@@ -1956,6 +1956,7 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 {
     GList *tmp;
     const GladeWidgetBuildData *data;
+    static GQuark visible_id = 0;
 
     /* get the build data */
     data = get_build_data(G_OBJECT_TYPE(widget));
@@ -1964,15 +1965,6 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 
     gtk_widget_set_name(widget, info->name);
     glade_xml_add_accessibility_info(self, widget, info);
-
-#if 0
-    if (info->tooltip) {
-	gtk_tooltips_set_tip(self->priv->tooltips,
-			     widget,
-			     glade_xml_gettext(self, info->tooltip),
-			     NULL);
-    }
-#endif
 
     /* store this information as data of the widget. */
     g_object_set_qdata(G_OBJECT(widget), glade_xml_tree_id, self);
@@ -2029,6 +2021,12 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 	    g_warning ("widget %s (%s) has children, but is not a GtkContainer.",
 		       info->name, g_type_name (G_TYPE_FROM_INSTANCE (widget)));
     }
+
+    if (visible_id == 0)
+	visible_id = g_quark_from_static_string("Libglade::visible");
+
+    if (g_object_get_qdata(G_OBJECT(widget), visible_id))
+	gtk_widget_show(widget);
 }
 
 gchar **

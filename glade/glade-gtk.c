@@ -44,6 +44,21 @@ custom_noop (GladeXML *xml, GtkWidget *widget,
 }
 
 static void
+set_visible(GladeXML *xml, GtkWidget *widget,
+	    const gchar *prop_name, const gchar *prop_value)
+{
+    static GQuark visible_id = 0;
+
+    if (visible_id == 0)
+	visible_id = g_quark_from_static_string("Libglade::visible");
+
+    if (g_ascii_tolower(prop_value[0]) == 'y' ||
+	g_ascii_tolower(prop_value[0]) == 't' ||
+	strtol(prop_value, NULL, 0) != 0)
+	g_object_set_qdata(G_OBJECT(widget), visible_id,GINT_TO_POINTER(TRUE));
+}
+
+static void
 set_tooltip(GladeXML *xml, GtkWidget *widget,
 	    const gchar *prop_name, const gchar *prop_value)
 {
@@ -757,6 +772,7 @@ combo_find_internal_child(GladeXML *xml, GtkWidget *parent,
 void
 _glade_init_gtk_widgets(void)
 {
+    glade_register_custom_prop (GTK_TYPE_WIDGET, "visible", set_visible);
     glade_register_custom_prop (GTK_TYPE_WIDGET, "tooltip", set_tooltip);
     glade_register_custom_prop (GTK_TYPE_PIXMAP, "build_insensitive", pixmap_set_build_insensitive);
     glade_register_custom_prop (GTK_TYPE_PIXMAP, "filename", pixmap_set_filename);

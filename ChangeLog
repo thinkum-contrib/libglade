@@ -1,3 +1,27 @@
+2002-01-29  James Henstridge  <james@daa.com.au>
+
+	* libglade-convert.in (hide_toplevel): remove function that sets
+	all toplevels to invisible.
+	(handle_file): don't hide toplevels.
+
+	* test-libglade.c (main): get rid of the broken code that
+	unconditionally shows the toplevels.  The glade file should
+	already contain the required information.
+
+	* glade/glade-gtk.c (set_visible): handle the "visible" property
+	as a custom prop, setting object data if the widget is to be shown
+	(it gets shown after all its children are processed in
+	set_common_params).
+
+	* glade/glade-xml.c (glade_xml_set_common_params): if the
+	"Libglade::visible" object data has been set non NULL on a widget,
+	call gtk_widget_show() on it.
+
+2002-01-28  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c (glade_xml_set_common_params): delete the
+	tooltip stuff, as it is handled as a custom property now.
+
 2002-01-16  jacob berkman  <jacob@ximian.com>
 
 	* libglade-convert.in (upgrade_widget): make GtkTextView wrap

@@ -1081,10 +1081,6 @@ def check_widget(widget, requirelist=[]):
     for childdef in widget.children:
         check_widget(childdef.widget, requirelist)
 
-def hide_toplevel(widget):
-    if not widget.has_prop('visible'):
-        widget['visible'] = 'no'
-
 # --- parse the file for widget definitions, fixup problems and dump.
 
 def handle_file(filename):
@@ -1099,7 +1095,6 @@ def handle_file(filename):
     requireslist = []
 
     for widgetdef in widgets:
-        hide_toplevel(widgetdef)
         upgrade_widget(widgetdef)
         fixup_widget(widgetdef)
         check_widget(widgetdef, requireslist)
