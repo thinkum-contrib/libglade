@@ -32,10 +32,11 @@ gladeinclude_HEADERS = $(the_headers)
 else
 lib_LIBRARIES        = libglade.a
 libglade_a_SOURCES   = $(the_sources)
+extra_dist           = $(the_headers)
 endif
 
 BUILT_SOURCES = glade-keys.c
-EXTRA_DIST = makekeys.awk
+EXTRA_DIST = makekeys.awk $(the_headers)
 
 glade-keys.c: makekeys.awk $(GDK_KEYSYMS)
 	$(AWK) -f $(srcdir)/makekeys.awk < $(GDK_KEYSYMS) > $(srcdir)/glade-keys.c
