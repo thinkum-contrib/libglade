@@ -1,5 +1,11 @@
 1999-06-20  James Henstridge  <james@daa.com.au>
 
+	* dialogs.glade: example of using the standard dialogs with libglade.
+	
+	* configure.in: upped version number to 0.2.
+
+	* glade/glade-gnome.c: small clean up.
+
 	* doc/libglade-docs.sgml: a few more changes to the documentation.
 
 1999-06-19  James Henstridge  <james@daa.com.au>

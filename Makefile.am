@@ -9,6 +9,7 @@ endif
 INCLUDES = $(THE_FLAGS) $(XML_CFLAGS)
 
 EXTRA_DIST =			\
+	libglade.spec		\
 	libglade.spec.in	\
 	libgladeConf.sh		\
 	test.glade		\
@@ -16,6 +17,7 @@ EXTRA_DIST =			\
 	example.glade		\
 	custom.glade		\
 	gnome-widgets.glade	\
+	dialogs.glade		\
 	libglade.m4		\
 	libglade-xgettext
 
@@ -35,6 +37,3 @@ endif
 SUBDIRS = $(extra_dirs) glade
 
 test_libglade_SOURCES = test-libglade.c
-
-dist-hook:
-	cp libglade.spec $(distdir)
