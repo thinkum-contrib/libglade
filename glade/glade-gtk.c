@@ -1123,8 +1123,10 @@ _glade_init_gtk_widgets(void)
 			   option_menu_build_children, NULL);
     glade_register_widget (GTK_TYPE_PIXMAP, glade_standard_build_widget,
 			   NULL, NULL);
+#ifdef HAVE_GTK_PLUG
     glade_register_widget (GTK_TYPE_PLUG, NULL,
 			   NULL, NULL);
+#endif
     glade_register_widget (GTK_TYPE_PREVIEW, build_preview,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_PROGRESS, glade_standard_build_widget,
@@ -1140,8 +1142,10 @@ _glade_init_gtk_widgets(void)
 			   scrolled_window_find_internal_child);
     glade_register_widget (GTK_TYPE_SEPARATOR_MENU_ITEM, glade_standard_build_widget,
 			   NULL, NULL);
+#ifdef HAVE_GTK_PLUG
     glade_register_widget (GTK_TYPE_SOCKET, glade_standard_build_widget,
 			   NULL, NULL);
+#endif
     glade_register_widget (GTK_TYPE_SPIN_BUTTON, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_STATUSBAR, glade_standard_build_widget,

@@ -2,6 +2,9 @@ SUBDIRS = glade doc tests
 
 INCLUDES = $(LIBGLADE_CFLAGS)
 
+# build documentation when doing a distcheck.
+DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
+
 if HAVE_PYTHON
 bin_SCRIPTS = libglade-convert
 endif

@@ -12,8 +12,8 @@ HTML_DIR=$(datadir)/gtk-doc/html
 
 TARGET_DIR=$(HTML_DIR)/$(DOC_MODULE)
 
-CFLAGS = -I$(top_srcdir) $(LIBGLADE_CFLAGS)
-LDFLAGS = ../glade/libglade-2.0.la $(LIBGLADE_LIBS)
+GTKDOC_CFLAGS = $(CFLAGS) -I$(top_srcdir) $(LIBGLADE_CFLAGS)
+GTKDOC_LIBS = $(LDFLAGS) ../glade/libglade-2.0.la $(LIBGLADE_LIBS)
 
 SCANOBJ_FILES = $(DOC_MODULE).signals $(DOC_MODULE).hierachy $(DOC_MODULE).args
 
@@ -26,7 +26,7 @@ tmpl_sources = \
   tmpl/glade-build.sgml \
   tmpl/libglade-unused.sgml
 
-if HAVE_GTK_DOC
+if ENABLE_GTK_DOC
 html_stamp = html.stamp
 endif
 
@@ -39,6 +39,7 @@ EXTRA_DIST = \
   libglade-dtd.sgml \
   libglade.types
 
+if ENABLE_GTK_DOC
 libglade-dtd.sgml: $(top_srcdir)/glade-2.0.dtd
 	echo "<![CDATA[" > $(srcdir)/libglade-dtd.sgml
 	cat $(top_srcdir)/glade-2.0.dtd >> $(srcdir)/libglade-dtd.sgml
@@ -49,7 +50,7 @@ scan-build.stamp: $(top_srcdir)/glade/*.h
 	@-chmod -R u+w $(srcdir)
 	env CC="$(LIBTOOL) --mode=compile $(CC)" \
 		LD="$(LIBTOOL) --mode=link $(CC)" \
-		CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
+		CFLAGS="$(GTKDOC_CFLAGS)" LDFLAGS="$(GTKDOC_LIBS)" \
 		gtkdoc-scangobj --module=$(DOC_MODULE) \
 			--types=$(srcdir)/$(DOC_MODULE).types \
 			--output-dir=$(srcdir)
@@ -80,6 +81,7 @@ html.stamp: sgml.stamp $(DOC_MAIN_SGML_FILE) $(content_files)
 	@-chmod -R u+w $(srcdir)
 	@test -d $(srcdir)/html || mkdir $(srcdir)/html
 	-cd $(srcdir)/html && gtkdoc-mkhtml $(DOC_MODULE) ../$(DOC_MAIN_SGML_FILE)
+endif
 
 clean-local:
 	rm -f *~ *.bak *.hierarchy *.signals *-unused.txt

@@ -1,3 +1,19 @@
+2002-05-12  James Henstridge  <james@daa.com.au>
+
+	* doc/Makefile.am: use CFLAGS and LDFLAGS when building docs, to
+	fix 64-bit build issues brought up in bug #81347 by Shivram U.
+
+	* Makefile.am (DISTCHECK_CONFIGURE_FLAGS): make sure documentation
+	gets built during distcheck.
+
+	* configure.in (HAVE_GTK_PLUG): add check for GtkPlug impl, for
+	those gtk targets that don't implement it yet.
+	(ENABLE_GTK_DOC): add configure magic to not build gtk-doc stuff
+	by default.
+
+	* glade/glade-gtk.c (_glade_init_gtk_widgets): only register
+	handler for GtkPlug/GtkSocket if HAVE_GTK_PLUG is defined.
+
 2002-05-06  James Henstridge  <james@daa.com.au>
 
 	* configure.in: push version number back up to 12.  This is
