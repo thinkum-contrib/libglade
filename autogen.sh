@@ -16,7 +16,7 @@ have_libtool=false
 if libtool --version < /dev/null > /dev/null 2>&1 ; then
 	libtool_version=`libtoolize --version | sed 's/^[^0-9]*\([0-9.][0-9.]*\).*/\1/'`
 	case $libtool_version in
-	    1.4*)
+	    1.[456789]*)
 		have_libtool=true
 		;;
 	esac
@@ -49,13 +49,10 @@ fi
 if automake-1.7 --version < /dev/null > /dev/null 2>&1; then
   AUTOMAKE=automake-1.7
   ACLOCAL=aclocal-1.7
-elif automake-1.6 --version < /dev/null > /dev/null 2>&1; then
-  AUTOMAKE=automake-1.6
-  ACLOCAL=aclocal-1.6
 else
 	echo
-	echo "You must have automake >= 1.6 installed to compile $PROJECT."
-	echo "Get ftp://ftp.gnu.org/pub/gnu/automake/automake-1.7.2.tar.gz"
+	echo "You must have automake >= 1.7 installed to compile $PROJECT."
+	echo "Get http://ftp.gnu.org/gnu/automake/automake-1.7.3.tar.gz"
 	echo "(or a newer version if it is available)"
 	DIE=1
 fi
