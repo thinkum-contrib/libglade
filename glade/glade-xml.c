@@ -105,7 +105,7 @@ glade_xml_init (GladeXML *self)
 {
     GladeXMLPrivate *priv;
 	
-    self->priv = priv = g_new (GladeXMLPrivate, 1);
+    self->priv = priv = g_new0 (GladeXMLPrivate, 1);
 
     self->filename = NULL;
 
@@ -119,6 +119,7 @@ glade_xml_init (GladeXML *self)
     priv->accel_groups = NULL;
     priv->default_widget = NULL;
     priv->focus_widget = NULL;
+    priv->deferred_props = NULL;
 }
 
 /**

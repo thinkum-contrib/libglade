@@ -1,3 +1,11 @@
+2001-08-28  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c (glade_xml_init): initialise deferred_props to
+	NULL.
+	(glade_xml_init): use g_new0 to allocate the private struct so I
+	don't get problems with invalid pointers when I miss something
+	like forgetting to initialise deferred_props.
+
 2001-08-26  James Henstridge  <james@daa.com.au>
 
 	* libglade-2.0.pc.in (moduledir): add variable to .pc file so that
