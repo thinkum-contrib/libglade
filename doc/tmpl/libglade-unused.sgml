@@ -1,17 +1,10 @@
-<!-- ##### MACRO GLADE_XML_CLASS ##### -->
-<para>
-
-</para>
-
-@klass: 
-
 <!-- ##### STRUCT GladeSignalData ##### -->
 <para>
 
 </para>
 
 
-<!-- ##### MACRO GLADE_IS_XML ##### -->
+<!-- ##### MACRO GLADE_XML ##### -->
 <para>
 
 </para>
@@ -25,7 +18,14 @@
 
 @Returns: 
 
-<!-- ##### MACRO GLADE_XML ##### -->
+<!-- ##### MACRO GLADE_XML_CLASS ##### -->
+<para>
+
+</para>
+
+@klass: 
+
+<!-- ##### MACRO GLADE_IS_XML ##### -->
 <para>
 
 </para>

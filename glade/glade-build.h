@@ -65,6 +65,11 @@ void           glade_xml_push_uline_accel(GladeXML *xml, GtkAccelGroup *uline);
 void           glade_xml_pop_uline_accel (GladeXML *xml);
 GtkAccelGroup *glade_xml_get_uline_accel (GladeXML *xml);
 
+/* this is the handler for GtkLabel accelerators */
+void           glade_xml_handle_label_accel(GladeXML *xml, const gchar *target,
+					    guint key);
+guint          glade_xml_get_parent_accel(GladeXML *xml);
+
 /* this function is called to build the interface by GladeXML */
 GtkWidget *glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info,
 				  const char *parent_long);

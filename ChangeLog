@@ -1,3 +1,48 @@
+1999-09-06  James Henstridge  <james@daa.com.au>
+
+	* NEWS: added news items for stuff I have added for this release.
+
+	* configure.in: incremented package version.
+
+	* glade/Makefile.am (LTVERSION): incremented libtool version.
+
+	* glade/glade-gnome.c (propbox_build_children): added similar
+	behaviour here.
+
+	* glade/glade-gtk.c (notebook_build_children): added underline
+	accelerator support for notebook tabs.  You can switch between
+	pages of the notebook by using the underline accelerator on the
+	page's tab.
+
+	* glade/glade-gnome.c (button_build_children): same function here
+	for gnome support.
+
+	* glade/glade-gtk.c (button_build_children): new function for
+	building button children.  It also adds an accelerator for the
+	clicked signal if appropriate.
+
+	* glade/glade-xml.c (glade_xml_set_common_params): check to see if
+	any label underline accelerators have to be attached.
+
+	* glade/glade-private.h (GladeXMLPrivate): added new fields for
+	label underline accelerators.
+
+	* glade/glade-build.h: added prototypes for the new functions.
+	
+	* glade/glade-xml.c (glade_xml_handle_label_accel): handle label
+	underline accelerators.
+	(glade_xml_get_parent_accel): routine for getting underline
+	accelerators directed at the parent widget.
+
+	* glade/glade-gtk.c (label_new): extract the underline accelerator
+	from the label.
+
+	* glade/glade-gnome.c (propbox_new): set up the property box to use
+	a new accel group.
+
+	* glade/glade-xml.c (glade_get_adjustment): accept the adjustment
+	element names from glade 0.5.2 and pre 0.5.2.
+
 1999-09-05  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-xml.c (glade_xml_new_from_memory): added new function

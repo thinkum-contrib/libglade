@@ -1,7 +1,7 @@
 AC_INIT(test-libglade.c)
 AM_CONFIG_HEADER(config.h)
 
-AM_INIT_AUTOMAKE(libglade, 0.4)
+AM_INIT_AUTOMAKE(libglade, 0.5)
 AM_MAINTAINER_MODE
 
 dnl get the GNOME macros
@@ -22,11 +22,6 @@ AC_ARG_PROGRAM
 AM_PROG_LIBTOOL
 
 AM_PATH_GTK(1.2.0)
-
-dnl for glade-keys.c
-AC_PROG_AWK
-GDK_KEYSYMS="`$GTK_CONFIG --prefix`/include/gdk/gdkkeysyms.h"
-AC_SUBST(GDK_KEYSYMS)
 
 AC_PATH_PROG(XML_CONFIG,xml-config,no)
 if test x$XML_CONFIG = xno; then

@@ -38,6 +38,21 @@
 /* functions to actually build the widgets */
 
 static void
+button_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info,
+		       const char *longname)
+{
+	GtkWidget *child = glade_xml_build_widget(xml,
+			(GladeWidgetInfo *)info->children->data, longname);
+	guint key = glade_xml_get_parent_accel(xml);
+
+	gtk_container_add(GTK_CONTAINER(w), child);
+	if (key)
+		gtk_widget_add_accelerator(w, "clicked",
+					   glade_xml_ensure_accel(xml),
+					   key, GDK_MOD1_MASK, 0);
+}
+
+static void
 menushell_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info,
 			  const char *longname)
 {
@@ -283,6 +298,13 @@ paned_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info,
 	gtk_paned_add2 (GTK_PANED(w), child);
 }
 
+static void note_change_page(GtkWidget *child, GtkNotebook *notebook)
+{
+	gint page = gtk_notebook_page_num(notebook, child);
+
+	gtk_notebook_set_page(notebook, page);
+}
+
 static void
 notebook_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info,
 			 const char *longname)
@@ -312,9 +334,18 @@ notebook_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info,
 			pages = g_list_append (pages, child);
 		else {
 			GtkWidget *page = pages->data;
+			gint key = glade_xml_get_parent_accel(xml);
 
 			pages = g_list_remove (pages, page);
 			gtk_notebook_append_page (GTK_NOTEBOOK(w), page,child);
+			if (key) {
+				gtk_widget_add_accelerator(page, "grab_focus",
+					     glade_xml_ensure_accel(xml),
+					     key, GDK_MOD1_MASK, 0);
+				gtk_signal_connect(GTK_OBJECT(page),
+					"grab_focus",
+					GTK_SIGNAL_FUNC(note_change_page), w);
+			}
 		}
 	}
 }
@@ -688,7 +719,8 @@ label_new (GladeXML *xml, GladeWidgetInfo *info)
 {
 	GList *tmp;
 	GtkWidget *label;
-	gchar *string = NULL;
+	guint key;
+	gchar *string = NULL, *focus_target = NULL;
 	GtkJustification just = GTK_JUSTIFY_CENTER;
 
 	for (tmp = info->attributes; tmp; tmp = tmp->next) {
@@ -699,9 +731,16 @@ label_new (GladeXML *xml, GladeWidgetInfo *info)
 		} else if (!strcmp(attr->name, "justify"))
 			just = glade_enum_from_string(GTK_TYPE_JUSTIFICATION,
 						      attr->value);
+		else if (!strcmp(attr->name, "default_focus_target")) {
+			if (!focus_target) focus_target = attr->value;
+		} else if (!strcmp(attr->name, "focus_target"))
+			focus_target = attr->value;
 	}
 
-	label = gtk_label_new(_(string));
+	label = gtk_label_new("");
+	key = gtk_label_parse_uline(GTK_LABEL(label), _(string));
+	if (key)
+		glade_xml_handle_label_accel(xml, focus_target, key);
 	if (just != GTK_JUSTIFY_CENTER)
 		gtk_label_set_justify(GTK_LABEL(label), just);
 	misc_set (GTK_MISC(label), info);
@@ -2651,10 +2690,10 @@ static const GladeWidgetBuildData widget_data[] = {
 	{"GtkAccelLabel",    accellabel_new,    NULL},
 	{"GtkEntry",         entry_new,         NULL},
 	{"GtkText",          text_new,          NULL},
-	{"GtkButton",        button_new,        glade_standard_build_children},
-	{"GtkToggleButton",  togglebutton_new,  glade_standard_build_children},
-	{"GtkCheckButton",   checkbutton_new,   glade_standard_build_children},
-	{"GtkRadioButton",   radiobutton_new,   glade_standard_build_children},
+	{"GtkButton",        button_new,        button_build_children},
+	{"GtkToggleButton",  togglebutton_new,  button_build_children},
+	{"GtkCheckButton",   checkbutton_new,   button_build_children},
+	{"GtkRadioButton",   radiobutton_new,   button_build_children},
 	{"GtkOptionMenu",    optionmenu_new,    NULL},
 	{"GtkCombo",         combo_new,         combo_build_children},
 	{"GtkList",          list_new,          NULL}, /* XXXX list appends ? */

@@ -36,7 +36,6 @@ extern "C" {
 
 typedef struct _GladeXML GladeXML;
 typedef struct _GladeXMLClass GladeXMLClass;
-typedef struct _GladeSignalData GladeSignalData;
 typedef struct _GladeXMLPrivate GladeXMLPrivate;
 
 struct _GladeXML {
@@ -52,14 +51,6 @@ struct _GladeXML {
 
 struct _GladeXMLClass {
   GtkDataClass parent_class;
-};
-
-struct _GladeSignalData {
-  GtkObject *signal_object;
-  char *signal_name;
-  char *signal_data; /* this isn't actually used, but it is in the XML files */
-  char *connect_object; /* or NULL if there is none */
-  gboolean signal_after;
 };
 
 GtkType glade_xml_get_type    (void);

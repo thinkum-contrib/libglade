@@ -62,6 +62,26 @@ struct _GladeXMLPrivate {
 	 */
 	GtkAccelGroup *accel_group;
 	GSList *uline_accels;
+
+	/* an accel intended for the parent of a widget */
+	guint parent_accel;
+	/* a list of label uline accels for widgets that don't exist yet */
+	GList *focus_ulines;
+};
+
+typedef struct _GladeFocusULine GladeFocusULine;
+struct _GladeFocusULine {
+	const gchar *widget_name;
+	guint key;
+};
+
+typedef struct _GladeSignalData GladeSignalData;
+struct _GladeSignalData {
+	GtkObject *signal_object;
+	char *signal_name;
+	char *signal_data;    /* this isn't actually used, but is in the XML */
+	char *connect_object; /* or NULL if there is none */
+	gboolean signal_after;
 };
 
 /*

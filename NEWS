@@ -1,3 +1,17 @@
+libglade-0.5:  6-October-1999
+	- removed some stuff to do with glade-keys.c I missed in the last
+	  release.
+	- If a .glade file has been changed on disk since it was last loaded
+	  by libglade, it is reparsed.  This should be helpful for libptb.
+	- New function glade_xml_new_from_memory for building an interface
+	  from an in memory buffer containing the XML file.
+	- Better support for underline accelerators.  You can now set
+	  underline accelerators on GtkLabel's, and get them to change focus
+	  to another widget, click a button, or change the page on a notebook.
+	- Added support for the GtkLayout, GnomeIconList, GnomeIconSelection,
+	  GnomeDruid, GnomeDruidPageStart, GnomeDruidPageFinish,
+	  GnomeDruidPageStandard, GnomePixmap and GnomePropertyBox widgets.
+
 libglade-0.4:  24-August-1999
 	- Use gdk_keyval_by_name instead of a local hash table for looking
 	  up key values for accelerators.  This removes a big hash table

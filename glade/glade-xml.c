@@ -102,6 +102,8 @@ glade_xml_init (GladeXML *self)
 	priv->toplevel = NULL;
 	priv->accel_group = NULL;
 	priv->uline_accels = NULL;
+	priv->parent_accel = 0;
+	priv->focus_ulines = NULL;
 }
 
 /**
@@ -561,6 +563,7 @@ glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window)
 	xml->priv->toplevel = window;
 	/* new toplevel needs new accel group */
 	xml->priv->accel_group = NULL;
+	xml->priv->parent_accel = 0;
 }
 
 /**
@@ -628,8 +631,64 @@ glade_xml_get_uline_accel(GladeXML *xml) {
 }
 
 /**
+ * glade_xml_handle_label_accel:
+ * @xml: the GladeXML object.
+ * @target: the target widget name (or %NULL).
+ * @key: the key code for the accelerator.
+ *
+ * This function is called by the GtkLabel creation routine to register an
+ * underline accelerator for the label.  If the target widget exists, the
+ * accelerator is connected to the grab_focus signal.  If it does not exist
+ * yet, the (target, key) pair is saved so that it can be attached when the
+ * widget is created.
+ * If @target is %NULL, then the accelerator should be attached to one of
+ * the parents of this widget (typically a GtkButton).
+ */
+void
+glade_xml_handle_label_accel(GladeXML *xml, const gchar *target, guint key)
+{
+	if (target) {
+		GtkWidget *twidget = glade_xml_get_widget(xml, target);
+
+		if (twidget)
+			gtk_widget_add_accelerator(twidget, "grab_focus",
+						   glade_xml_ensure_accel(xml),
+						   key, GDK_MOD1_MASK, 0);
+		else {
+			GladeFocusULine *uline = g_new(GladeFocusULine, 1);
+
+			uline->widget_name = target;
+			uline->key = key;
+			xml->priv->focus_ulines =
+				g_list_prepend(xml->priv->focus_ulines, uline);
+		}
+	} else
+		xml->priv->parent_accel = key;
+}
+
+/**
+ * glade_xml_get_parent_accel:
+ * @xml: the GladeXML object.
+ *
+ * This function gets the latest label underline accelerator directed at the
+ * parent widget.  If there is no accelerator waiting, 0 is returned.  If
+ * this function is called twice in a row, the second call will always return
+ * 0.
+ *
+ * Returns: the key code for the accelerator, or zero.
+ */
+guint
+glade_xml_get_parent_accel(GladeXML *xml)
+{
+	guint key = xml->priv->parent_accel;
+
+	xml->priv->parent_accel = 0;
+	return key;
+}
+
+/**
  * glade_xml_gettext:
- * @xml: the GladeXML widget.
+ * @xml: the GladeXML object.
  * @msgid: the string to translate.
  *
  * This function is a wrapper for gettext, that uses the translation domain
@@ -928,6 +987,23 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 	glade_xml_add_signals(self, widget, info);
 	glade_xml_add_accels(self, widget, info);
 
+	for (tmp = self->priv->focus_ulines; tmp; tmp = tmp->next) {
+		GladeFocusULine *uline = tmp->data;
+
+		if (!strcmp(uline->widget_name, info->name)) {
+			/* it is for us ... */
+			gtk_widget_add_accelerator(widget, "grab_focus",
+						glade_xml_ensure_accel(self),
+						uline->key, GDK_MOD1_MASK, 0);
+			tmp = tmp->next;
+			self->priv->focus_ulines =
+				g_list_remove(self->priv->focus_ulines, uline);
+			g_free(uline);
+		}
+		if (!tmp)
+			break;
+	}
+
 	gtk_widget_set_name(widget, info->name);
 	if (info->tooltip) {
 		if (self->priv->tooltips == NULL)
@@ -1027,32 +1103,35 @@ glade_get_adjustment(GladeWidgetInfo *info)
 
 	for (tmp = info->attributes; tmp != NULL; tmp = tmp->next) {
 		GladeAttribute *attr = tmp->data;
+		gchar *name = attr->name;
 
-		if (attr->name[0] == 'h')
-			switch (attr->name[1]) {
-			case 'l':
-				if (!strcmp(attr->name, "hlower"))
-					hlower = g_strtod(attr->value, NULL);
-				break;
-			case 'p':
-				if (!strcmp(attr->name, "hpage"))
-					hpage = g_strtod(attr->value, NULL);
-				else if (!strcmp(attr->name, "hpage_size"))
-					hpage_size=g_strtod(attr->value, NULL);
-				break;
-			case 's':
-				if (!strcmp(attr->name, "hstep"))
-					hstep = g_strtod(attr->value, NULL);
-				break;
-			case 'u':
-				if (!strcmp(attr->name, "hupper"))
-					hupper = g_strtod(attr->value, NULL);
-				break;
-			case 'v':
-				if (!strcmp(attr->name, "hvalue"))
-					hvalue = g_strtod(attr->value, NULL);
-				break;
-			}
+		if (name[0] == 'h')
+			name++;
+
+		switch (name[0]) {
+		case 'l':
+			if (!strcmp(name, "lower"))
+				hlower = g_strtod(attr->value, NULL);
+			break;
+		case 'p':
+			if (!strcmp(name, "page"))
+				hpage = g_strtod(attr->value, NULL);
+			else if (!strcmp(name, "page_size"))
+				hpage_size=g_strtod(attr->value, NULL);
+			break;
+		case 's':
+			if (!strcmp(name, "step"))
+				hstep = g_strtod(attr->value, NULL);
+			break;
+		case 'u':
+			if (!strcmp(name, "upper"))
+				hupper = g_strtod(attr->value, NULL);
+			break;
+		case 'v':
+			if (!strcmp(name, "value"))
+				hvalue = g_strtod(attr->value, NULL);
+			break;
+		}
 	}
 	return GTK_ADJUSTMENT (gtk_adjustment_new(hvalue, hlower, hupper,
 						  hstep, hpage, hpage_size));

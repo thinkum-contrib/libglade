@@ -7,7 +7,7 @@
 #   change to C+1:0:0
 # - If the interface is the same as the previous version, change to C:R+1:A
 
-LTVERSION = 1:1:1
+LTVERSION = 2:0:2
 
 if GNOME_SUPPORT
 THE_FLAGS = $(GNOME_INCLUDEDIR)
