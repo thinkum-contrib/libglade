@@ -1,3 +1,10 @@
+2001-02-13  James Henstridge  <james@daa.com.au>
+
+	* glade/glade.h: add prototype for glade_gnome_db_init.
+
+	* glade/glade-gnomedb.c (glade_gnome_db_init): accidentally forgot
+	to initialise the gnome-db widgets :( -- cut and paste error.
+
 2001-02-12  James Henstridge  <james@daa.com.au>
 
 	* NEWS: added news items.

@@ -206,5 +206,5 @@ glade_gnome_db_init(void)
 	if (initialised) return;
 	initialised = TRUE;
 	glade_gnome_init();
-	glade_init_gnome_widgets();
+	glade_init_gnome_db_widgets();
 }

@@ -1,4 +1,4 @@
-libglade-0.16:
+libglade-0.16: 13-February-2001
 	- GNOME-DB support contributed by David Marin Carreno.
 	- various other bug fixes and a few memory leaks plugged.  See
 	  changelog for details.
