@@ -1,3 +1,30 @@
+1999-06-14  James Henstridge  <james@daa.com.au>
+
+	* glade/glade.h: moved the include of glade/glade-xml.h outside of
+	the extern "C" { ... } block, since it has its own extern "C" { ... }
+	stuff (and the extern "C" notation is not valid in C).
+
+	* glade/glade-gtk.c (optionmenu_new, combo_new): made adjustments to
+	match change in libglade-xgettext.
+
+	* libglade-xgettext (TranslatableStringParser.end_items): add list
+	items to translation list individually instead of as one large string.
+
+	* glade/glade-gnome.c (gnomedialog_new, app_new): added support for
+	setting wmname/wmclass on these windows as well.
+
+	* glade/glade-gtk.c: added support for GtkFileSelection,
+	GtkColorSelectionDialog and GtkFontSelectionDialog, including
+	the support for connecting signals to their buttons.
+	Also added support for setting the wmname/wmclass on windows.
+
+1999-06-13  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gnome.c: put #ifdef's round references to
+	GNOME_STOCK_PIXMAP_MIDI, so it will compile with gnome-libs-1.0.1
+	(Damon is keeping compatibility with that release for glade, so
+	I may as well do so as well).
+
 1999-06-13  Richard Hestilow  <hestgray@ionet.net>
 
 	* glade/glade-xml.h, glade-build.h, glade.h: added 

@@ -48,7 +48,9 @@ class TranslatableStringParser(xmllib.XMLParser):
 	end_comments     = translate_this_string
 	end_preview_text = translate_this_string
 	end_tooltip      = translate_this_string
-	end_items        = translate_this_string
+	def end_items(self):
+		for item in string.split(self.data, '\n'):
+			self.add_string(item)
 
 	def output_pot(self, filename):
 		strings = self.strings.keys()

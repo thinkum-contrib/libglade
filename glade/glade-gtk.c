@@ -483,6 +483,100 @@ toolbar_build_children (GladeXML *xml, GtkWidget *w, GNode *node,
 }
 
 static void
+fileselection_build_children (GladeXML *xml, GtkWidget *w, GNode *node,
+			      const char *longname)
+{
+	xmlNodePtr info;
+	GNode *childnode;
+	char *content;
+
+	for (childnode = node->children; childnode;
+	     childnode = childnode->next) {
+		GtkWidget *child = NULL;
+		xmlNodePtr xmlnode = childnode->data;
+
+		for (xmlnode = xmlnode->childs; xmlnode;
+		     xmlnode = xmlnode->next)
+			if (!strcmp(xmlnode->name, "child_name"))
+				break;
+		if (!xmlnode) continue;
+		content = xmlNodeGetContent (xmlnode);
+		if (!strcmp(content, "FileSel:ok_button"))
+			child = GTK_FILE_SELECTION(w)->ok_button;
+		else if (!strcmp(content, "FileSel:cancel_button"))
+			child = GTK_FILE_SELECTION(w)->cancel_button;
+		if (content) free(content);
+		if (child)
+			glade_xml_set_common_params(xml, child, childnode,
+						    longname, "GtkButton");
+	}
+}
+
+static void
+colorselectiondialog_build_children (GladeXML *xml, GtkWidget *w, GNode *node,
+				     const char *longname)
+{
+	xmlNodePtr info;
+	GNode *childnode;
+	char *content;
+
+	for (childnode = node->children; childnode;
+	     childnode = childnode->next) {
+		GtkWidget *child = NULL;
+		xmlNodePtr xmlnode = childnode->data;
+
+		for (xmlnode = xmlnode->childs; xmlnode;
+		     xmlnode = xmlnode->next)
+			if (!strcmp(xmlnode->name, "child_name"))
+				break;
+		if (!xmlnode) continue;
+		content = xmlNodeGetContent (xmlnode);
+		if (!strcmp(content, "ColorSel:ok_button"))
+			child = GTK_COLOR_SELECTION_DIALOG(w)->ok_button;
+		else if (!strcmp(content, "ColorSel:cancel_button"))
+			child = GTK_COLOR_SELECTION_DIALOG(w)->cancel_button;
+		else if (!strcmp(content, "ColorSel:help_button"))
+			child = GTK_COLOR_SELECTION_DIALOG(w)->help_button;
+		if (content) free(content);
+		if (child)
+			glade_xml_set_common_params(xml, child, childnode,
+						    longname, "GtkButton");
+	}
+}
+
+static void
+fontselectiondialog_build_children (GladeXML *xml, GtkWidget *w, GNode *node,
+				     const char *longname)
+{
+	xmlNodePtr info;
+	GNode *childnode;
+	char *content;
+
+	for (childnode = node->children; childnode;
+	     childnode = childnode->next) {
+		GtkWidget *child = NULL;
+		xmlNodePtr xmlnode = childnode->data;
+
+		for (xmlnode = xmlnode->childs; xmlnode;
+		     xmlnode = xmlnode->next)
+			if (!strcmp(xmlnode->name, "child_name"))
+				break;
+		if (!xmlnode) continue;
+		content = xmlNodeGetContent (xmlnode);
+		if (!strcmp(content, "FontSel:ok_button"))
+			child = GTK_FONT_SELECTION_DIALOG(w)->ok_button;
+		else if (!strcmp(content, "FontSel:apply_button"))
+			child = GTK_FONT_SELECTION_DIALOG(w)->apply_button;
+		else if (!strcmp(content, "FontSel:cancel_button"))
+			child = GTK_FONT_SELECTION_DIALOG(w)->cancel_button;
+		if (content) free(content);
+		if (child)
+			glade_xml_set_common_params(xml, child, childnode,
+						    longname, "GtkButton");
+	}
+}
+
+static void
 misc_set (GtkMisc *misc, xmlNodePtr info)
 {
 	for (info = info->childs; info; info = info->next){
@@ -817,22 +911,20 @@ optionmenu_new(GladeXML *xml, GNode *node)
 		char *content = xmlNodeGetContent(info);
 
 		if (!strcmp(info->name, "items") && content) {
-			char *tmp = g_strdup(_(content));
-			char *pos = tmp;
-			char *items_end = &tmp[strlen(tmp)];
+			char *pos = content;
+			char *items_end = &pos[strlen(pos)];
 			while (pos < items_end) {
 				gchar *item_end = strchr (pos, '\n');
 				if (item_end == NULL)
 					item_end = items_end;
 				*item_end = '\0';
 	
-				menuitem = gtk_menu_item_new_with_label (pos);
+				menuitem=gtk_menu_item_new_with_label (_(pos));
 				gtk_widget_show (menuitem);
 				gtk_menu_append (GTK_MENU (menu), menuitem);
 	
 				pos = item_end + 1;
 			}
-			g_free(tmp);
 		} else if (!strcmp(info->name, "initial_choice"))
 			initial_choice = strtol(content, NULL, 0);
 
@@ -860,9 +952,8 @@ combo_new (GladeXML *xml, GNode *node)
 			break;
 		case 'i':
 			if (!strcmp(info->name, "items") && content) {
-				char *tmp = g_strdup(_(content));
-				char *pos = tmp;
-				char *items_end = &tmp[strlen(tmp)];
+				char *pos = content;
+				char *items_end = &pos[strlen(pos)];
 				GList *item_list = NULL;
 				while (pos < items_end) {
 					gchar *item_end = strchr (pos, '\n');
@@ -870,10 +961,10 @@ combo_new (GladeXML *xml, GNode *node)
 						item_end = items_end;
 					*item_end = '\0';
 	  
-					item_list = g_list_append(item_list, pos);
+					item_list = g_list_append(item_list,
+								  _(pos));
 					pos = item_end + 1;
 				}
-				g_free(tmp);
 				if (item_list)
 					gtk_combo_set_popdown_strings(
 						GTK_COMBO(combo), item_list);
@@ -2107,6 +2198,7 @@ window_new (GladeXML *xml, GNode *node)
 	GtkWindowPosition pos = GTK_WIN_POS_NONE;
 	GtkWindowType type = GTK_WINDOW_TOPLEVEL;
 	char *title = NULL;
+	char *wmname = NULL, *wmclass = NULL;
 
 	for (; info; info = info->next) {
 		char *content = xmlNodeGetContent(info);
@@ -2133,6 +2225,15 @@ window_new (GladeXML *xml, GNode *node)
 				type = glade_enum_from_string(GTK_TYPE_WINDOW_TYPE,
 							      content);
 			break;
+		case 'w':
+			if (!strcmp(info->name, "wmclass_name")) {
+				if (wmname) g_free(wmname);
+				wmname = g_strdup(content);
+			} else if (!strcmp(info->name, "wmclass_class")) {
+				if (wmclass) g_free(wmclass);
+				wmclass = g_strdup(content);
+			}
+			break;
 		case 'x':
 			if (info->name[1] == '\0') xpos = strtol(content, NULL, 0);
 			break;
@@ -2146,8 +2247,16 @@ window_new (GladeXML *xml, GNode *node)
 	}
 	win = gtk_window_new(type);
 	gtk_window_set_title(GTK_WINDOW(win), _(title));
+	if (title) g_free(title);
 	gtk_window_set_position(GTK_WINDOW(win), pos);
-	gtk_window_set_policy(GTK_WINDOW(win), allow_shrink,allow_grow,auto_shrink);
+	gtk_window_set_policy(GTK_WINDOW(win), allow_shrink, allow_grow,
+			      auto_shrink);
+	if (wmname || wmclass) {
+		gtk_window_set_wmclass(GTK_WINDOW(win),
+				       wmname?wmname:"", wmclass?wmclass:"");
+		if (wmname) g_free(wmname);
+		if (wmclass) g_free(wmclass);
+	}
 
 	if (xpos >= 0 || ypos >= 0)
 		gtk_widget_set_uposition(win, xpos, ypos);
@@ -2162,6 +2271,7 @@ dialog_new(GladeXML *xml, GNode *node)
 	xmlNodePtr info = ((xmlNodePtr)node->data)->childs;
 	gint xpos = -1, ypos = -1;
 	gboolean allow_shrink = TRUE, allow_grow = TRUE, auto_shrink = FALSE;
+	gchar *wmname = NULL, *wmclass = NULL;
 
 	for (; info; info = info->next) {
 		char *content = xmlNodeGetContent(info);
@@ -2178,13 +2288,96 @@ dialog_new(GladeXML *xml, GNode *node)
 		case 'p':
 			if (!strcmp(info->name, "position"))
 				gtk_window_set_position(GTK_WINDOW(win),
-							glade_enum_from_string(GTK_TYPE_WINDOW_POSITION,
-									       content));
+					glade_enum_from_string(
+						GTK_TYPE_WINDOW_POSITION,
+						content));
 			break;
 		case 't':
 			if (!strcmp(info->name, "title"))
 				gtk_window_set_title(GTK_WINDOW(win),
 						     _(content));
+			break;
+		case 'w':
+			if (!strcmp(info->name, "wmclass_name")) {
+				if (wmname) g_free(wmname);
+				wmname = g_strdup(content);
+			} else if (!strcmp(info->name, "wmclass_class")) {
+				if (wmclass) g_free(wmclass);
+				wmclass = g_strdup(content);
+			}
+			break;
+		case 'x':
+			if (info->name[1] == '\0') xpos=strtol(content,NULL,0);
+			break;
+		case 'y':
+			if (info->name[1] == '\0') ypos=strtol(content,NULL,0);
+			break;
+		}
+
+		if (content)
+			free(content);
+	}
+	gtk_window_set_policy(GTK_WINDOW(win), allow_shrink, allow_grow,
+			      auto_shrink);
+
+	if (wmname || wmclass) {
+		gtk_window_set_wmclass(GTK_WINDOW(win),
+				       wmname?wmname:"", wmclass?wmclass:"");
+		if (wmname) g_free(wmname);
+		if (wmclass) g_free(wmclass);
+	}
+
+	if (xpos >= 0 || ypos >= 0)
+		gtk_widget_set_uposition (win, xpos, ypos);
+
+	return win;
+}
+
+static GtkWidget *
+fileselection_new (GladeXML *xml, GNode *node)
+{
+	GtkWidget *win;
+	xmlNodePtr info = ((xmlNodePtr)node->data)->childs;
+	gint xpos = -1, ypos = -1;
+	gboolean allow_shrink = TRUE, allow_grow = TRUE, auto_shrink = FALSE;
+	GtkWindowPosition pos = GTK_WIN_POS_NONE;
+	GtkWindowType type = GTK_WINDOW_TOPLEVEL;
+	char *title = NULL;
+	char *wmname = NULL, *wmclass = NULL;
+
+	for (; info; info = info->next) {
+		char *content = xmlNodeGetContent(info);
+
+		switch (info->name[0]) {
+		case 'a':
+			if (!strcmp(info->name, "allow_grow"))
+				allow_grow = content[0] == 'T';
+			else if (!strcmp(info->name, "allow_shrink"))
+				allow_shrink = content[0] == 'T';
+			else if (!strcmp(info->name, "auto_shrink"))
+				auto_shrink = content[0] == 'T';
+			break;
+		case 'p':
+			if (!strcmp(info->name, "position"))
+				pos = glade_enum_from_string(
+					GTK_TYPE_WINDOW_POSITION, content);
+			break;
+		case 't':
+			if (!strcmp(info->name, "title")) {
+				if (title) g_free(title);
+				title = g_strdup(content);
+			} else if (!strcmp(info->name, "type"))
+				type = glade_enum_from_string(GTK_TYPE_WINDOW_TYPE,
+							      content);
+			break;
+		case 'w':
+			if (!strcmp(info->name, "wmclass_name")) {
+				if (wmname) g_free(wmname);
+				wmname = g_strdup(content);
+			} else if (!strcmp(info->name, "wmclass_class")) {
+				if (wmclass) g_free(wmclass);
+				wmclass = g_strdup(content);
+			}
 			break;
 		case 'x':
 			if (info->name[1] == '\0') xpos = strtol(content, NULL, 0);
@@ -2197,10 +2390,20 @@ dialog_new(GladeXML *xml, GNode *node)
 		if (content)
 			free(content);
 	}
-	gtk_window_set_policy(GTK_WINDOW(win), allow_shrink,allow_grow,auto_shrink);
+	win = gtk_file_selection_new(_(title));
+	if (title) g_free(title);
+	gtk_window_set_position(GTK_WINDOW(win), pos);
+	gtk_window_set_policy(GTK_WINDOW(win), allow_shrink, allow_grow,
+			      auto_shrink);
+	if (wmname || wmclass) {
+		gtk_window_set_wmclass(GTK_WINDOW(win),
+				       wmname?wmname:"", wmclass?wmclass:"");
+		if (wmname) g_free(wmname);
+		if (wmclass) g_free(wmclass);
+	}
 
 	if (xpos >= 0 || ypos >= 0)
-		gtk_widget_set_uposition (win, xpos, ypos);
+		gtk_widget_set_uposition(win, xpos, ypos);
 
 	return win;
 }
@@ -2208,8 +2411,157 @@ dialog_new(GladeXML *xml, GNode *node)
 static GtkWidget *
 colorselectiondialog_new (GladeXML *xml, GNode *node)
 {
-	/* XXXX - fix this */
-	return gtk_color_selection_dialog_new("ColorSel");
+	GtkWidget *win;
+	xmlNodePtr info = ((xmlNodePtr)node->data)->childs;
+	gint xpos = -1, ypos = -1;
+	gboolean allow_shrink = TRUE, allow_grow = TRUE, auto_shrink = FALSE;
+	GtkWindowPosition pos = GTK_WIN_POS_NONE;
+	GtkWindowType type = GTK_WINDOW_TOPLEVEL;
+	GtkUpdateType policy = GTK_UPDATE_CONTINUOUS;
+	char *title = NULL;
+	char *wmname = NULL, *wmclass = NULL;
+
+	for (; info; info = info->next) {
+		char *content = xmlNodeGetContent(info);
+
+		switch (info->name[0]) {
+		case 'a':
+			if (!strcmp(info->name, "allow_grow"))
+				allow_grow = content[0] == 'T';
+			else if (!strcmp(info->name, "allow_shrink"))
+				allow_shrink = content[0] == 'T';
+			else if (!strcmp(info->name, "auto_shrink"))
+				auto_shrink = content[0] == 'T';
+			break;
+		case 'p':
+			if (!strcmp(info->name, "position"))
+				pos = glade_enum_from_string(
+					GTK_TYPE_WINDOW_POSITION, content);
+			else if (!strcmp(info->name, "policy"))
+				policy = glade_enum_from_string
+					(GTK_TYPE_UPDATE_TYPE, content);
+			break;
+		case 't':
+			if (!strcmp(info->name, "title")) {
+				if (title) g_free(title);
+				title = g_strdup(content);
+			} else if (!strcmp(info->name, "type"))
+				type = glade_enum_from_string(GTK_TYPE_WINDOW_TYPE,
+							      content);
+			break;
+		case 'w':
+			if (!strcmp(info->name, "wmclass_name")) {
+				if (wmname) g_free(wmname);
+				wmname = g_strdup(content);
+			} else if (!strcmp(info->name, "wmclass_class")) {
+				if (wmclass) g_free(wmclass);
+				wmclass = g_strdup(content);
+			}
+			break;
+		case 'x':
+			if (info->name[1] == '\0') xpos = strtol(content, NULL, 0);
+			break;
+		case 'y':
+			if (info->name[1] == '\0') ypos = strtol(content, NULL, 0);
+			break;
+		}
+
+		if (content)
+			free(content);
+	}
+	win = gtk_color_selection_dialog_new(_(title));
+	if (title) g_free(title);
+	gtk_window_set_position(GTK_WINDOW(win), pos);
+	gtk_window_set_policy(GTK_WINDOW(win), allow_shrink, allow_grow,
+			      auto_shrink);
+	if (wmname || wmclass) {
+		gtk_window_set_wmclass(GTK_WINDOW(win),
+				       wmname?wmname:"", wmclass?wmclass:"");
+		if (wmname) g_free(wmname);
+		if (wmclass) g_free(wmclass);
+	}
+	gtk_color_selection_set_update_policy(GTK_COLOR_SELECTION(
+			GTK_COLOR_SELECTION_DIALOG(win)->colorsel), policy);
+
+	if (xpos >= 0 || ypos >= 0)
+		gtk_widget_set_uposition(win, xpos, ypos);
+
+	return win;
+}
+
+static GtkWidget *
+fontselectiondialog_new (GladeXML *xml, GNode *node)
+{
+	GtkWidget *win;
+	xmlNodePtr info = ((xmlNodePtr)node->data)->childs;
+	gint xpos = -1, ypos = -1;
+	gboolean allow_shrink = TRUE, allow_grow = TRUE, auto_shrink = FALSE;
+	GtkWindowPosition pos = GTK_WIN_POS_NONE;
+	GtkWindowType type = GTK_WINDOW_TOPLEVEL;
+	char *title = NULL;
+	char *wmname = NULL, *wmclass = NULL;
+
+	for (; info; info = info->next) {
+		char *content = xmlNodeGetContent(info);
+
+		switch (info->name[0]) {
+		case 'a':
+			if (!strcmp(info->name, "allow_grow"))
+				allow_grow = content[0] == 'T';
+			else if (!strcmp(info->name, "allow_shrink"))
+				allow_shrink = content[0] == 'T';
+			else if (!strcmp(info->name, "auto_shrink"))
+				auto_shrink = content[0] == 'T';
+			break;
+		case 'p':
+			if (!strcmp(info->name, "position"))
+				pos = glade_enum_from_string(GTK_TYPE_WINDOW_POSITION,
+							     content);
+			break;
+		case 't':
+			if (!strcmp(info->name, "title")) {
+				if (title) g_free(title);
+				title = g_strdup(content);
+			} else if (!strcmp(info->name, "type"))
+				type = glade_enum_from_string(GTK_TYPE_WINDOW_TYPE,
+							      content);
+			break;
+		case 'w':
+			if (!strcmp(info->name, "wmclass_name")) {
+				if (wmname) g_free(wmname);
+				wmname = g_strdup(content);
+			} else if (!strcmp(info->name, "wmclass_class")) {
+				if (wmclass) g_free(wmclass);
+				wmclass = g_strdup(content);
+			}
+			break;
+		case 'x':
+			if (info->name[1] == '\0') xpos = strtol(content, NULL, 0);
+			break;
+		case 'y':
+			if (info->name[1] == '\0') ypos = strtol(content, NULL, 0);
+			break;
+		}
+
+		if (content)
+			free(content);
+	}
+	win = gtk_font_selection_dialog_new(_(title));
+	if (title) g_free(title);
+	gtk_window_set_position(GTK_WINDOW(win), pos);
+	gtk_window_set_policy(GTK_WINDOW(win), allow_shrink, allow_grow,
+			      auto_shrink);
+	if (wmname || wmclass) {
+		gtk_window_set_wmclass(GTK_WINDOW(win),
+				       wmname?wmname:"", wmclass?wmclass:"");
+		if (wmname) g_free(wmname);
+		if (wmclass) g_free(wmclass);
+	}
+
+	if (xpos >= 0 || ypos >= 0)
+		gtk_widget_set_uposition(win, xpos, ypos);
+
+	return win;
 }
 
 static GtkWidget *
@@ -2331,7 +2683,11 @@ static const GladeWidgetBuildData widget_data[] = {
   /* toplevel widgets */
 	{"GtkWindow",        window_new,        glade_standard_build_children},
 	{"GtkDialog",        dialog_new,        dialog_build_children},
-	{"GtkColorSelectionDialog", colorselectiondialog_new, NULL},
+	{"GtkFileSelection", fileselection_new, fileselection_build_children},
+	{"GtkColorSelectionDialog", colorselectiondialog_new,
+				    colorselectiondialog_build_children},
+	{"GtkFontSelectionDialog", fontselectiondialog_new,
+				   fontselectiondialog_build_children},
 
   /* the custom widget */
 	{"Custom",           custom_new,        NULL},

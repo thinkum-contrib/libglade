@@ -35,11 +35,11 @@ void glade_gnome_init(void);
  * do any library initialisation and call glade_register_widgets */
 void glade_load_module(const char *module);
 
-#include <glade/glade-xml.h>
-/* don't include glade-build.h -- it is only for widget set definitions */
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 	
+#include <glade/glade-xml.h>
+/* don't include glade-build.h -- it is only for widget set definitions */
+
 #endif
