@@ -29,7 +29,7 @@ The interfaces can also be edited with GLADE.
 
 %package devel
 Summary: Libraries, includes, etc to develop libglade applications
-Group: X11/libraries
+Group: X11/Libraries
 Requires: libglade gtk+-devel libxml-devel
 
 %description devel
