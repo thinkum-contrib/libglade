@@ -47,9 +47,9 @@ void glade_style_attach(GtkWidget *widget, const char *style);
 
 /* from glade-xml.c */
 /* get the widget name */
-char *glade_get_widget_name(GtkWidget *widget);
+const char *glade_get_widget_name(GtkWidget *widget);
 /* get the name of the widget (dot separated heirachy) */
-char *glade_get_widget_long_name(GtkWidget *widget);
+const char *glade_get_widget_long_name(GtkWidget *widget);
 
 /* from glade-keys.c */
 /* perform string->int keysym conversion */

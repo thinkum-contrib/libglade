@@ -171,12 +171,12 @@ GtkWidget *glade_xml_get_widget_by_long_name(GladeXML *self,
   return g_hash_table_lookup(self->longname_hash, longname);
 }
 
-char *glade_get_widget_name(GtkWidget *widget) {
-  return (char *)gtk_object_get_data(GTK_OBJECT(widget),
+const char *glade_get_widget_name(GtkWidget *widget) {
+  return (const char *)gtk_object_get_data(GTK_OBJECT(widget),
 					   glade_xml_name_tag);
 }
-char *glade_get_widget_long_name(GtkWidget *widget) {
-  return (char *)gtk_object_get_data(GTK_OBJECT(widget),
+const char *glade_get_widget_long_name(GtkWidget *widget) {
+  return (const char *)gtk_object_get_data(GTK_OBJECT(widget),
 					   glade_xml_longname_tag);
 }
 GladeXML *glade_get_widget_tree(GtkWidget *widget) {

@@ -17,7 +17,7 @@ AC_ARG_PROGRAM
 
 AM_PROG_LIBTOOL
 
-AM_PATH_GTK(1.1.1)
+AM_PATH_GTK(1.2.0)
 
 dnl for glade-keys.c
 AC_PROG_AWK

@@ -1,3 +1,11 @@
+1999-04-20  James Henstridge  <james@daa.com.au>
+
+	* configure.in: bumped required version of GTK up to 1.2.0.
+
+	* glade/glade-xml.c, glade/glade-private.h: changed some occurences
+	of "char *" to "const char *" to remove warnings made by Miguel's
+	change.
+
 1999-04-10  Miguel de Icaza  <miguel@nuclecu.unam.mx>
 
 	* glade/glade-xml.h: Tag return values as "const char *" to warn
