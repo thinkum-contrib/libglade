@@ -1,3 +1,9 @@
+2000-08-13  Michael Meeks  <michael@helixcode.com>
+
+	* configure.in (have_bonobo): require Bonobo 0.17
+
+	* glade/glade-bonobo.c (gnome_control_new): fix for latest Bonobo.
+
 2000-08-01  James Henstridge  <james@daa.com.au>
 
 	* configure.in: revert Martin's patch.  The GNOME_INIT_HOOK macro
