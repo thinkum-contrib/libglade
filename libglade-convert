@@ -475,8 +475,8 @@ def fixup_as_type(widget, type):
                     del childdef.widget['child_name']
                     childdef['type'] = 'tab';
                 else:
-                    print >> sys.stderr , 'Unknown child_name %s', \
-                          childdef['child_name']
+                    print >> sys.stderr , 'Unknown child_name', \
+                          childdef.widget['child_name']
 
     # fix up adjustment properties
     if type in ('GtkHScale', 'GtkHScrollbar',

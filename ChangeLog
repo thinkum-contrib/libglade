@@ -1,3 +1,7 @@
+2001-10-20  jacob berkman  <jacob@ximian.com>
+
+	* libglade-convert (fixup_as_type): fix some typos
+
 Fri Oct 19 15:14:03 2001  Jonathan Blandford  <jrb@redhat.com>
 
 	* glade-2.0.dtd: Make valid xml.
