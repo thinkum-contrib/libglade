@@ -326,7 +326,7 @@ renamed_props = {
                                  ('logo_background_color', 'logo_background'),
                                  ('logo_image', 'logo'),
                                  ],
-    'GnomeFontPicker': [ ('use_font_size', 'label-font-size')
+    'GnomeFontPicker': [ ('use_font_size', 'label-font-size'),
                          ('use_font', 'use-font-in-label'),
                          ],
 }
