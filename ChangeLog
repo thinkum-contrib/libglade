@@ -1,3 +1,8 @@
+2004-02-07  Steve Chaplin <stevech1097@yahoo.com.au>
+
+	* tests/Makefile.am (AM_LDFLAGS): Fix a warning with automake.
+	(#119071, Steve Chaplin)
+
 Fri Jan 23 01:56:03 2004  Matthias Clasen  <maclas@gmx.de>
 
 	* glade/glade-xml.c (glade_flags_from_string): Handle spaces 

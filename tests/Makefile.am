@@ -22,7 +22,7 @@ LDADD = $(top_builddir)/glade/libglade-2.0.la
 
 test_libglade_gtk_LDADD = $(top_builddir)/glade/libglade-2.0.la $(test_libglade_gtk_exp)
 
-LDFLAGS = -export-dynamic
+AM_LDFLAGS = -export-dynamic
 
 test_libglade_gtk_SOURCE = test-libglade-gtk.c
 test_value_parse_SOURCE = test-value-parse.c
