@@ -1,5 +1,14 @@
 2001-10-20  Michael Meeks  <michael@ximian.com>
 
+	* glade/glade-bonobo.c: add BonoboWindow.
+
+	* libglade-convert (fixup_as_type): set use_underline on
+	label's containing '_'s. on GtkLabel & GtkButtons
+	(parent_table): update inheritance table.
+	(renamed_props): default_focus_target -> mnemnonic_widget.
+
+2001-10-20  Michael Meeks  <michael@ximian.com>
+
 	* libglade-convert (stock_button_translate): impl.
 
 	* glade/glade-xml.c (glade_xml_build_widget): calm

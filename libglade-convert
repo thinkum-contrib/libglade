@@ -291,7 +291,8 @@ renamed_props = {
     'GtkCombo' : [ ('use_arrows', 'enable_arrow_keys'),
                    ('use_arrows_always', 'enable_arrows_always'),
                    ('ok_if_empty', 'allow_empty') ],
-    'GnomeFileEntry' : [ ( 'directory', 'directory_entry' ) ]
+    'GnomeFileEntry' : [ ( 'directory', 'directory_entry' ) ],
+    'GtkLabel' : [ ('default_focus_target', 'mnemonic_widget') ],
 }
 
 # child properties to change on specific widgets
@@ -349,6 +350,8 @@ parent_table = {
     'GtkImageMenuItem'  : 'GtkMenuItem',
     'GtkFontSelectionDialog' : 'GtkDialog',
     'GnomeColorPicker'  : 'GtkButton',
+    'GtkToggleButton'   : 'GtkButton',
+    'GtkCheckButton'    : 'GtkToggleButton',
 }
 
 def find_parent(type):
@@ -579,6 +582,11 @@ def fixup_as_type(widget, type):
                 listitem['name'] = make_name()
                 list.add_child(listitem)
                 listitem.add_child (new_label ('GtkLabel', item, ''))
+
+    if type == 'GtkLabel' or type == 'GtkButton':
+        if widget.has_prop('label'):
+            if re.match('.*_.*', widget['label']):
+                widget['use_underline'] = 'yes'
 
     if type == 'GnomePropertyBox':
         childdef = widget.children[0]
