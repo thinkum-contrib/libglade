@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libglade VERSION\n"
-"POT-Creation-Date: 1999-08-22 21:24+0200\n"
+"POT-Creation-Date: 1999-08-24 23:38+0800\n"
 "PO-Revision-Date: 1999-08-22 21:25+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@online.no>\n"
 "Language-Team: Norwegian <no@li.org>\n"

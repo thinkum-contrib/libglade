@@ -28,40 +28,38 @@
  */
 #include <stdlib.h>
 #include <string.h>
-#include <glade/glade-private.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
-static gpointer
-new_func(gpointer key)
-{
-        gchar *filename = key;
+#include <glade/glade-widget-tree.h>
 
-	return glade_widget_tree_parse_file(filename);
-}
-
-static void
-destroy_func(gpointer val)
-{
-	GladeWidgetTree *tree = (GladeWidgetTree *)val;
-  
-	if (tree)
-		glade_widget_tree_free(tree);
-}
+static GHashTable *tree_hash = NULL;
 
 GladeWidgetTree *
 glade_tree_get(const char *filename)
 {
-	static GCache *cache = NULL;
+	GladeWidgetTree *tree;
+	gchar *orig_key;
 
-	if (!cache) {
-		/* cache uses file name as key */
-		cache = g_cache_new((GCacheNewFunc)new_func,    /* create new tree */
-				    (GCacheDestroyFunc)destroy_func, /* delete a tree */
-				    (GCacheDupFunc)g_strdup,    /* strdup to dup key */
-				    (GCacheDestroyFunc)g_free,  /* can just free strings */
-				    (GHashFunc)g_str_hash,      /* key hash */
-				    (GHashFunc)g_direct_hash,   /* value hash */
-				    (GCompareFunc)g_str_equal); /* key compare */
+	if (!tree_hash)
+		tree_hash = g_hash_table_new(g_str_hash, g_str_equal);
+
+	if (g_hash_table_lookup_extended(tree_hash, filename,
+					 (gpointer *)&orig_key,
+					 (gpointer *)&tree)) {
+		struct stat statbuf;
+
+		if (stat(filename, &statbuf) >= 0 &&
+		    statbuf.st_mtime > tree->mtime) {
+			glade_widget_tree_unref(tree);
+			tree = glade_widget_tree_parse_file(filename);
+			g_hash_table_insert(tree_hash, orig_key, tree);
+		}
+	} else {
+		tree = glade_widget_tree_parse_file(filename);
+		g_hash_table_insert(tree_hash, g_strdup(filename), tree);
 	}
-	return (GladeWidgetTree *)g_cache_insert(cache, (gpointer) filename);
+
+	return glade_widget_tree_ref(tree);
 }
 

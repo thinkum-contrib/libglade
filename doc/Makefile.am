@@ -50,7 +50,7 @@ libglade.hierarchy libglade-decl.txt:
 	$(MAKE) templates
 
 scan:
-	env CC="$(LIBTOOL) $(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
+	env CC="$(LIBTOOL) --mode=link $(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 		gtkdoc-scanobj --module=$(DOC_MODULE) \
 		--types=$(srcdir)/$(DOC_MODULE).types
 	-mv -f $(SCANOBJ_FILES) $(srcdir)

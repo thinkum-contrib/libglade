@@ -26,6 +26,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include <gtk/gtk.h>
 
@@ -64,6 +66,7 @@ static int my_xmlSAXParseFile(xmlSAXHandlerPtr sax, void *user_data,
 static GladeWidgetTree *glade_widget_tree_new(void) {
     GladeWidgetTree *self = g_new0(GladeWidgetTree, 1);
 
+    self->ref = 1;
     self->names = g_hash_table_new(g_str_hash, g_str_equal);
 
     return self;
@@ -132,13 +135,28 @@ static void glade_widget_info_free(GladeWidgetInfo *info) {
 }
 
 /**
- * glade_widget_tree_free
+ * glade_widget_tree_ref
  * @tree: the GladeWidgetTree structure
  *
- * Free a GladeWidgetTree structure.
+ * Increment the reference count of a GladeWidgetTree structure.
+ * Returns: the tree argument.
  */
-void glade_widget_tree_free(GladeWidgetTree *tree) {
+GladeWidgetTree *glade_widget_tree_ref(GladeWidgetTree *tree) {
+    tree->ref++;
+    return tree;
+}
+
+/**
+ * glade_widget_tree_unref
+ * @tree: the GladeWidgetTree structure
+ *
+ * Decrement the reference count of a GladeWidgetTree structure.
+ */
+void glade_widget_tree_unref(GladeWidgetTree *tree) {
     GList *tmp;
+
+    if (--(tree->ref) > 0)
+	return;
 
     /* free the styles */
     for (tmp = tree->styles; tmp; tmp = tmp->next) {
@@ -671,14 +689,18 @@ static xmlSAXHandler gladeSAXParser = {
  */
 GladeWidgetTree *glade_widget_tree_parse_file(const char *file) {
     GladeParseState state;
+    struct stat statbuf;
 
     state.tree = NULL;
     if (my_xmlSAXParseFile(&gladeSAXParser, &state, file) < 0) {
 	g_warning("document not well formed!");
 	if (state.tree)
-	    glade_widget_tree_free(state.tree);
+	    glade_widget_tree_unref(state.tree);
 	return NULL;
     }
+    /* set the modification time of the file ... */
+    if (stat(file, &statbuf) >= 0)
+	state.tree->mtime = statbuf.st_mtime;
     return state.tree;
 }
 

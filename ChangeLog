@@ -1,3 +1,35 @@
+1999-09-04  James Henstridge  <james@daa.com.au>
+
+	* doc/Makefile.am (scan): fixed up target so that libtool works
+	correctly even if it does not recognise the C compiler name (there
+	were problems with CC=egcs).
+
+	* glade/glade-xml.c: save a reference to the GladeWidgetTree
+	structure, and unref it when the GladeXML structure is destroyed.
+	This is so it does not get destroyed if it gets purged from the
+	cache.
+
+	* glade/glade-private.h: added the GladeWidgetTree to the private
+	structure.
+
+	* glade/glade-tree.c (glade_tree_get): check mtime on file to see
+	if tree needs to be read in again.
+
+	* glade/glade-sax.c: added implementations of reference counting
+	routines, and save modification time of the file in the structure.
+
+	* glade/glade-widget-tree.h: added an mtime field to GladeWidgetTree
+	and added reference counting.
+
+1999-09-03  James Henstridge  <james@daa.com.au>
+
+	* configure.in (ALL_LINGUAS): removed languages from the ALL_LINGUAS
+	variable.  Obviously no one read the message above it stating that
+	libglade doesn't install anything that needs translation.
+
+	* glade/Makefile.am (EXTRA_DIST): removed last reference to
+	glade-keys.c which was breaking the build on some systems.
+
 1999-09-01  Pablo Saratxaga <pablo@mandrakesoft.com>
 
 	* po/da.po: added danish file

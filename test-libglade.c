@@ -68,6 +68,11 @@ int main (int argc, char **argv)
   
   xml = glade_xml_new(filename, rootnode);
 
+  if (!xml) {
+    g_warning("something bad happened while creating the interface");
+    return 1;
+  }
+
   if (rootnode) {
     GtkWidget *wid = glade_xml_get_widget(xml, rootnode);
     if (!GTK_IS_WINDOW(wid)) {
@@ -86,13 +91,9 @@ int main (int argc, char **argv)
     }
   }
 
-  if (!xml) {
-    g_warning("something bad happened while creating the interface");
-    return;
-  }
-
   if (!no_connect)
     glade_xml_signal_autoconnect(xml);
   gtk_main();
+
   return 0;
 }

@@ -154,7 +154,7 @@ glade_xml_new_with_domain(const char *fname, const char *root,
 	GladeXML *self = gtk_type_new(glade_xml_get_type());
 
 	if (!glade_xml_construct(self, fname, root, domain)) {
-		gtk_object_destroy(GTK_OBJECT(self));
+		gtk_object_unref(GTK_OBJECT(self));
 		return NULL;
 	}
 	return self;
@@ -181,6 +181,7 @@ glade_xml_construct (GladeXML *self, const char *fname, const char *root,
 	if (!tree)
 		return FALSE;
 
+	self->priv->tree = tree;
 	if (self->textdomain) g_free(self->textdomain);
 	self->textdomain = g_strdup(domain);
 	if (self->filename)
@@ -691,6 +692,7 @@ glade_xml_destroy(GtkObject *object)
 	if (self->textdomain)
 		g_free(self->textdomain);
 
+	glade_widget_tree_unref(priv->tree);
 	/* strings are owned in the cached GladeWidgetTree structure */
 	g_hash_table_destroy(priv->name_hash);
 	/* strings belong to individual widgets -- don't free them */

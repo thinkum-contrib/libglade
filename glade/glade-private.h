@@ -28,6 +28,8 @@
 #include <glade/glade-widget-tree.h>
 
 struct _GladeXMLPrivate {
+	GladeWidgetTree *tree; /* the tree for this GladeXML */
+
 	GtkTooltips *tooltips; /* if not NULL, holds all tooltip info */
 
 	/*
@@ -75,10 +77,6 @@ GladeWidgetTree *glade_tree_get   (const char *filename);
 const char *glade_get_widget_name      (GtkWidget *widget);
 /* get the name of the widget (dot separated heirachy) */
 const char *glade_get_widget_long_name (GtkWidget *widget);
-
-/* from glade-keys.c */
-/* perform string->int keysym conversion */
-guint glade_key_get(char *str);
 
 #endif
 

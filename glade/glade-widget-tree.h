@@ -84,6 +84,8 @@ struct _GladeWidgetInfo {
 
 typedef struct _GladeWidgetTree GladeWidgetTree;
 struct _GladeWidgetTree {
+    guint ref;
+    GTime mtime;
     GList *styles;
     GList *widgets;
     GHashTable *names;
@@ -91,8 +93,9 @@ struct _GladeWidgetTree {
 
 /* parse a file and create a GladeWidgetTree structure */
 GladeWidgetTree *glade_widget_tree_parse_file(const char *file);
-/* free a GladeWidgetTree structure*/
-void glade_widget_tree_free(GladeWidgetTree *tree);
+/* ref/unref a GladeWidgetTree structure*/
+GladeWidgetTree *glade_widget_tree_ref(GladeWidgetTree *tree);
+void glade_widget_tree_unref(GladeWidgetTree *tree);
 /* print the info stored in a GladeWidgetTree structure */
 void glade_widget_tree_print(GladeWidgetTree *tree);
 

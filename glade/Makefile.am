@@ -48,6 +48,5 @@ libglade_la_LDFLAGS  = -version-info $(LTVERSION)
 gladeincludedir      = $(includedir)/glade
 gladeinclude_HEADERS = $(the_headers)
 
-BUILT_SOURCES = glade-keys.c
 EXTRA_DIST = $(the_headers)
 

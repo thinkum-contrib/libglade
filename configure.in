@@ -62,7 +62,7 @@ AM_CONDITIONAL(HAVE_GTK_DOC, $GTKDOC)
 
 dnl gettext stuff ... there is no message catalog for libglade -- libglade
 dnl provides translation for the XML files it reads in.
-ALL_LINGUAS="da no"
+ALL_LINGUAS=""
 AM_GNOME_GETTEXT
 
 AC_OUTPUT([Makefile
