@@ -1,3 +1,23 @@
+1999-10-28  James Henstridge  <james@daa.com.au>
+
+	* gnome-widgets.glade: added GnomeDruid example to file.
+	
+	* glade/glade-gnome.c (druidpage_build_children): use
+	glade_xml_set_common_params to handle the GnomeDruidPageStandard's
+	internal vbox.  This causes border width, etc to be handled
+	correctly.
+
+	* glade/glade-xml.c (glade_xml_gettext): always return the empty
+	string for empty message ids.  Most catalogs have a translation
+	from the empty message id to some info about the catalog.  We don't
+	want to display this.
+
+	* glade/glade-sax.c: fixed test to remove placeholders from internal
+	representation of the XML file.
+
+	* glade/glade-gtk.c (label_new, accellabel_new): fixed mem leak found
+	by Morten.  This fixes bug #3127.
+
 1999-09-28  James Henstridge  <james@daa.com.au>
 
 	* NEWS: added news items.

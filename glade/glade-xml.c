@@ -1,4 +1,4 @@
-/* -*- Mode: C; c-basic-offset: 8 -*- */
+//* -*- Mode: C; c-basic-offset: 8 -*- */
 /* libglade - a library for building interfaces from XML files at runtime
  * Copyright (C) 1998, 1999  James Henstridge <james@daa.com.au>
  *
@@ -709,7 +709,7 @@ glade_xml_get_parent_accel(GladeXML *xml)
 char *
 glade_xml_gettext(GladeXML *xml, const char *msgid)
 {
-	if (!msgid)
+	if (!msgid || msgid[0] == '\0')
 		return "";
 #ifdef ENABLE_NLS
 	if (xml->textdomain)

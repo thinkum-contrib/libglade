@@ -476,7 +476,8 @@ static void gladeEndElement(GladeParseState *state, const CHAR *name) {
 
 #ifdef REMOVE_PLACEHOLDERS
 	/* check to see if it was a placeholder */
-	if (state->widget->name&&!strcmp(state->widget->name, "Placeholder")) {
+	if (state->widget->class &&
+	    !strcmp(state->widget->class, "Placeholder")) {
 	    GladeWidgetInfo *child = state->widget;
 
 	    state->widget = state->widget->parent;

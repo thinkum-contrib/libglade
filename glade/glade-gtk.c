@@ -727,7 +727,7 @@ label_new (GladeXML *xml, GladeWidgetInfo *info)
 		GladeAttribute *attr = tmp->data;
 
 		if (!strcmp(attr->name, "label")) {
-			string = g_strdup(attr->value);
+			string = attr->value;
 		} else if (!strcmp(attr->name, "justify"))
 			just = glade_enum_from_string(GTK_TYPE_JUSTIFICATION,
 						      attr->value);
@@ -765,7 +765,7 @@ accellabel_new (GladeXML *xml, GladeWidgetInfo *info)
 		GladeAttribute *attr = tmp->data;
 
 		if (!strcmp(attr->name, "label")) {
-			string = g_strdup(attr->value);
+			string = attr->value;
 		} else if (!strcmp(attr->name, "justify"))
 			just = glade_enum_from_string(GTK_TYPE_JUSTIFICATION,
 						      attr->value);
