@@ -25,15 +25,17 @@ if LIBGLADE_FULLDIST
 bin_SCRIPTS = libglade-config libglade-xgettext
 noinst_PROGRAMS = test-libglade
 test_libglade_LDADD = $(THE_LIBS) $(XML_LIBS)
-extra_dirs = intl po macros doc
+extra_dirs = intl po macros
+extra_dirs_2 = doc
 m4datadir = $(datadir)/aclocal
 m4data_DATA = libglade.m4
 confexecdir = $(libdir)
 confexec_DATA = libgladeConf.sh
 else
 extra_dirs =
+extra_dirs_2 =
 endif
 
-SUBDIRS = $(extra_dirs) glade
+SUBDIRS = $(extra_dirs) glade $(extra_dirs_2)
 
 test_libglade_SOURCES = test-libglade.c
