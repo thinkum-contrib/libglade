@@ -1,3 +1,10 @@
+1999-11-13  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gnome.c (toolbar_new): use the toolbar style as set in
+	the control center, rather than that in the XML file.
+	(dockitem_new): fixed bug with setting name of dock items.  Patch
+	came from Eric Gillepsi Jr. <epg@pobox.com>.
+
 1999-11-12  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-gtk.c (toolbar_build_children): same here.
