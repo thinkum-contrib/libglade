@@ -100,7 +100,8 @@ glade_xml_init (GladeXML *self)
 	self->txtdomain = NULL;
 
 	priv->tree = NULL;
-	priv->tooltips = NULL;
+	priv->tooltips = gtk_tooltips_new();
+	gtk_tooltips_enable(priv->tooltips);
 	priv->name_hash = g_hash_table_new(g_str_hash, g_str_equal);
 	priv->longname_hash = g_hash_table_new(g_str_hash, g_str_equal);
 	priv->signals = g_hash_table_new(g_str_hash, g_str_equal);
@@ -204,9 +205,6 @@ glade_xml_construct (GladeXML *self, const char *fname, const char *root,
 	self->filename = g_strdup(fname);
 	glade_xml_build_interface(self, tree, root);
 
-	if (self->priv->tooltips)
-		gtk_tooltips_enable(self->priv->tooltips);
-
 	return TRUE;
 }
 
@@ -239,9 +237,6 @@ GladeXML *glade_xml_new_from_memory(char *buffer, int size, const char *root,
 	self->txtdomain = g_strdup(domain);
 	self->filename = NULL;
 	glade_xml_build_interface(self, tree, root);
-
-	if (self->priv->tooltips)
-		gtk_tooltips_enable(self->priv->tooltips);
 
 	return self;
 }
@@ -702,6 +697,8 @@ glade_get_widget_tree(GtkWidget *widget)
 void
 glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window)
 {
+	static char *tooltips_key = "libglade::GladeXML::tooltips";
+
 	if (xml->priv->focus_widget)
 		gtk_widget_grab_focus(xml->priv->focus_widget);
 	if (xml->priv->default_widget)
@@ -713,6 +710,11 @@ glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window)
 	g_slist_free(xml->priv->accel_groups);
 	xml->priv->accel_groups = NULL;
 	xml->priv->parent_accel = 0;
+	/* the window should hold a reference to the tooltips object */
+	gtk_object_ref(GTK_OBJECT(xml->priv->tooltips));
+	gtk_object_set_data_full(GTK_OBJECT(window), tooltips_key,
+				 xml->priv->tooltips,
+				 (GtkDestroyNotify)gtk_object_unref);
 }
 
  /**
@@ -980,25 +982,34 @@ glade_xml_destroy(GtkObject *object)
 	
 	if (self->filename)
 		g_free(self->filename);
+	self->filename = NULL;
 	if (self->txtdomain)
 		g_free(self->txtdomain);
+	self->txtdomain = NULL;
 
-	if (priv->tree)
-		glade_widget_tree_unref(priv->tree);
-	/* strings are owned in the cached GladeWidgetTree structure */
-	g_hash_table_destroy(priv->name_hash);
-	/* strings belong to individual widgets -- don't free them */
-	g_hash_table_destroy(priv->longname_hash);
+	if (priv) {
+		if (priv->tree)
+			glade_widget_tree_unref(priv->tree);
+		/* strings are owned in the cached GladeWidgetTree structure */
+		g_hash_table_destroy(priv->name_hash);
+		/* strings belong to individual widgets -- don't free them */
+		g_hash_table_destroy(priv->longname_hash);
 
-	g_hash_table_foreach(priv->signals, (GHFunc)glade_xml_destroy_signals,
-			     NULL);
-	g_hash_table_destroy(priv->signals);
+		g_hash_table_foreach(priv->signals,
+				     (GHFunc)glade_xml_destroy_signals, NULL);
+		g_hash_table_destroy(priv->signals);
 
-	/* the group name strings are owned by the GladeWidgetTree */
-	g_hash_table_foreach(self->priv->radio_groups, free_radio_groups,NULL);
-	g_hash_table_destroy(priv->radio_groups);
+		/* the group name strings are owned by the GladeWidgetTree */
+		g_hash_table_foreach(self->priv->radio_groups,
+				     free_radio_groups, NULL);
+		g_hash_table_destroy(priv->radio_groups);
+
+		if (priv->tooltips)
+			gtk_object_unref(GTK_OBJECT(priv->tooltips));
 	
-	g_free (self->priv);
+		g_free (self->priv);
+	}
+	self->priv = NULL;
 	if (parent_class->destroy)
 		(* parent_class->destroy)(object);
 }
@@ -1291,8 +1302,6 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 
 	gtk_widget_set_name(widget, info->name);
 	if (info->tooltip) {
-		if (self->priv->tooltips == NULL)
-			self->priv->tooltips = gtk_tooltips_new();
 		gtk_tooltips_set_tip(self->priv->tooltips,
 				     widget,
 				     glade_xml_gettext(self, info->tooltip),

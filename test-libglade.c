@@ -50,7 +50,7 @@
 #endif
 #include <glade/glade.h>
 
-char *filename = NULL, *rootnode = NULL;
+const char *filename = NULL, *rootnode = NULL;
 gboolean no_connect = FALSE;
 
 #ifdef ENABLE_GNOME
@@ -69,7 +69,7 @@ int main (int argc, char **argv)
   GladeXML *xml;
 
 #ifdef ENABLE_GNOME
-  char **list = NULL;
+  const char **list = NULL;
   
   gnome_init_with_popt_table ("test-libglade", VERSION, argc, argv, options, 0, &ctx);
   glade_gnome_init();
@@ -136,6 +136,9 @@ int main (int argc, char **argv)
 
   if (!no_connect)
     glade_xml_signal_autoconnect(xml);
+
+  gtk_object_unref(GTK_OBJECT(xml));
+
   gtk_main();
 
   return 0;

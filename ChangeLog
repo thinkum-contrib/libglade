@@ -1,3 +1,22 @@
+2000-11-05  James Henstridge  <james@daa.com.au>
+
+	* test-libglade.c (main): unref the GladeXML object before calling
+	gtk_main.  This shouldn't cause any problems.
+
+	* glade/glade-gnome.c (messagebox_build_children): glade seems to
+	use the stock_pixmap tag rather than stock_button now.
+	(get_stock_name): check for a NULL pointer here.
+
+2000-11-04  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c (glade_xml_init): always create the tooltips
+	object.
+	(glade_xml_set_toplevel): add a reference to the GtkTooltips
+	object for each toplevel window.  We use gtk_object_set_data_full
+	so we can remove this reference when the window is destroyed.
+	(glade_xml_destroy): unref the tooltips object here.  This will
+	not destroy the tooltips, as the GtkWindows now hold a reference.
+
 2000-11-02  Michael Meeks  <michael@helixcode.com>
 
 	* configure.in (have_bonobo): require Bonobo 0.27
