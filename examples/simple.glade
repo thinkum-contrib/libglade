@@ -94,6 +94,8 @@ does nothing interesting."/>
 	  <widget class="GtkHButtonBox" id="buttonbox1">
 	    <child>
               <widget class="GtkButton" id="button2">
+                <property name="label">gtk-cancel</property>
+                <property name="use_stock">yes</property>
                 <property name="visible">yes</property>
  
                 <accessibility>
@@ -108,14 +110,6 @@ does nothing interesting."/>
                 </accessibility> 
 
 	        <signal name="clicked" handler="gtk_main_quit" />
-
-                <child>
-                  <widget class="GtkLabel" id="label4">
-                    <property name="label" translatable="yes">_Cancel</property>
-                    <property name="use_underline">yes</property>
-                    <property name="visible">yes</property>
-                  </widget>
-                </child>
               </widget>
 	    </child>
 	  </widget>

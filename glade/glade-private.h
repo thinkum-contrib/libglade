@@ -1,6 +1,6 @@
 /* -*- Mode: C; c-basic-offset: 4 -*-
  * libglade - a library for building interfaces from XML files at runtime
- * Copyright (C) 1998-2001  James Henstridge <james@daa.com.au>
+ * Copyright (C) 1998-2002  James Henstridge <james@daa.com.au>
  *
  * glade-private.h: private datastructures for the GladeXML object.
  *
@@ -23,11 +23,7 @@
 #define GLADE_PRIVATE_H
 #include <stdio.h>
 #include <glib.h>
-#include <atk/atkrelation.h>
-#include <atk/atkrelationset.h>
-#include <gtk/gtkwidget.h>
-#include <gtk/gtkwindow.h>
-#include <gtk/gtkaccelgroup.h>
+#include <gtk/gtk.h>
 #include <glade/glade-xml.h>
 #include <glade/glade-parser.h>
 
@@ -45,18 +41,11 @@ struct _GladeXMLPrivate {
      * destroyed */
     GHashTable *signals;
 
-    /* This hash table contains GSLists that are the radio groups
-     * bound to each name. */
-    GHashTable *radio_groups;
-
     /* the current toplevel being built */
     GtkWindow *toplevel;
 
-    /* These items are for handling accelerator groups.  The first is
-     * the main accelerator group for the current window.  The second
-     * is an slist of groups, which is used for the uline accel groups
-     * for menu entries. */
-    GSList *accel_groups;
+    /* the accel group to add accelerators to (not mnemonics) */
+    GtkAccelGroup *accel_group;
 
     /* these hold the focus and default widgets for a window until they
      * get packed into the window -- we can't call gtk_widget_grab_focus
@@ -94,6 +83,20 @@ struct _GladeDeferredProperty {
 	} rel;
     } d;
 };
+
+typedef enum {
+    GLADE_DEBUG_PARSER = 1 << 0,
+    GLADE_DEBUG_BUILD  = 1 << 1
+} GladeDebugFlag;
+
+extern guint _glade_debug_flags;
+#ifdef DEBUG
+#  define GLADE_NOTE(type, action)  G_STMT_START { \
+    if (_glade_debug_flags & GLADE_DEBUG_##type) \
+        { action; };                } G_STMT_END
+#else
+#  define GLADE_NOTE(type, action)
+#endif
 
 #endif
 

@@ -1,6 +1,6 @@
 /* -*- Mode: C; c-basic-offset: 4 -*-
  * libglade - a library for building interfaces from XML files at runtime
- * Copyright (C) 1998-2001  James Henstridge <james@daa.com.au>
+ * Copyright (C) 1998-2002  James Henstridge <james@daa.com.au>
  *
  * glade-init.c: initialisation functions for libglade
  *
@@ -20,7 +20,7 @@
  * Boston, MA  02111-1307, USA.
  */
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#  include <config.h>
 #endif
 
 #include <string.h>
@@ -31,6 +31,17 @@
 
 #include "glade-init.h"
 #include "glade-build.h"
+#include "glade-private.h"
+
+#ifdef DEBUG
+guint _glade_debug_flags = 0;
+static const  GDebugKey libglade_debug_keys[] = {
+    { "parser", GLADE_DEBUG_PARSER },
+    { "build",  GLADE_DEBUG_BUILD },
+};
+static const guint libglade_ndebug_keys = G_N_ELEMENTS(libglade_debug_keys);
+#endif
+
 
 void _glade_init_gtk_widgets (void);
 
@@ -46,10 +57,24 @@ void
 glade_init(void)
 {
     static gboolean initialised = FALSE;
+#ifdef DEBUG
+    const gchar *env_string;
+#endif
 
     if (initialised) return;
     initialised = TRUE;
     _glade_init_gtk_widgets();
+
+#ifdef DEBUG
+    env_string = g_getenv("LIBGLADE_DEBUG");
+    if (env_string != NULL) {
+	_glade_debug_flags = g_parse_debug_string (env_string,
+						   libglade_debug_keys,
+						   libglade_ndebug_keys);
+	env_string = NULL;
+    }
+#endif
+
 }
 
 gchar *
@@ -225,3 +250,10 @@ glade_provide(const gchar *library)
     if (!already_loaded)
 	g_ptr_array_add(loaded_packages, g_strdup(library));
 }
+
+/**
+ * GLADE_MODULE_CHECK_INIT:
+ *
+ * This macro will insert a suitable version check function into a
+ * libglade loadable module.
+ */

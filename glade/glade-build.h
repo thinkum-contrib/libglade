@@ -1,6 +1,6 @@
 /* -*- Mode: C; c-basic-offset: 4 -*-
  * libglade - a library for building interfaces from XML files at runtime
- * Copyright (C) 1998-2001  James Henstridge <james@daa.com.au>
+ * Copyright (C) 1998-2002  James Henstridge <james@daa.com.au>
  *
  * glade-build.h: functions useful for adding support for new widgets.
  *
@@ -68,10 +68,6 @@ void glade_register_custom_prop(GType type,
 /* set the current toplevel widget while building (use NULL to unset) */
 void       glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window);
 
-/* push and pop accelerator groups on a stack */
-GtkAccelGroup *glade_xml_push_accel(GladeXML *xml);
-GtkAccelGroup *glade_xml_pop_accel(GladeXML *xml);
-
 /* make sure that xml->priv->accel_group is a valid AccelGroup */
 GtkAccelGroup *glade_xml_ensure_accel(GladeXML *xml);
 
@@ -116,12 +112,6 @@ void glade_standard_build_children(GladeXML *self, GtkWidget *parent,
  * integer value for the enum */
 gint  glade_enum_from_string(GType type, const char *string);
 guint glade_flags_from_string(GType type, const char *string);
-
-/* invoke the custom widget creation function */
-GtkWidget *glade_create_custom(GladeXML *xml, gchar *func_name, gchar *name,
-			       gchar *string1, gchar *string2,
-			       gint int1, gint int2);
-
 
 /* the module dynamic loading interface ... */
 

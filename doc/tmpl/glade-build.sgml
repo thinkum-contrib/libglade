@@ -102,18 +102,6 @@ the actual widgets from the XML node data structures.
 @find_internal_child: 
 
 
-<!-- ##### FUNCTION glade_xml_set_value_from_string ##### -->
-<para>
-
-</para>
-
-@xml: 
-@pspec: 
-@string: 
-@value: 
-@Returns: 
-
-
 <!-- ##### FUNCTION glade_standard_build_widget ##### -->
 <para>
 
@@ -123,6 +111,17 @@ the actual widgets from the XML node data structures.
 @widget_type: 
 @info: 
 @Returns: 
+
+
+<!-- ##### FUNCTION glade_xml_handle_widget_prop ##### -->
+<para>
+
+</para>
+
+@self: 
+@widget: 
+@prop_name: 
+@value_name: 
 
 
 <!-- ##### FUNCTION glade_standard_build_children ##### -->
@@ -137,6 +136,39 @@ the actual widgets from the XML node data structures.
 @w: 
 @longname: 
 @node: 
+
+
+<!-- ##### FUNCTION glade_xml_set_packing_property ##### -->
+<para>
+
+</para>
+
+@self: 
+@parent: 
+@child: 
+@name: 
+@value: 
+
+
+<!-- ##### USER_FUNCTION GladeApplyCustomPropFunc ##### -->
+<para>
+
+</para>
+
+@xml: 
+@widget: 
+@propname: 
+@value: 
+
+
+<!-- ##### FUNCTION glade_register_custom_prop ##### -->
+<para>
+
+</para>
+
+@type: 
+@prop_name: 
+@apply_prop: 
 
 
 <!-- ##### FUNCTION glade_xml_relative_file ##### -->
@@ -169,6 +201,18 @@ the actual widgets from the XML node data structures.
 @Returns: 
 
 
+<!-- ##### FUNCTION glade_xml_set_value_from_string ##### -->
+<para>
+
+</para>
+
+@xml: 
+@pspec: 
+@string: 
+@value: 
+@Returns: 
+
+
 <!-- ##### FUNCTION glade_xml_set_toplevel ##### -->
 <para>
 
@@ -180,24 +224,6 @@ the actual widgets from the XML node data structures.
 @info: 
 
 
-<!-- ##### FUNCTION glade_xml_push_accel ##### -->
-<para>
-
-</para>
-
-@xml: 
-@Returns: 
-
-
-<!-- ##### FUNCTION glade_xml_pop_accel ##### -->
-<para>
-
-</para>
-
-@xml: 
-@Returns: 
-
-
 <!-- ##### FUNCTION glade_xml_ensure_accel ##### -->
 <para>
 
@@ -205,5 +231,12 @@ the actual widgets from the XML node data structures.
 
 @xml: 
 @Returns: 
+
+
+<!-- ##### MACRO GLADE_MODULE_CHECK_INIT ##### -->
+<para>
+
+</para>
+
 
 

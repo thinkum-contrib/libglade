@@ -1,3 +1,53 @@
+2002-02-05  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c (glade_xml_init): radio_groups doesn't exist
+	anymore.
+	(glade_xml_finalize): same here.
+
+	* glade/glade-private.h: get rid of radio_groups hash table, as we
+	don't maintain a separate namespace for radio groups anymore.
+
+	* glade/glade-xml.c (glade_xml_init): s/accel_groups/accel_group/
+	(glade_xml_set_toplevel): just unref priv->accel_group.
+	(glade_xml_push_accel, glade_xml_pop_accel): remove.
+	(glade_xml_ensure_accel): changes to get rid of accel group stack.
+	(glade_xml_finalize): same here.
+
+	* glade/glade-build.h (glade_xml_push_accel, glade_xml_pop_accel):
+	remove these obsolete unused semi-public functions (not really
+	part of the API).
+
+	* glade/glade-private.h: only store a single accel group (the
+	multi level accel group stuff is no longer needed due to the
+	mnemonic code in gtk).
+
+	* glade/glade-xml.c (glade_create_custom): make this function
+	static.
+
+	* examples/simple.glade: make the cancel button in the dialog a
+	stock button, for testing purposes.
+
+	* glade/glade-parser.c (glade_parser_start_element): add a debug
+	message for start of element.
+	(glade_parser_end_element): same for end of element
+
+	* autogen.sh (have_automake): always pass --enable-debug in the
+	autogen script, as this won't cause massive debugging spew by
+	default anymore.
+
+	* glade/glade-xml.c: convert uses of debug() macro with
+	GLADE_NOTE(BUILD, ...).
+
+	* configure.in (AH_BOTTOM): don't bother defining debug() macro
+	here -- now handled by GLADE_NOTE environment variable.
+
+	* glade/glade-private.h: add code to define GLADE_NOTE() macro for
+	conditional debugging spew (like GTK_NOTE).
+
+	* glade/glade-init.c (glade_init): add code to parse a
+	LIBGLADE_DEBUG environment variable, similar to the GTK_DEBUG env
+	var.
+
 2002-01-31  James Henstridge  <james@daa.com.au>
 
 	* configure.in (CFLAGS): change to set -std=c9x rather than -ansi.

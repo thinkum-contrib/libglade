@@ -1,7 +1,7 @@
 <INCLUDE>glade/glade-init.h</INCLUDE>
 
 <SECTION>
-<FILE>glade</FILE>
+<FILE>glade-init.h</FILE>
 <TITLE>Libglade Initialisation</TITLE>
 glade_init
 glade_require
@@ -31,8 +31,14 @@ glade_get_widget_tree
 GladeXMLConnectFunc
 glade_xml_signal_connect_full
 glade_xml_signal_autoconnect_full
+GladeXMLCustomWidgetHandler
+glade_set_custom_handler
 <SUBSECTION Private>
 GladeXMLPrivate
+glade_xml_new_from_memory
+glade_xml_new_with_domain
+glade_gnome_init
+glade_bonobo_init
 <SUBSECTION Standard>
 glade_xml_get_type
 GLADE_TYPE_XML
@@ -53,6 +59,8 @@ GladeChildInfo
 GladeProperty
 GladeSignalInfo
 GladeAccelInfo
+GladeAtkActionInfo
+GladeAtkRelationInfo
 <SUBSECTION functions>
 glade_parser_parse_file
 glade_parser_parse_buffer
@@ -71,17 +79,24 @@ glade_xml_build_widget
 glade_xml_handle_internal_child
 glade_xml_set_common_params
 glade_register_widget
-<SUBSECTION Helper Routines>
-glade_xml_set_value_from_string
+<SUBSECTION Widget Construction Functions>
 glade_standard_build_widget
+glade_xml_handle_widget_prop
 glade_standard_build_children
+glade_xml_set_packing_property
+GladeApplyCustomPropFunc
+glade_register_custom_prop
+<SUBSECTION Utility Functions>
 glade_xml_relative_file
 glade_enum_from_string
 glade_flags_from_string
-<SUBSECTION AccelGroup Routines>
+glade_xml_set_value_from_string
+<SUBSECTION AccelGroup Functions>
 glade_xml_set_toplevel
-glade_xml_push_accel
-glade_xml_pop_accel
 glade_xml_ensure_accel
+<SUBSECTION Dynamic Module Loading>
+GLADE_MODULE_CHECK_INIT
+<SUBSECTION Private>
+glade_module_check_version
+GLADE_MODULE_API_VERSION
 </SECTION>
-

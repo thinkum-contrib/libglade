@@ -1,6 +1,6 @@
 /* -*- Mode: C; c-basic-offset: 4 -*-
  * libglade - a library for building interfaces from XML files at runtime
- * Copyright (C) 1998-2001  James Henstridge <james@daa.com.au>
+ * Copyright (C) 1998-2002  James Henstridge <james@daa.com.au>
  *
  * glade-parser.c: functions for parsing glade-2.0 files
  *
@@ -37,6 +37,7 @@
 #include <libxml/parser.h>
 
 #include "glade-parser.h"
+#include "glade-private.h"
 
 typedef enum {
     PARSER_START,
@@ -63,6 +64,34 @@ typedef enum {
     PARSER_FINISH,
     PARSER_UNKNOWN
 } ParserState;
+
+#ifdef DEBUG
+static const gchar *state_names[] = {
+    "START",
+    "GLADE_INTERFACE",
+    "REQUIRES",
+    "WIDGET",
+    "WIDGET_PROPERTY",
+    "WIDGET_ATK",
+    "WIDGET_ATK_PROPERTY",
+    "WIDGET_ATK_ACTION",
+    "WIDGET_ATK_RELATION",
+    "WIDGET_AFTER_ATK",
+    "WIDGET_SIGNAL",
+    "WIDGET_AFTER_SIGNAL",
+    "WIDGET_ACCEL",
+    "WIDGET_AFTER_ACCEL",
+    "WIDGET_CHILD",
+    "WIDGET_CHILD_AFTER_WIDGET",
+    "WIDGET_CHILD_PACKING",
+    "WIDGET_CHILD_PACKING_PROPERTY",
+    "WIDGET_CHILD_AFTER_PACKING",
+    "WIDGET_CHILD_PLACEHOLDER",
+    "WIDGET_CHILD_AFTER_PLACEHOLDER",
+    "FINISH",
+    "UNKNOWN",
+};
+#endif
 
 typedef struct _GladeParseState GladeParseState;
 struct _GladeParseState {
@@ -451,6 +480,9 @@ glade_parser_start_element(GladeParseState *state,
 {
     int i;
 
+    GLADE_NOTE(PARSER, g_message("<%s> in state %s",
+				 name, state_names[state->state]));
+
     switch (state->state) {
     case PARSER_START:
 	if (!strcmp(name, "glade-interface")) {
@@ -785,6 +817,10 @@ static void
 glade_parser_end_element(GladeParseState *state, const xmlChar *name)
 {
     GladeProperty prop;
+
+    GLADE_NOTE(PARSER, g_message("</%s> in state %s",
+				 name, state_names[state->state]));
+
     switch (state->state) {
     case PARSER_START:
 	g_warning("should not be closing any elements in this state");

@@ -93,6 +93,22 @@ these functions and structures.
 @modifiers: 
 @signal: 
 
+<!-- ##### STRUCT GladeAtkActionInfo ##### -->
+<para>
+
+</para>
+
+@action_name: 
+@description: 
+
+<!-- ##### STRUCT GladeAtkRelationInfo ##### -->
+<para>
+
+</para>
+
+@target: 
+@type: 
+
 <!-- ##### FUNCTION glade_parser_parse_file ##### -->
 <para>
 

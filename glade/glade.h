@@ -1,6 +1,6 @@
 /* -*- Mode: C; c-basic-offset: 4 -*-
  * libglade - a library for building interfaces from XML files at runtime
- * Copyright (C) 1998-2001  James Henstridge <james@daa.com.au>
+ * Copyright (C) 1998-2002  James Henstridge <james@daa.com.au>
  *
  * glade.h: the main include file for libglade.
  *

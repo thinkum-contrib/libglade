@@ -1,6 +1,6 @@
 /* -*- Mode: C; c-basic-offset: 4 -*-
  * libglade - a library for building interfaces from XML files at runtime
- * Copyright (C) 1998-2001  James Henstridge <james@daa.com.au>
+ * Copyright (C) 1998-2002  James Henstridge <james@daa.com.au>
  *
  * glade-gtk.c: support for GTK+ widgets in libglade
  *
@@ -19,16 +19,21 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA  02111-1307, USA.
  */
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
 
 #include <string.h>
 #include <stdlib.h>
-#include <glade/glade.h>
-#include <glade/glade-build.h>
-#include <glade/glade-private.h>
 
 /* for GtkText et all */
 #define GTK_ENABLE_BROKEN
 #include <gtk/gtk.h>
+
+#include <glade/glade.h>
+#include <glade/glade-build.h>
+#include <glade/glade-private.h>
+
 
 #define INT(s)   (strtol ((s), NULL, 0))
 #define BOOL(s)  (g_ascii_tolower (*(s)) == 't' || g_ascii_tolower (*(s)) == 'y' || INT (s))

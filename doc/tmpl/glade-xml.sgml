@@ -188,3 +188,28 @@ automatically connect as many handlers up as it can that way.
 @user_data: 
 
 
+<!-- ##### USER_FUNCTION GladeXMLCustomWidgetHandler ##### -->
+<para>
+
+</para>
+
+@xml: 
+@func_name: 
+@name: 
+@string1: 
+@string2: 
+@int1: 
+@int2: 
+@user_data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION glade_set_custom_handler ##### -->
+<para>
+
+</para>
+
+@handler: 
+@user_data: 
+
+

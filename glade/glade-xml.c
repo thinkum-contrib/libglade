@@ -1,6 +1,6 @@
 /* -*- Mode: C; c-basic-offset: 4 -*-
  * libglade - a library for building interfaces from XML files at runtime
- * Copyright (C) 1998-2001  James Henstridge <james@daa.com.au>
+ * Copyright (C) 1998-2002  James Henstridge <james@daa.com.au>
  *
  * glade-xml.c: implementation of core public interface functions
  *
@@ -20,7 +20,7 @@
  * Boston, MA  02111-1307, USA.
  */
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#  include <config.h>
 #endif
 
 #include <stdlib.h>
@@ -121,9 +121,8 @@ glade_xml_init (GladeXML *self)
     gtk_object_sink(GTK_OBJECT(priv->tooltips));
     priv->name_hash = g_hash_table_new(g_str_hash, g_str_equal);
     priv->signals = g_hash_table_new(g_str_hash, g_str_equal);
-    priv->radio_groups = g_hash_table_new (g_str_hash, g_str_equal);
     priv->toplevel = NULL;
-    priv->accel_groups = NULL;
+    priv->accel_group = NULL;
     priv->default_widget = NULL;
     priv->focus_widget = NULL;
     priv->deferred_props = NULL;
@@ -635,10 +634,9 @@ glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window)
     xml->priv->default_widget = NULL;
     xml->priv->toplevel = window;
     /* new toplevel needs new accel group */
-    if (xml->priv->accel_groups)
-	glade_xml_pop_accel(xml);
-    /* maybe put an assert that xml->priv->accel_groups == NULL here? */
-    xml->priv->accel_groups = NULL;
+    if (xml->priv->accel_group)
+	g_object_unref(xml->priv->accel_group);
+    xml->priv->accel_group = NULL;
 
     if (GTK_IS_WINDOW (window)) {
 	/* the window should hold a reference to the tooltips object */
@@ -651,7 +649,7 @@ glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window)
 
 /**
  * glade_xml_handle_widget_prop
- * @xml: the GladeXML object
+ * @self: the GladeXML object
  * @widget: the property the widget to set the property on.
  * @prop_name: the name of the property.
  * @value_name: the name of the widget used as the value for the property.
@@ -691,46 +689,6 @@ glade_xml_handle_widget_prop(GladeXML *self, GtkWidget *widget,
 }
 
 /**
- * glade_xml_push_accel:
- * @xml: the GladeXML object.
- *
- * Make a new accel group amd push onto the stack.  This is intended for use
- * by GtkNotebook so that each notebook page can set up its own accelerators.
- * Returns: The current GtkAccelGroup after push.
- */
-GtkAccelGroup *
-glade_xml_push_accel(GladeXML *xml)
-{
-    GtkAccelGroup *accel = gtk_accel_group_new();
-       
-    xml->priv->accel_groups = g_slist_prepend(xml->priv->accel_groups, accel);
-    return accel;
-}
-
-/**
- * glade_xml_pop_accel:
- * @xml: the GladeXML object.
- *
- * Pops the accel group.  This will usually be called after a GtkNotebook page
- * has been built.
- * Returns: The current GtkAccelGroup after pop.
- */
-GtkAccelGroup *
-glade_xml_pop_accel(GladeXML *xml)
-{
-    GtkAccelGroup *accel;
-
-    g_return_val_if_fail(xml->priv->accel_groups != NULL, NULL);
-
-    /* the accel group at the top of the stack */
-    accel = xml->priv->accel_groups->data;
-    xml->priv->accel_groups = g_slist_remove(xml->priv->accel_groups, accel);
-    /* unref the accel group that was at the top of the stack */
-    gtk_accel_group_unref(accel);
-    return xml->priv->accel_groups ? xml->priv->accel_groups->data : NULL;
-}
-
-/**
  * glade_xml_ensure_accel:
  * @xml: the GladeXML object.
  *
@@ -742,13 +700,13 @@ glade_xml_pop_accel(GladeXML *xml)
 GtkAccelGroup *
 glade_xml_ensure_accel(GladeXML *xml)
 {
-    if (!xml->priv->accel_groups) {
-	glade_xml_push_accel(xml);
+    if (!xml->priv->accel_group) {
+	xml->priv->accel_group = gtk_accel_group_new();
 	if (xml->priv->toplevel)
 	    gtk_window_add_accel_group(xml->priv->toplevel,
-				       xml->priv->accel_groups->data);
+				       xml->priv->accel_group);
     }
-    return (GtkAccelGroup *)xml->priv->accel_groups->data;
+    return xml->priv->accel_group;
 }
 
 /* this is a private function */
@@ -880,9 +838,9 @@ glade_xml_add_accels(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
     for (i = 0; i < info->n_accels; i++) {
 	GladeAccelInfo *accel = &info->accels[i];
 
-	debug(g_message("New Accel: key=%d,mod=%d -> %s:%s",
-			accel->key, accel->modifiers,
-			gtk_widget_get_name(w), accel->signal));
+	GLADE_NOTE(BUILD, g_message("New Accel: key=%d,mod=%d -> %s:%s",
+				    accel->key, accel->modifiers,
+				    gtk_widget_get_name(w), accel->signal));
 	gtk_widget_add_accelerator(w, accel->signal,
 				   glade_xml_ensure_accel(xml),
 				   accel->key, accel->modifiers,
@@ -911,9 +869,9 @@ glade_xml_add_accessibility_info(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *i
 	    g_value_unset (&value);
         }
 	
-	debug(g_message("Adding accessibility property %s:%s",
-			info->atk_props[i].name,
-			info->atk_props[i].value));
+	GLADE_NOTE(BUILD, g_message("Adding accessibility property %s:%s",
+				    info->atk_props[i].name,
+				    info->atk_props[i].value));
     }
 
     /* Hang on, we're not done yet ;-) */
@@ -937,12 +895,6 @@ glade_xml_destroy_signals(char *key, GList *signal_datas)
 	g_free(data);
     }
     g_list_free(signal_datas);
-}
-
-static void
-free_radio_groups(gpointer key, gpointer value, gpointer user_data)
-{
-    g_free(key);  /* the string name */
 }
 
 static void
@@ -974,17 +926,11 @@ glade_xml_finalize(GObject *object)
 			     (GHFunc)glade_xml_destroy_signals, NULL);
 	g_hash_table_destroy(priv->signals);
 
-	/* the group name strings are owned by the GladeWidgetTree */
-	g_hash_table_foreach(self->priv->radio_groups,
-			     free_radio_groups, NULL);
-	g_hash_table_destroy(priv->radio_groups);
-
 	if (priv->tooltips)
 	    g_object_unref(priv->tooltips);
 
-	/* there should only be at most one accel group on stack */
-	if (priv->accel_groups)
-	    glade_xml_pop_accel(self);
+	if (priv->accel_group)
+	    g_object_unref(priv->accel_group);
 
 	if (priv->tree)
 	    glade_interface_destroy(priv->tree);
@@ -997,14 +943,18 @@ glade_xml_finalize(GObject *object)
 }
 
 /**
- * glade_set_custom_handler
- * @handler: the custom widget handler
- * @user_data: user data passed to the custom handler
+ * GladeXMLCustomWidgetHandler:
+ * @xml: the GladeXML object.
+ * @func_name: the function name.
+ * @name: the name of the widget to be created.
+ * @string1: the string1 property.
+ * @string2: the string2 property.
+ * @int1: the int1 property.
+ * @int2: the int2 property.
+ * @user_data: the data passed to glade_set_custom_handler()
  *
- * Calling this function allows you to override the default behaviour
- * when a Custom widget is found in an interface.  This could be used by
- * a language binding to call some other function, or to limit what
- * functions can be called to create custom widgets.
+ * This prototype is for a function that creates custom widgets.
+ * Returns: the GtkWidget.
  */
 static GtkWidget *
 default_custom_handler(GladeXML *xml, gchar *func_name, gchar *name,
@@ -1031,6 +981,16 @@ default_custom_handler(GladeXML *xml, gchar *func_name, gchar *name,
 static GladeXMLCustomWidgetHandler custom_handler = default_custom_handler;
 static gpointer custom_user_data = NULL;
 
+/**
+ * glade_set_custom_handler:
+ * @handler: the custom widget handler
+ * @user_data: user data passed to the custom handler
+ *
+ * Calling this function allows you to override the default behaviour
+ * when a Custom widget is found in an interface.  This could be used by
+ * a language binding to call some other function, or to limit what
+ * functions can be called to create custom widgets.
+ */
 void
 glade_set_custom_handler(GladeXMLCustomWidgetHandler handler,
 			 gpointer user_data)
@@ -1039,20 +999,7 @@ glade_set_custom_handler(GladeXMLCustomWidgetHandler handler,
     custom_user_data = user_data;
 }
 
-/**
- * glade_set_custom_handler
- * @xml: the GladeXML object
- * @func_name: the name of the widget creation function
- * @name: the name of the widget
- * @string1: the first string argument
- * @string2: the second string argument
- * @int1: the first integer argument
- * @int2: the second integer argument
- *
- * Invokes the custom widget creation function.
- * Returns: the new widget or NULL on error.
- */
-GtkWidget *
+static GtkWidget *
 glade_create_custom(GladeXML *xml, gchar *func_name, gchar *name,
 		    gchar *string1, gchar *string2, gint int1, gint int2)
 {
@@ -1330,6 +1277,27 @@ invalidate_custom_prop_cache(GType type)
     g_free(children);
 }
 
+/**
+ * glade_register_custom_prop:
+ * @type: the GType of the widget.
+ * @prop_name: the name for the custom widget.
+ * @apply_prop: the function to be called when the custom property is found.
+ *
+ * Some properties are not (yet) handled through the GObject property
+ * code, so can not be handled by the generic code.  This function
+ * provides a way to register handlers for these properties.  Such
+ * handlers will apply for the GType @type and all its descendants.
+ */
+/**
+ * GladeApplyCustomPropFunc:
+ * @xml: the GladeXML object.
+ * @widget: the widget to apply the property to.
+ * @propname: the name of the property.
+ * @value: the value of the property.
+ *
+ * This prototype is used for custom property handlers registered with
+ * glade_register_custom_prop().
+ */
 void
 glade_register_custom_prop(GType type, const gchar *prop_name,
 			   GladeApplyCustomPropFunc apply_prop)
@@ -1831,7 +1799,8 @@ glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info)
     GType type;
     GtkWidget *ret;
     
-    debug(g_message("Widget class: %s\tname: %s", info->class, info->name));
+    GLADE_NOTE(BUILD, g_message("Widget class: %s\tname: %s",
+				info->class, info->name));
     if (!strcmp (info->class, "Custom")) {
 	ret = custom_new (self, info);
     } else {
