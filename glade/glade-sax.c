@@ -377,7 +377,7 @@ static void gladeEndElement(GladeParseState *state, const CHAR *name) {
 	else if (!strcmp(name, "name")) {
 	    state->widget->name = g_strdup(state->content->str);
 	    g_hash_table_insert(state->tree->names, state->widget->name,
-				state->widget->name);
+				state->widget);
 	    /* insert name -> widget mapping into hash table */
 	} else if (!strcmp(name, "tooltip"))
 	    state->widget->tooltip = g_strdup(state->content->str);
