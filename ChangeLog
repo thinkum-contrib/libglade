@@ -1,5 +1,19 @@
 1999-07-29  James Henstridge  <james@daa.com.au>
 
+	* doc/tmpl/glade-sax.sgml: added a small description of these
+	functions.
+
+	* doc/libglade-sections.txt: added documentation section on the SAX
+	parser.
+
+	* glade/glade-sax.c: added API doc comments.
+
+	* glade/glade-xml.c: updated the inline documentation to reflect
+	that xmlNode structures are no longer used.
+	
+	* glade/glade-xml.c, glade/glade-gtk.c, glade/glade-gnome.c: removed
+	some unused variables.
+
 	* glade/glade-styles.c: removed file.  Most of its functionality was
 	moved to the glade-sax parser, so there was not much reason for
 	keeping glade_style_attach in a single file.

@@ -41,6 +41,22 @@ GLADE_XML_CLASS
 GLADE_IS_XML
 </SECTION>
 
+<INCLUDE>glade/glade-widget-tree.h</INCLUDE>
+<SECTION>
+<FILE>glade-sax</FILE>
+<TITLE>Libglade SAX Parser</TITLE>
+GladeWidgetTree
+GladeStyleInfo
+GladeWidgetInfo
+GladeAttribute
+GladeSignalInfo
+GladeAcceleratorInfo
+<SUBSECTION functions>
+glade_widget_tree_parse_file
+glade_widget_tree_free
+glade_widget_tree_print
+</SECTION>
+
 <INCLUDE>glade/glade.h,glade/glade-build.h</INCLUDE>
 <SECTION>
 <FILE>glade-build</FILE>

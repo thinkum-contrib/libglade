@@ -134,6 +134,12 @@ static void glade_widget_info_free(GladeWidgetInfo *info) {
     g_free(info);
 }
 
+/**
+ * glade_widget_tree_free
+ * @tree: the GladeWidgetTree structure
+ *
+ * Free a GladeWidgetTree structure.
+ */
 void glade_widget_tree_free(GladeWidgetTree *tree) {
     GList *tmp;
 
@@ -656,6 +662,15 @@ static xmlSAXHandler gladeSAXParser = {
     (fatalErrorSAXFunc)gladeFatalError, /* fatalError */
 };
 
+/**
+ * glade_widget_tree_parse_file
+ * @file: the filename of the XML file to parse.
+ *
+ * This routine will parse a file containing Glade XML, and produce a
+ * GladeWidgetTree structure containing the information in this file.
+ *
+ * Returns: the GladeWidgetTree structure, or NULL on error.
+ */
 GladeWidgetTree *glade_widget_tree_parse_file(const char *file) {
     GladeParseState state;
 
@@ -705,6 +720,14 @@ static void glade_print_widget_info(GladeWidgetInfo *info, gchar *indent) {
     }
 }
 
+/**
+ * glade_widget_tree_print
+ * @tree: the widget tree.
+ *
+ * Prints out the information stored in the GladeWidgetTree structure.
+ * This is mainly for debugging to make sure that the parser is producing
+ * correct output.
+ */
 void glade_widget_tree_print(GladeWidgetTree *tree) {
     GList *tmp;
 

@@ -301,7 +301,6 @@ static void
 autoconnect_full_foreach(const char *signal_handler, GList *signals,
 			 connect_struct *conn)
 {
-	GtkSignalFunc func;
 	GladeXML *self = NULL;
 
 	for (; signals != NULL; signals = signals->next) {
@@ -705,7 +704,7 @@ glade_register_widgets(const GladeWidgetBuildData *widgets)
 /**
  * GladeNewFunc
  * @xml: The GladeXML object.
- * @node: the GNode holding the xmlNode for this widget.
+ * @info: the GladeWidgetInfo structure for this widget.
  *
  * This function signature should be used by functions that build particular
  * widget types.  The function should create the new widget and set any non
@@ -718,19 +717,18 @@ glade_register_widgets(const GladeWidgetBuildData *widgets)
  * GladeBuildChildrenFunc
  * @xml: the GladeXML object.
  * @w: this widget.
- * @node: the GNode holding the xmlNode for this widget.
+ * @info: the GladeWidgetInfo structure for this widget.
  * @longname: the long name for this widget.
  *
  * This function signature should be used by functions that are responsible
  * for adding children to a container widget.  To create each child widget,
- * glade_xml_build_widget should be called.  The GNode for the child widget
- * will be a child of this widget's GNode.
+ * glade_xml_build_widget should be called.
  */
 
 /**
  * glade_xml_build_widget:
  * @self: the GladeXML object.
- * @node: the GNode holding the xmlNode of the child
+ * @info: the GladeWidgetInfo structure for the widget.
  * @parent_long: the long name of the parent object.
  *
  * This function is not intended for people who just use libglade.  Instead
@@ -781,9 +779,8 @@ glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info,
  * glade_xml_set_common_params
  * @self: the GladeXML widget.
  * @widget: the widget to set parameters on.
- * @node: the XML node for this widget.
+ * @info: the GladeWidgetInfo structure for the widget.
  * @parent_long: the long name of the parent widget.
- * @widget_class: the class of this widget, or NULL to guess the class.
  *
  * This function sets the common parameters on a widget, and is responsible
  * for inserting it into the GladeXML object's internal structures.  It will
@@ -868,7 +865,7 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
  * glade_standard_build_children
  * @self: the GladeXML object.
  * @w: the container widget.
- * @node: the node for this widget.
+ * @info: the GladeWidgetInfo structure.
  * @longname: the long name for this widget.
  *
  * This is the standard child building function.  It simply calls
@@ -891,7 +888,7 @@ glade_standard_build_children(GladeXML *self, GtkWidget *w,
 
 /**
  * glade_get_adjustment
- * @gnode: the XML node for the widget.
+ * @info: the GladeWidgetInfo structure for this widget.
  *
  * This utility routine is used to create an adjustment object for a widget.
  *

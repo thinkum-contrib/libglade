@@ -21,8 +21,10 @@ the actual widgets from the XML node data structures.
 </para>
 
 @xml: 
-@node: 
+@info: 
 @Returns: 
+<!-- # Unused Parameters # -->
+@node: 
 
 
 <!-- ##### USER_FUNCTION GladeBuildChildrenFunc ##### -->
@@ -32,8 +34,10 @@ the actual widgets from the XML node data structures.
 
 @xml: 
 @w: 
-@node: 
+@info: 
 @longname: 
+<!-- # Unused Parameters # -->
+@node: 
 
 
 <!-- ##### FUNCTION glade_xml_build_widget ##### -->
@@ -42,10 +46,11 @@ the actual widgets from the XML node data structures.
 </para>
 
 @self: 
-@node: 
+@info: 
 @parent_long: 
 @Returns: 
 <!-- # Unused Parameters # -->
+@node: 
 @xml: 
 
 
@@ -56,8 +61,10 @@ the actual widgets from the XML node data structures.
 
 @self: 
 @widget: 
-@node: 
+@info: 
 @parent_long: 
+<!-- # Unused Parameters # -->
+@node: 
 @widget_class: 
 
 
@@ -100,8 +107,10 @@ the actual widgets from the XML node data structures.
 
 </para>
 
-@gnode: 
+@info: 
 @Returns: 
+<!-- # Unused Parameters # -->
+@gnode: 
 
 
 <!-- ##### FUNCTION glade_standard_build_children ##### -->
@@ -111,8 +120,10 @@ the actual widgets from the XML node data structures.
 
 @self: 
 @w: 
-@node: 
+@info: 
 @longname: 
+<!-- # Unused Parameters # -->
+@node: 
 
 
 <!-- ##### FUNCTION glade_xml_gettext ##### -->

@@ -2331,7 +2331,7 @@ custom_new (GladeXML *xml, GladeWidgetInfo *info)
 					   gint int1, gint int2);
 	GtkWidget *wid = NULL;
 	GList *tmp;
-	gchar *name=NULL, *func_name = NULL, *string1 = NULL, *string2 = NULL;
+	gchar *func_name = NULL, *string1 = NULL, *string2 = NULL;
 	gint int1 = 0, int2 = 0;
 	create_func func;
 	GModule *allsymbols;
