@@ -1,5 +1,7 @@
 2001-12-12  James Henstridge  <james@daa.com.au>
 
+	* configure.in: increment libtool version number.
+
 	* libglade-2.0.pc.in (moduledir): uncomment this again, as
 	commenting it out breaks some packages.
 
