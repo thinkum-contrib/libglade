@@ -79,8 +79,6 @@ glade_standard_build_children
 glade_xml_relative_file
 glade_enum_from_string
 glade_flags_from_string
-<SUBSECTION I18N Routines>
-glade_xml_gettext
 <SUBSECTION AccelGroup Routines>
 glade_xml_set_toplevel
 glade_xml_push_accel

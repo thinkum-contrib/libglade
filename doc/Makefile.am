@@ -24,20 +24,17 @@ tmpl_sources =				\
 	tmpl/glade-build.sgml		\
 	tmpl/libglade-unused.sgml
 
-noinst_DATA = html.stamp
+if HAVE_GTK_DOC
+html_stamp = html.stamp
+endif
+
+noinst_DATA = $(html_stamp)
 
 EXTRA_DIST = 				\
 	libglade-decl.txt		\
 	libglade-sections.txt		\
 	libglade-docs.sgml		\
 	libglade.types
-
-if HAVE_GTK_DOC
-html/libglade.html: sgml/glade.sgml
-	$(MAKE) html
-else
-html/libglade.html:
-endif
 
 scan-build.stamp: $(top_srcdir)/glade/*.h
 	@echo '*** Scanning header files ***'
