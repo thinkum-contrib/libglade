@@ -532,9 +532,22 @@ toolbar_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info,
 				g_free(icon);
 				iconw = gtk_pixmap_new(pix, mask);
 			}
-			child = gtk_toolbar_append_item(GTK_TOOLBAR(w),
-							_(label), NULL, NULL,
-							iconw, NULL, NULL);
+			if (!strcmp(cinfo->class, "GtkToggleButton"))
+				child = gtk_toolbar_append_element(
+					GTK_TOOLBAR(w),
+					GTK_TOOLBAR_CHILD_TOGGLEBUTTON, NULL,
+					_(label), NULL, NULL, iconw, NULL,
+					NULL);
+			else if (!strcmp(cinfo->class, "GtkRadioButton"))
+				child = gtk_toolbar_append_element(
+					GTK_TOOLBAR(w),
+					GTK_TOOLBAR_CHILD_RADIOBUTTON, NULL,
+					_(label), NULL, NULL, iconw, NULL,
+					NULL);
+			else
+				child = gtk_toolbar_append_item(GTK_TOOLBAR(w),
+					_(label), NULL, NULL, iconw, NULL,
+					NULL);
 			glade_xml_set_common_params(xml, child, cinfo,
 						    longname);
 		} else {

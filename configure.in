@@ -36,7 +36,7 @@ dnl Check to make sure that we have libxml >= 1.7.2 installed
 old_LIBS="$LIBS"
 LIBS="$XML_LIBS $LIBS"
 AC_CHECK_FUNC(xmlSAXUserParseFile,,
-AC_MSG_ERROR([*** libxml >= 1.7.2 is required to compile gnorpm]))
+AC_MSG_ERROR([*** libxml >= 1.7.2 is required to compile libglade]))
 LIBS="$old_LIBS"
 
 

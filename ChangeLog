@@ -1,5 +1,13 @@
 1999-11-12  James Henstridge  <james@daa.com.au>
 
+	* glade/glade-gtk.c (toolbar_build_children): same here.
+
+	* glade/glade-gnome.c (toolbar_build_children): check if we are adding
+	a toggle button or radio button, and handle those cases correctly.
+
+	* configure.in (libxml check): this is libglade, not gnorpm.  Fixed
+	simple cut and paste error from messages in the libxml check.
+
 	* glade/glade-gnome.c (pixmapmenuitem_new): make sure labels are
 	left justified in GtkPixmapMenuItems.
 

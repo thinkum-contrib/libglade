@@ -370,6 +370,18 @@
 	  <label>Clear</label>
 	  <stock_pixmap>GNOME_STOCK_PIXMAP_CLEAR</stock_pixmap>
 	</widget>
+
+	<widget>
+	  <class>GtkToggleButton</class>
+	  <child_name>Toolbar:button</child_name>
+	  <name>togglebutton1</name>
+	  <label>Tog</label>
+	  <stock_pixmap>GNOME_STOCK_PIXMAP_ATTACH</stock_pixmap>
+	  <active>False</active>
+	  <child>
+	    <new_group>True</new_group>
+	  </child>
+	</widget>
       </widget>
     </widget>
 
