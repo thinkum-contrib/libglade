@@ -1,5 +1,14 @@
 2001-08-16  James Henstridge  <james@daa.com.au>
 
+	* configure.in: update to use some autoconf-2.52 features, such as
+	getting rid of the need for acconfig.h.
+
+	* glade/glade-xml.c (glade_xml_build_interface): call
+	glade_require() for each extra module required by the glade file,
+	in order to handle autoloading.
+
+	* Makefile.am (SUBDIRS): fix up makefile a bit.
+
 	* glade/glade-xml.c (glade_xml_set_value_from_string): add support
 	for GdkColor and GtkAdjustment type values.
 	(glade_xml_set_value_from_string): make the unsupported property

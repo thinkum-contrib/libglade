@@ -1110,6 +1110,10 @@ glade_xml_build_interface(GladeXML *self, GladeInterface *iface,
     GladeWidgetInfo *wid;
     GtkWidget *w;
 
+    /* make sure required modules are loaded */
+    for (i = 0; i < iface->n_requires; i++)
+	glade_require(iface->requires[i]);
+
     if (root) {
 	wid = g_hash_table_lookup(iface->names, root);
 	g_return_if_fail(wid != NULL);
