@@ -789,7 +789,6 @@ Any Tag#</dia:string>
       </dia:attribute>
       <dia:connections>
         <dia:connection handle="0" to="O12" connection="3"/>
-        <dia:connection handle="1" to="O12" connection="0"/>
       </dia:connections>
     </dia:object>
     <dia:object type="UML - Generalization" version="0" id="O27">
@@ -899,7 +898,6 @@ Any Tag#</dia:string>
       </dia:attribute>
       <dia:connections>
         <dia:connection handle="0" to="O5" connection="5"/>
-        <dia:connection handle="1" to="O12" connection="2"/>
       </dia:connections>
     </dia:object>
     <dia:object type="UML - Generalization" version="0" id="O31">
@@ -1009,7 +1007,6 @@ Any Tag#</dia:string>
       </dia:attribute>
       <dia:connections>
         <dia:connection handle="0" to="O12" connection="4"/>
-        <dia:connection handle="1" to="O18" connection="3"/>
       </dia:connections>
     </dia:object>
     <dia:object type="UML - Generalization" version="0" id="O35">
@@ -1038,7 +1035,6 @@ Any Tag#</dia:string>
       </dia:attribute>
       <dia:connections>
         <dia:connection handle="0" to="O18" connection="5"/>
-        <dia:connection handle="1" to="O20" connection="0"/>
       </dia:connections>
     </dia:object>
     <dia:object type="UML - Generalization" version="0" id="O36">
@@ -1067,7 +1063,6 @@ Any Tag#</dia:string>
       </dia:attribute>
       <dia:connections>
         <dia:connection handle="0" to="O20" connection="2"/>
-        <dia:connection handle="1" to="O18" connection="7"/>
       </dia:connections>
     </dia:object>
     <dia:group>
@@ -1157,7 +1152,6 @@ Any Tag#</dia:string>
       </dia:attribute>
       <dia:connections>
         <dia:connection handle="0" to="O37" connection="0"/>
-        <dia:connection handle="1" to="O12" connection="7"/>
       </dia:connections>
     </dia:object>
     <dia:object type="UML - Generalization" version="0" id="O40">
@@ -1188,7 +1182,6 @@ Any Tag#</dia:string>
       </dia:attribute>
       <dia:connections>
         <dia:connection handle="0" to="O12" connection="6"/>
-        <dia:connection handle="1" to="O37" connection="3"/>
       </dia:connections>
     </dia:object>
     <dia:object type="Standard - Text" version="0" id="O41">
@@ -1334,7 +1327,6 @@ accel#</dia:string>
       </dia:attribute>
       <dia:connections>
         <dia:connection handle="0" to="O37" connection="5"/>
-        <dia:connection handle="1" to="O43" connection="0"/>
       </dia:connections>
     </dia:object>
     <dia:object type="UML - Generalization" version="0" id="O46">
@@ -1363,7 +1355,6 @@ accel#</dia:string>
       </dia:attribute>
       <dia:connections>
         <dia:connection handle="0" to="O43" connection="2"/>
-        <dia:connection handle="1" to="O37" connection="7"/>
       </dia:connections>
     </dia:object>
     <dia:object type="Standard - Text" version="0" id="O47">
@@ -1509,7 +1500,6 @@ Any Tag#</dia:string>
       </dia:attribute>
       <dia:connections>
         <dia:connection handle="0" to="O49" connection="2"/>
-        <dia:connection handle="1" to="O12" connection="5"/>
       </dia:connections>
     </dia:object>
     <dia:object type="UML - Generalization" version="0" id="O52">
@@ -1740,7 +1730,6 @@ Gtk-Interface#</dia:string>
       </dia:attribute>
       <dia:connections>
         <dia:connection handle="0" to="O2" connection="5"/>
-        <dia:connection handle="1" to="O12" connection="0"/>
       </dia:connections>
     </dia:object>
     <dia:object type="Standard - Text" version="0" id="O60">
@@ -1779,7 +1768,7 @@ Gtk-Interface#</dia:string>
         <dia:point val="15.7026,-4.3681"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="5.94449,-5.57573;25.4607,-2.57573"/>
+        <dia:rectangle val="5.94448,-5.57573;25.4607,-2.57573"/>
       </dia:attribute>
       <dia:attribute name="text">
         <dia:composite type="text">

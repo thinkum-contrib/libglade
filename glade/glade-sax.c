@@ -34,9 +34,6 @@
 
 #include "glade-widget-tree.h"
 
-/* this is from glade-keys.h */
-guint glade_key_get(const char *str);
-
 /* This function is like xmlSAXParseFile, but allows us to set the user_data.
  * It also does not assume we are building the DOM tree.  It returns a
  * negative value on error.
@@ -450,8 +447,9 @@ static void gladeEndElement(GladeParseState *state, const CHAR *name) {
 	break;
     case PARSER_ACCELERATOR_ATTRIBUTE:
 	state->state = PARSER_ACCELERATOR;
-	if (!strcmp(name, "key"))
-	    state->cur_accel->key = glade_key_get(state->content->str);
+	if (!strcmp(name, "key") && !strncmp(state->content->str, "GDK_", 4))
+	    state->cur_accel->key =
+		gdk_keyval_from_name(&state->content->str[4]);
 	else if (!strcmp(name, "modifiers")) {
 	    /* decode the modifiers string */
 	    char *pos = state->content->str;

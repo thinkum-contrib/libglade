@@ -7,7 +7,7 @@
 #   change to C+1:0:0
 # - If the interface is the same as the previous version, change to C:R+1:A
 
-LTVERSION = 1:0:1
+LTVERSION = 1:1:1
 
 if GNOME_SUPPORT
 THE_FLAGS = $(GNOME_INCLUDEDIR)
@@ -23,7 +23,6 @@ the_sources =		\
 	glade-xml.c 	\
 	glade-gtk.c 	\
 	glade-tree.c 	\
-	glade-keys.c 	\
 	glade-private.h
 
 the_headers =		\
@@ -50,7 +49,5 @@ gladeincludedir      = $(includedir)/glade
 gladeinclude_HEADERS = $(the_headers)
 
 BUILT_SOURCES = glade-keys.c
-EXTRA_DIST = makekeys.awk $(the_headers)
+EXTRA_DIST = $(the_headers)
 
-$(srcdir)/glade-keys.c: makekeys.awk $(GDK_KEYSYMS)
-	$(AWK) -f $(srcdir)/makekeys.awk < $(GDK_KEYSYMS) > $(srcdir)/glade-keys.c

@@ -1,3 +1,32 @@
+1999-08-24  James Henstridge  <james@daa.com.au>
+
+	* test-libglade.c (main): when building only part of the widget tree,
+	if the toplevel is not a GtkWindow descendant, pack it inside a
+	container window.  For example, "./test-libglade gnome-widgets.glade
+	menubar1" will show just the menu bar in a window.
+
+	* NEWS: updated news file.
+
+	* configure.in: incremented package version number.
+
+	* glade/Makefile.am (LTVERSION): incremented libtool version number.
+
+	* glade/glade-gtk.c (packer_new, packer_build_children): added
+	support for the GtkPacker widget.
+
+	* glade/Makefile.am: removed references to glade-keys.c.  It is no
+	longer needed.
+
+	* glade/glade-private.h (glade_key_get): removed prototype.
+
+	* glade/glade-sax.c (gladeEndElement): switched over to using
+	gdk_keyval_from_name rather than using glade_key_get.  This saves
+	a bit of memory.
+
+	* glade/glade-gtk.c (radiobutton_new): fixed radio button group
+	handling.
+	(table_new): fixed up recognition of the column_spacing attribute.
+
 1999-08-09  James Henstridge  <james@daa.com.au>
 
 	* Makefile.am: removed dist-hook for the generated libglade.spec.

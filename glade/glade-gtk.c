@@ -296,6 +296,63 @@ notebook_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info,
 }
 
 static void
+packer_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info,
+		       const char *longname)
+{
+	GList *tmp;
+
+	for (tmp = info->children; tmp; tmp = tmp->next) {
+		GladeWidgetInfo *cinfo = tmp->data;
+		GList *tmp2;
+		GtkWidget *child = glade_xml_build_widget (xml,cinfo,longname);
+		GtkSideType side = GTK_SIDE_TOP;
+		GtkAnchorType anchor = GTK_ANCHOR_CENTER;
+		GtkPackerOptions options = 0;
+		gboolean use_default = TRUE;
+		guint border = 0, pad_x = 0, pad_y = 0, ipad_x = 0, ipad_y = 0;
+
+		for (tmp2 = cinfo->child_attributes; tmp2; tmp2 = tmp2->next) {
+			GladeAttribute *attr = tmp2->data;
+
+			if (!strcmp(attr->name, "side"))
+				side = glade_enum_from_string(
+					GTK_TYPE_SIDE_TYPE, attr->value);
+			else if (!strcmp(attr->name, "anchor"))
+				anchor = glade_enum_from_string(
+					GTK_TYPE_ANCHOR_TYPE, attr->value);
+			else if (!strcmp(attr->name, "expand")) {
+				if (attr->value[0] == 'T')
+					options |= GTK_PACK_EXPAND;
+			} else if (!strcmp(attr->name, "xfill")) {
+				if (attr->value[0] == 'T')
+					options |= GTK_FILL_X;
+			} else if (!strcmp(attr->name, "yfill")) {
+				if (attr->value[0] == 'T')
+					options |= GTK_FILL_Y;
+			} else if (!strcmp(attr->name, "use_default"))
+				use_default = attr->value[0] == 'T';
+			else if (!strcmp(attr->name, "border_width"))
+				border = strtoul(attr->value, NULL, 0);
+			else if (!strcmp(attr->name, "xpad"))
+				pad_x = strtoul(attr->value, NULL, 0);
+			else if (!strcmp(attr->name, "ypad"))
+				pad_y = strtoul(attr->value, NULL, 0);
+			else if (!strcmp(attr->name, "xipad"))
+				ipad_x = strtoul(attr->value, NULL, 0);
+			else if (!strcmp(attr->name, "yipad"))
+				ipad_y = strtoul(attr->value, NULL, 0);
+		}
+		if (use_default)
+			gtk_packer_add_defaults(GTK_PACKER(w), child,
+						side, anchor, options);
+		else
+			gtk_packer_add(GTK_PACKER(w), child, side, anchor,
+				       options, border, pad_x, pad_y,
+				       ipad_x, ipad_y);
+	}
+}
+
+static void
 dialog_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info,
 		       const char *longname)
 {
@@ -843,10 +900,11 @@ radiobutton_new(GladeXML *xml, GladeWidgetInfo *info)
 		else if (!strcmp(attr->name, "draw_indicator"))
 			draw_indicator = attr->value[0] == 'T';
 		else if (!strcmp(attr->name, "group")){
+			group_name = attr->value;
 			group = g_hash_table_lookup (xml->priv->radio_groups,
-						     attr->value);
+						     group_name);
 			if (!group)
-				group_name = attr->value;
+				group_name = g_strdup(group_name);
 		}
 	}
 	if (string != NULL) {
@@ -861,11 +919,7 @@ radiobutton_new(GladeXML *xml, GladeWidgetInfo *info)
 	} else
 		button = gtk_radio_button_new (group);
 
-	/*
-	 * If this is the first radio item within this group
-	 * add it.
-	 */
-	if (group == NULL && group_name){
+	if (group_name) {
 		GtkRadioButton *radio = GTK_RADIO_BUTTON (button);
 		
 		g_hash_table_insert (xml->priv->radio_groups,
@@ -1671,7 +1725,7 @@ table_new(GladeXML *xml, GladeWidgetInfo *info)
 		case 'c':
 			if (!strcmp(attr->name, "columns"))
 				cols = strtol(attr->value, NULL, 0);
-			else if (!strcmp(attr->name, "col_spacing"))
+			else if (!strcmp(attr->name, "column_spacing"))
 				cspace = strtol(attr->value, NULL, 0);
 			break;
 		case 'h':
@@ -1811,7 +1865,10 @@ frame_new(GladeXML *xml, GladeWidgetInfo *info)
 			break;
 		}
 	}
-	frame = gtk_frame_new(_(label));
+	if (label)
+		frame = gtk_frame_new(_(label));
+	else
+		frame = gtk_frame_new(NULL);
 	gtk_frame_set_label_align(GTK_FRAME(frame), label_xalign, 0.5);
 	gtk_frame_set_shadow_type(GTK_FRAME(frame), shadow_type);
 
@@ -1861,7 +1918,12 @@ aspectframe_new(GladeXML *xml, GladeWidgetInfo *info)
 			break;
 		}
 	}
-	frame = gtk_aspect_frame_new(_(label), xalign,yalign,ratio,obey_child);
+	if (label)
+		frame = gtk_aspect_frame_new(_(label), xalign, yalign,
+					     ratio, obey_child);
+	else
+		frame = gtk_aspect_frame_new(NULL, xalign, yalign,
+					     ratio, obey_child);
 	gtk_frame_set_label_align(GTK_FRAME(frame), label_xalign, 0.5);
 	gtk_frame_set_shadow_type(GTK_FRAME(frame), shadow_type);
 	return frame;
@@ -2019,6 +2081,35 @@ viewport_new(GladeXML *xml, GladeWidgetInfo *info)
 						       attr->value));
 	}
 	return port;
+}
+
+static GtkWidget *
+packer_new(GladeXML *xml, GladeWidgetInfo *info)
+{
+	GtkWidget *packer = gtk_packer_new();
+	guint border = 0, pad_x = 0, pad_y = 0, ipad_x = 0, ipad_y = 0;
+	GList *tmp;
+
+	for (tmp = info->attributes; tmp; tmp = tmp->next) {
+		GladeAttribute *attr = tmp->data;
+
+		if (strncmp(attr->name, "default_", 8))
+			continue;
+		if (!strcmp(&attr->name[8], "border_width"))
+			border = strtoul(attr->value, NULL, 0);
+		else if (!strcmp(&attr->name[8], "pad_x"))
+			pad_x = strtoul(attr->value, NULL, 0);
+		else if (!strcmp(&attr->name[8], "pad_y"))
+			pad_y = strtoul(attr->value, NULL, 0);
+		else if (!strcmp(&attr->name[8], "ipad_x"))
+			ipad_x = strtoul(attr->value, NULL, 0);
+		else if (!strcmp(&attr->name[8], "ipad_y"))
+			ipad_y = strtoul(attr->value, NULL, 0);
+	}
+	gtk_packer_set_default_border_width(GTK_PACKER(packer), border);
+	gtk_packer_set_default_pad(GTK_PACKER(packer), pad_x, pad_y);
+	gtk_packer_set_default_ipad(GTK_PACKER(packer), ipad_x, ipad_y);
+	return packer;
 }
 
 static GtkWidget *
@@ -2562,6 +2653,7 @@ static const GladeWidgetBuildData widget_data[] = {
 	{"GtkEventBox",      eventbox_new,      glade_standard_build_children},
 	{"GtkScrolledWindow",scrolledwindow_new,glade_standard_build_children},
 	{"GtkViewport",      viewport_new,      glade_standard_build_children},
+	{"GtkPacker",        packer_new,        packer_build_children},
 
   /* other widgets */
 	{"GtkCurve",         curve_new,         NULL},

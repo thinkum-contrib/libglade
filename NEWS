@@ -1,4 +1,20 @@
-libglade-0.2:
+libglade-0.4:  24-August-1999
+	- Use gdk_keyval_by_name instead of a local hash table for looking
+	  up key values for accelerators.  This removes a big hash table
+	  from libglade's overhead.
+	- Radio buttons groups are really fixed this time.
+	- Table column spacing is correctly interpreted now.
+	- Support for the GtkPacker widget has been added.
+
+libglade-0.3:  9-August-1999
+	- Changed over to a SAX based XML parser.  This cuts down on memory
+	  usage and increases speed a bit for the parser.  It also reduces
+	  the number of malloc's and frees.
+	- Better handling of accelerator keys, including underline accelerators
+	  for menu items and buttons.
+	- Miscelaneous bug fixes.
+
+libglade-0.2:  20-June-1999
 	- Radio group support
 	- The start of gnome support -- this code has been split off into a
 	  separate library called libglade-gnome.  You can get the cflags or

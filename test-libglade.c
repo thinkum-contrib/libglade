@@ -68,6 +68,24 @@ int main (int argc, char **argv)
   
   xml = glade_xml_new(filename, rootnode);
 
+  if (rootnode) {
+    GtkWidget *wid = glade_xml_get_widget(xml, rootnode);
+    if (!GTK_IS_WINDOW(wid)) {
+      GtkWidget *win, *frame;
+
+      win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+      gtk_signal_connect(GTK_OBJECT(win), "destroy",
+			 GTK_SIGNAL_FUNC(gtk_main_quit), NULL);
+      gtk_container_set_border_width(GTK_CONTAINER(win), 5);
+      frame = gtk_frame_new(NULL);
+      gtk_container_set_border_width(GTK_CONTAINER(frame), 5);
+      gtk_container_add(GTK_CONTAINER(win), frame);
+      gtk_widget_show(frame);
+      gtk_container_add(GTK_CONTAINER(frame), wid);
+      gtk_widget_show(win);
+    }
+  }
+
   if (!xml) {
     g_warning("something bad happened while creating the interface");
     return;
