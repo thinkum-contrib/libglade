@@ -1,5 +1,20 @@
 2000-06-25  James Henstridge  <james@daa.com.au>
 
+	* glade/glade-gnome.c (pixmapmenuitem_new): revert visible accels.
+
+	* glade/glade-gtk.c (menuitem_new): 
+	(checkmenuitem_new): 
+	(radiomenuitem_new): revert visible accel patch here.
+
+	* glade/glade-gnome.c (toolbar_build_children): same here.
+
+	* glade/glade-gtk.c (toolbar_build_children): set group on radio
+	buttons in a toolbar.
+
+	* glade/glade-gnome.c (href_new): default url to "" rather than
+	NULL, so we don't crash if url is not specified in glade file.
+	Fixes #9206
+
 	* glade/glade-gtk.c (radiomenuitem_new): applied Mitch Chapman's patch
 	to add group support to radiomenuitems.
 
