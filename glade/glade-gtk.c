@@ -234,6 +234,24 @@ toolbar_set_tooltips (GladeXML *xml, GtkWidget *w,
     gtk_toolbar_set_tooltips (GTK_TOOLBAR (w), BOOL (value));
 }
 
+static void
+statusbar_set_has_resize_grip (GladeXML *xml, GtkWidget *w,
+			       const char *name, const char *value)
+{
+    gtk_statusbar_set_has_resize_grip (GTK_STATUSBAR (w), BOOL (value));
+}
+
+static void
+ruler_set_metric (GladeXML *xml, GtkWidget *w,
+		  const char *name, const char *value)
+{
+    gtk_ruler_set_metric (
+	GTK_RULER (w),
+	glade_enum_from_string (GTK_TYPE_METRIC_TYPE, value));
+}
+
+
+
 static GtkWidget *
 placeholder_create (void)
 {
@@ -760,6 +778,8 @@ _glade_init_gtk_widgets(void)
     glade_register_custom_prop (GTK_TYPE_RADIO_MENU_ITEM, "group",
 				radio_menu_item_set_group);
     glade_register_custom_prop (GTK_TYPE_TOOLBAR, "tooltips", toolbar_set_tooltips);
+    glade_register_custom_prop (GTK_TYPE_STATUSBAR, "has_resize_grip", statusbar_set_has_resize_grip);
+    glade_register_custom_prop (GTK_TYPE_RULER, "metric", ruler_set_metric);
 
     glade_register_widget (GTK_TYPE_ACCEL_LABEL, glade_standard_build_widget,
 			   NULL, NULL);
