@@ -1812,7 +1812,8 @@ menuitem_new(GladeXML *xml, GladeWidgetInfo *info)
 			if (accel)
 				gtk_widget_add_accelerator(menuitem,
 							   "activate_item",
-							   accel, key, 0, 0);
+							   accel, key, 0,
+							   GTK_ACCEL_VISIBLE);
 			else {
 				/* not inside a GtkMenu -- must be on menubar*/
 				accel = glade_xml_ensure_accel(xml);
@@ -1866,7 +1867,8 @@ checkmenuitem_new(GladeXML *xml, GladeWidgetInfo *info)
 		if (accel)
 			gtk_widget_add_accelerator(menuitem,
 						   "activate_item",
-						   accel, key, 0, 0);
+						   accel, key, 0,
+						   GTK_ACCEL_VISIBLE);
 		else {
 			/* not inside a GtkMenu -- must be on menubar*/
 			accel = glade_xml_ensure_accel(xml);
@@ -1893,6 +1895,8 @@ radiomenuitem_new(GladeXML *xml, GladeWidgetInfo *info)
 	GList *tmp;
 	char *label = NULL;
 	gboolean right = FALSE, active = FALSE, toggle = FALSE;
+	GSList *group = NULL;
+	char *group_name = NULL;
 
 	for (tmp = info->attributes; tmp; tmp = tmp->next) {
 		GladeAttribute *attr = tmp->data;
@@ -1905,10 +1909,16 @@ radiomenuitem_new(GladeXML *xml, GladeWidgetInfo *info)
 			active = attr->value[0] == 'T';
 		else if (!strcmp(attr->name, "always_show_toggle"))
 			toggle = attr->value[0] == 'T';
+		else if (!strcmp(attr->name, "group")) {
+			group_name = attr->value;
+			group = g_hash_table_lookup(xml->priv->radio_groups,
+						    group_name);
+			if (!group)
+				group_name = g_strdup(group_name);
+		}
 	}
 
-	/* XXXX -- must do something about radio item groups ... */
-	menuitem = gtk_radio_menu_item_new_with_label(NULL, "");
+	menuitem = gtk_radio_menu_item_new_with_label(group, "");
 	if (label){
 		char *s = label [0] ? _(label) : "";
 		
@@ -1921,7 +1931,8 @@ radiomenuitem_new(GladeXML *xml, GladeWidgetInfo *info)
 		if (accel)
 			gtk_widget_add_accelerator(menuitem,
 						   "activate_item",
-						   accel, key, 0, 0);
+						   accel, key, 0,
+						   GTK_ACCEL_VISIBLE);
 		else {
 			/* not inside a GtkMenu -- must be on menubar*/
 			accel = glade_xml_ensure_accel(xml);
@@ -1934,6 +1945,12 @@ radiomenuitem_new(GladeXML *xml, GladeWidgetInfo *info)
 
 	if (right)
 		gtk_menu_item_right_justify(GTK_MENU_ITEM(menuitem));
+	if (group_name) {
+		GtkRadioMenuItem *radio = GTK_RADIO_MENU_ITEM(menuitem);
+		g_hash_table_insert(xml->priv->radio_groups,
+				    group_name,
+				    gtk_radio_menu_item_group(radio));
+	}
 	gtk_check_menu_item_set_state(GTK_CHECK_MENU_ITEM(menuitem), active);
 	gtk_check_menu_item_set_show_toggle(GTK_CHECK_MENU_ITEM(menuitem), toggle);
 
@@ -2234,7 +2251,7 @@ hpaned_new(GladeXML *xml, GladeWidgetInfo *info)
 		else if (!strcmp(attr->name, "gutter_size"))
 			gtk_paned_set_gutter_size(GTK_PANED(paned),
 						  strtoul(attr->value,NULL,0));
-		else if (!strcmp(attr, "position"))
+		else if (!strcmp(attr->name, "position"))
 			gtk_paned_set_position(GTK_PANED(paned),
 					       strtol(attr->value, NULL, 0));
 	}
@@ -2256,7 +2273,7 @@ vpaned_new(GladeXML *xml, GladeWidgetInfo *info)
 		else if (!strcmp(attr->name, "gutter_size"))
 			gtk_paned_set_gutter_size(GTK_PANED(paned),
 						  strtoul(attr->value,NULL,0));
-		else if (!strcmp(attr, "position"))
+		else if (!strcmp(attr->name, "position"))
 			gtk_paned_set_position(GTK_PANED(paned),
 					       strtol(attr->value, NULL, 0));
 	}

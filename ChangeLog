@@ -1,3 +1,14 @@
+2000-06-25  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gtk.c (radiomenuitem_new): applied Mitch Chapman's patch
+	to add group support to radiomenuitems.
+
+	* glade/glade-gnome.c (pixmapmenuitem_new): make accel visible.
+
+	* glade/glade-gtk.c (menuitem_new): make accelerator visible.
+	(checkmenuitem_new): make accel visible.
+	(radiomenuitem_new): make accel visible.
+
 2000-05-20  James Henstridge  <james@daa.com.au>
 
 	* NEWS: news updates.
