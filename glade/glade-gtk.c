@@ -903,7 +903,11 @@ toolbar_build_children (GladeXML *xml, GtkWidget *parent,
 	    glade_xml_set_common_params (xml, child, childinfo->child);
 	} else {
 	    child = glade_xml_build_widget (xml, childinfo->child);
-	    gtk_toolbar_append_widget (GTK_TOOLBAR (parent), child, NULL, NULL);
+
+	    if (GTK_IS_TOOL_ITEM (child))
+		gtk_toolbar_insert (GTK_TOOLBAR (parent), GTK_TOOL_ITEM (child), -1);
+	    else
+		gtk_toolbar_append_widget (GTK_TOOLBAR (parent), child, NULL, NULL);
 	}
     }
 }

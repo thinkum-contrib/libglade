@@ -1,3 +1,9 @@
+2004-07-09  Daniel Elstner  <daniel.elstner@gmx.net>
+
+	* glade/glade-gtk.c (toolbar_build_children): Use the new
+	gtk_toolbar_insert() instead of gtk_toolbar_append_widget()
+	to append GtkToolItem objects. (bug #142761)
+
 2004-05-17  James Henstridge  <james@daa.com.au>
 
 	* NEWS: add small news message.
