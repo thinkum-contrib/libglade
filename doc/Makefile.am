@@ -36,8 +36,11 @@ else
 html/libglade.html:
 endif
 
-sgml/glade.sgml: $(tmpl_sources)
+sgml/glade.sgml: $(tmpl_sources) libglade.hierarchy libglade-decl.txt
 	$(MAKE) sgml	
+
+libglade.hierarchy libglade-decl.txt:
+	$(MAKE) templates
 
 scan:
 	cd $(srcdir) \
