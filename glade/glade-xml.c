@@ -51,8 +51,6 @@ static void glade_xml_finalize(GObject *object);
 static void glade_xml_build_interface(GladeXML *xml, GladeInterface *iface,
 				      const char *root);
 
-GladeExtendedFunc *glade_xml_build_extended_widget = NULL;
-
 /**
  * glade_xml_get_type:
  *
@@ -678,7 +676,7 @@ glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window)
 			     (GtkDestroyNotify)gtk_object_unref);
 }
 
- /**
+/**
  * glade_xml_push_accel:
  * @xml: the GladeXML object.
  *
@@ -695,7 +693,8 @@ glade_xml_push_accel(GladeXML *xml)
     return accel;
 }
 
-/* glade_xml_pop_accel:
+/**
+ * glade_xml_pop_accel:
  * @xml: the GladeXML object.
  *
  * Pops the accel group.  This will usually be called after a GtkNotebook page
@@ -988,7 +987,7 @@ glade_create_custom(GladeXML *xml, gchar *func_name, gchar *name,
 
 /**
  * glade_enum_from_string
- * @type: the GtkType for this flag or enum type.
+ * @type: the GType for this enum type.
  * @string: the string representation of the enum value.
  *
  * This helper routine is designed to be used by widget build routines to
@@ -1021,6 +1020,19 @@ glade_enum_from_string (GType type, const char *string)
     return ret;
 }
 
+/**
+ * glade_flags_from_string
+ * @type: the GType for this flags type.
+ * @string: the string representation of the flags value.
+ *
+ * This helper routine is designed to be used by widget build routines
+ * to convert the string representations of flags values found in the
+ * XML descriptions to the integer values that can be used to
+ * configure the widget.  The string is composed of string names or
+ * nicknames for various flags separated by '|'.
+ *
+ * Returns: the integer value for this flags string
+ */
 guint
 glade_flags_from_string (GType type, const char *string)
 {
@@ -1123,6 +1135,23 @@ glade_register_widgets(const GladeWidgetBuildData *widgets)
     }
 }
 
+/**
+ * glade_xml_set_value_from_string
+ * @pspec: the GParamSpec for the property
+ * @string: the string representation of the value.
+ * @value: the GValue to store the result in.
+ *
+ * This function demarshals a value from a string.  This function
+ * calls g_value_init() on the @value argument, so it need not be
+ * initialised beforehand.
+ *
+ * This function can handle char, uchar, boolean, int, uint, long,
+ * ulong, enum, flags, float, double, string, GdkColor and
+ * GtkAdjustment type values.  Support for GtkWidget type values is
+ * still to come.
+ *
+ * Returns: %TRUE on success.
+ */
 gboolean
 glade_xml_set_value_from_string (GParamSpec *pspec,
 				 const gchar *string,
@@ -1216,6 +1245,19 @@ glade_xml_set_value_from_string (GParamSpec *pspec,
     return ret;
 }
 
+/**
+ * glade_standard_build_widget
+ * @xml: the GladeXML object.
+ * @widget_type: the GType of the widget.
+ * @info: the GladeWidgetInfo structure.
+ *
+ * This is the standard widget building function.  It processes all
+ * the widget properties using the standard object properties
+ * interfaces.  This function will be sufficient for most widget
+ * types, thus reducing the ammount of work needed to wrap a library.
+ *
+ * Returns: the constructed widget.
+ */
 GtkWidget *
 glade_standard_build_widget(GladeXML *xml, GType widget_type,
 			    GladeWidgetInfo *info)
@@ -1266,28 +1308,32 @@ glade_standard_build_widget(GladeXML *xml, GType widget_type,
 /**
  * glade_standard_build_children
  * @self: the GladeXML object.
- * @w: the container widget.
+ * @parent: the container widget.
  * @info: the GladeWidgetInfo structure.
  *
  * This is the standard child building function.  It simply calls
- * gtk_container_add on each child to add them to the parent.  It is
- * implemented here, as it should be useful to many GTK+ based widget
- * sets.
+ * gtk_container_add on each child to add them to the parent, and
+ * process any packing properties using the generic container packing
+ * properties interfaces.
+ *
+ * This function will be sufficient for most container widgets
+ * provided that they implement the GtkContainer child packing
+ * properties interfaces.
  */
 void
-glade_standard_build_children(GladeXML *self, GtkWidget *w,
+glade_standard_build_children(GladeXML *self, GtkWidget *parent,
 			      GladeWidgetInfo *info)
 {
     gint i, j;
 
-    g_object_ref(G_OBJECT(w));
+    g_object_ref(G_OBJECT(parent));
     for (i = 0; i < info->n_children; i++) {
 	GladeWidgetInfo *childinfo = info->children[i].child;
 	GtkWidget *child;
 
 	/* handle any internal children */
 	if (info->children[i].internal_child) {
-	    glade_xml_handle_internal_child(self, w, &info->children[i]);
+	    glade_xml_handle_internal_child(self, parent, &info->children[i]);
 	    continue;
 	}
 
@@ -1295,23 +1341,23 @@ glade_standard_build_children(GladeXML *self, GtkWidget *w,
 
 	g_object_ref(G_OBJECT(child));
 	gtk_widget_freeze_child_notify(child);
-	gtk_container_add(GTK_CONTAINER(w), child);
+	gtk_container_add(GTK_CONTAINER(parent), child);
 	for (j = 0; j < info->children[i].n_properties; j++) {
 	    const gchar *name = info->children[i].properties[j].name;
 	    GValue value = { 0 };
 	    GParamSpec *pspec;
 
 	    pspec = gtk_container_class_find_child_property(
-		G_OBJECT_GET_CLASS(w), name);
+		G_OBJECT_GET_CLASS(parent), name);
 	    if (!pspec) {
 		g_warning("unknown child property `%s' for container `%s'",
-			  name, G_OBJECT_TYPE_NAME(w));
+			  name, G_OBJECT_TYPE_NAME(parent));
 		continue;
 	    }
 
 	    if (glade_xml_set_value_from_string(pspec,
 			info->children[i].properties[j].value, &value)) {
-		gtk_container_child_set_property(GTK_CONTAINER(w), child,
+		gtk_container_child_set_property(GTK_CONTAINER(parent), child,
 						 name, &value);
 		g_value_unset(&value);
 	    }
@@ -1319,7 +1365,7 @@ glade_standard_build_children(GladeXML *self, GtkWidget *w,
 	gtk_widget_thaw_child_notify(child);
 	g_object_ref(G_OBJECT(child));
     }
-    g_object_unref(G_OBJECT(w));
+    g_object_unref(G_OBJECT(parent));
 }
 
 #ifndef ENABLE_NLS
@@ -1406,23 +1452,11 @@ glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info)
     }
     data = g_hash_table_lookup(widget_table, info->class);
     if (data == NULL) {
-	if (glade_xml_build_extended_widget) {
-	    char *err = NULL;
-
-	    ret = glade_xml_build_extended_widget(self, info, &err);
-	    if (!ret) {
-		g_warning("%s", err);
-		ret = gtk_label_new(err);
-		g_free(err);
-		gtk_widget_show(ret);
-	    }
-	} else {
-	    char buf[50];
-	    g_warning("unknown widget class '%s'", info->class);
-	    g_snprintf(buf, 49, "[a %s]", info->class);
-	    ret = gtk_label_new(buf);
-	    gtk_widget_show(ret);
-	}
+	char buf[50];
+	g_warning("unknown widget class '%s'", info->class);
+	g_snprintf(buf, 49, "[a %s]", info->class);
+	ret = gtk_label_new(buf);
+	gtk_widget_show(ret);
     } else {
 	if (!data->typecode && data->get_type_func)
 	    data->typecode = data->get_type_func();
@@ -1434,6 +1468,18 @@ glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info)
     return ret;
 }
 
+/**
+ * glade_xml_handle_internal_child
+ * @self: the GladeXML object.
+ * @parent: the parent widget.
+ * @child_info: the GladeChildInfo structure for the child.
+ *
+ * This function is intended to be called by the build_children
+ * callback for container widgets.  If the build_children callback
+ * encounters a child with the internal-child attribute set, then it
+ * should call this function to handle it and then continue on to the
+ * next child.
+ */
 void
 glade_xml_handle_internal_child(GladeXML *self, GtkWidget *parent,
 				GladeChildInfo *child_info)

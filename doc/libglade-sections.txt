@@ -73,7 +73,6 @@ glade_xml_set_common_params
 GladeWidgetBuildData
 glade_register_widgets
 <SUBSECTION Helper Routines>
-glade_xml_set_value_from_prop
 glade_xml_set_value_from_string
 glade_standard_build_widget
 glade_standard_build_children

@@ -234,6 +234,16 @@ Libglade SAX Parser
 @xml: 
 @uline: 
 
+<!-- ##### FUNCTION glade_xml_set_value_from_prop ##### -->
+<para>
+
+</para>
+
+@widget_type: 
+@value: 
+@prop: 
+@Returns: 
+
 <!-- ##### FUNCTION glade_xml_set_window_props ##### -->
 <para>
 

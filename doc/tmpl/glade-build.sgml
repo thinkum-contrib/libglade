@@ -111,17 +111,6 @@ the actual widgets from the XML node data structures.
 @widgets: 
 
 
-<!-- ##### FUNCTION glade_xml_set_value_from_prop ##### -->
-<para>
-
-</para>
-
-@widget_type: 
-@value: 
-@prop: 
-@Returns: 
-
-
 <!-- ##### FUNCTION glade_xml_set_value_from_string ##### -->
 <para>
 
@@ -150,9 +139,10 @@ the actual widgets from the XML node data structures.
 </para>
 
 @self: 
-@w: 
+@parent: 
 @info: 
 <!-- # Unused Parameters # -->
+@w: 
 @longname: 
 @node: 
 

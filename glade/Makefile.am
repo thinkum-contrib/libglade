@@ -40,7 +40,7 @@ libglade_2_0_la_LIBADD   = $(GTK_LIBS) $(XML_LIBS)
 libglade_2_0_la_LDFLAGS  = -version-info $(LTVERSION)
 
 bonobo_la_SOURCES = glade-bonobo.c
-bonobo_la_LIBADD = $(LIBGLADE_BONOBO_LIBS)
+bonobo_la_LIBADD = libglade-2.0.la $(LIBGLADE_BONOBO_LIBS)
 bonobo_la_LDFLAGS = -export-dynamic -module -avoid-version
 
 EXTRA_DIST = $(gladeinclude_HEADERS) \
