@@ -1,3 +1,9 @@
+2001-11-28  Peter Williams  <peterw@ximian.com>
+
+	* tests/Makefile.am (test-libglade-gtk-noupgrade.glade2): libglade-convert
+	lives in top_builddir, not top_srcdir.
+	(test-libglade-gtk.glade2): Same.
+
 2001-11-28  jacob berkman  <jacob@ximian.com>
 
 	* libglade-convert.in: add a --verbose flag which can print out

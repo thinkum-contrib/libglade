@@ -14,14 +14,14 @@ INCLUDES = \
 
 # note that these are different rules
 # one uses --no-upgrade
-test-libglade-gtk.glade2: test-libglade-gtk.glade $(top_srcdir)/libglade-convert
+test-libglade-gtk.glade2: test-libglade-gtk.glade $(top_builddir)/libglade-convert
 	$(PYTHON) $(top_builddir)/libglade-convert \
 		$(srcdir)/test-libglade-gtk.glade \
 		> test-libglade-gtk.glade2.tmp \
 	&& mv test-libglade-gtk.glade2.tmp \
 		test-libglade-gtk.glade2
 
-test-libglade-gtk-noupgrade.glade2: test-libglade-gtk.glade $(top_srcdir)/libglade-convert
+test-libglade-gtk-noupgrade.glade2: test-libglade-gtk.glade $(top_builddir)/libglade-convert
 	$(PYTHON) $(top_builddir)/libglade-convert --no-upgrade \
 		$(srcdir)/test-libglade-gtk.glade \
 		> test-libglade-gtk-noupgrade.glade2.tmp \
