@@ -1,3 +1,8 @@
+2004-09-23  Matthias Clasen  <mclasen@redhat.com>
+
+	* glade/glade-gtk.c (menu_item_set_use_stock): Make accelerators
+	work in stock menu items.  (#140328)
+
 2004-07-09  Daniel Elstner  <daniel.elstner@gmx.net>
 
 	* glade/glade-gtk.c (toolbar_build_children): Use the new

@@ -377,6 +377,14 @@ menu_item_set_use_stock (GladeXML *xml, GtkWidget *w,
 
 	    gtk_label_set_text(GTK_LABEL(child), stock_item.label);
 	    gtk_label_set_use_underline(GTK_LABEL(child), TRUE);
+
+	    if (stock_item.keyval)
+		gtk_widget_add_accelerator (w,
+					    "activate",
+					    glade_xml_ensure_accel(xml),
+					    stock_item.keyval,
+					    stock_item.modifier,
+					    GTK_ACCEL_VISIBLE);
 	} else {
 	    g_warning("could not look up stock id '%s'", stock_id);
 	}
