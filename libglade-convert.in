@@ -670,12 +670,11 @@ def fixup_as_type(widget, type):
 
     # add label children to menu items.
     if type == 'GtkMenuItem':
-        if widget.has_prop('label') and not widget.has_prop('stock_item'):
-            widget.add_child ( \
-                new_label('GtkAccelLabel', \
-                          widget['label'], \
-                          widget['name']))
-            del widget['label']
+        if widget.has_prop('stock_item'):
+            widget['label'] = stock_button_translate (widget['stock_item'])
+            widget['use_stock'] = 'yes'
+            widget['use_underline'] = 'yes'
+            del widget['stock_item']
 
     if type == 'GtkImageMenuItem':
         if widget.has_prop('stock_icon'):
@@ -791,7 +790,7 @@ def fixup_as_type(widget, type):
         for childdef in widget.children:
             del childdef.widget['child_name']
 
-    if type == 'GtkLabel' or type == 'GtkButton':
+    if type in ('GtkLabel', 'GtkButton', 'GtkMenuItem'):
         if widget.has_prop('label'):
             if re.match('.*_.*', widget['label']):
                 widget['use_underline'] = 'yes'

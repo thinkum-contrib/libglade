@@ -1,3 +1,18 @@
+2002-01-30  James Henstridge  <james@daa.com.au>
+
+	* libglade-convert.in (fixup_as_type): make menu items use the
+	label, use_underline and use_stock custom props, rather than
+	putting a label widget inside.  This reduces glade file complexity
+	a bit.
+
+	* glade/glade-gtk.c (menu_item_set_label): create an accel label
+	in the menu item, so that accels display correctly.
+	(menu_item_set_use_underline): same here.
+	(menu_item_set_use_stock): new routine for turning a menu item
+	into a stock item.
+	(build_image_menu_item): remove this one in favour of the
+	"use_stock" property.
+
 2002-01-30  Zbigniew Chyla  <cyba@gnome.pl>
 
 	* glade/glade-parser.c (glade_parser_end_element): Try to translate

@@ -28,6 +28,7 @@
 
                 <child>
                   <widget class="GtkMenuItem" id="FileMenu">
+                    <property name="label" translatable="yes">File</property>
                     <property name="visible">yes</property>
 
                     <child>
@@ -36,33 +37,14 @@
 
                         <child>
                           <widget class="GtkMenuItem" id="Quit">
+                            <property name="label" translatable="yes">Quit</property>
                             <property name="visible">yes</property>
 
                             <signal name="activate" handler="gtk_main_quit" />
 
                             <accelerator key="Q" modifiers="GDK_CONTROL_MASK" signal="activate" />
-
-                            <child>
-                              <widget class="GtkAccelLabel" id="convertwidget2">
-                                <property name="accel-object">Quit</property>
-                                <property name="xalign">0.0</property>
-                                <property name="label" translatable="yes">_Quit</property>
-                                <property name="use-underline">yes</property>
-                                <property name="visible">yes</property>
-                              </widget>
-                            </child>
                           </widget>
                         </child>
-                      </widget>
-                    </child>
-
-                    <child>
-                      <widget class="GtkAccelLabel" id="convertwidget1">
-                        <property name="accel-object">FileMenu</property>
-                        <property name="xalign">0.0</property>
-                        <property name="label" translatable="yes">_File</property>
-                        <property name="use-underline">yes</property>
-                        <property name="visible">yes</property>
                       </widget>
                     </child>
                   </widget>
@@ -70,6 +52,7 @@
 
                 <child>
                   <widget class="GtkMenuItem" id="HelpMenu">
+                    <property name="label" translatable="yes">Help</property>
                     <property name="visible">yes</property>
 
                     <child>
@@ -78,33 +61,14 @@
 
                         <child>
                           <widget class="GtkMenuItem" id="About">
+                            <property name="label" translatable="yes">About...</property>
                             <property name="visible">yes</property>
 
                             <signal name="activate" handler="gtk_widget_show" object="AboutDialog" />
 
                             <accelerator key="A" modifiers="GDK_CONTROL_MASK" signal="activate" />
-
-                            <child>
-                              <widget class="GtkAccelLabel" id="convertwidget4">
-                                <property name="accel-object">About</property>
-                                <property name="xalign">0.0</property>
-                                <property name="label" translatable="yes">_About...</property>
-                                <property name="use-underline">yes</property>
-                                <property name="visible">yes</property>
-                              </widget>
-                            </child>
                           </widget>
                         </child>
-                      </widget>
-                    </child>
-
-                    <child>
-                      <widget class="GtkAccelLabel" id="convertwidget3">
-                        <property name="accel-object">HelpMenu</property>
-                        <property name="xalign">0.0</property>
-                        <property name="label" translatable="yes">_Help</property>
-                        <property name="use-underline">yes</property>
-                        <property name="visible">yes</property>
                       </widget>
                     </child>
                   </widget>
@@ -247,8 +211,8 @@
                         <property name="draw_value">yes</property>
                         <property name="value_pos">GTK_POS_TOP</property>
                         <property name="digits">1</property>
-                        <property name="adjustment">0 0 100 1 10 10</property>
                         <property name="visible">yes</property>
+                        <property name="adjustment">0 0 100 1 10 10</property>
                       </widget>
                     </child>
 
@@ -271,8 +235,8 @@
 
                         <child>
                           <widget class="GtkHScrollbar" id="hscrollbar1">
-                            <property name="adjustment">20 0 40 1 10 10</property>
                             <property name="visible">yes</property>
+                            <property name="adjustment">20 0 40 1 10 10</property>
                           </widget>
                           <packing>
                             <property name="padding">0</property>
@@ -289,7 +253,6 @@
 
             <child>
               <widget class="GtkLabel" id="label2">
-                <property name="child_name">Notebook:tab</property>
                 <property name="label" translatable="yes">Gamma</property>
                 <property name="justify">GTK_JUSTIFY_CENTER</property>
                 <property name="xalign">0.5</property>
@@ -298,11 +261,13 @@
                 <property name="ypad">0</property>
                 <property name="visible">yes</property>
               </widget>
+              <packing>
+                <property name="type">tab</property>
+              </packing>
             </child>
 
             <child>
               <widget class="GtkLabel" id="label3">
-                <property name="child_name">Notebook:tab</property>
                 <property name="label" translatable="yes">Rulers</property>
                 <property name="justify">GTK_JUSTIFY_CENTER</property>
                 <property name="xalign">0.5</property>
@@ -311,11 +276,13 @@
                 <property name="ypad">0</property>
                 <property name="visible">yes</property>
               </widget>
+              <packing>
+                <property name="type">tab</property>
+              </packing>
             </child>
 
             <child>
               <widget class="GtkLabel" id="label4">
-                <property name="child_name">Notebook:tab</property>
                 <property name="label" translatable="yes">Ranges</property>
                 <property name="justify">GTK_JUSTIFY_CENTER</property>
                 <property name="xalign">0.5</property>
@@ -324,6 +291,9 @@
                 <property name="ypad">0</property>
                 <property name="visible">yes</property>
               </widget>
+              <packing>
+                <property name="type">tab</property>
+              </packing>
             </child>
           </widget>
           <packing>
@@ -420,7 +390,7 @@ are all specified in XML.</property>
             <property name="padding">0</property>
             <property name="expand">no</property>
             <property name="fill">yes</property>
-            <property name="pack">GTK_PACK_END</property>
+            <property name="pack_type">GTK_PACK_END</property>
           </packing>
         </child>
       </widget>

@@ -52,9 +52,7 @@ set_visible(GladeXML *xml, GtkWidget *widget,
     if (visible_id == 0)
 	visible_id = g_quark_from_static_string("Libglade::visible");
 
-    if (g_ascii_tolower(prop_value[0]) == 'y' ||
-	g_ascii_tolower(prop_value[0]) == 't' ||
-	strtol(prop_value, NULL, 0) != 0)
+    if (BOOL(prop_value))
 	g_object_set_qdata(G_OBJECT(widget), visible_id,GINT_TO_POINTER(TRUE));
 }
 
@@ -272,13 +270,15 @@ menu_item_set_label (GladeXML *xml, GtkWidget *w,
     GtkWidget *child = GTK_BIN (w)->child;
 
     if (!child) {
-	GtkWidget *label = gtk_label_new (value);
-	gtk_widget_show (label);
-	gtk_container_add (GTK_CONTAINER (w), label);
-    } else {
-	if (GTK_IS_LABEL (child))
-	    gtk_label_set_label (GTK_LABEL (child), value);
+	child = gtk_accel_label_new("");
+	gtk_misc_set_alignment(GTK_MISC(child), 0.0, 0.5);
+	gtk_container_add(GTK_CONTAINER(w), child);
+	gtk_accel_label_set_accel_widget(GTK_ACCEL_LABEL(child), w);
+	gtk_widget_show(child);
     }
+
+    if (GTK_IS_LABEL (child))
+	gtk_label_set_label (GTK_LABEL (child), value);
 }
 
 static void
@@ -288,16 +288,55 @@ menu_item_set_use_underline (GladeXML *xml, GtkWidget *w,
     GtkWidget *child = GTK_BIN (w)->child;
 
     if (!child) {
-	GtkWidget *label = gtk_label_new (NULL);
-	gtk_widget_show (label);
-	gtk_container_add (GTK_CONTAINER (w), label);
-	gtk_label_set_use_underline (GTK_LABEL (label), BOOL (value));
-    } else {
-	if (GTK_IS_LABEL (child))
-	    gtk_label_set_use_underline (GTK_LABEL (child), BOOL (value));
+	child = gtk_accel_label_new("");
+	gtk_misc_set_alignment(GTK_MISC(child), 0.0, 0.5);
+	gtk_container_add(GTK_CONTAINER(w), child);
+	gtk_accel_label_set_accel_widget(GTK_ACCEL_LABEL(child), w);
+	gtk_widget_show(child);
     }
+
+    if (GTK_IS_LABEL (child))
+	gtk_label_set_use_underline (GTK_LABEL (child), BOOL (value));
 }
 
+static void
+menu_item_set_use_stock (GladeXML *xml, GtkWidget *w,
+			 const gchar *name, const gchar *value)
+{
+    GtkWidget *child = GTK_BIN (w)->child;
+
+    if (!child) {
+	child = gtk_accel_label_new("");
+	gtk_misc_set_alignment(GTK_MISC(child), 0.0, 0.5);
+	gtk_container_add(GTK_CONTAINER(w), child);
+	gtk_accel_label_set_accel_widget(GTK_ACCEL_LABEL(child), w);
+	gtk_widget_show(child);
+    }
+
+    if (GTK_IS_LABEL (child)) {
+	const gchar *stock_id = gtk_label_get_label(GTK_LABEL(child));
+	GtkStockItem stock_item;
+
+	if (gtk_stock_lookup(stock_id, &stock_item)) {
+	    /* put in the stock image next to the text.  Done before
+             * messing with the label child, so that stock_id doesn't
+             * become invalid. */
+	    if (GTK_IS_IMAGE_MENU_ITEM(w)) {
+		GtkWidget *image =
+		    gtk_image_new_from_stock(stock_id, GTK_ICON_SIZE_MENU);
+
+		gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(w), image);
+		gtk_widget_show(image);
+	    }
+
+	    gtk_label_set_label(GTK_LABEL(child), stock_item.label);
+	    gtk_label_set_use_underline(GTK_LABEL(child), BOOL (value));
+	} else {
+	    g_warning("could not look up stock id '%s'", stock_id);
+	}
+	g_free(stock_id);
+    }
+}
 
 
 static GtkWidget *
@@ -428,59 +467,6 @@ build_preview (GladeXML *xml, GType widget_type,
     gtk_preview_set_expand (GTK_PREVIEW (preview), expand);
 
     return preview;
-}
-
-static GtkWidget *
-build_image_menu_item (GladeXML *xml, GType widget_type,
-		       GladeWidgetInfo *info)
-{
-    GtkWidget *menuitem;
-
-    const char *stock_id = NULL, *label = NULL;
-    gboolean use_underline = FALSE;
-    gboolean visible = FALSE;
-
-    int i;
-
-    for (i = 0; i < info->n_properties; i++) {
-	const char *name  = info->properties[i].name;
-	const char *value = info->properties[i].value;
-
-	if (!strcmp (name, "stock"))
-	    stock_id = value;
-	else if (!strcmp (name, "label"))
-	    label = value;
-	else if (!strcmp (name, "use_underline"))
-	    use_underline = BOOL (value);
-	/* FIXME: There should be some way to set all the standard widget
-	   properties. */
-	else if (!strcmp (name, "visible"))
-	    visible = BOOL (value);
-    }
-
-    if (stock_id) {
-	GtkAccelGroup *accel_group;
-
-	accel_group = glade_xml_ensure_accel (xml);
-
-	menuitem = gtk_image_menu_item_new_from_stock (stock_id, accel_group);
-
-	/* Stock 'New' items can have different labels, e.g. 'New _Project'.
-	   They still get the stock icon and accelerator. */
-	if (label && !strcmp (stock_id, GTK_STOCK_NEW))
-	    gtk_label_set_text_with_mnemonic (GTK_LABEL (GTK_BIN (menuitem)->child), label);
-    } else if (label && use_underline) {
-	menuitem = gtk_image_menu_item_new_with_mnemonic (label);
-    } else if (label) {
-	menuitem = gtk_image_menu_item_new_with_label (label);
-    } else {
-	menuitem = gtk_image_menu_item_new ();
-    }
-
-    if (visible)
-	gtk_widget_show (menuitem);
-
-    return menuitem;
 }
 
 static void
@@ -916,6 +902,7 @@ _glade_init_gtk_widgets(void)
     glade_register_custom_prop (GTK_TYPE_RULER, "metric", ruler_set_metric);
     glade_register_custom_prop (GTK_TYPE_MENU_ITEM, "label", menu_item_set_label);
     glade_register_custom_prop (GTK_TYPE_MENU_ITEM, "use_underline", menu_item_set_use_underline);
+    glade_register_custom_prop (GTK_TYPE_MENU_ITEM, "use_stock", menu_item_set_use_stock);
 
     glade_register_widget (GTK_TYPE_ACCEL_LABEL, glade_standard_build_widget,
 			   NULL, NULL);
@@ -983,7 +970,7 @@ _glade_init_gtk_widgets(void)
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_IMAGE, glade_standard_build_widget,
 			   NULL, NULL);
-    glade_register_widget (GTK_TYPE_IMAGE_MENU_ITEM, build_image_menu_item,
+    glade_register_widget (GTK_TYPE_IMAGE_MENU_ITEM, glade_standard_build_widget,
 			   menuitem_build_children, image_menu_find_internal_child);
     glade_register_widget (GTK_TYPE_INPUT_DIALOG, NULL,
 			   glade_standard_build_children, NULL);
