@@ -700,9 +700,9 @@ radiobutton_new(GladeXML *xml, GNode *node)
 		GtkRadioButton *radio = GTK_RADIO_BUTTON (button);
 		
 		g_hash_table_insert (xml->priv->radio_groups,
-				     group_name,
+				     g_strdup (group_name),
 				     gtk_radio_button_group (radio));
-	}
+	} 
 
 	if (group_name)
 		g_free (group_name);
