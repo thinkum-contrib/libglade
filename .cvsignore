@@ -32,4 +32,5 @@ libgladeConf.sh
 NO-AUTO-GEN
 ABOUT-NLS
 intl
+*.pc
 

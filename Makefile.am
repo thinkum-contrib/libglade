@@ -1,11 +1,17 @@
 if GNOME_SUPPORT
 THE_FLAGS = $(GNOME_INCLUDEDIR)
 THE_LIBS  = glade/libglade-gnome.la glade/libglade.la $(GNOME_LIBDIR) $(GNOMEUI_LIBS)
+libglade_gnome_pc = libglade-gnome.pc
 else
 THE_FLAGS = $(GTK_CFLAGS)
 THE_LIBS  = glade/libglade.la $(GTK_LIBS)
+libglade_gnome_pc =
 endif
-
+if BONOBO_SUPPORT
+libglade_bonobo_pc = libglade-bonobo.pc
+else
+libglade_bonobo_pc =
+endif
 INCLUDES = $(THE_FLAGS) $(XML_CFLAGS)
 
 EXTRA_DIST =			\
@@ -20,6 +26,9 @@ EXTRA_DIST =			\
 	dialogs.glade		\
 	libglade.m4		\
 	libglade-xgettext	\
+	libglade.pc.in		\
+	libglade-gnome.pc.in	\
+	libglade-bonobo.pc.in	\
 	config.h.win32		\
 	makefile.mingw
 
@@ -33,5 +42,8 @@ m4data_DATA = libglade.m4
 
 confexecdir = $(libdir)
 confexec_DATA = libgladeConf.sh
+
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = libglade.pc $(libglade_gnome_pc) $(libglade_bonobo_pc)
 
 test_libglade_SOURCES = test-libglade.c

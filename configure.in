@@ -76,5 +76,7 @@ po/Makefile.in
 glade/Makefile
 doc/Makefile
 libglade-config
-libgladeConf.sh])
-
+libgladeConf.sh
+libglade.pc
+libglade-gnome.pc
+libglade-bonobo.pc])

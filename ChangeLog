@@ -1,5 +1,11 @@
 2000-11-22  James Henstridge  <james@daa.com.au>
 
+	* configure.in: build .pc files from .pc.in files.
+
+	* libglade-*.pc.in: pkg-config input files for various libglade
+	components.  These ones cause a segfault in pkgconfig-0.4, due to
+	a small bug.
+
 	* configure.in (have_bonobo): modify check so that you must pass
 	--enable-bonobo flag to get bonobo support.
 
