@@ -6,17 +6,17 @@ DOC_MODULE=libglade
 DOC_MAIN_SGML_FILE=libglade-docs.sgml
 
 # The directory containing the source code (if it contains documentation).
-DOC_SOURCE_DIR=$(top_srcdir)/glade
+DOC_SOURCE_DIR=../glade
 
 HTML_DIR=$(datadir)/gnome/html
 
 TARGET_DIR=$(HTML_DIR)/$(DOC_MODULE)
 
 if GNOME_SUPPORT
-CFLAGS = $(GNOME_INCLUDEDIR) $(XML_CFLAGS)
+CFLAGS = $(GNOME_INCLUDEDIR) $(XML_CFLAGS) -I..
 LDFLAGS = -lglade $(GNOME_LIBDIR) $(GNOMEUI_LIBS) $(XML_LIBS)
 else
-CFLAGS = $(GTK_CFLAGS) $(XML_CFLAGS)
+CFLAGS = $(GTK_CFLAGS) $(XML_CFLAGS) -I..
 LDFLAGS = -lglade $(GTK_LIBS) $(XML_LIBS)
 endif
 
