@@ -16,6 +16,7 @@ translatable_properties = [
 # --- Code to represent a widget in memory, and dump it to stdout ---
 
 upgrade = 1
+verbose = 0
 
 class WidgetDef:
     def __init__(self, parent=None):
@@ -514,6 +515,9 @@ def stock_pixmap_translate(old_name):
 
 def fixup_as_type(widget, type):
 
+    if verbose:
+        print >> sys.stderr, 'Fixing', widget['name'], 'up as', type
+
     # table based property removals/renames
     for name in global_obsolete_props:
         widget.remove_prop(name)
@@ -936,13 +940,15 @@ def handle_file(filename):
 usage = 'usage: libglade-convert [--no-upgrade] oldfile.glade'
 
 def main():
-    global upgrade
+    global upgrade, verbose
     opts, args = getopt.getopt(sys.argv[1:], '',
-                               ['no-upgrade', 'help'])
+                               ['no-upgrade', 'verbose', 'help'])
     
     for opt, arg in opts:
         if opt == '--no-upgrade':
             upgrade = 0
+        elif opt == '--verbose':
+            verbose = 1
         elif opt == '--help':
             print usage
             sys.exit(0)

@@ -1,3 +1,8 @@
+2001-11-28  jacob berkman  <jacob@ximian.com>
+
+	* libglade-convert.in: add a --verbose flag which can print out
+	what it's doing, making debugging easier
+
 2001-11-28  James Henstridge  <james@daa.com.au>
 
 	* configure.in (try): fix up xml.parsers.expat check.
