@@ -1,3 +1,11 @@
+1999-12-03  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-sax.c: added some assertions to the tree ref/unref
+	code.
+
+	* glade/glade-xml.c (glade_xml_destroy): patch to prevent segfaults
+	on bad .glade files from Michael Meeks.
+
 1999-11-20  James Henstridge  <james@daa.com.au>
 
 	* README: updated readme file.  It was really out of date.

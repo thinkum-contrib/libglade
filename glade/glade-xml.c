@@ -795,7 +795,8 @@ glade_xml_destroy(GtkObject *object)
 	if (self->textdomain)
 		g_free(self->textdomain);
 
-	glade_widget_tree_unref(priv->tree);
+	if (priv->tree)
+		glade_widget_tree_unref(priv->tree);
 	/* strings are owned in the cached GladeWidgetTree structure */
 	g_hash_table_destroy(priv->name_hash);
 	/* strings belong to individual widgets -- don't free them */

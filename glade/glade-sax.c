@@ -119,6 +119,8 @@ static void glade_widget_info_free(GladeWidgetInfo *info) {
  * Returns: the tree argument.
  */
 GladeWidgetTree *glade_widget_tree_ref(GladeWidgetTree *tree) {
+    g_return_val_if_fail(tree != NULL, NULL);
+
     tree->ref++;
     return tree;
 }
@@ -131,6 +133,8 @@ GladeWidgetTree *glade_widget_tree_ref(GladeWidgetTree *tree) {
  */
 void glade_widget_tree_unref(GladeWidgetTree *tree) {
     GList *tmp;
+
+    g_return_if_fail(tree != NULL);
 
     if (--(tree->ref) > 0)
 	return;
