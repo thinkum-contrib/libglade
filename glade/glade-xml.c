@@ -490,7 +490,19 @@ glade_xml_destroy(GtkObject *object)
 		(* parent_class->destroy)(object);
 }
 
-/* private -- used by widget building routines only */
+/**
+ * glade_enum_from_string
+ * @type: the GtkType for this flag or enum type.
+ * @string: the string representation of the enum value.
+ *
+ * This helper routine is designed to be used by widget build routines to
+ * convert the string representations of enumeration values found in the
+ * XML descriptions to the integer values that can be used to configure
+ * the widget.
+ *
+ * Returns: the integer value for this enumeration, or 0 if it couldn't be
+ * found.
+ */
 gint
 glade_enum_from_string (GtkType type, const char *string)
 {
@@ -551,6 +563,31 @@ glade_register_widgets(const GladeWidgetBuildData *widgets)
 		i++;
 	}
 }
+
+/**
+ * GladeNewFunc
+ * @xml: The GladeXML object.
+ * @node: the GNode holding the xmlNode for this widget.
+ *
+ * This function signature should be used by functions that build particular
+ * widget types.  The function should create the new widget and set any non
+ * standard widget parameters (ie. don't set visibility, size, etc), as
+ * this is handled by glade_xml_build_widget, which calls these functions.
+ *
+ * Returns: the new widget.
+ */
+/**
+ * GladeBuildChildrenFunc
+ * @xml: the GladeXML object.
+ * @w: this widget.
+ * @node: the GNode holding the xmlNode for this widget.
+ * @longname: the long name for this widget.
+ *
+ * This function signature should be used by functions that are responsible
+ * for adding children to a container widget.  To create each child widget,
+ * glade_xml_build_widget should be called.  The GNode for the child widget
+ * will be a child of this widget's GNode.
+ */
 
 /**
  * glade_xml_build_widget:
@@ -619,8 +656,8 @@ glade_xml_build_widget(GladeXML *self, GNode *node,
 			if (!strcmp(name, "accelerator"))
 				glade_xml_add_accel(ret, tmp);
 			break;
-		case 'A': /* The old accelerator tag used 'Accelerator' rather than
-			     'accelerator'. */
+		case 'A': /* The old accelerator tag used 'Accelerator'
+			   * rather than 'accelerator'. */
 			if (!strcmp(name, "Accelerator"))
 				glade_xml_add_accel(ret, tmp);
 			break;
@@ -661,15 +698,14 @@ glade_xml_build_widget(GladeXML *self, GNode *node,
 		case 's':
 			if (!strcmp(name, "sensitive"))
 				gtk_widget_set_sensitive(ret, *value == 'T');
-			else if (!strcmp(name, "signal"))
-				glade_xml_add_signal(self, ret, tmp);
 			else if (!strcmp(name, "style_name")) {
 				if (w_style) g_free(w_style);
 				w_style = g_strdup(value);
 			} else if (!strcmp(name, "signal"))
 				glade_xml_add_signal(self, ret, tmp);
 			break;
-		case 'S': /* The old signal tag used 'Signal' rather than 'signal'. */
+		case 'S': /* The old signal tag used 'Signal' rather than
+			   * 'signal'. */
 			if (!strcmp(name, "Signal"))
 				glade_xml_add_signal(self, ret, tmp);
 			break;

@@ -42,7 +42,7 @@ typedef struct {
 void glade_register_widgets(const GladeWidgetBuildData *widgets);
 
 /* this function is called to build the interface by GladeXML */
-GtkWidget *glade_xml_build_widget(GladeXML *xml, GNode *node,
+GtkWidget *glade_xml_build_widget(GladeXML *self, GNode *node,
 				  const char *parent_long);
 
 /* this is a wrapper for gtk_type_enum_find_value, that just returns the

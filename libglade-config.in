@@ -54,12 +54,14 @@ while test $# -gt 0; do
 
     --cflags)
 	if test "@includedir@" != /usr/include ; then
-	    echo -I@includedir@
+	    echo -I@includedir@ @XML_CFLAGS@
+	else
+	    echo @XML_CFLAGS@
 	fi
        	;;
 
     --libs)
-       	echo -L@libdir@ @LIBGLADE_LIBS@
+       	echo -L@libdir@ -lglade @XML_LIBS@
        	;;
 
     *)

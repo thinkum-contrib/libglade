@@ -1,0 +1,45 @@
+<INCLUDE>glade/glade.h</INCLUDE>
+
+<SECTION>
+<FILE>glade</FILE>
+<TITLE>Libglade Initialisation</TITLE>
+glade_init
+glade_load_module
+</SECTION>
+
+<SECTION>
+<FILE>glade-xml</FILE>
+<TITLE>GladeXML</TITLE>
+GladeXML
+GladeXMLClass
+glade_xml_new
+glade_xml_construct
+glade_xml_signal_connect
+glade_xml_signal_autoconnect
+glade_xml_get_widget
+glade_xml_get_widget_by_long_name
+glade_get_widget_name
+glade_get_widget_long_name
+glade_get_widget_tree
+<SUBSECTION Private>
+GladeSignalData
+<SUBSECTION Standard>
+glade_xml_get_type
+GLADE_XML
+GLADE_XML_CLASS
+GLADE_IS_XML
+</SECTION>
+
+<INCLUDE>glade/glade.h,glade/glade-build.h</INCLUDE>
+<SECTION>
+<FILE>glade-build</FILE>
+<TITLE>Libglade Build</TITLE>
+GladeNewFunc
+GladeBuildChildrenFunc
+glade_xml_build_widget
+GladeWidgetBuildData
+glade_register_widgets
+<SUBSECTION Helper Routines>
+glade_enum_from_string
+</SECTION>
+

@@ -6,8 +6,6 @@ THE_FLAGS = $(GTK_CFLAGS)
 THE_LIBS  = $(GTK_LIBS)
 endif
 
-SUBDIRS = glade
-
 INCLUDES = $(THE_FLAGS) $(XML_CFLAGS)
 
 EXTRA_DIST = libglade.spec test.glade simple.glade example.glade
@@ -16,8 +14,12 @@ if LIBGLADE_FULLDIST
 bin_SCRIPTS = libglade-config
 noinst_PROGRAMS = test-libglade
 test_libglade_LDADD = glade/libglade.la $(THE_LIBS) $(XML_LIBS)
+extra_dirs = macros doc
 else
+extra_dirs =
 endif
+
+SUBDIRS = glade $(extra_dirs)
 
 test_libglade_SOURCES = test-libglade.c
 

@@ -33,9 +33,11 @@ typedef struct _GladeXMLClass GladeXMLClass;
 typedef struct _GladeSignalData GladeSignalData;
 
 struct _GladeXML {
+  /* <public> */
   GtkData parent;
 
   char *filename;
+  /* <private> */
   GtkTooltips *tooltips; /* if not NULL, holds all tooltip info */
   /* hash tables of widgets.  The keys are stored as widget data, and get
    * freed with those widgets. */
@@ -60,11 +62,11 @@ struct _GladeSignalData {
 };
 
 GtkType glade_xml_get_type    (void);
-GladeXML *glade_xml_new       (const char *filename, const char *root);
-void glade_xml_construct      (GladeXML *xml, const char *filename,
+GladeXML *glade_xml_new       (const char *fname, const char *root);
+void glade_xml_construct      (GladeXML *self, const char *fname,
 			       const char *root);
 
-void glade_xml_signal_connect (GladeXML *xml, const char *signalname,
+void glade_xml_signal_connect (GladeXML *self, const char *signalname,
 			       GtkSignalFunc func);
 /*
  * use gmodule to connect signals automatically.  Basically a symbol with
@@ -72,11 +74,11 @@ void glade_xml_signal_connect (GladeXML *xml, const char *signalname,
  * the associated symbols.  So setting gtk_main_quit as a signal handler
  * for the destroy signal of a window will do what you expect.
  */
-void       glade_xml_signal_autoconnect      (GladeXML *xml);
+void       glade_xml_signal_autoconnect      (GladeXML *self);
 
-GtkWidget *glade_xml_get_widget              (GladeXML *xml,
+GtkWidget *glade_xml_get_widget              (GladeXML *self,
 					      const char *name);
-GtkWidget *glade_xml_get_widget_by_long_name (GladeXML *xml,
+GtkWidget *glade_xml_get_widget_by_long_name (GladeXML *self,
 					      const char *longname);
 
 /* don't free the results of these two ... */

@@ -1,0 +1,11 @@
+Makefile
+Makefile.in
+html
+sgml
+libglade.signals
+libglade.args
+libglade.hierarchy
+libglade-decl-list.txt
+libglade-decl.txt
+*.bak
+*-unused.txt

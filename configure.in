@@ -47,8 +47,8 @@ dnl false when building libglade as part of gnumeric.
 AM_CONDITIONAL(LIBGLADE_FULLDIST, true)
 GNOME_COMPILE_WARNINGS
 
-LIBGLADE_LIBS="-lglade $XML_LIBS"
-AC_SUBST(LIBGLADE_LIBS)
+AC_CHECK_PROG(GTKDOC, gtkdoc-mkdb, true, false)
+AM_CONDITIONAL(HAVE_GTK_DOC, $GTKDOC)
 
-AC_OUTPUT(Makefile macros/Makefile glade/Makefile libglade-config)
+AC_OUTPUT(Makefile macros/Makefile glade/Makefile doc/Makefile libglade-config)
 
