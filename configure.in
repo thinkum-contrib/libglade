@@ -42,15 +42,23 @@ AC_MSG_ERROR([*** libxml >= 1.7.2 is required to compile libglade]))
 LIBS="$old_LIBS"
 
 
+AC_ARG_WITH(gnome, [  --with-gnome               enable GNOME support],
+  [with_gnome="$withval"],[with_gnome=no])
+
 have_gnome=false
-GNOME_INIT_HOOK([
+if test "x$with_gnome" = "xyes" ; then
+  GNOME_INIT_HOOK([
 	have_gnome=true
 	AC_DEFINE(ENABLE_GNOME)
-])
+  ])
+fi
+
 AM_CONDITIONAL(GNOME_SUPPORT, $have_gnome)
 
 have_bonobo=false
-AM_PATH_BONOBO(0.10, have_bonobo=true)
+if test "x$have_gnome" = "xtrue" ; then
+  AM_PATH_BONOBO(0.10, have_bonobo=true)
+fi
 AM_CONDITIONAL(BONOBO_SUPPORT, $have_bonobo)
 
 
