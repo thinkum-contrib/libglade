@@ -1,6 +1,6 @@
 -*- mode: autoconf -*-
 AC_PREREQ(2.52)
-AC_INIT(libglade, 2.3.1,
+AC_INIT(libglade, 2.3.2,
         [http://bugzilla.gnome.org/enter_bug.cgi?product=libglade])
 
 AC_CONFIG_SRCDIR([test-libglade.c])
@@ -37,7 +37,7 @@ LIBS=$save_LIBS
 
 AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
 
-PKG_CHECK_MODULES(LIBGLADE, libxml-2.0 >= 2.4.10 atk >= 1.0.0 gtk+-2.0 >= 2.3.0)
+PKG_CHECK_MODULES(LIBGLADE, libxml-2.0 >= 2.4.10 atk >= 1.0.0 gtk+-2.0 >= 2.3.0 glib-2.0 >= 2.3.1)
 AC_SUBST(LIBGLADE_LIBS)
 AC_SUBST(LIBGLADE_CFLAGS)
 
