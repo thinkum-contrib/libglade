@@ -1597,7 +1597,9 @@ glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info)
 
     debug(g_message("Widget class: %s", info->class));
     if (!strcmp(info->class, "Placeholder")) {
-	g_warning("placeholders exist in interface description");
+	static int warned = 0;
+	if (!warned++)
+	    g_warning("placeholders exist in interface description");
 	ret = gtk_label_new("[placeholder]");
 	gtk_widget_show(ret);
 	return ret;

@@ -1,3 +1,21 @@
+2001-10-20  Michael Meeks  <michael@ximian.com>
+
+	* libglade-convert (stock_button_translate): impl.
+
+	* glade/glade-xml.c (glade_xml_build_widget): calm
+	placeholder warnings.
+
+	* libglade-convert (fixup_as_type): map stock_icon on
+	GtkImageMenuItems, deal with GtkButtons with stock stuff
+	properly. Map GnomeDialog's to GtkDialogs - makes most
+	sense it seems.
+
+	* glade/glade-gnome.c: add GnomeDialog
+
+	* glade/glade-gtk.c (placeholder_create): impl.
+	(image_menu_find_internal_child): impl.
+	(menuitem_build_children): deal with internal children.
+
 2001-10-18  Michael Meeks  <michael@ximian.com>
 
 	* libglade-convert (fixup_as_type): deal with a scrolled

@@ -55,3 +55,5 @@ gnome_la_LDFLAGS = -export-dynamic -module -avoid-version
 EXTRA_DIST = $(gladeinclude_HEADERS) \
 	makefile.mingw	\
 	glade.def
+
+inst-lib: install-glademoduleLTLIBRARIES

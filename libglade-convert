@@ -2,6 +2,7 @@
 
 # yes, this requires python 2.x and an XML parser module (eg. PyExpat)
 
+import re
 import sys
 import string
 import getopt
@@ -340,7 +341,7 @@ parent_table = {
     'GnomeAbout'        : 'GtkDialog',
     'GnomeApp'          : 'GtkDialog',
     'GnomeScores'       : 'GtkDialog',
-    'GnomeDialog'       : 'GtkDialog',
+    'GnomeDialog'       : 'GtkWindow',
     'GnomeDruid'        : 'GtkContainer',
     'GnomeEntry'        : 'GtkCombo',
     'GtkCheckMenuItem'  : 'GtkMenuItem',
@@ -379,6 +380,20 @@ def new_label(class_type, text, accel_object):
         label['use-underline'] = 'yes'        
 
     return label
+
+def stock_icon_translate(old_name):
+    if re.match ('GNOME_STOCK_MENU_.*', old_name):
+        name = re.sub('GNOME_STOCK_MENU_', 'gtk-', old_name)
+        return name.lower ()
+    else:
+        return old_name
+
+def stock_button_translate(old_name):
+    if re.match ('GNOME_STOCK_BUTTON_.*', old_name):
+        name = re.sub('GNOME_STOCK_BUTTON_', 'gtk-', old_name)
+        return name.lower ()
+    else:
+        return old_name
 
 def fixup_as_type(widget, type):
 
@@ -480,12 +495,21 @@ def fixup_as_type(widget, type):
                           widget['name']))
             del widget['label']
 
-#    if type == 'GtkImageMenuItem':
-#        if widget.has_prop('stock_icon'):
-#            icon = WidgetDef()
-#            icon['class'] = 'GtkImage'
-#            icon['name'] = make_name ()
-#            widget.add_child (icon, 'image')
+    if type == 'GtkImageMenuItem':
+        if widget.has_prop('stock_icon'):
+            icon = WidgetDef()
+            icon['class'] = 'GtkImage'
+            icon['name'] = make_name ()
+            icon['stock'] = stock_icon_translate (widget['stock_icon'])
+            widget.add_child (icon, 'image')
+            del widget['stock_icon']
+
+    if type == 'GtkButton':
+        if widget.has_prop('stock_button'):
+            widget['label'] = stock_button_translate (widget['stock_button'])
+            widget['use_stock'] = 'yes'
+            widget['use_underline'] = 'yes'
+            del widget['stock_button']
 
     if type == 'GtkDialog':
         childdef = widget.children[0]
@@ -562,6 +586,11 @@ def fixup_as_type(widget, type):
         del childdef.widget['child_name']
         fixup_as_type (widget, 'GtkWindow')
         return 1 # don't let GtkDialog mangle us ...
+
+    # Whole hog conversion - GnomeDialog is a dead duck.
+    if type == 'GnomeDialog':
+        widget['class'] = 'GtkDialog'
+        fixup_as_type (widget, 'GtkDialog')
 
     return 0
 

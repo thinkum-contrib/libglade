@@ -39,6 +39,14 @@ window_new(GladeXML *xml, GType widget_type, GladeWidgetInfo *info)
     return window;
 }
 
+static GtkWidget *
+placeholder_create (void)
+{
+    GtkWidget *pl = gtk_alignment_new (0.5, 0.5, 1.0, 1.0);
+    gtk_widget_show (pl);
+    return pl;
+}
+
 void
 menuitem_build_children(GladeXML *self, GtkWidget *w,
 			GladeWidgetInfo *info)
@@ -47,8 +55,15 @@ menuitem_build_children(GladeXML *self, GtkWidget *w,
 
     g_object_ref(G_OBJECT(w));
     for (i = 0; i < info->n_children; i++) {
+	GtkWidget       *child;
 	GladeWidgetInfo *childinfo = info->children[i].child;
-	GtkWidget *child = glade_xml_build_widget(self, childinfo);
+
+	if (info->children[i].internal_child) {
+	    glade_xml_handle_internal_child(self, w, &info->children[i]);
+	    continue;
+	}
+
+	child = glade_xml_build_widget(self, childinfo);
 
 	if (GTK_IS_MENU(child))
 	    gtk_menu_item_set_submenu(GTK_MENU_ITEM(w), child);
@@ -159,6 +174,21 @@ dialog_find_internal_child(GladeXML *xml, GtkWidget *parent,
     if (!strcmp(childname, "action_area"))
 	return GTK_DIALOG(parent)->action_area;
 
+    return NULL;
+}
+
+static GtkWidget *
+image_menu_find_internal_child(GladeXML *xml, GtkWidget *parent,
+			       const gchar *childname)
+{
+    if (!strcmp(childname, "image")) {
+	GtkWidget *pl = placeholder_create ();
+
+	gtk_image_menu_item_set_image (
+	    GTK_IMAGE_MENU_ITEM (parent), pl);
+
+	return pl;
+    }
     return NULL;
 }
 
@@ -329,7 +359,7 @@ static GladeWidgetBuildData widget_data[] = {
     { "GtkImage", glade_standard_build_widget, NULL,
       gtk_image_get_type },
     { "GtkImageMenuItem", glade_standard_build_widget, menuitem_build_children,
-      gtk_image_menu_item_get_type },
+      gtk_image_menu_item_get_type, 0, image_menu_find_internal_child },
     { "GtkInputDialog", window_new, glade_standard_build_children,
       gtk_input_dialog_get_type },
     { "GtkLabel", glade_standard_build_widget, NULL,
