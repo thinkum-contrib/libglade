@@ -1,3 +1,7 @@
+1999-04-25  bertrand <Bertrand.Guiheneuf@inria.fr>
+
+	* glade/glade-init.c (glade_load_module): typo fix.
+
 1999-04-25  Miguel de Icaza  <miguel@nuclecu.unam.mx>
 
 	* glade/glade-styles.c (glade_style_attach): Use g_strconcat

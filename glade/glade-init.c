@@ -71,7 +71,7 @@ glade_load_module (const char *module)
 		module_name = g_strconcat("lib", module, ".so", NULL);
 	mod = g_module_open(module_name, G_MODULE_BIND_LAZY);
 
-	if (mod &&g _module_symbol(mod, "glade_init_module", (gpointer*)&init_func)) {
+	if (mod &&g_module_symbol(mod, "glade_init_module", (gpointer*)&init_func)) {
 		if (init_func) {
 			g_module_make_resident(mod);
 			init_func();
