@@ -89,4 +89,4 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 %doc test-libglade.c
 %doc *.glade
-%doc %{prefix}/share/gnome/libglade/*
+%doc %{prefix}/share/gnome/html/libglade/*
