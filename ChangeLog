@@ -1,3 +1,9 @@
+Sat Nov  1 20:43:05 2003  Jonathan Blandford  <jrb@gnome.org>
+
+	* glade/glade-gtk.c (_glade_init_gtk_widgets): add GtkColorButton,
+	GtkComboBox, GtkFileChooser and GtkFontButton.  GtkComboBox will
+	need better support in the future.
+
 2003-10-24  Mark McLoughlin  <mark@skynet.ie>
 
 	* configure.in: bump version to 2.3.0 (in sync with

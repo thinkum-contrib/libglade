@@ -1087,12 +1087,16 @@ _glade_init_gtk_widgets(void)
 			   menuitem_build_children, NULL);
     glade_register_widget (GTK_TYPE_CLIST, glade_standard_build_widget,
 			   clist_build_children, NULL);
+    glade_register_widget (GTK_TYPE_COLOR_BUTTON, glade_standard_build_widget,
+			   NULL, NULL);
     glade_register_widget (GTK_TYPE_COLOR_SELECTION, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_COLOR_SELECTION_DIALOG, NULL,
 			   glade_standard_build_children, colorseldlg_find_internal_child);
     glade_register_widget (GTK_TYPE_COMBO, glade_standard_build_widget,
 			   glade_standard_build_children, combo_find_internal_child);
+    glade_register_widget (GTK_TYPE_COMBO_BOX, glade_standard_build_widget,
+			   NULL, NULL);
     glade_register_widget (GTK_TYPE_CTREE, glade_standard_build_widget,
 			   clist_build_children, NULL);
     glade_register_widget (GTK_TYPE_CURVE, glade_standard_build_widget,
@@ -1107,10 +1111,14 @@ _glade_init_gtk_widgets(void)
 			   glade_standard_build_children, NULL);
     glade_register_widget (GTK_TYPE_EXPANDER, glade_standard_build_widget,
 			   expander_build_children, NULL);
+    glade_register_widget (GTK_TYPE_FILE_CHOOSER, glade_standard_build_widget,
+			   NULL, NULL);
     glade_register_widget (GTK_TYPE_FILE_SELECTION, NULL,
 			   glade_standard_build_children, filesel_find_internal_child);
     glade_register_widget (GTK_TYPE_FIXED, glade_standard_build_widget,
 			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_FONT_BUTTON, glade_standard_build_widget,
+			   NULL, NULL);
     glade_register_widget (GTK_TYPE_FONT_SELECTION, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_FONT_SELECTION_DIALOG, NULL,
