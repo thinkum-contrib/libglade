@@ -16,10 +16,11 @@ EXTRA_DIST =			\
 	example.glade		\
 	custom.glade		\
 	gnome-widgets.glade	\
-	libglade.m4
+	libglade.m4		\
+	libglade-xgettext
 
 if LIBGLADE_FULLDIST
-bin_SCRIPTS = libglade-config
+bin_SCRIPTS = libglade-config libglade-xgettext
 noinst_PROGRAMS = test-libglade
 test_libglade_LDADD = $(THE_LIBS) $(XML_LIBS)
 extra_dirs = macros doc

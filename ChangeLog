@@ -1,3 +1,12 @@
+1999-06-11  James Henstridge  <james@daa.com.au>
+
+	* Makefile.am (bin_SCRIPTS): added libglade-xgettext.
+
+	* libglade-xgettext: a small program that can extract translation
+	strings from glade XML files.  Libglade itself has no i18n support
+	yet, but this is a start.  The program can output both standard pot
+	files or a C file that can then be parsed by xgettext.
+
 1999-06-10  James Henstridge  <james@daa.com.au>
 
 	* test-libglade.c (main): updated to call glade_gnome_init() instead
