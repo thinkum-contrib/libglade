@@ -38,6 +38,7 @@ EXTRA_DIST = 				\
 
 scan-build.stamp: $(top_srcdir)/glade/*.h
 	@echo '*** Scanning header files ***'
+	@-chmod -R u+w $(srcdir)
 	env CC="$(LIBTOOL) --mode=compile $(CC)" \
 		LD="$(LIBTOOL) --mode=link $(CC)" \
 		CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
@@ -55,16 +56,19 @@ $(DOC_MODULE)-decl.txt $(SCANOBJ_FILES): scan-build.stamp
 
 tmpl.stamp: $(DOC_MODULE)-decl.txt $(SCANOBJ_FILES) $(DOC_MODULE)-sections.txt
 	@echo '*** Rebuilding template files ***'
+	@-chmod -R u+w $(srcdir)
 	cd $(srcdir) && gtkdoc-mktmpl --module=$(DOC_MODULE)
 
 sgml.stamp: tmpl.stamp $(top_srcdir)/glade/*.c $(srcdir)/tmpl/*.sgml
 	@echo '*** Building SGML ***'
+	@-chmod -R u+w $(srcdir)
 	@test -d $(srcdir)/sgml || mkdir $(srcdir)/sgml
 	cd $(srcdir) \
 	&& gtkdoc-mkdb --module=$(DOC_MODULE) --source-dir=$(DOC_SOURCE_DIR)
 
 html.stamp: sgml.stamp $(DOC_MAIN_SGML_FILE) $(content_files)
 	@echo '*** Building HTML ***'
+	@-chmod -R u+w $(srcdir)
 	@test -d $(srcdir)/html || mkdir $(srcdir)/html
 	-cd $(srcdir)/html && gtkdoc-mkhtml $(DOC_MODULE) ../$(DOC_MAIN_SGML_FILE)
 

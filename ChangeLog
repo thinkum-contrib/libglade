@@ -1,5 +1,8 @@
 2001-09-26  James Henstridge  <james@daa.com.au>
 
+	* Makefile.am (SUBDIRS): don't build po directory, as there are no
+	translations to do.
+
 	* libglade-convert (upgrade_widget): new function to handle
 	upgrading widgets.
 	(main): use the getopt module to parse arguments

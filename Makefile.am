@@ -1,4 +1,4 @@
-SUBDIRS = po glade doc
+SUBDIRS = glade doc
 
 INCLUDES = $(GTK_CFLAGS) $(XML_CFLAGS)
 
@@ -25,6 +25,7 @@ EXTRA_DIST = \
   examples/simple.glade \
   examples/first.glade \
   examples/example.glade \
+  examples/bonobo.glade \
   config.h.win32 \
   makefile.mingw
 
