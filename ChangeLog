@@ -1,3 +1,21 @@
+1999-06-19  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gnome.c (gnomedialog_build_children): connect signals
+	to the individual button widgets.
+	(messagebox_build_children): similar for the message box widget.
+
+	* doc/libglade-docs.sgml: heaps of extra docs.  This should reduce
+	the number of libglade questions people ask me (assuming they
+	read the docs of course :).
+
+	* doc/libglade-sections.txt: added entries for the extra functions.
+
+	* glade/glade-xml.h, glade/glade-xml.c
+	(glade_xml_signal_connect_full, glade_xml_signal_autoconnect_full):
+	Added two functions that should be useful for people wanting to write
+	language bindings for libglade.  They allow the user to specify an
+	arbitrary function to use for connecting signals.
+
 1999-06-17  James Henstridge  <james@daa.com.au>
 
 	* gnome-widgets.glade: made the test glade file for GNOME a bit

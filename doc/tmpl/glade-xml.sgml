@@ -149,3 +149,38 @@ automatically connect as many handlers up as it can that way.
 @Returns: 
 
 
+<!-- ##### USER_FUNCTION GladeXMLConnectFunc ##### -->
+<para>
+
+</para>
+
+@handler_name: 
+@object: 
+@signal_name: 
+@signal_data: 
+@connect_object: 
+@after: 
+@user_data: 
+
+
+<!-- ##### FUNCTION glade_xml_signal_connect_full ##### -->
+<para>
+
+</para>
+
+@self: 
+@handler_name: 
+@func: 
+@user_data: 
+
+
+<!-- ##### FUNCTION glade_xml_signal_autoconnect_full ##### -->
+<para>
+
+</para>
+
+@self: 
+@func: 
+@user_data: 
+
+

@@ -26,6 +26,7 @@
 
 #ifdef __cplusplus
 extern "C" {
+#pragma }
 #endif /* __cplusplus */
 	
 #define GLADE_XML(obj) GTK_CHECK_CAST((obj), glade_xml_get_type(), GladeXML)
@@ -76,6 +77,31 @@ void glade_xml_signal_connect (GladeXML *self, const char *handlername,
  * for the destroy signal of a window will do what you expect.
  */
 void       glade_xml_signal_autoconnect      (GladeXML *self);
+
+/* if the gtk_signal_connect_object behaviour is required, connect_object
+ * will point to the object, otherwise it will be NULL.
+ */
+typedef void (*GladeXMLConnectFunc)          (const gchar *handler_name,
+					      GtkObject *object,
+					      const gchar *signal_name,
+					      const gchar *signal_data,
+					      GtkObject *connect_object,
+					      gboolean after,
+					      gpointer user_data);
+
+/*
+ * These two are to make it easier to use libglade with an interpreted
+ * language binding.
+ */
+void       glade_xml_signal_connect_full     (GladeXML *self,
+					      const gchar *handler_name,
+					      GladeXMLConnectFunc func,
+					      gpointer user_data);
+
+void       glade_xml_signal_autoconnect_full (GladeXML *self,
+					      GladeXMLConnectFunc func,
+					      gpointer user_data);
+
 
 GtkWidget *glade_xml_get_widget              (GladeXML *self,
 					      const char *name);

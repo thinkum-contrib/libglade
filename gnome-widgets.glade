@@ -394,13 +394,9 @@ no C code specific to this interface has been written.</comments>
   <class>GnomeMessageBox</class>
   <name>closebox</name>
   <visible>False</visible>
-  <signal>
-    <name>clicked</name>
-    <handler>gtk_main_quit</handler>
-    <last_modification_time>Thu, 17 Jun 1999 07:42:57 GMT</last_modification_time>
-  </signal>
-  <type>GNOME_MESSAGE_BOX_INFO</type>
-  <message>The application is about to quit</message>
+  <type>GNOME_MESSAGE_BOX_QUESTION</type>
+  <message>Are you sure you want to quit
+the application?</message>
 
   <widget>
     <class>GtkVBox</class>
@@ -436,7 +432,26 @@ no C code specific to this interface has been written.</comments>
 	<name>button8</name>
 	<can_default>True</can_default>
 	<can_focus>True</can_focus>
-	<stock_button>GNOME_STOCK_BUTTON_OK</stock_button>
+	<signal>
+	  <name>clicked</name>
+	  <handler>gtk_main_quit</handler>
+	  <last_modification_time>Sat, 19 Jun 1999 13:56:42 GMT</last_modification_time>
+	</signal>
+	<stock_button>GNOME_STOCK_BUTTON_YES</stock_button>
+      </widget>
+
+      <widget>
+	<class>GtkButton</class>
+	<name>button9</name>
+	<can_default>True</can_default>
+	<can_focus>True</can_focus>
+	<signal>
+	  <name>clicked</name>
+	  <handler>gtk_widget_hide</handler>
+	  <object>closebox</object>
+	  <last_modification_time>Sat, 19 Jun 1999 13:56:56 GMT</last_modification_time>
+	</signal>
+	<stock_button>GNOME_STOCK_BUTTON_NO</stock_button>
       </widget>
     </widget>
   </widget>
@@ -855,7 +870,7 @@ useful, rather than just displaying this dialog.</label>
 
       <widget>
 	<class>GtkButton</class>
-	<name>button9</name>
+	<name>button10</name>
 	<can_default>True</can_default>
 	<can_focus>True</can_focus>
 	<stock_button>GNOME_STOCK_BUTTON_OK</stock_button>

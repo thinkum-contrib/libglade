@@ -232,7 +232,7 @@ glade_xml_signal_connect (GladeXML *self, const char *handlername,
 }
 
 static void
-autoconnect_foreach(char *signal_handler, GList *signals,
+autoconnect_foreach(const char *signal_handler, GList *signals,
 		    GModule *allsymbols)
 {
 	GtkSignalFunc func;
@@ -288,6 +288,109 @@ glade_xml_signal_autoconnect (GladeXML *self)
 	/* get a handle on the main executable -- use this to find symbols */
 	allsymbols = g_module_open(NULL, 0);
 	g_hash_table_foreach(self->priv->signals, (GHFunc)autoconnect_foreach, allsymbols);
+}
+
+
+typedef struct {
+  GladeXMLConnectFunc func;
+  gpointer user_data;
+} connect_struct;
+
+static void
+autoconnect_full_foreach(const char *signal_handler, GList *signals,
+			 connect_struct *conn)
+{
+	GtkSignalFunc func;
+	GladeXML *self = NULL;
+
+	for (; signals != NULL; signals = signals->next) {
+		GladeSignalData *data = signals->data;
+		GtkObject *connect_object = NULL;
+		
+		if (data->connect_object) {
+			if (!self)
+				self = glade_get_widget_tree(
+					GTK_WIDGET(data->signal_object));
+			connect_object = g_hash_table_lookup(
+					self->priv->name_hash,
+					data->connect_object);
+		}
+
+		(* conn->func) (signal_handler, data->signal_object,
+				data->signal_name, data->signal_data,
+				connect_object, data->signal_after,
+				conn->user_data);
+	}
+}
+
+/**
+ * GladeXMLConnectFunc:
+ * @handler_name: the name of the handler function to connect.
+ * @object: the object to connect the signal to.
+ * @signal_name: the name of the signal.
+ * @signal_data: the string value of the signal data given in the XML file.
+ * @connect_object: non NULL if gtk_signal_connect_object should be used.
+ * @after: TRUE if the connection should be made with gtk_signal_connect_after.
+ * @user_data: the user data argument.
+ *
+ * This is the signature of a function used to connect signals.  It is used
+ * by the glade_xml_signal_connect_full and glade_xml_signal_autoconnect_full
+ * functions.  It is mainly intented for interpreted language bindings, but
+ * could be useful where the programmer wants more control over the signal
+ * connection process.
+ */
+
+/**
+ * glade_xml_signal_connect_full:
+ * @self: the GladeXML object.
+ * @handler_name: the name of the signal handler that we want to connect.
+ * @func: the function to use to connect the signals.
+ * @user_data: arbitrary data to pass to the connect function.
+ *
+ * This function is similar to glade_xml_signal_connect, except that it
+ * allows you to give an arbitrary function that will be used for actually
+ * connecting the signals.  This is mainly useful for writers of interpreted
+ * language bindings, or applications where you need more control over the
+ * signal connection process.
+ */
+void
+glade_xml_signal_connect_full(GladeXML *self, const gchar *handler_name,
+			      GladeXMLConnectFunc func, gpointer user_data)
+{
+	connect_struct conn;
+	GList *signals = g_hash_table_lookup(self->priv->signals,handler_name);
+
+	g_return_if_fail (func != NULL);
+	/* rather than rewriting the code from the autoconnect_full version,
+	 * just reuse its helper function */
+	conn.func = func;
+	conn.user_data = user_data;
+	autoconnect_full_foreach(handler_name, signals, &conn);
+}
+
+/**
+ * glade_xml_signal_autoconnect_full:
+ * @self: the GladeXML object.
+ * @func: the function used to connect the signals.
+ * @user_data: arbitrary data that will be passed to the connection function.
+ *
+ * This function is similar to glade_xml_signal_connect_full, except that it
+ * will try to connect all signals in the interface, not just a single
+ * named handler.  It can be thought of the interpeted language binding
+ * version of glade_xml_signal_autoconnect, except that it does not
+ * require gmodule to function correctly.
+ */
+void
+glade_xml_signal_autoconnect_full (GladeXML *self, GladeXMLConnectFunc func,
+				   gpointer user_data)
+{
+	connect_struct conn;
+
+	g_return_if_fail (func != NULL);
+	conn.func = func;
+	conn.user_data = user_data;
+	g_hash_table_foreach(self->priv->signals,
+			     (GHFunc)autoconnect_full_foreach, &conn);
 }
 
 /**
