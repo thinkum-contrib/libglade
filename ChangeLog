@@ -1,5 +1,7 @@
 2000-05-20  James Henstridge  <james@daa.com.au>
 
+	* NEWS: news updates.
+
 	* doc/Makefile.am (scan): change so you don't need an X connection
 	during build of documentation.
 	(uninstall-local): add uninstall hook to uninstall libglade docs, to

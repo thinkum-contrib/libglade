@@ -1,3 +1,10 @@
+libglade-0.13: 20-May-2000
+	- improved bonobo support from Michael Meeks.
+	- building documentation doesn't require an X connection now.
+	- accelerators for widgets on notebook pages are now only active
+	  when the page is visible (Jon K Hellan).
+	- memory leak fixes (Morten).
+
 libglade-0.12: 13-March-2000
 	- fixes for GtkHPaned/GtkVPaned.
 	- handle progress bar attributes.
