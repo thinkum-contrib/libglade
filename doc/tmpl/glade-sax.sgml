@@ -21,25 +21,17 @@ these functions and structures.
 
 </para>
 
-<!-- ##### STRUCT GladeWidgetTree ##### -->
+<!-- ##### STRUCT GladeInterface ##### -->
 <para>
 
 </para>
 
-@ref: 
-@mtime: 
-@styles: 
-@widgets: 
+@requires: 
+@n_requires: 
+@toplevels: 
+@n_toplevels: 
 @names: 
-
-<!-- ##### STRUCT GladeStyleInfo ##### -->
-<para>
-
-</para>
-
-@name: 
-@rc_name: 
-@local: 
+@strings: 
 
 <!-- ##### STRUCT GladeWidgetInfo ##### -->
 <para>
@@ -49,24 +41,28 @@ these functions and structures.
 @parent: 
 @class: 
 @name: 
-@tooltip: 
-@width: 
-@height: 
-@border_width: 
-@visible: 
-@sensitive: 
-@can_default: 
-@can_focus: 
-@has_default: 
-@has_focus: 
-@style: 
-@attributes: 
-@child_attributes: 
+@properties: 
+@n_properties: 
+@atk_props: 
+@n_atk_props: 
 @signals: 
-@accelerators: 
+@n_signals: 
+@accels: 
+@n_accels: 
 @children: 
+@n_children: 
 
-<!-- ##### STRUCT GladeAttribute ##### -->
+<!-- ##### STRUCT GladeChildInfo ##### -->
+<para>
+
+</para>
+
+@properties: 
+@n_properties: 
+@child: 
+@internal_child: 
+
+<!-- ##### STRUCT GladeProperty ##### -->
 <para>
 
 </para>
@@ -81,11 +77,10 @@ these functions and structures.
 
 @name: 
 @handler: 
-@data: 
 @object: 
 @after: 
 
-<!-- ##### STRUCT GladeAcceleratorInfo ##### -->
+<!-- ##### STRUCT GladeAccelInfo ##### -->
 <para>
 
 </para>
@@ -94,7 +89,7 @@ these functions and structures.
 @modifiers: 
 @signal: 
 
-<!-- ##### FUNCTION glade_widget_tree_parse_file ##### -->
+<!-- ##### FUNCTION glade_parser_parse_file ##### -->
 <para>
 
 </para>
@@ -103,38 +98,30 @@ these functions and structures.
 @Returns: 
 
 
-<!-- ##### FUNCTION glade_widget_tree_parse_memory ##### -->
+<!-- ##### FUNCTION glade_parser_parse_buffer ##### -->
 <para>
 
 </para>
 
 @buffer: 
-@size: 
+@len: 
 @Returns: 
 
 
-<!-- ##### FUNCTION glade_widget_tree_ref ##### -->
+<!-- ##### FUNCTION glade_interface_destroy ##### -->
 <para>
 
 </para>
 
-@tree: 
-@Returns: 
+@interface: 
 
 
-<!-- ##### FUNCTION glade_widget_tree_unref ##### -->
+<!-- ##### FUNCTION glade_interface_dump ##### -->
 <para>
 
 </para>
 
-@tree: 
-
-
-<!-- ##### FUNCTION glade_widget_tree_print ##### -->
-<para>
-
-</para>
-
-@tree: 
+@interface: 
+@filename: 
 
 

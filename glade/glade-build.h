@@ -42,8 +42,7 @@ typedef GtkWidget *(* GladeNewFunc) (GladeXML *xml,
 /* call glade_xml_build_widget on each child node, and pack in self */
 typedef void (* GladeBuildChildrenFunc) (GladeXML *xml,
 					 GtkWidget *parent,
-					 GladeWidgetInfo *info,
-					 const char *longname);
+					 GladeWidgetInfo *info);
 typedef GtkWidget *(* GladeFindInternalChildFunc) (GladeXML *xml,
 						   GtkWidget *parent,
 						   const char *childname);
@@ -84,29 +83,22 @@ gboolean glade_xml_set_value_from_prop (GType widget_type,
 					GValue *value,
 					GladeProperty *prop);
 
-/* set standard properties on a GtkWindow widget */
-void           glade_xml_set_window_props (GtkWindow *window,
-					   GladeWidgetInfo *info);
-
 /* this function is called to build the interface by GladeXML */
-GtkWidget *glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info,
-				  const char *parent_long);
+GtkWidget *glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info);
 
 /* this function is used to get a pointer to the internal child of a
  * container widget.  It would generally be called by the
  * build_children callback for any children with the internal_child
  * name set. */
 void glade_xml_handle_internal_child(GladeXML *self, GtkWidget *parent,
-				     GladeChildInfo *child_info,
-				     const gchar *parent_long);
+				     GladeChildInfo *child_info);
 
 /* This function performs half of what glade_xml_build_widget does.  It is
  * useful when the widget has already been created.  Usually it would not
  * have any use at all. */
 void       glade_xml_set_common_params(GladeXML *self,
 				       GtkWidget *widget,
-				       GladeWidgetInfo *info,
-				       const char *parent_long);
+				       GladeWidgetInfo *info);
 
 gboolean glade_xml_set_value_from_string (GParamSpec *pspec,
 					  const gchar *string,
@@ -117,10 +109,7 @@ GtkWidget *glade_standard_build_widget(GladeXML *xml, GType widget_type,
 
 /* A standard child building routine that can be used in widget builders */
 void glade_standard_build_children(GladeXML *self, GtkWidget *w,
-				   GladeWidgetInfo *info,const char *longname);
-
-/* create an adjustment object for a widget */
-GtkAdjustment *glade_get_adjustment(GladeWidgetInfo *info);
+				   GladeWidgetInfo *info);
 
 /* this is a wrapper for gtk_type_enum_find_value, that just returns the
  * integer value for the enum */
@@ -148,7 +137,7 @@ G_MODULE_EXPORT const gchar *g_module_check_init(GModule *gmodule); \
 const gchar * \
 g_module_check_init(GModule *gmodule) \
 { \
-  return dia_plugin_check_version(DIA_PLUGIN_API_VERSION); \
+  return glade_plugin_check_version(DIA_PLUGIN_API_VERSION); \
 }
 
 /* prototype for plugin init function (should be implemented by plugin) */

@@ -39,14 +39,14 @@ window_new(GladeXML *xml, GType widget_type, GladeWidgetInfo *info)
 
 void
 menuitem_build_children(GladeXML *self, GtkWidget *w,
-			GladeWidgetInfo *info, const char *longname)
+			GladeWidgetInfo *info)
 {
     gint i, j;
 
     g_object_ref(G_OBJECT(w));
     for (i = 0; i < info->n_children; i++) {
 	GladeWidgetInfo *childinfo = info->children[i].child;
-	GtkWidget *child = glade_xml_build_widget(self, childinfo, longname);
+	GtkWidget *child = glade_xml_build_widget(self, childinfo);
 
 	if (GTK_IS_MENU(child))
 	    gtk_menu_item_set_submenu(GTK_MENU_ITEM(w), child);

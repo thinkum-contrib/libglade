@@ -39,7 +39,6 @@ struct _GladeXMLPrivate {
      * and get * freed with those widgets.
      */
     GHashTable *name_hash;
-    GHashTable *longname_hash;
 	
     /*
      * hash table of signals.  The Data is a GList of GladeSignalData

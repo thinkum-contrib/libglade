@@ -1,3 +1,16 @@
+2001-08-19  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c (glade_get_adjustment): remove function.
+	(glade_xml_set_window_props): remove function.
+
+	* glade/glade-gtk.c (menuitem_build_children): same here.
+
+	* glade/glade-xml.c: change many functions to get rid of long name
+	crud.
+
+	* glade/glade-private.h: remove longname_hash from the private
+	structure.
+
 2001-08-16  James Henstridge  <james@daa.com.au>
 
 	* Makefile.am (SUBDIRS): renable building of documentation.

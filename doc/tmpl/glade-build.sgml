@@ -36,8 +36,8 @@ the actual widgets from the XML node data structures.
 @xml: 
 @parent: 
 @info: 
-@longname: 
 <!-- # Unused Parameters # -->
+@longname: 
 @w: 
 @node: 
 
@@ -49,11 +49,21 @@ the actual widgets from the XML node data structures.
 
 @self: 
 @info: 
-@parent_long: 
 @Returns: 
 <!-- # Unused Parameters # -->
+@parent_long: 
 @node: 
 @xml: 
+
+
+<!-- ##### FUNCTION glade_xml_handle_internal_child ##### -->
+<para>
+
+</para>
+
+@self: 
+@parent: 
+@child_info: 
 
 
 <!-- ##### FUNCTION glade_xml_set_common_params ##### -->
@@ -64,8 +74,8 @@ the actual widgets from the XML node data structures.
 @self: 
 @widget: 
 @info: 
-@parent_long: 
 <!-- # Unused Parameters # -->
+@parent_long: 
 @node: 
 @widget_class: 
 
@@ -90,6 +100,52 @@ the actual widgets from the XML node data structures.
 @widgets: 
 
 
+<!-- ##### FUNCTION glade_xml_set_value_from_prop ##### -->
+<para>
+
+</para>
+
+@widget_type: 
+@value: 
+@prop: 
+@Returns: 
+
+
+<!-- ##### FUNCTION glade_xml_set_value_from_string ##### -->
+<para>
+
+</para>
+
+@pspec: 
+@string: 
+@value: 
+@Returns: 
+
+
+<!-- ##### FUNCTION glade_standard_build_widget ##### -->
+<para>
+
+</para>
+
+@xml: 
+@widget_type: 
+@info: 
+@Returns: 
+
+
+<!-- ##### FUNCTION glade_standard_build_children ##### -->
+<para>
+
+</para>
+
+@self: 
+@w: 
+@info: 
+<!-- # Unused Parameters # -->
+@longname: 
+@node: 
+
+
 <!-- ##### FUNCTION glade_xml_relative_file ##### -->
 <para>
 
@@ -110,37 +166,14 @@ the actual widgets from the XML node data structures.
 @Returns: 
 
 
-<!-- ##### FUNCTION glade_get_adjustment ##### -->
+<!-- ##### FUNCTION glade_flags_from_string ##### -->
 <para>
 
 </para>
 
-@info: 
+@type: 
+@string: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@gnode: 
-
-
-<!-- ##### FUNCTION glade_xml_set_window_props ##### -->
-<para>
-
-</para>
-
-@window: 
-@info: 
-
-
-<!-- ##### FUNCTION glade_standard_build_children ##### -->
-<para>
-
-</para>
-
-@self: 
-@w: 
-@info: 
-@longname: 
-<!-- # Unused Parameters # -->
-@node: 
 
 
 <!-- ##### FUNCTION glade_xml_gettext ##### -->
@@ -162,6 +195,24 @@ the actual widgets from the XML node data structures.
 @window: 
 
 
+<!-- ##### FUNCTION glade_xml_push_accel ##### -->
+<para>
+
+</para>
+
+@xml: 
+@Returns: 
+
+
+<!-- ##### FUNCTION glade_xml_pop_accel ##### -->
+<para>
+
+</para>
+
+@xml: 
+@Returns: 
+
+
 <!-- ##### FUNCTION glade_xml_ensure_accel ##### -->
 <para>
 
@@ -179,14 +230,5 @@ the actual widgets from the XML node data structures.
 @xml: 
 @target: 
 @key: 
-
-
-<!-- ##### FUNCTION glade_xml_get_parent_accel ##### -->
-<para>
-
-</para>
-
-@xml: 
-@Returns: 
 
 

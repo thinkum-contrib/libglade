@@ -4,7 +4,6 @@
 <FILE>glade</FILE>
 <TITLE>Libglade Initialisation</TITLE>
 glade_init
-glade_gnome_init
 glade_load_module
 <SUBSECTION Private>
 </SECTION>
@@ -15,8 +14,7 @@ glade_load_module
 GladeXML
 GladeXMLClass
 glade_xml_new
-glade_xml_new_with_domain
-glade_xml_new_from_memory
+glade_xml_new_from_buffer
 glade_xml_construct
 <SUBSECTION Signal Routines>
 glade_xml_signal_connect
@@ -24,10 +22,8 @@ glade_xml_signal_connect_data
 glade_xml_signal_autoconnect
 <SUBSECTION Widget Accessor Routines>
 glade_xml_get_widget
-glade_xml_get_widget_by_long_name
 glade_xml_get_widget_prefix
 glade_get_widget_name
-glade_get_widget_long_name
 glade_get_widget_tree
 <SUBSECTION For Language Bindings>
 GladeXMLConnectFunc
@@ -42,22 +38,21 @@ GLADE_XML_CLASS
 GLADE_IS_XML
 </SECTION>
 
-<INCLUDE>glade/glade-widget-tree.h</INCLUDE>
+<INCLUDE>glade/glade-parser.h</INCLUDE>
 <SECTION>
 <FILE>glade-sax</FILE>
 <TITLE>Libglade SAX Parser</TITLE>
-GladeWidgetTree
-GladeStyleInfo
+GladeInterface
 GladeWidgetInfo
-GladeAttribute
+GladeChildInfo
+GladeProperty
 GladeSignalInfo
-GladeAcceleratorInfo
+GladeAccelInfo
 <SUBSECTION functions>
-glade_widget_tree_parse_file
-glade_widget_tree_parse_memory
-glade_widget_tree_ref
-glade_widget_tree_unref
-glade_widget_tree_print
+glade_parser_parse_file
+glade_parser_parse_buffer
+glade_interface_destroy
+glade_interface_dump
 </SECTION>
 
 <INCLUDE>glade/glade.h,glade/glade-build.h</INCLUDE>
@@ -66,25 +61,27 @@ glade_widget_tree_print
 <TITLE>Libglade Build</TITLE>
 GladeNewFunc
 GladeBuildChildrenFunc
+GladeFindInternalChildrenFunc
 glade_xml_build_widget
+glade_xml_handle_internal_child
 glade_xml_set_common_params
 GladeWidgetBuildData
 glade_register_widgets
 <SUBSECTION Helper Routines>
+glade_xml_set_value_from_prop
+glade_xml_set_value_from_string
+glade_standard_build_widget
+glade_standard_build_children
 glade_xml_relative_file
 glade_enum_from_string
-glade_get_adjustment
-glade_xml_set_window_props
-glade_standard_build_children
+glade_flags_from_string
 <SUBSECTION I18N Routines>
 glade_xml_gettext
 <SUBSECTION AccelGroup Routines>
 glade_xml_set_toplevel
+glade_xml_push_accel
+glade_xml_pop_accel
 glade_xml_ensure_accel
-glade_xml_push_uline_accel
-glade_xml_pop_uline_accel
-glade_xml_get_uline_accel
 glade_xml_handle_label_accel
-glade_xml_get_parent_accel
 </SECTION>
 

@@ -103,16 +103,12 @@ GtkWidget *glade_xml_get_widget              (GladeXML *self,
 					      const char *name);
 GList     *glade_xml_get_widget_prefix       (GladeXML *self,
 					      const char *name);
-GtkWidget *glade_xml_get_widget_by_long_name (GladeXML *self,
-					      const char *longname);
 
 gchar     *glade_xml_relative_file           (GladeXML *self,
 					      const gchar *filename);
 
 /* don't free the results of these two ... */
 const char *glade_get_widget_name      (GtkWidget *widget);
-const char *glade_get_widget_long_name (GtkWidget *widget);
-
 GladeXML   *glade_get_widget_tree      (GtkWidget *widget);
 
 /* interface for changing the custom widget handling */
