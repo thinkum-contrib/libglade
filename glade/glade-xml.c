@@ -1832,12 +1832,7 @@ glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info)
     GtkWidget *ret;
     
     debug(g_message("Widget class: %s\tname: %s", info->class, info->name));
-    if (!strcmp(info->class, "Placeholder")) {
-	static int warned = 0;
-	if (!warned++)
-	    g_warning("placeholders exist in interface description");
-	ret = gtk_label_new("[placeholder]");
-    } else if (!strcmp (info->class, "Custom")) {
+    if (!strcmp (info->class, "Custom")) {
 	ret = custom_new (self, info);
     } else {
 	type = g_type_from_name(info->class);

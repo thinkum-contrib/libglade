@@ -58,35 +58,11 @@ typedef enum {
     PARSER_WIDGET_CHILD_PACKING,
     PARSER_WIDGET_CHILD_PACKING_PROPERTY,
     PARSER_WIDGET_CHILD_AFTER_PACKING,
+    PARSER_WIDGET_CHILD_PLACEHOLDER,
+    PARSER_WIDGET_CHILD_AFTER_PLACEHOLDER,
     PARSER_FINISH,
     PARSER_UNKNOWN
 } ParserState;
-
-#if 0
-static gchar *state_names[] = {
-    "START",
-    "GLADE_INTERFACE",
-    "REQUIRES",
-    "WIDGET",
-    "WIDGET_PROPERTY",
-    "WIDGET_ATK",
-    "WIDGET_ATK_PROPERTY",
-    "WIDGET_ATK_ACTION",
-    "WIDGET_ATK_RELATION",
-    "WIDGET_AFTER_ATK",
-    "WIDGET_SIGNAL",
-    "WIDGET_AFTER_SIGNAL",
-    "WIDGET_ACCEL",
-    "WIDGET_AFTER_ACCEL",
-    "WIDGET_CHILD",
-    "WIDGET_CHILD_AFTER_WIDGET",
-    "WIDGET_CHILD_PACKING",
-    "WIDGET_CHILD_PACKING_PROPERTY",
-    "WIDGET_CHILD_AFTER_PACKING",
-    "FINISH",
-    "UNKNOWN"
-};
-#endif
 
 typedef struct _GladeParseState GladeParseState;
 struct _GladeParseState {
@@ -720,6 +696,10 @@ glade_parser_start_element(GladeParseState *state,
 	    state->accels = NULL;
 
 	    state->state = PARSER_WIDGET;
+	} else if (!strcmp(name, "placeholder")) {
+	    /* this isn't a real child, so knock off  the last ChildInfo */
+	    state->widget->n_children--;
+	    state->state = PARSER_WIDGET_CHILD_PLACEHOLDER;
 	} else {
 	    g_warning("Unexpected element <%s> inside <child>.", name);
 	    state->prev_state = state->state;
@@ -771,6 +751,18 @@ glade_parser_start_element(GladeParseState *state,
 	break;
     case PARSER_WIDGET_CHILD_AFTER_PACKING:
 	g_warning("<child> should have no elements after <packing>.  Found <%s>.", name);
+	state->prev_state = state->state;
+	state->state = PARSER_UNKNOWN;
+	state->unknown_depth++;
+	break;
+    case PARSER_WIDGET_CHILD_PLACEHOLDER:
+	g_warning("<placeholder> should be empty.  Found <%s>.", name);
+	state->prev_state = state->state;
+	state->state = PARSER_UNKNOWN;
+	state->unknown_depth++;
+	break;
+    case PARSER_WIDGET_CHILD_AFTER_PLACEHOLDER:
+	/* this is a placeholder <child> element -- ignore extra elements */
 	state->prev_state = state->state;
 	state->state = PARSER_UNKNOWN;
 	state->unknown_depth++;
@@ -928,6 +920,16 @@ glade_parser_end_element(GladeParseState *state, const xmlChar *name)
 	state->state = PARSER_WIDGET_CHILD_PACKING;
 	break;
     case PARSER_WIDGET_CHILD_AFTER_PACKING:
+	if (strcmp(name, "child") != 0)
+	    g_warning("should find </child> here.  Found </%s>", name);
+	state->state = PARSER_WIDGET_AFTER_ACCEL;
+	break;
+    case PARSER_WIDGET_CHILD_PLACEHOLDER:
+	if (strcmp(name, "placeholder") != 0)
+	    g_warning("should find </placeholder> here.  Found </%s>", name);
+	state->state = PARSER_WIDGET_CHILD_AFTER_PLACEHOLDER;
+	break;
+    case PARSER_WIDGET_CHILD_AFTER_PLACEHOLDER:
 	if (strcmp(name, "child") != 0)
 	    g_warning("should find </child> here.  Found </%s>", name);
 	state->state = PARSER_WIDGET_AFTER_ACCEL;

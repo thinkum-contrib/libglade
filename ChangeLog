@@ -1,5 +1,28 @@
 2002-01-29  James Henstridge  <james@daa.com.au>
 
+	* glade-2.0.dtd: change the child element list for <child>
+	elements to allow <placeholder> in place of <widget>.
+
+	* glade/glade-xml.c (glade_xml_build_widget): get rid of the code
+	checking for a class name of Placeholder.  libglade-convert will
+	no longer pass them through.
+
+	* libglade-convert.in (WidgetDef.ChildDef.dump): if the widget has
+	class <Placeholder>, then write out a <placeholder/> element
+	rather than a <widget> element.
+
+	* examples/first.glade: add a placeholder to example file.
+
+	* glade/glade-parser.c: add two new states to do with
+	<placeholder/> elements.
+	(glade_parser_start_element): handle <placeholder> elements in the
+	PARSER_WIDGET_CHILD state.
+	(glade_parser_start_element): ignore elements after the
+	<placeholder> element (PARSER_WIDGET_CHILD_AFTER_PLACEHOLDER
+	state).
+	(glade_parser_end_element): add logic for handling the new
+	placeholder related states.
+
 	* glade/glade-xml.c (glade_xml_get_toplevel_names): remove
 	function from API.  It isn't used anywhere according to LXR (I
 	just removed the only bit of code that was using it)

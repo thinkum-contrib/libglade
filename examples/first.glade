@@ -72,6 +72,15 @@
 	    <property name="bottom-attach">1</property>
 	  </packing>
         </child>
+	<child>
+	  <placeholder />
+	  <packing>
+	    <property name="left-attach">0</property>
+	    <property name="right-attach">2</property>
+	    <property name="top-attach">1</property>
+	    <property name="bottom-attach">2</property>
+	  </packing>
+	</child>
       </widget>
     </child>
   </widget>

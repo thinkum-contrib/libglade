@@ -54,11 +54,13 @@
   modifiers CDATA #REQUIRED
   signal CDATA #REQUIRED >
 
-<!ELEMENT child (widget, packing?) >
-<!-- composite children should not have any properties set on them.
-     (Composite children are things like the scrollbars in a
+<!ELEMENT child ((widget|placeholder), packing?) >
+<!-- internal children should not have any properties set on them.
+     (Internal children are things like the scrollbars in a
      GtkScrolledWindow, or the vbox in a GtkDialog). -->
 <!ATTLIST child
   internal-child CDATA #IMPLIED >
 
 <!ELEMENT packing (property+) >
+
+<!ELEMENT placeholder #EMPTY >

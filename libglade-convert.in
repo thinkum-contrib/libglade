@@ -118,7 +118,10 @@ class WidgetDef:
                       (indent, self.internal_child)
             else:
                 print '%s<child>' % indent
-            self.widget.dump(indent + '  ')
+            if self.widget.wclass == 'Placeholder':
+                print '%s  <placeholder />' % indent
+            else:
+                self.widget.dump(indent + '  ')
             if self.properties:
                 print '%s  <packing>' % indent
                 for name in self.property_names:
