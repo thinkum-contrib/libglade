@@ -1,4 +1,5 @@
 *-unused.txt
+*-undocumented.txt
 *.bak
 *.lo
 .libs
