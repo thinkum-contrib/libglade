@@ -592,7 +592,7 @@ option_menu_build_children (GladeXML *xml, GtkWidget *parent,
 	GtkWidget *child;
 	GladeWidgetInfo *childinfo = info->children[i].child;
 
-	if (strcmp(childinfo->class, "GtkMenu") != 0) {
+	if (strcmp(childinfo->classname, "GtkMenu") != 0) {
 	    g_warning("the child of the option menu '%s' was not a GtkMenu",
 		      info->name);
 	    continue;
@@ -631,7 +631,7 @@ clist_build_children(GladeXML *self, GtkWidget *parent,
 	childinfo = info->children[i].child;
 
 	/* treat GtkLabels specially */
-	if (!strcmp (childinfo->class, "GtkLabel")) {
+	if (!strcmp (childinfo->classname, "GtkLabel")) {
 	    int j;
 	    const char *label = NULL;
 
@@ -676,9 +676,9 @@ toolbar_build_children (GladeXML *xml, GtkWidget *parent,
 
 	childinfo = &info->children[i];
 
-	if (!strcmp (childinfo->child->class, "toggle") ||
-	    !strcmp (childinfo->child->class, "radio") ||
-	    !strcmp (childinfo->child->class, "button")) {
+	if (!strcmp (childinfo->child->classname, "toggle") ||
+	    !strcmp (childinfo->child->classname, "radio") ||
+	    !strcmp (childinfo->child->classname, "button")) {
 	    const char *label = NULL, *stock = NULL, *group_name = NULL;
 	    char *icon = NULL;
 	    gboolean use_stock = FALSE, active = FALSE, new_group = FALSE;
@@ -753,14 +753,14 @@ toolbar_build_children (GladeXML *xml, GtkWidget *parent,
 		gtk_toolbar_append_space (GTK_TOOLBAR (parent));
 
 	    /* FIXME: these should be translated */
-	    if (!strcmp (childinfo->child->class, "toggle")) {
+	    if (!strcmp (childinfo->child->classname, "toggle")) {
 		child = gtk_toolbar_append_element (
 		    GTK_TOOLBAR (parent),
 		    GTK_TOOLBAR_CHILD_TOGGLEBUTTON, NULL,
 		    label, NULL, NULL, iconw, NULL, NULL);
 		gtk_toggle_button_set_active(
 		    GTK_TOGGLE_BUTTON (child), active);
-	    } else if (!strcmp (childinfo->child->class, "radio")) {
+	    } else if (!strcmp (childinfo->child->classname, "radio")) {
 		child = gtk_toolbar_append_element (
 		    GTK_TOOLBAR (parent),
 		    GTK_TOOLBAR_CHILD_RADIOBUTTON, NULL,

@@ -67,7 +67,7 @@ typedef struct _GladeChildInfo GladeChildInfo;
 struct _GladeWidgetInfo {
     GladeWidgetInfo *parent;
 
-    gchar *class;
+    gchar *classname;
     gchar *name;
 
     GladeProperty *properties;

@@ -1,3 +1,12 @@
+2002-04-22  Murray Cumming  <murrayc@usa.net>
+	
+	* glade/glade-parser.[h|c}: Renamed GladeWidgetInfo::class field
+	to classname, because "class" is a C++ keyword. It's not really a 
+	public header, but this has had gnome-2-release-team approval
+	anyway.
+	* Incremented version number so that it's obvious that libbonoboui
+	and libgnomeui need to get this newer libglade version.
+
 2002-04-23  James Henstridge  <james@daa.com.au>
 
 	* configure.in: increment version number.

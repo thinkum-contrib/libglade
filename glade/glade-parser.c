@@ -159,13 +159,13 @@ create_widget_info(GladeInterface *interface, const xmlChar **attrs)
 
     for (i = 0; attrs && attrs[i] != NULL; i += 2) {
 	if (!strcmp(attrs[i], "class"))
-	    info->class = alloc_string(interface, attrs[i+1]);
+	    info->classname = alloc_string(interface, attrs[i+1]);
 	else if (!strcmp(attrs[i], "id"))
 	    info->name = alloc_string(interface, attrs[i+1]);
 	else
 	    g_warning("unknown attribute `%s' for <widget>.", attrs[i]);
     }
-    if (info->class == NULL || info->name == NULL)
+    if (info->classname == NULL || info->name == NULL)
 	g_warning("<widget> element missing required attributes!");
     g_hash_table_insert(interface->names, info->name, info);
     return info;
@@ -1233,7 +1233,7 @@ dump_widget(xmlNode *parent, GladeWidgetInfo *info, gint indent)
     xmlNode *widget = xmlNewNode(NULL, "widget");
     gint i, j;
 
-    xmlSetProp(widget, "class", info->class);
+    xmlSetProp(widget, "class", info->classname);
     xmlSetProp(widget, "id", info->name);
     xmlAddChild(parent, widget);
     xmlNodeAddContent(widget, "\n");

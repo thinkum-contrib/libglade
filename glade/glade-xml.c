@@ -1808,15 +1808,15 @@ glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info)
     GtkWidget *ret;
     
     GLADE_NOTE(BUILD, g_message("Widget class: %s\tname: %s",
-				info->class, info->name));
-    if (!strcmp (info->class, "Custom")) {
+				info->classname, info->name));
+    if (!strcmp (info->classname, "Custom")) {
 	ret = custom_new (self, info);
     } else {
-	type = g_type_from_name(info->class);
+	type = g_type_from_name(info->classname);
 	if (type == G_TYPE_INVALID) {
 	    char buf[50];
-	    g_warning("unknown widget class '%s'", info->class);
-	    g_snprintf(buf, 49, "[a %s]", info->class);
+	    g_warning("unknown widget class '%s'", info->classname);
+	    g_snprintf(buf, 49, "[a %s]", info->classname);
 	    ret = gtk_label_new(buf);
 	} else {
 	    ret = get_build_data(type)->new(self, type, info);
