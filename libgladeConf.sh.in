@@ -8,3 +8,5 @@ else
 fi
 LIBGLADE_LIBDIR="-L@libdir@ @GNOME_LIBDIR@"
 LIBGLADE_LIBS="-lglade-gnome -lglade @XML_LIBS@ @GNOMEUI_LIBS@"
+MODULE_VERSION="libglade-@VERSION@"
+
