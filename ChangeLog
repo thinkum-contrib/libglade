@@ -1,3 +1,9 @@
+2002-02-06  James Henstridge  <james@daa.com.au>
+
+	* doc/libglade-docs.sgml: some documentation updates (not quite
+	finished, but the tutorial/notes section at the start should be
+	more useful now).
+
 2002-02-05  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-xml.c (glade_xml_init): radio_groups doesn't exist
