@@ -2,7 +2,7 @@ SUBDIRS = po glade doc
 
 INCLUDES = $(GTK_CFLAGS) $(XML_CFLAGS)
 
-bin_SCRIPTS = libglade-xgettext libglade-convert
+bin_SCRIPTS = libglade-convert
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libglade-2.0.pc
@@ -21,7 +21,6 @@ EXTRA_DIST = \
   libglade.spec.in \
   libglade.spec \
   libglade-2.0.pc.in \
-  libglade-xgettext \
   libglade-convert \
   examples/simple.glade \
   examples/first.glade \

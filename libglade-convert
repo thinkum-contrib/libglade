@@ -4,6 +4,7 @@
 
 import sys
 import string
+import getopt
 import xml.dom.minidom
 
 translatable_properties = [
@@ -317,6 +318,7 @@ def collect_adjustment(widgetdef, prop_prefix, new_name):
         widgetdef[new_name] = '%s %s %s %s %s %s' % (value, lower, upper,
                                                      step, page, page_size)
 
+# fix up attribute naming, and possibly adding missing children.
 def fixup_widget(widget):
     do_children = 1
 
@@ -446,6 +448,54 @@ def fixup_widget(widget):
         for childdef in widget.children:
             fixup_widget(childdef.widget)
 
+# upgrade widgets to their gtk/gnome 2.0 equivalents
+def upgrade_widget(widget):
+    do_children = 1
+
+    # use GtkImage for image display now.
+    if widget['class'] == 'GtkPixmap':
+        widget['class'] = 'GtkImage'
+        widget.rename_prop('filename', 'pixbuf')
+        widget.remove_prop('build_insensitive')
+    if widget['class'] == 'GnomePixmap':
+        widget['class'] = 'GtkImage'
+        widget.rename_prop('filename', 'pixbuf')
+
+    # get rid of GtkPixmapMenuItem
+    if widget['class'] == 'GtkPixmapMenuItem':
+        widget['class'] = 'GtkImageMenuItem'
+
+    if do_children:
+        for childdef in widget.children:
+            upgrade_widget(childdef.widget)
+
+# warn about removed widgets, and build a list of libraries used
+bad_widgets = {
+    'GtkText': 'broken',
+    'GtkTree': 'broken',
+    'GtkTreeItem': 'broken',
+    'GtkCList': 'deprecated',
+    'GtkCTree': 'deprecated',
+    'GtkPixmap': 'deprecated',
+    'GnomePixmap': 'deprecated',
+    'GtkPixmapMenuItem': 'removed',
+}
+def check_widget(widget, requirelist=[]):
+    try:
+        error = bad_widgets[widget['class']]
+        print >> sys.stderr , 'widget %s of class %s is %s.' % \
+              (widget['name'], widget['class'], error)
+        if error == 'removed':
+            sys.exit(1)
+    except KeyError:
+        pass
+    if widget['class'][:5] == 'Gnome' and 'gnome' not in requirelist:
+        requirelist.append('gnome')
+    if widget['class'][:6] == 'Bonobo' and 'bonobo' not in requirelist:
+        requirelist.append('bonobo')
+
+    for childdef in widget.children:
+        check_widget(childdef.widget, requirelist)
 
 # --- parse the file for widget definitions, fixup problems and dump.
 
@@ -458,21 +508,46 @@ def handle_file(filename):
 	   node.nodeName == 'widget':
             widgets.append(handle_widget(node))
 
+    requireslist = []
+
+    for widgetdef in widgets:
+        fixup_widget(widgetdef)
+        upgrade_widget(widgetdef)
+        check_widget(widgetdef, requireslist)
+
     print '<?xml version="1.0" standalone="no"?> <!--*- mode: xml -*-->'
     print '<!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd" >'
     print
     print '<glade-interface>'
-    indent = '  '
 
+    for requirement in requireslist:
+        print '  <requires lib="%s" />' % requirement
+    if requireslist:
+        print
+
+    indent = '  '
     for widgetdef in widgets:
-        fixup_widget(widgetdef)
         widgetdef.dump(indent)
 
     print '</glade-interface>'
     document.unlink() # only needed for python interpreters without cyclic gc
 
-if __name__ == '__main__':
-    if len(sys.argv) != 2:
-	print >> sys.stderr, 'usage: libglade-convert oldfile.glade'
+usage = 'usage: libglade-convert [--no-upgrade] oldfile.glade'
+
+def main():
+    opts, args = getopt.getopt(sys.argv[1:], '',
+                               ['no-upgrade', 'help'])
+    upgrade = 1
+    for opt, arg in opts:
+        if opt == '--no-upgrade':
+            upgrade = 0
+        elif opt == '--help':
+            print usage
+            sys.exit(0)
+    if len(args) != 1:
+	print >> sys.stderr, usage
 	sys.exit(1)
-    handle_file(sys.argv[1])
+    handle_file(args[0])
+
+if __name__ == '__main__':
+    main()

@@ -129,6 +129,11 @@ typedef GtkWidget *(* GladeXMLCustomWidgetHandler) (GladeXML *xml,
 void glade_set_custom_handler(GladeXMLCustomWidgetHandler handler,
 			      gpointer user_data);
 
+#ifndef LIBGLADE_DISABLE_DEPRECATED
+#define glade_xml_new_with_domain glade_xml_new
+#define glade_xml_new_from_memory glade_xml_new_from_buffer
+#endif
+
 G_END_DECLS
 	
 #endif

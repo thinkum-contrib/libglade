@@ -93,7 +93,8 @@ void       glade_xml_set_common_params(GladeXML *self,
 				       GtkWidget *widget,
 				       GladeWidgetInfo *info);
 
-gboolean glade_xml_set_value_from_string (GParamSpec *pspec,
+gboolean glade_xml_set_value_from_string (GladeXML *xml,
+					  GParamSpec *pspec,
 					  const gchar *string,
 					  GValue *value);
 

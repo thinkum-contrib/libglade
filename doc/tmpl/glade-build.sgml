@@ -116,6 +116,7 @@ the actual widgets from the XML node data structures.
 
 </para>
 
+@xml: 
 @pspec: 
 @string: 
 @value: 

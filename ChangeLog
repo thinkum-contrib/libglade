@@ -1,3 +1,34 @@
+2001-09-26  James Henstridge  <james@daa.com.au>
+
+	* libglade-convert (upgrade_widget): new function to handle
+	upgrading widgets.
+	(main): use the getopt module to parse arguments
+	(check_widget): new function to check for deprecated, broken or
+	removed widgets in the interface.  It also finds what libraries
+	are used in the interface.
+	(handle_file): write out requires lines.
+
+	* Makefile.am (bin_SCRIPTS): remove the libglade-xgettext script.
+	It doesn't work anymore, and its job should be handled by
+	xml-i18n-tools.  Incidentally, this should get rid of the last
+	parallel install issue.
+
+	* glade/glade-xml.c (glade_xml_set_value_from_string): handle
+	GdkPixbuf type properties.  String represents filename.
+
+	* glade/glade-bonobo.c (glade_bonobo_widget_new): same here.
+
+	* glade/glade-xml.c: remove glade_xml_new_with_domain.
+	(glade_xml_set_value_from_string): add GladeXML argument.
+	(glade_standard_build_widget): add argument to
+	set_value_from_string call.
+	(glade_standard_build_children): same here.
+
+	* glade/glade-xml.h: more compatibility defines.
+
+	* glade/glade-init.h (glade_bonobo_init): surround these
+	compatibility defines with LIBGLADE_DISABLE_DEPRECATED.
+
 2001-09-11  Michael Meeks  <michael@ximian.com>
 
 	* glade/glade-init.h: add glade_gnome_init, glade_bonobo_init

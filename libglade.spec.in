@@ -1,24 +1,16 @@
-# Note that this is NOT a relocatable package
-%define name	@PACKAGE@
-%define ver	@VERSION@
-%define RELEASE 1
-%define rel     %{?CUSTOM_RELEASE} %{!?CUSTOM_RELEASE:%RELEASE}
-%define prefix	/usr
-
 Summary: libglade library
-Name: %name
-Version: %ver
-Release: %rel
+Name: libglade
+Version: @VERSION@
+Release: 1
 Copyright: LGPL
 Group: System Environment/Libraries
-Source: ftp://ftp.daa.com.au/pub/james/gnome/libglade-%{ver}.tar.gz
+Source: ftp://ftp.gnome.org/pub/GNOME/stable/sources/libglade/libglade-%{version}.tar.gz
 BuildRoot: /var/tmp/%{name}-root
-Packager: James Henstridge
+Packager: James Henstridge <james@daa.com.au>
 URL: http://www.gnome.org
-Docdir: %{prefix}/doc
 
-Requires: gtk+
-Requires: libxml >= 1.3
+Requires: gtk+ >= 1.3.8
+Requires: libxml2 >= 2.4.1
 
 %description
 This library allows you to load user interfaces in your program, which are
@@ -30,7 +22,7 @@ The interfaces can also be edited with GLADE.
 %package devel
 Summary: Libraries, includes, etc to develop libglade applications
 Group: Development/Libraries
-Requires: libglade gtk+-devel libxml-devel
+Requires: libglade gtk+-devel libxml2-devel
 
 %description devel
 Libraries, include files, etc you can use to develop libglade applications.
@@ -54,11 +46,7 @@ Libraries, include files, etc you can use to develop libglade applications.
 	MYARCH_FLAGS="--host=alpha-redhat-linux"
 %endif
 
-if [ ! -f configure ]; then
-	CFLAGS="$RPM_OPT_FLAGS" ./autogen.sh $MYARCH_FLAGS --prefix=%prefix
-else
-	CFLAGS="$RPM_OPT_FLAGS" ./configure $MYARCH_FLAGS --prefix=%prefix
-fi
+CFLAGS="$RPM_OPT_FLAGS" ./configure $MYARCH_FLAGS --prefix=%{_prefix}
 
 if [ "$SMP" != "" ]; then
 	make -k -j$SMP check "MAKE=make -k -j$SMP check"
@@ -69,33 +57,34 @@ fi
 %install
 [ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
 
-make -k prefix=$RPM_BUILD_ROOT%{prefix} install
+make -k prefix=$RPM_BUILD_ROOT%{_prefix} install
 
 
 %clean
 [ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
 
-%post -p /sbin/ldconfig
+%post
+/sbin/ldconfig
 
-%postun -p /sbin/ldconfig
+%postun
+/sbin/ldconfig
 
 %files
 %defattr(-, root, root)
 
 %doc AUTHORS ChangeLog NEWS README COPYING
-%{prefix}/lib/lib*.so.*
+%{_prefix}/lib/lib*.so.*
+%{_prefix}/lib/libglade/2.0/*
 
 %files devel
 %defattr(-, root, root)
 
-%{prefix}/bin/*
-%{prefix}/lib/lib*.so
-%{prefix}/lib/*a
-%{prefix}/include/glade/*
-%{prefix}/share/aclocal/*
-%{prefix}/lib/libgladeConf.sh
-%{prefix}/lib/pkgconfig/*.pc
+%{_prefix}/bin/*
+%{_prefix}/lib/lib*.so
+%{_prefix}/lib/*a
+%{_prefix}/include/libglade-2.0/glade/*
+%{_prefix}/lib/pkgconfig/libglade-2.0.pc
 
 %doc test-libglade.c
 %doc *.glade
-%doc %{prefix}/share/gnome/html/libglade/*
+%doc %{_prefix}/share/gtk-doc/html/libglade/*

@@ -150,36 +150,6 @@ glade_xml_new(const char *fname, const char *root, const char *domain)
 }
 
 /**
- * glade_xml_new_with_domain:
- * @fname: the XML file name.
- * @root: the widget node in @fname to start building from (or %NULL)
- * @domain: the translation domain to use for this interface (or %NULL)
- *
- * Creates a new GladeXML object (and the corresponding widgets) from the
- * XML file @fname.  Optionally it will only build the interface from the
- * widget node @root (if it is not %NULL).  This feature is useful if you
- * only want to build say a toolbar or menu from the XML file, but not the
- * window it is embedded in.  Note also that the XML parse tree is cached
- * to speed up creating another GladeXML object for the same file.  This
- * function differs from glade_xml_new in that you can specify a different
- * translation domain from the default to be used.
- *
- * Returns: the newly created GladeXML object, or NULL on failure.
- */
-GladeXML *
-glade_xml_new_with_domain(const char *fname, const char *root,
-			  const char *domain)
-{
-    GladeXML *self = g_object_new(GLADE_TYPE_XML, NULL);
-
-    if (!glade_xml_construct(self, fname, root, domain)) {
-	g_object_unref(G_OBJECT(self));
-	return NULL;
-    }
-    return self;
-}
-
-/**
  * glade_xml_construct:
  * @self: the GladeXML object
  * @fname: the XML filename
@@ -1105,6 +1075,7 @@ glade_register_widgets(const GladeWidgetBuildData *widgets)
 
 /**
  * glade_xml_set_value_from_string
+ * @xml: the GladeXML object.
  * @pspec: the GParamSpec for the property
  * @string: the string representation of the value.
  * @value: the GValue to store the result in.
@@ -1121,7 +1092,8 @@ glade_register_widgets(const GladeWidgetBuildData *widgets)
  * Returns: %TRUE on success.
  */
 gboolean
-glade_xml_set_value_from_string (GParamSpec *pspec,
+glade_xml_set_value_from_string (GladeXML *xml,
+				 GParamSpec *pspec,
 				 const gchar *string,
 				 GValue *value)
 {
@@ -1197,6 +1169,22 @@ glade_xml_set_value_from_string (GParamSpec *pspec,
 
 	    g_value_set_object(value, adj);
 	    gtk_object_sink(GTK_OBJECT(adj));
+	} else if (G_VALUE_HOLDS(value, GDK_TYPE_PIXBUF)) {
+	    gchar *filename;
+	    GError *error = NULL;
+	    GdkPixbuf *pixbuf;
+
+	    filename = glade_xml_relative_file(xml, string);
+	    pixbuf = gdk_pixbuf_new_from_file(filename, &error);
+	    if (pixbuf) {
+		g_value_set_object(value, pixbuf);
+		g_object_unref(G_OBJECT(pixbuf));
+	    } else {
+		g_warning("Error loading image: %s", error->message);
+		g_error_free(error);
+		ret = FALSE;
+	    }
+	    g_free(filename);
 	} else
 	    ret = FALSE;
 	break;
@@ -1268,7 +1256,8 @@ glade_standard_build_widget(GladeXML *xml, GType widget_type,
 	    continue;
 	}
 
-	if (glade_xml_set_value_from_string(pspec, info->properties[i].value,
+	if (glade_xml_set_value_from_string(xml, pspec,
+					    info->properties[i].value,
 					    &param.value)) {
 	    param.name = info->properties[i].name;
 	    g_array_append_val(props_array, param);
@@ -1347,7 +1336,7 @@ glade_standard_build_children(GladeXML *self, GtkWidget *parent,
 		continue;
 	    }
 
-	    if (glade_xml_set_value_from_string(pspec,
+	    if (glade_xml_set_value_from_string(self, pspec,
 			info->children[i].properties[j].value, &value)) {
 		gtk_container_child_set_property(GTK_CONTAINER(parent), child,
 						 name, &value);
