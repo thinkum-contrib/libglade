@@ -1,3 +1,7 @@
+2002-05-12  Jacob Berkman  <jacob@ximian.com>
+
+	* autogen.sh: enable gtk-doc from CVS, like gtk does
+
 2002-05-12  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-parser.c (glade_parser_parse_file): put in a check
