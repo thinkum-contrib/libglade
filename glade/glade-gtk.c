@@ -404,6 +404,13 @@ window_set_wmclass_class (GladeXML *xml, GtkWidget *w,
 }
 
 static void
+entry_set_invisible_char (GladeXML *xml, GtkWidget *w,
+			  const gchar *name, const gchar *value)
+{
+    gtk_entry_set_invisible_char (GTK_ENTRY (w), value [0]);
+}
+
+static void
 button_set_response_id (GladeXML *xml, GtkWidget *w,
 			const gchar *name, const gchar *value)
 {
@@ -1022,6 +1029,7 @@ _glade_init_gtk_widgets(void)
     glade_register_custom_prop (GTK_TYPE_WINDOW, "wmclass_class", window_set_wmclass_class);
     glade_register_custom_prop (GTK_TYPE_LIST_ITEM, "label", list_item_set_label);
     glade_register_custom_prop (GTK_TYPE_BUTTON, "response_id", button_set_response_id);
+    glade_register_custom_prop (GTK_TYPE_ENTRY, "invisible_char", entry_set_invisible_char);
 
     glade_register_widget (GTK_TYPE_ACCEL_LABEL, glade_standard_build_widget,
 			   NULL, NULL);
