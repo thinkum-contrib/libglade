@@ -15,8 +15,10 @@ translatable_properties = [
 
 # --- Code to represent a widget in memory, and dump it to stdout ---
 
+upgrade = 1
+
 class WidgetDef:
-    def __init__(self):
+    def __init__(self, parent=None):
         self.wclass = None
         self.name = None
         self.property_names = [ ]
@@ -24,12 +26,15 @@ class WidgetDef:
         self.signals = []
         self.accels = []
         self.children = []
+        self.parent = parent
 
     def __getitem__(self, name):
         if name == 'name':
             return self.name
         if name == 'class':
             return self.wclass
+        if name == 'parent':
+            return self.parent
         return self.properties[name]
     def __setitem__(self, name, value):
         if name == 'name':
@@ -64,7 +69,6 @@ class WidgetDef:
             
     def mark_obsolete (self):
         self.properties ['obsolete'] = 'yes'
-
     def add_signal(self, name, handler, object=None, after=0):
         self.signals.append((name, handler, object, after))
     def add_accel(self, key, modifiers, signal):
@@ -222,8 +226,8 @@ def get_child_props(childdef, widgetnode):
 	    continue
         childdef[node.nodeName] = totext(node.childNodes)
 
-def handle_widget(widgetnode):
-    widget = WidgetDef()
+def handle_widget(widgetnode, parent=None):
+    widget = WidgetDef(parent)
     properties = []
     signals = []
     accels = []
@@ -232,7 +236,7 @@ def handle_widget(widgetnode):
 	if node.nodeType != node.ELEMENT_NODE:
 	    continue
 	if node.nodeName == 'widget':
-            child_widget = handle_widget(node)
+            child_widget = handle_widget(node, widget)
             childdef = widget.add_child(child_widget)
             get_child_props(childdef, node)
 	elif node.nodeName in ('signal', 'Signal'):
@@ -255,7 +259,12 @@ def make_name():
     return 'convertwidget' + str(name_counter)
 
 # properties to change on all widgets
-global_obsolete_props = [ ]
+global_obsolete_props = [
+    'child_min_width',
+    'child_min_height',
+    'child_ipad_x',
+    'child_ipad_y'
+]
 global_renamed_props = [
     ('width', 'width-request'),
     ('height', 'height-request'),
@@ -276,6 +285,7 @@ obsolete_props = {
     'GtkHRuler': [ 'metric' ],
     'GtkVRuler': [ 'metric' ],
     'GnomeFileEntry' : [ 'max_saved' ],
+    'GnomeEntry' : [ 'max_saved' ],
 }
 
 renamed_props = {
@@ -294,9 +304,15 @@ renamed_props = {
     'GnomeFileEntry' : [ ( 'directory', 'directory_entry' ) ],
     'GtkLabel' : [ ('default_focus_target', 'mnemonic_widget') ],
     'GtkCList' : [ ('columns', 'n_columns' ) ],
+#    'GtkProgressBar' : [ ('format', 'format_string' ) ],
 }
 
 # child properties to change on specific widgets
+global_renamed_child_props = [
+    ('pack', 'pack_type'),
+    ('child_ipad_x', 'child_internal_pad_x'),
+    ('child_ipad_y', 'child_internal_pad_y')
+]
 obsolete_child_props = {
 }
 renamed_child_props = {
@@ -490,6 +506,10 @@ def fixup_as_type(widget, type):
         for old, new in renamed_props[type]:
             widget.rename_prop(old, new)
 
+    for old, new in global_renamed_child_props:
+        for childdef in widget.children:
+            childdef.rename_prop(old, new)
+
     if obsolete_child_props.has_key(type):
         for name in obsolete_child_props[type]:
             for childdef in widget.children:
@@ -564,6 +584,8 @@ def fixup_as_type(widget, type):
     if type in ('GtkViewport', 'GtkLayout', 'GtkScrolledWindow'):
         collect_adjustment(widget, 'h', 'hadjustment')
         collect_adjustment(widget, 'v', 'vadjustment')
+    if type in ('GtkProgressBar', ):
+        collect_adjustment(widget, '', 'adjustment')
 
     # add label children to menu items.
     if type == 'GtkMenuItem':
@@ -702,18 +724,38 @@ def fixup_as_type(widget, type):
 def upgrade_widget(widget):
     do_children = 1
 
+    if not upgrade:
+        return
+
     # use GtkImage for image display now.
     if widget['class'] == 'GtkPixmap':
         widget['class'] = 'GtkImage'
         widget.rename_prop('filename', 'pixbuf')
         widget.remove_prop('build_insensitive')
-    if widget['class'] == 'GnomeFontSelector':
+    elif widget['class'] == 'GnomeFontSelector':
         widget['class'] = 'GtkFontSelectionDialog'
-    if widget['class'] == 'GnomePixmap':
+    elif widget['class'] == 'GnomePixmap':
         widget['class'] = 'GtkImage'
         widget.rename_prop('filename', 'pixbuf')
-    if widget['class'] == 'GtkPixmapMenuItem':
+    elif widget['class'] == 'GtkPixmapMenuItem':
         widget['class'] = 'GtkImageMenuItem'
+
+    elif widget['class'] == 'GtkText':
+        widget['class'] = 'GtkTextView'
+        parent = widget['parent']
+        if parent['class'] == 'GtkScrolledWindow':
+            parent['shadow_type'] = 'GTK_SHADOW_IN'
+
+    elif widget['class'] == 'GtkCList':
+        widget['class'] = 'GtkTreeView'
+        parent = widget['parent']
+        if parent['class'] == 'GtkScrolledWindow':
+            parent['shadow_type'] = widget['shadow_type']
+            widget.remove_prop('shadow_type')
+        widget.rename_prop('show_titles', 'headers-visible')
+        widget.remove_prop('columns')
+        widget.remove_prop('column_widths')
+        widget.remove_prop('selection_mode')
 
     if do_children:
         for childdef in widget.children:
@@ -797,7 +839,6 @@ usage = 'usage: libglade-convert [--no-upgrade] oldfile.glade'
 def main():
     opts, args = getopt.getopt(sys.argv[1:], '',
                                ['no-upgrade', 'help'])
-    upgrade = 1
     for opt, arg in opts:
         if opt == '--no-upgrade':
             upgrade = 0

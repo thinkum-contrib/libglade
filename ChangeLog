@@ -1,5 +1,16 @@
 2001-11-07  jacob berkman  <jacob@ximian.com>
 
+	* libglade-convert: convert GtkCTree, GtkCList to GtkTreeView and
+	GtkText to GtkTextView.  also fix some deprecated things and set
+	up the GtkProgress adjustment correctly
+
+	* glade/glade-gtk.c (build_progress): handle the format property
+	(build_option_menu): handle the history property
+	(build_text_view): handle the text property
+	(build_clist): simplify by using glade_standard_build_widget
+
+	* glade/Makefile.am: define GLADE_LIBDIR
+
 	* libglade-2.0.pc.in (includedir): remove moduledir as it is
 	broken
 
