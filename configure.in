@@ -95,6 +95,21 @@ fi
 AM_CONDITIONAL(HAVE_PYTHON, test -n "$jh_cv_path_python")
 AC_SUBST(PYTHON)
 
+dnl add debugging options ...
+changequote(,)dnl
+if test "x$GCC" = xyes; then
+  case " $CFLAGS " in
+  *[\	\ ]-Wall[\	\ ]*) ;;
+  *) CFLAGS="$CFLAGS -Wall" ;;
+  esac
+
+  case " $CFLAGS " in
+  *[\	\ ]-ansi[\	\ ]*) ;;
+  *) CFLAGS="$CFLAGS -ansi" ;;
+  esac
+fi
+changequote([,])dnl
+
 AC_OUTPUT([
 Makefile
 libglade.spec

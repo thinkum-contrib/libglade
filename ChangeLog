@@ -1,5 +1,19 @@
 2002-01-29  James Henstridge  <james@daa.com.au>
 
+	* glade/glade-xml.c (glade_xml_get_toplevel_names): remove
+	function from API.  It isn't used anywhere according to LXR (I
+	just removed the only bit of code that was using it)
+	(connect_data_connect_func): remove use of deprecated signal
+	connection functions.
+	(glade_xml_signal_connect_data): change argument from
+	GtkSignalFunc to GCallback (the two are defined identically).
+	(glade_xml_signal_connect): use non deprecated signal functions.
+	(autoconnect_foreach): use non deprecated signal functions.
+	(glade_xml_init): ref the tooltips with g_object_ref.
+	(glade_xml_set_toplevel): ref tooltips with g_object_ref, and use
+	g_object_unref as a destroy notify.
+	(glade_xml_finalize): release the tooltips with g_object_unref.
+
 	* libglade-convert.in (hide_toplevel): remove function that sets
 	all toplevels to invisible.
 	(handle_file): don't hide toplevels.

@@ -65,10 +65,10 @@ gboolean   glade_xml_construct           (GladeXML *self, const char *fname,
 
 void       glade_xml_signal_connect      (GladeXML *self,
 					  const char *handlername,
-					  GtkSignalFunc func);
+					  GCallback func);
 void       glade_xml_signal_connect_data (GladeXML *self,
 					  const char *handlername,
-					  GtkSignalFunc func,
+					  GCallback func,
 					  gpointer user_data);
 /*
  * use gmodule to connect signals automatically.  Basically a symbol with
@@ -82,10 +82,10 @@ void       glade_xml_signal_autoconnect  (GladeXML *self);
  * will point to the object, otherwise it will be NULL.
  */
 typedef void (*GladeXMLConnectFunc) (const gchar *handler_name,
-				     GtkObject *object,
+				     GObject *object,
 				     const gchar *signal_name,
 				     const gchar *signal_data,
-				     GtkObject *connect_object,
+				     GObject *connect_object,
 				     gboolean after,
 				     gpointer user_data);
 
@@ -110,8 +110,6 @@ GList     *glade_xml_get_widget_prefix       (GladeXML *self,
 
 gchar     *glade_xml_relative_file           (GladeXML *self,
 					      const gchar *filename);
-
-gchar    **glade_xml_get_toplevel_names      (GladeXML *self);
 
 /* don't free the results of these two ... */
 const char *glade_get_widget_name      (GtkWidget *widget);

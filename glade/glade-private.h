@@ -72,7 +72,7 @@ struct _GladeXMLPrivate {
 
 typedef struct _GladeSignalData GladeSignalData;
 struct _GladeSignalData {
-    GtkObject *signal_object;
+    GObject *signal_object;
     char *signal_name;
     char *connect_object; /* or NULL if there is none */
     gboolean signal_after;

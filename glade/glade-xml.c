@@ -117,7 +117,7 @@ glade_xml_init (GladeXML *self)
     priv->tree = NULL;
     priv->tooltips = gtk_tooltips_new();
     gtk_tooltips_enable(priv->tooltips);
-    gtk_object_ref(GTK_OBJECT(priv->tooltips));
+    g_object_ref(priv->tooltips);
     gtk_object_sink(GTK_OBJECT(priv->tooltips));
     priv->name_hash = g_hash_table_new(g_str_hash, g_str_equal);
     priv->signals = g_hash_table_new(g_str_hash, g_str_equal);
@@ -236,7 +236,7 @@ glade_xml_new_from_buffer(const char *buffer, int size, const char *root,
  */
 void
 glade_xml_signal_connect (GladeXML *self, const char *handlername,
-			  GtkSignalFunc func)
+			  GCallback func)
 {
     GList *signals;
 
@@ -249,24 +249,21 @@ glade_xml_signal_connect (GladeXML *self, const char *handlername,
 	GladeSignalData *data = signals->data;
 
 	if (data->connect_object) {
-	    GtkObject *other = g_hash_table_lookup(self->priv->name_hash,
+	    GObject *other = g_hash_table_lookup(self->priv->name_hash,
 						   data->connect_object);
-	    if (data->signal_after)
-		gtk_signal_connect_object_after(data->signal_object,
-						data->signal_name,
-						func, other);
-	    else
-		gtk_signal_connect_object(data->signal_object,
-					  data->signal_name, func, other);
+
+	    g_signal_connect_object(data->signal_object, data->signal_name,
+			func, other, (data->signal_after ? G_CONNECT_AFTER : 0)
+					| G_CONNECT_SWAPPED);
 	} else {
 	    /* the signal_data argument is just a string, but may be
 	     * helpful for someone */
 	    if (data->signal_after)
-		gtk_signal_connect_after(data->signal_object,
-					 data->signal_name, func, NULL);
+		g_signal_connect_after(data->signal_object, data->signal_name,
+				       func, NULL);
 	    else
-		gtk_signal_connect(data->signal_object, data->signal_name,
-				   func, NULL);
+		g_signal_connect(data->signal_object, data->signal_name,
+				 func, NULL);
 	}
     }
 }
@@ -275,7 +272,7 @@ static void
 autoconnect_foreach(const char *signal_handler, GList *signals,
 		    GModule *allsymbols)
 {
-    GtkSignalFunc func;
+    GCallback func;
 
     if (!g_module_symbol(allsymbols, signal_handler, (gpointer *)&func))
 	g_warning("could not find signal handler '%s'.", signal_handler);
@@ -285,24 +282,21 @@ autoconnect_foreach(const char *signal_handler, GList *signals,
 	    if (data->connect_object) {
 		GladeXML *self = glade_get_widget_tree(
 					GTK_WIDGET(data->signal_object));
-		GtkObject *other = g_hash_table_lookup(self->priv->name_hash,
+		GObject *other = g_hash_table_lookup(self->priv->name_hash,
 						       data->connect_object);
-		if (data->signal_after)
-		    gtk_signal_connect_object_after(data->signal_object,
-						    data->signal_name,
-						    func, other);
-		else
-		    gtk_signal_connect_object(data->signal_object,
-					      data->signal_name, func, other);
+
+		g_signal_connect_object(data->signal_object, data->signal_name,
+			func, other, (data->signal_after ? G_CONNECT_AFTER : 0)
+					| G_CONNECT_SWAPPED);
 	    } else {
 		/* the signal_data argument is just a string, but may
 		 * be helpful for someone */
 		if (data->signal_after)
-		    gtk_signal_connect_after(data->signal_object,
-					     data->signal_name, func, NULL);
+		    g_signal_connect_after(data->signal_object,
+					   data->signal_name, func, NULL);
 		else
-		    gtk_signal_connect(data->signal_object, data->signal_name,
-				       func, NULL);
+		    g_signal_connect(data->signal_object, data->signal_name,
+				     func, NULL);
 	    }
 	}
 }
@@ -349,7 +343,7 @@ autoconnect_full_foreach(const char *signal_handler, GList *signals,
 
     for (; signals != NULL; signals = signals->next) {
 	GladeSignalData *data = signals->data;
-	GtkObject *connect_object = NULL;
+	GObject *connect_object = NULL;
 		
 	if (data->connect_object) {
 	    if (!self)
@@ -457,38 +451,34 @@ glade_xml_signal_autoconnect_full (GladeXML *self, GladeXMLConnectFunc func,
  * demonstration of how to use glade_xml_signal_connect_full.
  */
 typedef struct {
-    GtkSignalFunc func;
+    GCallback func;
     gpointer user_data;
 } connect_data_data;
 
 static void
-connect_data_connect_func(const gchar *handler_name, GtkObject *object,
+connect_data_connect_func(const gchar *handler_name, GObject *object,
 			  const gchar *signal_name, const gchar *signal_data,
-			  GtkObject *connect_object, gboolean after,
+			  GObject *connect_object, gboolean after,
 			  gpointer user_data)
 {
     connect_data_data *data = (connect_data_data *)user_data;
 
     if (connect_object) {
-	if (after)
-	    gtk_signal_connect_object_after(object, signal_name,
-					    data->func, connect_object);
-	else
-	    gtk_signal_connect_object(object, signal_name,
-				      data->func, connect_object);
+	g_signal_connect_object(object, signal_name, data->func,
+	    connect_object, (after ? G_CONNECT_AFTER : 0) | G_CONNECT_SWAPPED);
     } else {
 	if (after)
-	    gtk_signal_connect_after(object, signal_name,
-				     data->func, data->user_data);
+	    g_signal_connect_after(object, signal_name,
+				   data->func, data->user_data);
 	else
-	    gtk_signal_connect(object, signal_name,
-			       data->func, data->user_data);
+	    g_signal_connect(object, signal_name,
+			     data->func, data->user_data);
     }
 }
 
 void
 glade_xml_signal_connect_data (GladeXML *self, const char *handlername,
-			       GtkSignalFunc func, gpointer user_data)
+			       GCallback func, gpointer user_data)
 {
     connect_data_data data;
 
@@ -652,10 +642,10 @@ glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window)
 
     if (GTK_IS_WINDOW (window)) {
 	/* the window should hold a reference to the tooltips object */
-	gtk_object_ref(GTK_OBJECT(xml->priv->tooltips));
+	g_object_ref(xml->priv->tooltips);
 	g_object_set_qdata_full(G_OBJECT(window), glade_xml_tooltips_id,
 				xml->priv->tooltips,
-				(GDestroyNotify)gtk_object_unref);
+				(GDestroyNotify)g_object_unref);
     }
 }
 
@@ -772,7 +762,7 @@ glade_xml_add_signals(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
 	GladeSignalData *data = g_new0(GladeSignalData, 1);
 	GList *list;
 
-	data->signal_object = GTK_OBJECT(w);
+	data->signal_object = G_OBJECT(w);
 	data->signal_name = sig->name;
 	data->connect_object = sig->object;
 	data->signal_after = sig->after;
@@ -990,7 +980,7 @@ glade_xml_finalize(GObject *object)
 	g_hash_table_destroy(priv->radio_groups);
 
 	if (priv->tooltips)
-	    gtk_object_unref(GTK_OBJECT(priv->tooltips));
+	    g_object_unref(priv->tooltips);
 
 	/* there should only be at most one accel group on stack */
 	if (priv->accel_groups)
@@ -2027,22 +2017,4 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 
     if (g_object_get_qdata(G_OBJECT(widget), visible_id))
 	gtk_widget_show(widget);
-}
-
-gchar **
-glade_xml_get_toplevel_names (GladeXML *self)
-{
-    int i;
-    gchar **ret;
-    GladeInterface *tree;
-    
-    tree = self->priv->tree;
-
-    ret = g_new (gchar *, tree->n_toplevels + 1);
-
-    for (i = 0; i < tree->n_toplevels; i++)
-	ret [i] = g_strdup (tree->toplevels [i]->name);
-    ret[i] = NULL;
-
-    return ret;
 }
