@@ -36,6 +36,9 @@
 
 #include "glade-widget-tree.h"
 
+/* define this if you want placeholders removed from the GladeWidgetTree. */
+#define REMOVE_PLACEHOLDERS
+
 /* This function is like xmlSAXParseFile, but allows us to set the user_data.
  * It also does not assume we are building the DOM tree.  It returns a
  * negative value on error.
@@ -105,6 +108,8 @@ static GladeWidgetInfo *glade_widget_info_new(void) {
     info->sensitive = TRUE;
     info->can_default = FALSE;
     info->can_focus = TRUE;
+    info->has_default = FALSE;
+    info->has_focus = FALSE;
 
     return info;
 }
@@ -433,6 +438,10 @@ static void gladeEndElement(GladeParseState *state, const CHAR *name) {
 	    state->widget->can_default = (state->content->str[0] == 'T');
 	else if (!strcmp(name, "can_focus"))
 	    state->widget->can_focus = (state->content->str[0] == 'T');
+	else if (!strcmp(name, "has_default"))
+	    state->widget->has_default = (state->content->str[0] == 'T');
+	else if (!strcmp(name, "has_focus"))
+	    state->widget->has_focus = (state->content->str[0] == 'T');
 	else if (!strcmp(name, "style_name")) {
 	    GList *tmp;
 	    GladeStyleInfo *si = NULL;
@@ -464,7 +473,19 @@ static void gladeEndElement(GladeParseState *state, const CHAR *name) {
 	break;
     case PARSER_WIDGET:
 	/* close the widget tag */
-	state->widget = state->widget->parent;
+
+#ifdef REMOVE_PLACEHOLDERS
+	/* check to see if it was a placeholder */
+	if (state->widget->name&&!strcmp(state->widget->name, "Placeholder")) {
+	    GladeWidgetInfo *child = state->widget;
+
+	    state->widget = state->widget->parent;
+	    state->widget->children = g_list_remove(state->widget->children,
+						    child);
+	    glade_widget_info_free(child);
+	} else
+#endif
+	    state->widget = state->widget->parent;
 	state->widget_depth--;
 	if (!state->widget)
 	    state->state = PARSER_GTK_INTERFACE;

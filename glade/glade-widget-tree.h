@@ -69,6 +69,8 @@ struct _GladeWidgetInfo {
     gboolean sensitive : 1;
     gboolean can_default : 1;
     gboolean can_focus : 1;
+    gboolean has_default : 1;
+    gboolean has_focus : 1;
 
     GladeStyleInfo *style;
 

@@ -1,3 +1,12 @@
+1999-09-14  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-sax.c (gladeEndElement): extract has_default, has_focus
+	into appropriate elements.
+	(gladeEndElement): remove placeholders from the interface description.
+	To get old behaviour, don't define REMOVE_PLACEHOLDERS at top of 
+
+	* glade/glade-widget-tree.h: added has_default and has_focus flags.
+
 1999-09-13  Miguel de Icaza  <miguel@nuclecu.unam.mx>
 
 	* glade/glade-gtk.c (label_new): Do not translate a string if it
