@@ -1,3 +1,13 @@
+1999-08-02  James Henstridge  <james@daa.com.au>
+
+	* doc/Makefile.am (scan): set CC to "$(LIBTOOL) $(CC)" for
+	gtkdoc-scanobj, and make it link the test program with the libtool
+	libraries rather than the installed libraries.
+
+	* Makefile.am: changed to build the glade subdir before doc.
+	Include libglade.spec in tarballs (it was probably removed when
+	libglade.spec.in was added).
+
 1999-07-30  James Henstridge  <james@daa.com.au>
 
 	* test-libglade.c (main): give an error if glade_xml_new returns an

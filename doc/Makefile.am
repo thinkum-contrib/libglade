@@ -14,10 +14,10 @@ TARGET_DIR=$(HTML_DIR)/$(DOC_MODULE)
 
 if GNOME_SUPPORT
 CFLAGS = $(GNOME_INCLUDEDIR) $(XML_CFLAGS) -I..
-LDFLAGS = -lglade $(GNOME_LIBDIR) $(GNOMEUI_LIBS) $(XML_LIBS)
+LDFLAGS = ../glade/libglade.la $(GNOME_LIBDIR) $(GNOMEUI_LIBS) $(XML_LIBS)
 else
 CFLAGS = $(GTK_CFLAGS) $(XML_CFLAGS) -I..
-LDFLAGS = -lglade $(GTK_LIBS) $(XML_LIBS)
+LDFLAGS = ../glade/libglade.la $(GTK_LIBS) $(XML_LIBS)
 endif
 
 tmpl_sources =				\
@@ -49,7 +49,7 @@ libglade.hierarchy libglade-decl.txt:
 
 scan:
 	cd $(srcdir) \
-	&& env CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
+	&& env CC="$(LIBTOOL) $(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 		gtkdoc-scanobj --module=$(DOC_MODULE)
 	cd $(srcdir) \
 	&& gtkdoc-scan --module=$(DOC_MODULE) \
