@@ -1,3 +1,9 @@
+libglade-0.11: 5-December-1999
+	- fixed some more problems that would cause segfaults on some errors.
+	- added support for GtkCalendar and GtkInputDialog.
+	- added assertions to some functions to try to pick up more runtime
+	  errors.
+
 libglade-0.9:  20-November-1999
 	- don't crash when creating a GtkPixmap widget if the pixmap file
 	  couldn't be found, or the pixmap file was corrupt.

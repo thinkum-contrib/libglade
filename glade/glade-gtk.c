@@ -667,6 +667,38 @@ fontselectiondialog_build_children (GladeXML *xml, GtkWidget *w,
 }
 
 static void
+inputdialog_build_children (GladeXML *xml, GtkWidget *w,
+			    GladeWidgetInfo *info,const char *longname)
+{
+	GList *tmp;
+
+	for (tmp = info->children; tmp; tmp = tmp->next) {
+		GladeWidgetInfo *cinfo = tmp->data;
+		GtkWidget *child = NULL;
+		GList *tmp2;
+		gchar *child_name = NULL;
+
+		for (tmp2 = cinfo->attributes; tmp2; tmp2 = tmp2->next) {
+			GladeAttribute *attr = tmp2->data;
+			if (!strcmp(attr->name, "child_name")) {
+				child_name = attr->value;
+				break;
+			}
+		}
+		if (!child_name) continue;
+
+		if (!strcmp(child_name, "InputDialog:save_button"))
+			child = GTK_INPUT_DIALOG(w)->save_button;
+		else if (!strcmp(child_name, "InputDialog:close_button"))
+			child = GTK_INPUT_DIALOG(w)->close_button;
+
+		if (child)
+			glade_xml_set_common_params(xml, child, cinfo,
+						    longname);
+	}
+}
+
+static void
 combo_build_children (GladeXML *xml, GtkWidget *w,
 		      GladeWidgetInfo *info, const char *longname)
 {
@@ -2366,6 +2398,37 @@ preview_new(GladeXML *xml, GladeWidgetInfo *info)
 }
 
 static GtkWidget *
+calendar_new (GladeXML *xml, GladeWidgetInfo *info)
+{
+	GtkWidget *wid = gtk_calendar_new();
+	GList *tmp;
+	GtkCalendarDisplayOptions dopt = 0;
+
+	for (tmp = info->attributes; tmp; tmp = tmp->next) {
+		GladeAttribute *attr = tmp->data;
+
+		if (!strcmp(attr->name, "show_heading")) {
+			if (attr->value[0] == 'T')
+				dopt |= GTK_CALENDAR_SHOW_HEADING;
+		} else if (!strcmp(attr->name, "show_day_names")) {
+			if (attr->value[0] == 'T')
+				dopt |= GTK_CALENDAR_SHOW_DAY_NAMES;
+		} else if (!strcmp(attr->name, "no_month_change")) {
+			if (attr->value[0] == 'T')
+				dopt |= GTK_CALENDAR_NO_MONTH_CHANGE;
+		} else if (!strcmp(attr->name, "show_week_numbers")) {
+			if (attr->value[0] == 'T')
+				dopt |= GTK_CALENDAR_SHOW_WEEK_NUMBERS;
+		} else if (!strcmp(attr->name, "week_start_monday")) {
+			if (attr->value[0] == 'T')
+				dopt |= GTK_CALENDAR_WEEK_START_MONDAY;
+		}
+	}
+	gtk_calendar_display_options(GTK_CALENDAR(wid), dopt);
+	return wid;
+}
+
+static GtkWidget *
 window_new (GladeXML *xml, GladeWidgetInfo *info)
 {
 	GtkWidget *win;
@@ -2513,6 +2576,24 @@ fontselectiondialog_new (GladeXML *xml, GladeWidgetInfo *info)
 }
 
 static GtkWidget *
+inputdialog_new (GladeXML *xml, GladeWidgetInfo *info)
+{
+	GtkWidget *win = gtk_input_dialog_new();
+	GList *tmp;
+
+	for (tmp = info->attributes; tmp; tmp = tmp->next) {
+		GladeAttribute *attr = tmp->data;
+
+		if (!strcmp(attr->name, "title"))
+			gtk_window_set_title(GTK_WINDOW(win), _(attr->value));
+	}
+	glade_xml_set_window_props(GTK_WINDOW(win), info);
+	glade_xml_set_toplevel(xml, GTK_WINDOW(win));
+
+	return win;
+}
+
+static GtkWidget *
 custom_new (GladeXML *xml, GladeWidgetInfo *info)
 {
 	typedef GtkWidget *(* create_func)(gchar *name,
@@ -2618,6 +2699,7 @@ static const GladeWidgetBuildData widget_data[] = {
 	{"GtkColorSelection",colorselection_new,NULL},
 	{"GtkFontSelection", fontselection_new, NULL},
 	{"GtkPreview",       preview_new,       NULL},
+	{"GtkCalendar",      calendar_new,      NULL},
 
   /* toplevel widgets */
 	{"GtkWindow",        window_new,        glade_standard_build_children},
@@ -2627,6 +2709,7 @@ static const GladeWidgetBuildData widget_data[] = {
 				    colorselectiondialog_build_children},
 	{"GtkFontSelectionDialog", fontselectiondialog_new,
 				   fontselectiondialog_build_children},
+	{"GtkInputDialog",   inputdialog_new,   inputdialog_build_children},
 
   /* the custom widget */
 	{"Custom",           custom_new,        NULL},
