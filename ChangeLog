@@ -1,3 +1,9 @@
+1999-05-23  Jacob Berkman  <jberk+@cmu.edu>
+
+	* doc/Makefile.am: added an if GNOME_SUPPORT
+	PROBLEM: make dies in doc if libglade has not been installed
+	yet.  I tried tinkering a bit but couldn't make it work
+
 1999-05-16  Raja R Harinath  <harinath@cs.umn.edu>
 
 	* glade/Makefile.am (glade-keys.c): Mention explicitly that

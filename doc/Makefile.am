@@ -12,8 +12,13 @@ HTML_DIR=$(datadir)/gnome/html
 
 TARGET_DIR=$(HTML_DIR)/$(DOC_MODULE)
 
+if GNOME_SUPPORT
+CFLAGS = $(GNOME_INCLUDEDIR) $(XML_CFLAGS)
+LDFLAGS = -lglade $(GNOME_LIBDIR) $(GNOMEUI_LIBS) $(XML_LIBS)
+else
 CFLAGS = $(GTK_CFLAGS) $(XML_CFLAGS)
 LDFLAGS = -lglade $(GTK_LIBS) $(XML_LIBS)
+endif
 
 tmpl_sources =				\
 	tmpl/glade.sgml			\
