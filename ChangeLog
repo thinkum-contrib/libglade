@@ -1,3 +1,9 @@
+2000-05-05   Maciej Stachowiak  <mjs@eazel.com>
+
+	* configure.in: actually substitute the BONOBO_SUPPORT_FALSE flag
+	required by libglade-config.in. Probably someone forgot to commit
+	something.
+
 2000-05-04  Michael Meeks  <michael@helixcode.com>
 
 	* glade/Makefile.am: update.
