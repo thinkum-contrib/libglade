@@ -1,3 +1,10 @@
+libglade-0.9:  20-November-1999
+	- don't crash when creating a GtkPixmap widget if the pixmap file
+	  couldn't be found, or the pixmap file was corrupt.
+	- fixed bug with setting the window policy.  If you were using
+	  libglade-0.8 and found you could not resize windows correctly, then
+	  this bug should now be fixed.
+
 libglade-0.8:  16-November-1999
 	- fixed mem leak in the GtkLabel and GtkAccelLabel creation routines.
 	  Also recognise the wrap property of these widgets.

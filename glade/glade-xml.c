@@ -1230,7 +1230,7 @@ glade_xml_set_window_props(GtkWindow *window, GladeWidgetInfo *info)
 			break;
 		}
 	}
-	gtk_window_set_policy(window, allow_grow, allow_shrink, auto_shrink);
+	gtk_window_set_policy(window, allow_shrink, allow_grow, auto_shrink);
 	if (wmname != NULL || wmclass != NULL)
 		gtk_window_set_wmclass(window,
 				       wmname  ? wmname  : "",

@@ -1,3 +1,17 @@
+1999-11-20  James Henstridge  <james@daa.com.au>
+
+	* README: updated readme file.  It was really out of date.
+
+	* configure.in: incremented package version number.
+
+	* glade/Makefile.am (LTVERSION): incremented libtool version number.
+
+	* glade/glade-gtk.c (pixmap_new): make sure we don't crash when the
+	pixmap can't be found.
+
+	* glade/glade-xml.c (glade_xml_set_window_props): fixed bug in
+	call to gtk_window_set_policy.
+
 1999-11-16  James Henstridge  <james@daa.com.au>
 
 	* glade/Makefile.am (LTVERSION): updated libtool version number.

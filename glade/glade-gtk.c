@@ -1591,7 +1591,10 @@ pixmap_new(GladeXML *xml, GladeWidgetInfo *info)
 		gtk_widget_get_default_colormap(), &bitmap, NULL, filename);
 	if (filename)
 		g_free(filename);
-	pix = gtk_pixmap_new(pixmap, bitmap);
+	if (pixmap)
+		pix = gtk_pixmap_new(pixmap, bitmap);
+	else
+		pix = gtk_type_new(gtk_pixmap_get_type());
 	misc_set(GTK_MISC(pix), info);
 
 	return pix;

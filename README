@@ -10,14 +10,17 @@ create the interface files.
 For an idea of how to use the library, see test-libglade.c and
 glade/glade-xml.h.
 
-To compile, you will need the gnome-xml package out of the GNOME CVS tree
-(you won't need gnome-libs, as libglade doesn't support that widget set yet).
-A fairly recent version is needed.
+To compile, you will need the libxml package (aka the gnome-xml module in CVS)
+which can be found on the GNOME FTP site or its mirrors.  If you want GNOME
+support, you will also need the gnome-libs package installed.
 
-The speed of this library is pretty good on my 486, so no one else should have
-problems :)
+When I started developing this library, I was using a 486, and did not have
+any problems with the speed.  Since then, I have reduced its memory usage
+and increased its speed a bit, so you should not have problems with the
+library's speed :)
 
-I would like to thank Damon Chaplin for his wonderful interface builder.
+I would like to thank Damon Chaplin for writing GLADE, which is one of the
+best user interface builders I have used.
 
 
 LIBGLADE INTERNALS
@@ -25,27 +28,25 @@ LIBGLADE INTERNALS
 
 If you are interested in how libglade works, here is a small description:
 
-First, when glade_xml_new is called, the XML interface is loaded, any styles
-are parsed, so they can be used by the GTK RC style code, and a GNode tree
-of the xmlNode's corresponding to the <widget> tags are created.  This
-information is stored in a GCache, in case the same interface is loaded again
-in this program.
+When glade_xml_new is called, the XML file is loaded using libxml.
+Libglade uses the SAX interface because it is faster and allows me to
+store the data in a more compact representation.  The data in the XML
+file is cached, so that if you load the interface again, the file does
+not need to be reparsed.  If the file has changed though, it will be
+reparsed.
 
-Then glade_xml_build_interface is called.  It calls glade_xml_build_widget on
-the toplevel widgets (either the one given as second argument to glade_xml_new,
-or all the toplevel ones).
+The styles in the glade file are first passed to the GTK RC system, so
+they can be applied to the widgets when the interface is built.  Note
+that newer versions of GLADE have removed the widget style code.
 
-Glade_xml_build_widget checks the widget class for this node, and looks the
-class up in a hash table.  The hash value holds a function for creating the
-widget from the information in that node, and optionally one for adding
-children to this widget.
+Now glade_xml_build_widget is called for all the toplevel widgets in
+the interface (or if the second argument to glade_xml_new was non
+NULL, the widget it refers to is treated as the toplevel).
 
-The new_widget function should create the widget, but not worry about any of
-the global widget options.  Then the global widget options are evaluated, and
-signals are added to a signal handler hash.
-
-If a child creation routine was specified, this is now called.  It should call
-glade_xml_build_widget on any child widgets, and then add them to itself.
+For each of these widgets, they are created by a function specific to
+the widget type, and then glade_xml_build_widget is called for each
+child widget, which is then packed into its parent.  This is done
+recursively, so the whole interface is constructed.
 
 New widget types are added to the widget class hash with the
 glade_register_widgets function.  For an example, see the end of glade-gtk.c.
