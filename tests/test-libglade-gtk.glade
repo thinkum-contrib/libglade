@@ -26,6 +26,7 @@
   <allow_shrink>False</allow_shrink>
   <allow_grow>True</allow_grow>
   <auto_shrink>False</auto_shrink>
+  <visible>False</visible>
 
   <widget>
     <class>GtkVBox</class>
@@ -1987,6 +1988,7 @@ test 3
   <allow_shrink>True</allow_shrink>
   <allow_grow>True</allow_grow>
   <auto_shrink>False</auto_shrink>
+  <visible>False</visible>
 
   <widget>
     <class>GtkVBox</class>
@@ -2107,6 +2109,7 @@ test 3
   <allow_grow>True</allow_grow>
   <auto_shrink>False</auto_shrink>
   <show_file_op_buttons>True</show_file_op_buttons>
+  <visible>False</visible>
 
   <widget>
     <class>GtkButton</class>
@@ -2141,6 +2144,7 @@ test 3
   <allow_grow>True</allow_grow>
   <auto_shrink>False</auto_shrink>
   <policy>GTK_UPDATE_CONTINUOUS</policy>
+  <visible>False</visible>
 
   <widget>
     <class>GtkButton</class>

@@ -1,5 +1,33 @@
 2002-02-21  James Henstridge  <james@daa.com.au>
 
+	* tests/Makefile.am: update tests.
+
+	* tests/test-libglade-gtk.c (main): update so that it takes a
+	filename as an argument (so it can be used for multiple tests),
+	and make it exit with return value 77 when it can't connect to the
+	X server.
+
+	* tests/test-convert (RETVAL): new file to run the tests for
+	conversion script.
+
+	* tests/test-libglade-gtk.glade: make the toplevel widgets non
+	visible.
+
+	* examples/example.glade: same.
+
+	* examples/bonobo.glade: same.
+
+	* examples/first.glade: same.
+
+	* examples/simple.glade: fix up doctype.
+
+	* glade-2.0.dtd: fix up syntax error in DTD.
+	(property): add agent attribute for <property>, as agreed with
+	damon.
+
+	* libglade-convert.in (handle_file): use a full URL for the
+	doctype.
+
 	* libglade.spec.in (CATALOG): install and remove the catalog in
 	scripts.
 

@@ -21,7 +21,8 @@
 <!ATTLIST property
   name CDATA #REQUIRED
   type CDATA #IMPLIED
-  translatable (yes|no) 'no' >
+  translatable (yes|no) 'no'
+  agent CDATA #IMPLIED >
 
 <!ELEMENT atkproperty (#PCDATA | accessibility)* >
 <!ATTLIST atkproperty
@@ -63,4 +64,4 @@
 
 <!ELEMENT packing (property+) >
 
-<!ELEMENT placeholder #EMPTY >
+<!ELEMENT placeholder EMPTY >

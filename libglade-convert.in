@@ -1159,7 +1159,7 @@ def handle_file(filename):
         check_widget(widgetdef, requireslist)
 
     print '<?xml version="1.0" standalone="no"?> <!--*- mode: xml -*-->'
-    print '<!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd" >'
+    print '<!DOCTYPE glade-interface SYSTEM "http://glade.gnome.org/glade-2.0.dtd" >'
     print
     print '<glade-interface>'
 
