@@ -1164,65 +1164,51 @@ glade_register_widgets(const GladeWidgetBuildData *widgets)
 }
 
 gboolean
-glade_xml_set_value_from_prop (GType widget_type,
-			       GValue *value,
-			       GladeProperty *prop)
+glade_xml_set_value_from_string (GParamSpec *pspec,
+				 const gchar *string,
+				 GValue *value)
 {
-    GObjectClass *oclass = g_type_class_ref(widget_type);
-    GParamSpec *pspec;
     GType prop_type;
     gboolean ret = TRUE;
 
-    oclass = g_type_class_ref(widget_type);
-    pspec = g_object_class_find_property(oclass, prop->name);
-
-    if (!pspec) {
-	g_warning("unknown property `%s' for class `%s'", prop->name,
-		  g_type_name(widget_type));
-	g_type_class_unref(oclass);
-	return FALSE;
-    }
     prop_type = G_PARAM_SPEC_VALUE_TYPE(pspec);
     g_value_init(value, prop_type);
     switch (G_TYPE_FUNDAMENTAL(prop_type)) {
     case G_TYPE_CHAR:
-	g_value_set_char(value, prop->value[0]);
+	g_value_set_char(value, string[0]);
 	break;
     case G_TYPE_UCHAR:
-	g_value_set_uchar(value, (guchar)prop->value[0]);
+	g_value_set_uchar(value, (guchar)string[0]);
 	break;
     case G_TYPE_BOOLEAN:
-	g_value_set_boolean(value,
-			    prop->value[0] == 'T' || prop->value[0] == 'y');
+	g_value_set_boolean(value, string[0] == 'T' || string[0] == 'y');
 	break;
     case G_TYPE_INT:
-	g_value_set_int(value, strtol(prop->value, NULL, 0));
+	g_value_set_int(value, strtol(string, NULL, 0));
 	break;
     case G_TYPE_UINT:
-	g_value_set_uint(value, strtoul(prop->value, NULL, 0));
+	g_value_set_uint(value, strtoul(string, NULL, 0));
 	break;
     case G_TYPE_LONG:
-	g_value_set_long(value, strtol(prop->value, NULL, 0));
+	g_value_set_long(value, strtol(string, NULL, 0));
 	break;
     case G_TYPE_ULONG:
-	g_value_set_ulong(value, strtoul(prop->value, NULL, 0));
+	g_value_set_ulong(value, strtoul(string, NULL, 0));
 	break; 
     case G_TYPE_ENUM:
-	g_value_set_enum(value, glade_enum_from_string(prop_type,
-						       prop->value));
+	g_value_set_enum(value, glade_enum_from_string(prop_type, string));
 	break;
     case G_TYPE_FLAGS:
-	g_value_set_flags(value, glade_flags_from_string(prop_type,
-							 prop->value));
+	g_value_set_flags(value, glade_flags_from_string(prop_type, string));
 	break;
     case G_TYPE_FLOAT:
-	g_value_set_float(value, g_strtod(prop->value, NULL));
+	g_value_set_float(value, g_strtod(string, NULL));
 	break;
     case G_TYPE_DOUBLE:
-	g_value_set_double(value, g_strtod(prop->value, NULL));
+	g_value_set_double(value, g_strtod(string, NULL));
 	break;
     case G_TYPE_STRING:
-	g_value_set_string(value, prop->value);
+	g_value_set_string(value, string);
 	break;
     case G_TYPE_BOXED:
     default:
@@ -1231,7 +1217,6 @@ glade_xml_set_value_from_prop (GType widget_type,
 	ret = FALSE;
 	break;
     }
-    g_type_class_unref(oclass);
     return ret;
 }
 
@@ -1253,9 +1238,17 @@ glade_standard_build_widget(GladeXML *xml, GType widget_type,
     /* collect properties */
     for (i = 0; i < info->n_properties; i++) {
 	GParameter param = { NULL };
+	GParamSpec *pspec;
 
-	if (glade_xml_set_value_from_prop(widget_type, &param.value,
-					  &info->properties[i])) {
+	pspec = g_object_class_find_property(oclass, info->properties[i].name);
+	if (!pspec) {
+	    g_warning("unknown property `%s' for class `%s'",
+		      info->properties[i].name, g_type_name(widget_type));
+	    continue;
+	}
+
+	if (glade_xml_set_value_from_string(pspec, info->properties[i].value,
+					    &param.value)) {
 	    param.name = info->properties[i].name;
 	    g_array_append_val(props_array, param);
 	}
@@ -1272,6 +1265,58 @@ glade_standard_build_widget(GladeXML *xml, GType widget_type,
     g_type_class_unref(oclass);
 
     return widget;
+}
+
+/**
+ * glade_standard_build_children
+ * @self: the GladeXML object.
+ * @w: the container widget.
+ * @info: the GladeWidgetInfo structure.
+ * @longname: the long name for this widget.
+ *
+ * This is the standard child building function.  It simply calls
+ * gtk_container_add on each child to add them to the parent.  It is
+ * implemented here, as it should be useful to many GTK+ based widget
+ * sets.
+ */
+void
+glade_standard_build_children(GladeXML *self, GtkWidget *w,
+			      GladeWidgetInfo *info, const char *longname)
+{
+    gint i, j;
+
+    g_object_ref(G_OBJECT(w));
+    for (i = 0; i < info->n_children; i++) {
+	GladeWidgetInfo *childinfo = info->children[i].child;
+	GtkWidget *child = glade_xml_build_widget(self, childinfo, longname);
+
+	g_object_ref(G_OBJECT(child));
+	gtk_widget_freeze_child_notify(child);
+	gtk_container_add(GTK_CONTAINER(w), child);
+	for (j = 0; j < info->children[i].n_properties; j++) {
+	    const gchar *name = info->children[i].properties[j].name;
+	    GValue value = { 0 };
+	    GParamSpec *pspec;
+
+	    pspec = gtk_container_class_find_child_property(
+		G_OBJECT_GET_CLASS(w), name);
+	    if (!pspec) {
+		g_warning("unknown child property `%s' for container `%s'",
+			  name, G_OBJECT_TYPE_NAME(w));
+		continue;
+	    }
+
+	    if (glade_xml_set_value_from_string(pspec,
+			info->children[i].properties[j].value, &value)) {
+		gtk_container_child_set_property(GTK_CONTAINER(w), child,
+						 name, &value);
+		g_value_unset(&value);
+	    }
+	}
+	gtk_widget_thaw_child_notify(child);
+	g_object_ref(G_OBJECT(child));
+    }
+    g_object_unref(G_OBJECT(w));
 }
 
 #ifndef ENABLE_NLS
@@ -1492,32 +1537,6 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
     if (info->visible)
 	gtk_widget_show(widget);
 #endif
-}
-
-/**
- * glade_standard_build_children
- * @self: the GladeXML object.
- * @w: the container widget.
- * @info: the GladeWidgetInfo structure.
- * @longname: the long name for this widget.
- *
- * This is the standard child building function.  It simply calls
- * gtk_container_add on each child to add them to the parent.  It is
- * implemented here, as it should be useful to many GTK+ based widget
- * sets.
- */
-void
-glade_standard_build_children(GladeXML *self, GtkWidget *w,
-			      GladeWidgetInfo *info, const char *longname)
-{
-    gint i;
-
-    for (i = 0; i < info->n_children; i++) {
-	GladeWidgetInfo *childinfo = info->children[i].child;
-	GtkWidget *child = glade_xml_build_widget(self, childinfo, longname);
-
-	gtk_container_add(GTK_CONTAINER(w), child);
-    }
 }
 
 /**

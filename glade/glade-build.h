@@ -96,9 +96,9 @@ void       glade_xml_set_common_params(GladeXML *self,
 				       GladeWidgetInfo *info,
 				       const char *parent_long);
 
-gboolean glade_xml_set_value_from_prop (GType widget_type,
-					GValue *value,
-					GladeProperty *prop);
+gboolean glade_xml_set_value_from_string (GParamSpec *pspec,
+					  const gchar *string,
+					  GValue *value);
 
 GtkWidget *glade_standard_build_widget(GladeXML *xml, GType widget_type,
 				       GladeWidgetInfo *info);

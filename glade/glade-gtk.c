@@ -128,8 +128,8 @@ static GladeWidgetBuildData widget_data[] = {
       gtk_notebook_get_type },
     { "GtkOptionMenu", glade_standard_build_widget, glade_standard_build_children,
       gtk_option_menu_get_type },
-    { "GtkPacker", glade_standard_build_widget, glade_standard_build_children,
-      gtk_packer_get_type },
+/*    { "GtkPacker", glade_standard_build_widget, glade_standard_build_children,
+      gtk_packer_get_type }, */
     { "GtkPixmap", glade_standard_build_widget, NULL,
       gtk_pixmap_get_type },
     { "GtkPlug", window_new, glade_standard_build_children,

@@ -1,3 +1,10 @@
+2001-06-25  James Henstridge  <james@daa.com.au>
+
+	* examples/simple.glade: update to use a container child property.
+
+	* glade/glade-xml.c (glade_standard_build_children): add support
+	for container child properties.
+
 2001-06-17  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-gtk.c (widget_data): add entries to the widget_data

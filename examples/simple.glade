@@ -13,16 +13,31 @@
     </accessibility>
 
     <child>
-      <widget class="GtkButton" id="button1">
+      <widget class="GtkVBox" id="vbox1">
+        <property name="spacing">5</property>
         <property name="visible">yes</property>
- 
-	<signal name="clicked" handler="gtk_main_quit" />
 
         <child>
+          <property name="expand">no</property>
+
           <widget class="GtkLabel" id="label1">
-            <property name="label">_Push me</property>
-            <property name="use_underline">yes</property>
+            <property name="label">A label</property>
             <property name="visible">yes</property>
+          </widget>
+        </child>
+        <child>
+          <widget class="GtkButton" id="button1">
+            <property name="visible">yes</property>
+ 
+	    <signal name="clicked" handler="gtk_main_quit" />
+
+            <child>
+              <widget class="GtkLabel" id="label2">
+                <property name="label">_Push me</property>
+                <property name="use_underline">yes</property>
+                <property name="visible">yes</property>
+              </widget>
+            </child>
           </widget>
         </child>
       </widget>
