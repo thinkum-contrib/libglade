@@ -752,7 +752,7 @@ static GtkWidget *clist_new(GladeXML *xml, GNode *node) {
     }
     if (content) free(content);
   }
-  gtk_clist_set_policy(GTK_CLIST(clist), hpol, vpol);
+  /*gtk_clist_set_policy(GTK_CLIST(clist), hpol, vpol);*/
   return clist;
 }
 
@@ -814,7 +814,7 @@ static GtkWidget *ctree_new(GladeXML *xml, GNode *node) {
     }
     if (content) free(content);
   }
-  gtk_clist_set_policy(GTK_CLIST(ctree), hpol, vpol);
+  /*gtk_clist_set_policy(GTK_CLIST(ctree), hpol, vpol);*/
   return ctree;
 }
 
@@ -1469,9 +1469,9 @@ static GtkWidget *hpaned_new(GladeXML *xml, GNode *node) {
   for (; info; info = info->next) {
     char *content = xmlNodeGetContent(info);
     if (!strcmp(info->name, "handle_size"))
-      gtk_paned_handle_size(GTK_PANED(paned), g_strtod(content, NULL));
+      gtk_paned_set_handle_size(GTK_PANED(paned), g_strtod(content, NULL));
     else if (!strcmp(info->name, "gutter_size"))
-      gtk_paned_gutter_size(GTK_PANED(paned), g_strtod(content, NULL));
+      gtk_paned_set_gutter_size(GTK_PANED(paned), g_strtod(content, NULL));
     if (content) free(content);
   }
   return paned;
@@ -1484,9 +1484,9 @@ static GtkWidget *vpaned_new(GladeXML *xml, GNode *node) {
   for (; info; info = info->next) {
     char *content = xmlNodeGetContent(info);
     if (!strcmp(info->name, "handle_size"))
-      gtk_paned_handle_size(GTK_PANED(paned), g_strtod(content, NULL));
+      gtk_set_paned_handle_size(GTK_PANED(paned), g_strtod(content, NULL));
     else if (!strcmp(info->name, "gutter_size"))
-      gtk_paned_gutter_size(GTK_PANED(paned), g_strtod(content, NULL));
+      gtk_set_paned_gutter_size(GTK_PANED(paned), g_strtod(content, NULL));
     if (content) free(content);
   }
   return paned;
@@ -1726,7 +1726,7 @@ static GtkWidget *window_new(GladeXML *xml, GNode *node) {
   }
   win = gtk_window_new(type);
   gtk_window_set_title(GTK_WINDOW(win), title);
-  gtk_window_position(GTK_WINDOW(win), pos);
+  gtk_window_set_position(GTK_WINDOW(win), pos);
   gtk_window_set_policy(GTK_WINDOW(win), allow_shrink,allow_grow,auto_shrink);
   if (xpos >= 0 || ypos >= 0) gtk_widget_set_uposition(win, xpos, ypos);
   return win;
@@ -1751,7 +1751,7 @@ static GtkWidget *dialog_new(GladeXML *xml, GNode *node) {
       break;
     case 'p':
       if (!strcmp(info->name, "position"))
-	gtk_window_position(GTK_WINDOW(win),
+	gtk_window_set_position(GTK_WINDOW(win),
 			glade_enum_from_string(GTK_TYPE_WINDOW_POSITION,
 					       content));
       break;

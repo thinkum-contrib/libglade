@@ -426,7 +426,7 @@ GtkWidget *glade_xml_build_widget(GladeXML *self, GNode *node,
     case 'b':
       if (!strcmp(name, "border_width")) {
 	long width = strtol(value, NULL, 0);
-	gtk_container_border_width(GTK_CONTAINER(ret), width);
+	gtk_container_set_border_width(GTK_CONTAINER(ret), width);
       }
       break;
     case 'c':

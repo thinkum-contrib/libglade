@@ -45,6 +45,7 @@ libtoolize --copy --force
 aclocal $ACLOCAL_FLAGS
 automake --add-missing
 autoconf
+autoheader
 ./configure "$@"
 
 echo 
