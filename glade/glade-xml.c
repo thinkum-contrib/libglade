@@ -46,7 +46,7 @@ static void glade_xml_build_interface(GladeXML *xml, GladeTreeData *tree,
 				      const char *root);
 
 GtkType glade_xml_get_type(void) {
-  GtkType xml_type = 0;
+  static GtkType xml_type = 0;
   if (!xml_type) {
     GtkTypeInfo xml_info = {
       "GladeXML",
@@ -423,6 +423,10 @@ GtkWidget *glade_xml_build_widget(GladeXML *self, GNode *node,
       if (!strcmp(name, "Accelerator"))
 	glade_xml_add_accel(ret, tmp);
       break;
+    case 'a':
+      if (!strcmp(name, "accelerator"))
+	glade_xml_add_accel(ret, tmp);
+      break;
     case 'b':
       if (!strcmp(name, "border_width")) {
 	long width = strtol(value, NULL, 0);
@@ -463,7 +467,8 @@ GtkWidget *glade_xml_build_widget(GladeXML *self, GNode *node,
       else if (!strcmp(name, "style_name")) {
 	if (w_style) g_free(w_style);
 	w_style = g_strdup(value);
-      }
+      } else if (!strcmp(name, "signal"))
+	glade_xml_add_signal(self, ret, tmp);
       break;
     case 'S':
       if (!strcmp(name, "Signal"))

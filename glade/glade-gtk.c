@@ -86,7 +86,7 @@ static void box_build_children(GladeXML *xml, GtkWidget *w, GNode *node,
 	if (!strcmp(xmlnode->name, "padding"))
 	  padding = strtol(content, NULL, 0);
 	else if (!strcmp(xmlnode->name, "pack"))
-	  start = strcmp(content, GTK_PACK_START) == 0;
+	  start = strcmp(content, "GTK_PACK_START") == 0;
 	break;
       }
       if (content) free(content);
@@ -317,7 +317,7 @@ static void dialog_build_children(GladeXML *xml, GtkWidget *w, GNode *node,
 	if (!strcmp(xmlnode->name, "padding"))
 	  padding = strtol(content, NULL, 0);
 	else if (!strcmp(xmlnode->name, "pack"))
-	  start = strcmp(content, GTK_PACK_START) == 0;
+	  start = strcmp(content, "GTK_PACK_START") == 0;
 	break;
       }
       if (content) free(content);

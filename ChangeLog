@@ -1,3 +1,20 @@
+1999-04-22  James Henstridge  <james@daa.com.au>
+
+	* test-libglade.c (main): argument parsing code wasn't recognising
+	the rootnode argument.  This batch of fixes was sent in by Philippe
+	Giacinti (I am still reviewing the local style part of the patch).
+
+	* glade/glade-xml.c (glade_xml_get_type): wasn't saving the object
+	type correctly.  Caused problems if more than one GladeXML object
+	was created.
+	(glade_xml_build_widget): in newer versions of GLADE, it uses the
+	signal tag instead of Signal, and accelerator instead of Accelerator.
+	Now libglade recognises the new tags as having the same meaning.
+
+	* glade/glade-gtk.c: some small changes for the box and dialog child
+	adding routines (I had GTK_PACK_START where it should have been
+	"GTK_PACK_START").
+
 1999-04-20  James Henstridge  <james@daa.com.au>
 
 	* configure.in: bumped required version of GTK up to 1.2.0.

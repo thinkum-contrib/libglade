@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
     else if (filename == NULL)
       filename = argv[i];
     else if (rootnode == NULL)
-      rootnode = NULL;
+      rootnode = argv[i];
     else {
       g_print("Usage: %s [--no-connect] filename [rootnode]\n", argv[0]);
       return 1;
