@@ -74,7 +74,7 @@
     the initial generating of course, and this is not much of an
     overhead) when compared to a hand crafted interface.</para>
 
-    <sect1 id=libglade-basics>
+    <sect1 id="libglade-basics">
       <title>Libglade Programming Basics</title>
 
       <para>Your basic libglade program will look something like this:</para>
@@ -168,7 +168,7 @@ AC_SUBST(MYPROG_LIBS)
 
     </sect1>
 
-    <sect1 id=libglade-modules>
+    <sect1 id="libglade-modules">
       <title>Libglade Modules</title>
       
       <para>Libglade can be extended to support widget libraries built
@@ -216,7 +216,7 @@ AC_SUBST(MYPROG_LIBS)
 
     </sect1>
 
-    <sect1 id=libglade-extending>
+    <sect1 id="libglade-extending">
       <title>Extending Libglade</title>
 
       <para>In some cases, libglade may not provide support for the
@@ -283,7 +283,7 @@ GtkWidget *custom_func(gchar *widget_name, gchar *string1, gchar *string2,
 
     </sect1>
 
-    <sect1 id=libglade-embedding>
+    <sect1 id="libglade-embedding">
       <title>Embedding Libglade Interfaces</title>
 
       <para>Sometimes you will only want to use libglade for a small
