@@ -180,7 +180,12 @@ gboolean
 glade_xml_construct (GladeXML *self, const char *fname, const char *root,
 		     const char *domain)
 {
-	GladeWidgetTree *tree = glade_tree_get(fname);
+	GladeWidgetTree *tree;
+
+	g_return_val_if_fail(self != NULL, FALSE);
+	g_return_val_if_fail(fname != NULL, FALSE);
+
+	tree = glade_tree_get(fname);
 
 	if (!tree)
 		return FALSE;
@@ -249,8 +254,13 @@ void
 glade_xml_signal_connect (GladeXML *self, const char *handlername,
 			  GtkSignalFunc func)
 {
-	GList *signals = g_hash_table_lookup(self->priv->signals, handlername);
-	
+	GList *signals;
+
+	g_return_if_fail(self != NULL);
+	g_return_if_fail(handlername != NULL);
+	g_return_if_fail(func != NULL);
+
+	signals = g_hash_table_lookup(self->priv->signals, handlername);
 	for (; signals != NULL; signals = signals->next) {
 		GladeSignalData *data = signals->data;
 
@@ -281,6 +291,7 @@ autoconnect_foreach(const char *signal_handler, GList *signals,
 		    GModule *allsymbols)
 {
 	GtkSignalFunc func;
+
 	if (!g_module_symbol(allsymbols, signal_handler, (gpointer *)&func))
 		g_warning("could not find signal handler '%s'.", signal_handler);
 	else
@@ -327,6 +338,8 @@ void
 glade_xml_signal_autoconnect (GladeXML *self)
 {
 	GModule *allsymbols;
+
+	g_return_if_fail(self != NULL);
 	if (!g_module_supported())
 		g_error("glade_xml_signal_autoconnect requires working gmodule");
 
@@ -402,13 +415,17 @@ glade_xml_signal_connect_full(GladeXML *self, const gchar *handler_name,
 			      GladeXMLConnectFunc func, gpointer user_data)
 {
 	connect_struct conn;
-	GList *signals = g_hash_table_lookup(self->priv->signals,handler_name);
+	GList *signals;
 
+	g_return_if_fail(self != NULL);
+	g_return_if_fail(handler_name != NULL);
 	g_return_if_fail (func != NULL);
+
 	/* rather than rewriting the code from the autoconnect_full version,
 	 * just reuse its helper function */
 	conn.func = func;
 	conn.user_data = user_data;
+	signals = g_hash_table_lookup(self->priv->signals, handler_name);
 	autoconnect_full_foreach(handler_name, signals, &conn);
 }
 
@@ -430,7 +447,9 @@ glade_xml_signal_autoconnect_full (GladeXML *self, GladeXMLConnectFunc func,
 {
 	connect_struct conn;
 
+	g_return_if_fail(self != NULL);
 	g_return_if_fail (func != NULL);
+
 	conn.func = func;
 	conn.user_data = user_data;
 	g_hash_table_foreach(self->priv->signals,
@@ -451,6 +470,9 @@ glade_xml_signal_autoconnect_full (GladeXML *self, GladeXMLConnectFunc func,
 GtkWidget *
 glade_xml_get_widget (GladeXML *self, const char *name)
 {
+	g_return_val_if_fail(self != NULL, NULL);
+	g_return_val_if_fail(name != NULL, NULL);
+
 	return g_hash_table_lookup(self->priv->name_hash, name);
 }
 
@@ -471,6 +493,9 @@ GtkWidget *
 glade_xml_get_widget_by_long_name(GladeXML *self,
 				  const char *longname)
 {
+	g_return_val_if_fail(self != NULL, NULL);
+	g_return_val_if_fail(longname != NULL, NULL);
+
 	return g_hash_table_lookup(self->priv->longname_hash, longname);
 }
 
@@ -489,6 +514,8 @@ gchar *
 glade_xml_relative_file(GladeXML *self, const gchar *filename)
 {
 	gchar *dirname, *tmp;
+
+	g_return_val_if_fail(self != NULL, NULL);
 	g_return_val_if_fail(filename != NULL, NULL);
 
 	if (g_path_is_absolute(filename)) /* an absolute pathname */
@@ -511,6 +538,8 @@ glade_xml_relative_file(GladeXML *self, const gchar *filename)
 const char *
 glade_get_widget_name(GtkWidget *widget)
 {
+	g_return_val_if_fail(widget != NULL, NULL);
+
 	return (const char *)gtk_object_get_data(GTK_OBJECT(widget),
 						 glade_xml_name_tag);
 }
@@ -528,6 +557,8 @@ glade_get_widget_name(GtkWidget *widget)
 const char *
 glade_get_widget_long_name (GtkWidget *widget)
 {
+	g_return_val_if_fail(widget != NULL, NULL);
+
 	return (const char *)gtk_object_get_data(GTK_OBJECT(widget),
 						 glade_xml_longname_tag);
 }
@@ -544,6 +575,8 @@ glade_get_widget_long_name (GtkWidget *widget)
 GladeXML *
 glade_get_widget_tree(GtkWidget *widget)
 {
+	g_return_val_if_fail(widget != NULL, NULL);
+
 	return gtk_object_get_data(GTK_OBJECT(widget), glade_xml_tag);
 }
 

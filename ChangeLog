@@ -1,3 +1,14 @@
+1999-12-04  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gtk.c, glade/glade-gnome.c: other fixes.
+	
+	* glade/glade-gnome.c (toolbar_build_children): same here.
+
+	* glade/glade-gtk.c (toolbar_build_children): do not die if pixmap
+	couldn't be found.
+
+	* glade/glade-xml.c: added more assertions.
+
 1999-12-03  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-sax.c: added some assertions to the tree ref/unref

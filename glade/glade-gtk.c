@@ -333,10 +333,16 @@ notebook_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info,
 		if (tmp2 == NULL || strcmp(attr->value, "Notebook:tab") != 0)
 			pages = g_list_append (pages, child);
 		else {
-			GtkWidget *page = pages->data;
+			GtkWidget *page;
 			gint key = glade_xml_get_parent_accel(xml);
 
-			pages = g_list_remove (pages, page);
+			if (pages) {
+				page = pages->data;
+				pages = g_list_remove (pages, page);
+			} else {
+				page = gtk_label_new("Unknown page");
+				gtk_widget_show(page);
+			}
 			gtk_notebook_append_page (GTK_NOTEBOOK(w), page,child);
 			if (key) {
 				gtk_widget_add_accelerator(page, "grab_focus",
@@ -525,12 +531,18 @@ toolbar_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info,
 			}
 			if (icon) {
 				GdkPixmap *pix;
-				GdkBitmap *mask;
+				GdkBitmap *mask = NULL;
 				pix = gdk_pixmap_colormap_create_from_xpm(NULL,
 					gtk_widget_get_colormap(w), &mask,
 					NULL, icon);
 				g_free(icon);
-				iconw = gtk_pixmap_new(pix, mask);
+				if (pix)
+					iconw = gtk_pixmap_new(pix, mask);
+				else
+					iconw = gtk_type_new(
+						gtk_pixmap_get_type());
+				if (pix) gdk_pixmap_unref(pix);
+				if (mask) gdk_bitmap_unref(mask);
 			}
 			if (!strcmp(cinfo->class, "GtkToggleButton"))
 				child = gtk_toolbar_append_element(
@@ -1575,7 +1587,8 @@ pixmap_new(GladeXML *xml, GladeWidgetInfo *info)
 {
 	GtkWidget *pix;
 	GList *tmp;
-	GdkPixmap *pixmap; GdkBitmap *bitmap;
+	GdkPixmap *pixmap;
+	GdkBitmap *bitmap = NULL;
 	char *filename = NULL;
   
 	for (tmp = info->attributes; tmp; tmp = tmp->next) {
@@ -1595,6 +1608,9 @@ pixmap_new(GladeXML *xml, GladeWidgetInfo *info)
 		pix = gtk_pixmap_new(pixmap, bitmap);
 	else
 		pix = gtk_type_new(gtk_pixmap_get_type());
+
+	if (pixmap) gdk_pixmap_unref(pixmap);
+	if (bitmap) gdk_bitmap_unref(bitmap);
 	misc_set(GTK_MISC(pix), info);
 
 	return pix;
