@@ -1,3 +1,20 @@
+2001-06-15  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c (glade_xml_set_value_from_prop): fix up GValue
+	code here.
+	(glade_enum_from_string): update to use GEnum APIs.
+	(glade_flags_from_string): new function to parse flags.  Can parse
+	symbols or'd together with '|'.
+
+	* glade/glade-init.c (glade_require): fix return statement.
+
+	* glade/glade-xml.h: don't include nonexistant <gtk/gtkdata.h>.
+	We don't even need it anymore.
+
+	* glade/glade-xml.c (glade_standard_build_widget): generic
+	function to build a new widget using properties.  Requires my
+	g_object_newv patch (until it gets applied to glib).
+
 2001-05-19  James Henstridge  <james@daa.com.au>
 
 	* Makefile.am (bin_SCRIPTS): don't install libglade-config script.

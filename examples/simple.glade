@@ -1,0 +1,20 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd" >
+
+<glade-interface>
+  <requires lib="gnome"/>
+  <widget class="GtkWindow" id="window1">
+    <property name="title">Testing</property>
+
+    <accessibility>
+      <property name="AtkObject::name">Top level</property>
+    </accessibility>
+
+    <child>
+      <widget class="GtkHBox" id="hbox1">
+	<signal name="size_allocate"
+		handler="do_something" />
+      </widget>
+    </child>
+  </widget>
+</glade-interface>

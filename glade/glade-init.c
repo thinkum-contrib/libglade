@@ -107,7 +107,7 @@ glade_require(const gchar *library)
 	g_warning("could not find `%s' init function: %s", library,
 		  g_module_error());
 	g_module_close(module);
-	return NULL;
+	return;
     }
 
     init_func();

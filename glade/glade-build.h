@@ -76,6 +76,10 @@ void           glade_xml_handle_label_accel(GladeXML *xml, const gchar *target,
 guint          glade_xml_get_parent_accel  (GladeXML *xml);
 #endif
 
+gboolean glade_xml_set_value_from_prop (GType widget_type,
+					GValue *value,
+					GladeProperty *prop);
+
 /* set standard properties on a GtkWindow widget */
 void           glade_xml_set_window_props (GtkWindow *window,
 					   GladeWidgetInfo *info);
