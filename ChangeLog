@@ -1,5 +1,11 @@
 2000-11-22  James Henstridge  <james@daa.com.au>
 
+	* NEWS: new news items.
+
+	* configure.in: increment version number.
+
+	* doc/Makefile.am (clean-local): small makefile fix.
+
 	* configure.in: build .pc files from .pc.in files.
 
 	* libglade-*.pc.in: pkg-config input files for various libglade

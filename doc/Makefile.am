@@ -75,6 +75,7 @@ html:
 
 clean-local:
 	rm -f *~ *.bak *.hierarchy *.signals *-unused.txt
+	rm -f libglade-scan.lo libglade-scan.o
 
 maintainer-clean-local: clean
 	cd $(srcdir) && rm -rf sgml html $(DOC_MODULE)-decl-list.txt $(DOC_MODULE)-decl.txt 

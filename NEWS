@@ -1,3 +1,16 @@
+libglade-0.15: 22-November-2000
+	- many bug fixes and memory leak plugs (me, Morten, Federico, others)
+	- libglade now does `visible accel group' handling for
+	  GnomeDruids as well.
+	- Install pkg-config .pc files so that you can get libglade
+	  cflags and libs through the pkg-config system as well.  Due
+	  to a small bug in pkgconfig-0.4, these files cause a segfault :(
+	- Updated bonobo support (Michael)
+	- You now need to pass the --enable-bonobo flag to configure
+	  to build with bonobo support.
+	- small fix to headers so that they don't cause problems with
+	  the C++ compiler in RH7.0.
+
 libglade-0.14: 10-July-2000
 	- radio menu item support (from patch by Mitch Chapman)
 	- make accelerators visible in GtkPixmapMenuitems.
