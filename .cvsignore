@@ -13,8 +13,7 @@ configure.scan
 libtool
 ltconfig
 ltmain.sh
-stamp-h
-stamp-h.in
+stamp-h*
 stamp.h
 version.h
 config.h.in
@@ -34,4 +33,4 @@ ABOUT-NLS
 intl
 *.pc
 *.tar.gz
-
+libglade-convert
