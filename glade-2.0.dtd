@@ -45,7 +45,8 @@
   name CDATA #REQUIRED
   handler CDATA #REQUIRED
   after (yes|no) 'no'
-  object IDREF #IMPLIED >
+  object IDREF #IMPLIED
+  last_modification_time CDATA #IMPLIED >
 
 <!ELEMENT accelerator EMPTY >
 <!ATTLIST accelerator

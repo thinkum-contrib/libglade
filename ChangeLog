@@ -1,5 +1,12 @@
 2002-01-14  Damon Chaplin  <damon@ximian.com>
 
+	* glade/glade-parser.c (handle_signal): ignore last_modification_time.
+
+	* glade-2.0.dtd: added last_modification_time attribute for signals,
+	which Glade uses but libglade ignores.
+
+2002-01-14  Damon Chaplin  <damon@ximian.com>
+
 	* glade/glade-gtk.c (statusbar_set_has_resize_grip): 
 	(ruler_set_metric): added 2 custom property handlers.
 

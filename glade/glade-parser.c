@@ -303,6 +303,8 @@ handle_signal(GladeParseState *state, const xmlChar **attrs)
 	    info.after = attrs[i+1][0] == 'y';
 	else if (!strcmp(attrs[i], "object"))
 	    info.object = alloc_string(state->interface, attrs[i+1]);
+	else if (!strcmp(attrs[i], "last_modification_time"))
+	    /* Do nothing. */;
 	else
 	    g_warning("unknown attribute `%s' for <signal>.", attrs[i]);
     }
