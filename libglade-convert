@@ -6,6 +6,10 @@ import sys
 import string
 import xml.dom.minidom
 
+translatable_properties = [
+    'label', 'title', 'text', 'format', 'copyright', 'comments',
+    'preview_text', 'tooltip'
+]
 
 # --- Code to represent a widget in memory, and dump it to stdout ---
 
@@ -103,8 +107,12 @@ class WidgetDef:
             if self.properties:
                 print '%s  <packing>' % indent
                 for name in self.property_names:
-                    print '%s    <property name="%s">%s</property>' % \
-                          (indent, name, self.properties[name])
+                    if name in translatable_properties:
+                        print '%s    <property name="%s" translatable="yes">%s</property>' % \
+                              (indent, name, self.properties[name])
+                    else:
+                        print '%s    <property name="%s">%s</property>' % \
+                              (indent, name, self.properties[name])
                 print '%s  </packing>' % indent
             print '%s</child>' % indent
 
@@ -117,8 +125,12 @@ class WidgetDef:
         print '%s<widget class="%s" id="%s">' %(indent, self.wclass, self.name)
         want_newline = 0
         for name in self.property_names:
-            print '%s  <property name="%s">%s</property>' % \
-                  (indent, name, self.properties[name])
+            if name in translatable_properties:
+                print '%s  <property name="%s" translatable="yes">%s</property>' % \
+                      (indent, name, self.properties[name])
+            else:
+                print '%s  <property name="%s">%s</property>' % \
+                      (indent, name, self.properties[name])
             want_newline = 1
         if want_newline and (self.signals or self.accels or self.children):
             print

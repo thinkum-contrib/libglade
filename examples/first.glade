@@ -2,7 +2,7 @@
 <!DOCTYPE glade-interface SYSTEM "../glade-2.0.dtd" >
 <glade-interface>
   <widget class="GtkWindow" id="window1">
-    <property name="title">window1</property>
+    <property name="title" translatable="yes">window1</property>
     <property name="type">GTK_WINDOW_TOPLEVEL</property>
     <property name="window-position">GTK_WIN_POS_NONE</property>
     <property name="modal">False</property>
@@ -22,7 +22,7 @@
         <property name="visible">yes</property>
         <child>
           <widget class="GtkLabel" id="label1">
-            <property name="label">I am a label</property>
+            <property name="label" translatable="yes">I am a label</property>
             <property name="justify">GTK_JUSTIFY_LEFT</property>
             <property name="wrap">True</property>
             <property name="xalign">0.5</property>

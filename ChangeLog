@@ -1,5 +1,10 @@
 2001-08-24  James Henstridge  <james@daa.com.au>
 
+	* libglade-convert (WidgetDef.dump, ChildDef.dump): look at
+	translatable_properties list to see if the property should be
+	translatable.  This list is taken from the libglade-xgettext
+	utility.
+
 	* glade/glade-parser.c: fix things so that things really get
 	translated.
 

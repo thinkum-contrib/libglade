@@ -3,7 +3,7 @@
 
 <glade-interface>
   <widget class="GtkWindow" id="window1">
-    <property name="title">Testing</property>
+    <property name="title" translatable="yes">Testing</property>
     <property name="border_width">10</property>
     <property name="visible">yes</property>
 
@@ -18,7 +18,7 @@
 
         <child>
           <widget class="GtkLabel" id="label1">
-            <property name="label">A label</property>
+            <property name="label" translatable="yes">A label</property>
             <property name="visible">yes</property>
           </widget>
 	  <packing>
@@ -33,7 +33,7 @@
 
             <child>
               <widget class="GtkLabel" id="label2">
-                <property name="label">_Push me</property>
+                <property name="label" translatable="yes">_Push me</property>
                 <property name="use_underline">yes</property>
                 <property name="visible">yes</property>
               </widget>
@@ -45,7 +45,7 @@
   </widget>
 
   <widget class="GtkDialog" id="dialog1">
-    <property name="title">Testing2</property>
+    <property name="title" translatable="yes">Testing2</property>
     <property name="border_width">10</property>
     <property name="visible">yes</property>
 
@@ -53,7 +53,7 @@
       <widget class="GtkVBox" id="vbox2">
         <child>
           <widget class="GtkLabel" id="label3">
-            <property name="label">A label</property>
+            <property name="label" translatable="yes">A label</property>
             <property name="visible">yes</property>
           </widget>
 	  <packing>
