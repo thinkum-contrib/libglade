@@ -1,12 +1,8 @@
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
-<!ENTITY libglade-glade-init SYSTEM "sgml/glade-init.sgml">
-<!ENTITY libglade-glade-xml SYSTEM "sgml/glade-xml.sgml">
-<!ENTITY libglade-glade-parser SYSTEM "sgml/glade-parser.sgml">
-<!ENTITY libglade-glade-build SYSTEM "sgml/glade-build.sgml">
-<!ENTITY libglade-dtd SYSTEM "libglade-dtd.sgml">
-]>
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+    "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<book id="libglade">
+<book id="libglade" xmlns:xi="http://www.w3.org/2001/XInclude">
   <bookinfo>
     <title>Libglade Reference Manual</title>
     <authorgroup>
@@ -345,7 +341,7 @@ menubar = glade_xml_get_widget(xml, "menubar");
     introduce a new element for each new property.  This was done so
     that the format could be described with a fairly small DTD:</para>
 
-    <programlisting>&libglade-dtd;</programlisting>
+    <programlisting><xi:include href="../glade-2.0.dtd" parse="text"/></programlisting>
 
     <para>The <sgmltag>&lt;widget&gt;</sgmltag> elements contain
     <sgmltag>&lt;property&gt;</sgmltag> elements which define widget
@@ -501,10 +497,10 @@ menubar = glade_xml_get_widget(xml, "menubar");
       the public interfaces are documented here.</para>
     </partintro>
 
-    &libglade-glade-init;
-    &libglade-glade-xml;
-    &libglade-glade-parser;
-    &libglade-glade-build;
+    <xi:include href="xml/glade-init.xml"/>
+    <xi:include href="xml/glade-xml.xml"/>
+    <xi:include href="xml/glade-parser.xml"/>
+    <xi:include href="xml/glade-build.xml"/>
   </part>
 
 </book>
