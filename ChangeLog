@@ -1,3 +1,11 @@
+2000-10-07  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gnome.c (pbox_page_setup_signals): ditto.
+
+	* glade/glade-gtk.c (note_page_setup_signals): make the map and
+	unmap signals hold a reference to the accel group.  Get rid of the
+	destroy handler which unref'd the accel group.
+
 2000-09-18  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-xml.c (glade_xml_pop_accel): unref the accel group
