@@ -429,6 +429,8 @@ def new_label(class_type, text, accel_object):
     label['class'] = class_type
     label['name'] = make_name()
     label['label'] = text;
+    if '_' in text:
+        label['use-underline'] = 'yes'
 
     if not class_type == 'GtkMenuItem':
         label['xalign'] = '0.0'

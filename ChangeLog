@@ -1,3 +1,8 @@
+Sat Feb  9 09:06:56 2002  Jonathan Blandford  <jrb@redhat.com>
+
+	* libglade-convert.in (new_label): turn on 'use-underline' if
+	there's an '_' in the label.
+
 2002-02-07  jacob berkman  <jacob@ximian.com>
 
 	* glade/glade-xml.c (glade_xml_relative_file): use
