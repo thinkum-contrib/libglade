@@ -41,7 +41,7 @@ static gchar *glade_style_make_name(void) {
 
 typedef enum {
     PARSER_START,
-    PARSER_FINNISH,
+    PARSER_FINISH,
     PARSER_GTK_INTERFACE,
     PARSER_WIDGET,
     PARSER_WIDGET_ATTRIBUTE,
@@ -58,7 +58,7 @@ typedef enum {
 
 static const char *states[] = {
     "START",
-    "FINNISH",
+    "FINISH",
     "GTK_INTERFACE",
     "WIDGET",
     "WIDGET_ATTRIBUTE",
@@ -231,7 +231,7 @@ static void gladeStartElement(GladeParseState *state, const CHAR *name,
     case PARSER_UNKNOWN:
 	state->unknown_depth++;
 	break;
-    case PARSER_FINNISH:
+    case PARSER_FINISH:
 	/* should not start new elements in this state */
 	g_assert_not_reached();
 	break;
@@ -452,7 +452,7 @@ static void gladeEndElement(GladeParseState *state, const CHAR *name) {
 	break;
     case PARSER_GTK_INTERFACE:
 	/* the end of the file ... */
-	state->state = PARSER_FINNISH;
+	state->state = PARSER_FINISH;
 	break;
     case PARSER_START:
 	/* we should not have a closing tag in this state */
