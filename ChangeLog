@@ -1,3 +1,11 @@
+2001-10-26  Michael Meeks  <michael@ximian.com>
+
+	* glade/glade-gtk.c (clist_new): fix warning.
+	(_glade_init_gtk_widgets): glade_standard_build_widget
+	for GTK_TYPE_TEXT, not build_children, use build_button
+	for GTK_TYPE_BUTTON, use scrolled_window_find_internal_child
+	for GTK_TYPE_SCROLLED_WINDOW - kills all the warnings.
+
 2001-10-24  jacob berkman  <jacob@ximian.com>
 
 	* glade/glade-gnome.c:

@@ -250,7 +250,7 @@ clist_new (GladeXML *xml, GType widget_type,
     if (column_widths) {
 	const char *pos = column_widths;
 	while (pos && *pos) {
-	    int width = strtol (pos, &pos, 0);
+	    int width = strtol (pos, (char **)&pos, 0);
 	    if (*pos == ',') pos++;
 	    gtk_clist_set_column_width (GTK_CLIST (clist), cols++, width);
 	}
@@ -481,7 +481,7 @@ _glade_init_gtk_widgets(void)
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_ASPECT_FRAME, glade_standard_build_widget,
 			   glade_standard_build_children, NULL);
-    glade_register_widget (GTK_TYPE_BUTTON, glade_standard_build_widget,
+    glade_register_widget (GTK_TYPE_BUTTON, build_button,
 			   glade_standard_build_children, NULL);
     glade_register_widget (GTK_TYPE_CALENDAR, glade_standard_build_widget,
 			   NULL, NULL);
@@ -576,7 +576,8 @@ _glade_init_gtk_widgets(void)
     glade_register_widget (GTK_TYPE_RADIO_MENU_ITEM, glade_standard_build_widget,
 			   menuitem_build_children, NULL);
     glade_register_widget (GTK_TYPE_SCROLLED_WINDOW, glade_standard_build_widget,
-			   glade_standard_build_children, NULL);
+			   glade_standard_build_children,
+			   scrolled_window_find_internal_child);
     glade_register_widget (GTK_TYPE_SOCKET, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_SPIN_BUTTON, glade_standard_build_widget,
@@ -587,7 +588,7 @@ _glade_init_gtk_widgets(void)
 			   glade_standard_build_children, NULL);
     glade_register_widget (GTK_TYPE_TEAROFF_MENU_ITEM, glade_standard_build_widget,
 			   NULL, NULL);
-    glade_register_widget (GTK_TYPE_TEXT, glade_standard_build_children,
+    glade_register_widget (GTK_TYPE_TEXT, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_TEXT_VIEW, glade_standard_build_widget,
 			   NULL, NULL);
