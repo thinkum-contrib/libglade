@@ -1,5 +1,12 @@
 1999-04-24  James Henstridge  <james@daa.com.au>
 
+	* Makefile.am: removed reference to the macros	directory, as they
+	break the gnumeric build.  The problem with this is that a
+	distributed libglade package would not contain all the files
+	needed to build the configure script if you modify the Makefile.am's.
+
+1999-04-24  James Henstridge  <james@daa.com.au>
+
 	* libglade-config.in: don't output -I/usr/include if that is where
 	the headers are, as this location is already in the search path.
 
