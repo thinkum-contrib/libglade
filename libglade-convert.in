@@ -321,6 +321,10 @@ renamed_props = {
                                  ('logo_background_color', 'logo_background'),
                                  ('logo_image', 'logo'),
                                  ],
+    'GnomeFontPicker': [ ('show_size', 'show-size'),
+                         ('use_font', 'use-font-in-label'),
+                         ('use_font_size', 'label-font-size')
+                         ],
 }
 
 # child properties to change on specific widgets

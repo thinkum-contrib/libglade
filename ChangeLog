@@ -1,5 +1,7 @@
 2001-12-06  jacob berkman  <jacob@ximian.com>
 
+	* libglade-convert.in: support GnomeFontPicker
+
 	* glade/glade-xml.c (glade_xml_set_common_params): print a warning
 	if a widget has children but is not a container
 	(glade_xml_set_toplevel): don't set the tooltips if the window is
