@@ -6,7 +6,7 @@ m4_define([required_glib_version],   [2.5.0])
 m4_define([required_atk_version],    [1.9.0])
 m4_define([required_gtk_version],    [2.5.0])
 
-AC_INIT([libglade], [2.5.0],
+AC_INIT([libglade], [2.5.1],
         [http://bugzilla.gnome.org/enter_bug.cgi?product=libglade])
 
 AC_CONFIG_SRCDIR([test-libglade.c])

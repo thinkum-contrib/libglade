@@ -1,5 +1,11 @@
 2005-02-11  James Henstridge  <james@jamesh.id.au>
 
+	* glade/Makefile.am (LTVERSION): bump libtool version number.
+
+	* configure.in: bump version number.
+
+	* NEWS: add 2.5.1 news items.
+
 	* glade/glade-gtk.c (toolbar_build_children): revert the handling
 	of old toolbars to the pre-2.4.1 behaviour, with the exception of
 	the "active" handling for radio buttons.
