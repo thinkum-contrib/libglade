@@ -1,3 +1,20 @@
+2000-03-10  Michael Meeks  <michael@helixcode.com>
+
+	* glade/glade-bonobo.c: Add.
+
+	* glade/glade.h: add glade_bonobo_init.
+
+	* glade/glade-xml.c (glade_xml_build_widget): Add extended widget
+	support.
+
+	* glade/glade-private.h: Add extended_widget prototype.
+
+	* glade/Makefile.am (THE_FLAGS): add Bonobo support.
+
+	* configure.in: add bonobo checks.
+
+	* autogen.sh (PKG_NAME): change to libGlade.
+
 2000-03-12  James Henstridge  <james@daa.com.au>
 
 	* glade/Makefile.am (INCLUDES): don't bother with the THE_FLAGS

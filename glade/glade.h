@@ -33,6 +33,11 @@ void glade_init(void);
  * glade_init() if you want to use the GNOME widget set with libglade */
 void glade_gnome_init(void);
 
+/* this is defined in libglade-bonobo -- it should be used instead of
+ * glade_init() if you want to use the GNOME widget set with included
+ * Bonobo controls with libglade */
+void glade_bonobo_init(void);
+
 /* Load the named dynamic module.  Basically it is loaded, and the
  * glade_init_module function is called.  This function should
  * do any library initialisation and call glade_register_widgets */

@@ -1,7 +1,7 @@
 AC_INIT(test-libglade.c)
 AM_CONFIG_HEADER(config.h)
 
-AM_INIT_AUTOMAKE(libglade, 0.11)
+AM_INIT_AUTOMAKE(libglade, 0.12)
 AM_MAINTAINER_MODE
 
 dnl get the GNOME macros
@@ -46,6 +46,10 @@ GNOME_INIT_HOOK([
 	AC_DEFINE(ENABLE_GNOME)
 ])
 AM_CONDITIONAL(GNOME_SUPPORT, $have_gnome)
+
+have_bonobo=false
+AM_PATH_BONOBO(0.8, have_bonobo=true)
+AM_CONDITIONAL(BONOBO_SUPPORT, $have_bonobo)
 
 GNOME_COMPILE_WARNINGS
 

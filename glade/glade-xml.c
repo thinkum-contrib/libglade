@@ -52,6 +52,8 @@ static void glade_xml_destroy(GtkObject *object);
 static void glade_xml_build_interface(GladeXML *xml, GladeWidgetTree *tree,
 				      const char *root);
 
+GladeExtendedFunc *glade_xml_build_extended_widget = NULL;
+
 /**
  * glade_xml_get_type:
  *
@@ -1001,11 +1003,24 @@ glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info,
 	}
 	data = g_hash_table_lookup(widget_table, info->class);
 	if (data == NULL) {
-		char buf[50];
-		g_warning("unknown widget class '%s'", info->class);
-		g_snprintf(buf, 49, "[a %s]", info->class);
-		ret = gtk_label_new(buf);
-		gtk_widget_show(ret);
+		if (glade_xml_build_extended_widget) {
+			char *err = NULL;
+
+			ret = glade_xml_build_extended_widget(self, info, &err);
+			if (!ret) {
+				g_warning("%s", err);
+				ret = gtk_label_new(err);
+				g_free(err);
+				gtk_widget_show(ret);
+			}
+		} else {
+			char buf[50];
+			g_warning("unknown widget class '%s'", info->class);
+			g_snprintf(buf, 49, "[a %s]", info->class);
+			ret = gtk_label_new(buf);
+			gtk_widget_show(ret);
+		}
+		
 		return ret;
 	}
 	g_assert(data->new);

@@ -4,7 +4,7 @@
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 
-PKG_NAME="Glade"
+PKG_NAME="libGlade"
 
 (test -f $srcdir/configure.in \
   && test -f $srcdir/glade/glade-gtk.c \

@@ -92,6 +92,10 @@ struct _GladeSignalData {
 	gboolean signal_after;
 };
 
+typedef GtkWidget *(GladeExtendedFunc) (GladeXML *self, GladeWidgetInfo *info,
+					char **error);
+extern GladeExtendedFunc *glade_xml_build_extended_widget;
+
 /*
  * parse an XML document, evaluating any styles found.  Uses a cached copy
  * of the GladeWidgetTree structure if this file has been parsed previously.
