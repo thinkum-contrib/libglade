@@ -1,4 +1,15 @@
+2002-03-30  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gtk.c (_glade_init_gtk_widgets): register
+	GtkSeparatorMenuItem so that it can be used in glade files. (fixes
+	bug 76682).
+	(option_menu_build_children): don't require that the option menu's
+	GtkMenu be an "internal child" (fixes bug 75590).
+
 2002-03-23  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c (add_relation): unref the AtkRelation after
+	adding it to the AtkRelationSet (from bug 75782)
 
 	* glade/glade-gtk.c (button_set_response_id): new function to
 	handle response_id as a custom property.

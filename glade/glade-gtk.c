@@ -544,7 +544,19 @@ option_menu_build_children (GladeXML *xml, GtkWidget *parent,
 {
     int i, history = 0;
 
-    glade_standard_build_children (xml, parent, info);
+    for (i = 0; i < info->n_children; i++) {
+	GtkWidget *child;
+	GladeWidgetInfo *childinfo = info->children[i].child;
+
+	if (strcmp(childinfo->class, "GtkMenu") != 0) {
+	    g_warning("the child of the option menu '%s' was not a GtkMenu",
+		      info->name);
+	    continue;
+	}
+	child = glade_xml_build_widget(xml, childinfo);
+
+	gtk_option_menu_set_menu(GTK_OPTION_MENU(parent), child);
+    }
 
     for (i = 0; i < info->n_properties; i++) {
 	const char *name  = info->properties[i].name;
@@ -854,26 +866,6 @@ image_menu_find_internal_child(GladeXML *xml, GtkWidget *parent,
 }
 
 static GtkWidget *
-option_menu_find_internal_child(GladeXML *xml, GtkWidget *parent,
-				const gchar *childname)
-{
-    if (!strcmp(childname, "menu")) {
-	GtkWidget *ret;
-	
-	if ((ret = gtk_option_menu_get_menu (GTK_OPTION_MENU (parent))))
-	    return ret;
-
-	ret = gtk_menu_new ();
-	gtk_widget_show (ret);
-	gtk_option_menu_set_menu (GTK_OPTION_MENU (parent), ret);
-
-	return ret;
-    }
-
-    return NULL;
-}
-
-static GtkWidget *
 scrolled_window_find_internal_child(GladeXML *xml, GtkWidget *parent,
 				    const gchar *childname)
 {
@@ -1083,7 +1075,7 @@ _glade_init_gtk_widgets(void)
     glade_register_widget (GTK_TYPE_NOTEBOOK, glade_standard_build_widget,
 			   notebook_build_children, NULL);
     glade_register_widget (GTK_TYPE_OPTION_MENU, glade_standard_build_widget,
-			   option_menu_build_children, option_menu_find_internal_child);
+			   option_menu_build_children, NULL);
     glade_register_widget (GTK_TYPE_PIXMAP, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_PLUG, NULL,
@@ -1101,6 +1093,8 @@ _glade_init_gtk_widgets(void)
     glade_register_widget (GTK_TYPE_SCROLLED_WINDOW, glade_standard_build_widget,
 			   glade_standard_build_children,
 			   scrolled_window_find_internal_child);
+    glade_register_widget (GTK_TYPE_SEPARATOR_MENU_ITEM, glade_standard_build_widget,
+			   NULL, NULL);
     glade_register_widget (GTK_TYPE_SOCKET, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_SPIN_BUTTON, glade_standard_build_widget,
