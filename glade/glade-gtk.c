@@ -734,7 +734,7 @@ static GtkWidget *clist_new(GladeXML *xml, GNode *node) {
 			glade_enum_from_string(GTK_TYPE_SELECTION_MODE,
 					       content));
       else if (!strcmp(info->name, "shadow_type"))
-	gtk_clist_set_border(GTK_CLIST(clist),
+	gtk_clist_set_shadow_type(GTK_CLIST(clist),
 			     glade_enum_from_string(GTK_TYPE_SHADOW_TYPE,
 						    content));
       else if (!strcmp(info->name, "show_titles")) {
@@ -796,7 +796,7 @@ static GtkWidget *ctree_new(GladeXML *xml, GNode *node) {
 			glade_enum_from_string(GTK_TYPE_SELECTION_MODE,
 					       content));
       else if (!strcmp(info->name, "shadow_type"))
-	gtk_clist_set_border(GTK_CLIST(ctree),
+	gtk_clist_set_shadow_type(GTK_CLIST(ctree),
 			     glade_enum_from_string(GTK_TYPE_SHADOW_TYPE,
 						    content));
       else if (!strcmp(info->name, "show_titles")) {

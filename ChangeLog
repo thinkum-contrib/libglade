@@ -1,3 +1,8 @@
+1999-04-06  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gtk.c: a few small fixes to make libglade compile
+	correctly with newer versions of GTK.
+
 1999-01-13  James Henstridge  <james@daa.com.au>
 
 	* autogen.sh: it wasn't calling autoheader, which caused some trouble.
