@@ -6,6 +6,7 @@
     <property name="title" translatable="yes">Testing</property>
     <property name="border_width">10</property>
     <property name="visible">yes</property>
+    <property name="wmclass_name">somedialog</property>
     <property name="cxx_use_heap" agent="glademm">yes</property>
 
     <accessibility>

@@ -1,5 +1,13 @@
 2002-03-10  James Henstridge  <james@daa.com.au>
 
+	* examples/simple.glade: add a wmclass_name property to the
+	window, as a test.
+
+	* glade/glade-gtk.c (window_set_wmclass_name): function to set
+	wmclass_name property.
+	(window_set_wmclass_class): setter for wmclass_class.
+	(_glade_init_gtk_widgets): register setters.
+
 	* glade/glade-parser.c (alloc_propname): new function for
 	allocating a normalised property name string.
 	(glade_parser_start_element): use alloc_propname() for storing

@@ -362,6 +362,27 @@ menu_item_set_use_stock (GladeXML *xml, GtkWidget *w,
     }
 }
 
+static void
+window_set_wmclass_name (GladeXML *xml, GtkWidget *w,
+			 const gchar *name, const gchar *value)
+{
+    GtkWindow *window = GTK_WINDOW(w);
+    gchar *wmclass = g_strdup(window->wmclass_class);
+
+    gtk_window_set_wmclass(window, value, wmclass);
+    g_free(wmclass);
+}
+
+static void
+window_set_wmclass_class (GladeXML *xml, GtkWidget *w,
+			  const gchar *name, const gchar *value)
+{
+    GtkWindow *window = GTK_WINDOW(w);
+    gchar *wmname = g_strdup(window->wmclass_name);
+
+    gtk_window_set_wmclass(window, wmname, value);
+    g_free(wmname);
+}
 
 static void
 menuitem_build_children(GladeXML *self, GtkWidget *w,
@@ -959,6 +980,8 @@ _glade_init_gtk_widgets(void)
     glade_register_custom_prop (GTK_TYPE_MENU_ITEM, "label", menu_item_set_label);
     glade_register_custom_prop (GTK_TYPE_MENU_ITEM, "use_underline", menu_item_set_use_underline);
     glade_register_custom_prop (GTK_TYPE_MENU_ITEM, "use_stock", menu_item_set_use_stock);
+    glade_register_custom_prop (GTK_TYPE_WINDOW, "wmclass_name", window_set_wmclass_name);
+    glade_register_custom_prop (GTK_TYPE_WINDOW, "wmclass_class", window_set_wmclass_class);
 
     glade_register_widget (GTK_TYPE_ACCEL_LABEL, glade_standard_build_widget,
 			   NULL, NULL);
