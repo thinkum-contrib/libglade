@@ -1136,6 +1136,15 @@ combo_find_internal_child(GladeXML *xml, GtkWidget *parent,
     return NULL;
 }
 
+static GtkWidget *
+combo_box_entry_find_internal_child(GladeXML *xml, GtkWidget *parent,
+				    const gchar *childname)
+{
+    if (!strcmp(childname, "entry"))
+	return gtk_bin_get_child(GTK_BIN(parent));
+    return NULL;
+}
+
 void
 _glade_init_gtk_widgets(void)
 {
@@ -1209,7 +1218,7 @@ _glade_init_gtk_widgets(void)
     glade_register_widget (GTK_TYPE_COMBO_BOX, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_COMBO_BOX_ENTRY, glade_standard_build_widget,
-			   NULL, NULL);
+			   glade_standard_build_children, combo_box_entry_find_internal_child);
     glade_register_widget (GTK_TYPE_CTREE, glade_standard_build_widget,
 			   clist_build_children, NULL);
     glade_register_widget (GTK_TYPE_CURVE, glade_standard_build_widget,

@@ -1,3 +1,12 @@
+2004-05-19  Daniel Elstner  <daniel.elstner@gmx.net>
+
+	* glade/glade-gtk.c (combo_box_entry_find_internal_child): New
+	function that exposes GtkComboBoxEntry's child GtkEntry widget as
+	internal-child "entry".
+	(_glade_init_gtk_widgets): Add glade_standard_build_children and
+	combo_box_entry_find_internal_child to the glade_register_widget()
+	call for GTK_TYPE_COMBO_BOX_ENTRY.
+
 2004-11-11  James Henstridge  <james@jamesh.id.au>
 
 	* glade/glade-parser.c (glade_parser_start_element): Apply Damon's
