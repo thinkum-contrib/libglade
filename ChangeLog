@@ -1,3 +1,9 @@
+1999-06-03  James Henstridge  <james@daa.com.au>
+
+	* Makefile.am (m4data_DATA): install the libglade.m4 macro.
+
+	* libglade.m4: added an autoconf macro to detect libglade.
+
 1999-05-27  James Henstridge  <james@daa.com.au>
 
 	* libglade-config.in (libs): add gnome libraries to the link line.

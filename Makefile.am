@@ -8,13 +8,15 @@ endif
 
 INCLUDES = $(THE_FLAGS) $(XML_CFLAGS)
 
-EXTRA_DIST = libglade.spec test.glade simple.glade example.glade
+EXTRA_DIST = libglade.spec test.glade simple.glade example.glade libglade.m4
 
 if LIBGLADE_FULLDIST
 bin_SCRIPTS = libglade-config
 noinst_PROGRAMS = test-libglade
 test_libglade_LDADD = glade/libglade.la $(THE_LIBS) $(XML_LIBS)
 extra_dirs = macros doc
+m4datadir = $(datadir)/aclocal
+m4data_DATA = libglade.m4
 else
 extra_dirs =
 endif
