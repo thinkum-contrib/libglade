@@ -421,6 +421,82 @@ button_set_response_id (GladeXML *xml, GtkWidget *w,
 }
 
 static void
+toggle_tool_button_set_active (GladeXML *xml, GtkWidget *w,
+			       const char *name, const char *value)
+{
+    gtk_toggle_tool_button_set_active (GTK_TOGGLE_TOOL_BUTTON (w),
+				       BOOL (value));
+}
+
+static void
+tool_button_set_icon (GladeXML *xml, GtkWidget *w,
+		      const char *name, const char *value)
+{
+    GdkPixbuf *pb;
+    GtkWidget *image;
+    char *file;
+
+    file = glade_xml_relative_file (xml, value);
+    pb = gdk_pixbuf_new_from_file (file, NULL);
+    g_free (file);
+
+    if (!pb) {
+	g_warning ("Couldn't find image file: %s", value);
+	return;
+    }
+
+    image = gtk_image_new_from_pixbuf (pb);
+    g_object_unref (pb);
+
+    gtk_widget_show (image);
+    gtk_tool_button_set_icon_widget (GTK_TOOL_BUTTON (w), image);
+}
+
+static void
+combo_box_set_items (GladeXML *xml, GtkWidget *w,
+		     const char *name, const char *value)
+{
+    GtkListStore *store;
+    GtkCellRenderer *cell;
+    gchar *items, *items_end, *item_start, *item_end;
+    GtkTreeIter iter;
+
+    /* If the "items" property is set, we create a simple model with just
+       one column of text. */
+    store = gtk_list_store_new (1, G_TYPE_STRING);
+    gtk_combo_box_set_model (GTK_COMBO_BOX (w), GTK_TREE_MODEL (store));
+
+    /* GtkComboBoxEntry creates the cell renderer itself, but we have to set
+       the column containing the text. */
+    if (GTK_IS_COMBO_BOX_ENTRY (w)) {
+	gtk_combo_box_entry_set_text_column (GTK_COMBO_BOX_ENTRY (w), 0);
+    } else {
+	cell = gtk_cell_renderer_text_new ();
+	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (w), cell, TRUE);
+	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (w), cell,
+					"text", 0,
+					NULL);
+    }
+
+    /* Now add the items one at a time. */
+    items = g_strdup (value);
+    items_end = &items[strlen (items)];
+    item_start = items;
+    while (item_start < items_end) {
+	item_end = strchr (item_start, '\n');
+	if (item_end == NULL)
+	    item_end = items_end;
+	*item_end = '\0';
+
+	gtk_list_store_append (store, &iter);
+	gtk_list_store_set (store, &iter, 0, item_start, -1);
+
+	item_start = item_end + 1;
+    }
+    g_free (items);
+}
+
+static void
 menuitem_build_children(GladeXML *self, GtkWidget *w,
 			GladeWidgetInfo *info)
 {
@@ -1069,6 +1145,9 @@ _glade_init_gtk_widgets(void)
     glade_register_custom_prop (GTK_TYPE_LIST_ITEM, "label", list_item_set_label);
     glade_register_custom_prop (GTK_TYPE_BUTTON, "response_id", button_set_response_id);
     glade_register_custom_prop (GTK_TYPE_ENTRY, "invisible_char", entry_set_invisible_char);
+    glade_register_custom_prop (GTK_TYPE_TOGGLE_TOOL_BUTTON, "active", toggle_tool_button_set_active);
+    glade_register_custom_prop (GTK_TYPE_TOOL_BUTTON, "icon", tool_button_set_icon);
+    glade_register_custom_prop (GTK_TYPE_COMBO_BOX, "items", combo_box_set_items);
 
     glade_register_widget (GTK_TYPE_ACCEL_LABEL, glade_standard_build_widget,
 			   NULL, NULL);
@@ -1097,6 +1176,8 @@ _glade_init_gtk_widgets(void)
     glade_register_widget (GTK_TYPE_COMBO, glade_standard_build_widget,
 			   glade_standard_build_children, combo_find_internal_child);
     glade_register_widget (GTK_TYPE_COMBO_BOX, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_COMBO_BOX_ENTRY, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_CTREE, glade_standard_build_widget,
 			   clist_build_children, NULL);
@@ -1186,10 +1267,14 @@ _glade_init_gtk_widgets(void)
 			   glade_standard_build_children, NULL);
     glade_register_widget (GTK_TYPE_RADIO_MENU_ITEM, glade_standard_build_widget,
 			   menuitem_build_children, NULL);
+    glade_register_widget (GTK_TYPE_RADIO_TOOL_BUTTON, glade_standard_build_widget,
+			   NULL, NULL);
     glade_register_widget (GTK_TYPE_SCROLLED_WINDOW, glade_standard_build_widget,
 			   glade_standard_build_children,
 			   scrolled_window_find_internal_child);
     glade_register_widget (GTK_TYPE_SEPARATOR_MENU_ITEM, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_SEPARATOR_TOOL_ITEM, glade_standard_build_widget,
 			   NULL, NULL);
 #ifdef HAVE_GTK_PLUG
     glade_register_widget (GTK_TYPE_SOCKET, glade_standard_build_widget,
@@ -1211,8 +1296,14 @@ _glade_init_gtk_widgets(void)
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_TOGGLE_BUTTON, glade_standard_build_widget,
 			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_TOGGLE_TOOL_BUTTON, glade_standard_build_widget,
+			   NULL, NULL);
     glade_register_widget (GTK_TYPE_TOOLBAR, glade_standard_build_widget,
 			   toolbar_build_children, NULL);
+    glade_register_widget (GTK_TYPE_TOOL_ITEM, glade_standard_build_widget,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_TOOL_BUTTON, glade_standard_build_widget,
+			   NULL, NULL);
     glade_register_widget (GTK_TYPE_TREE, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_TREE_VIEW, glade_standard_build_widget,

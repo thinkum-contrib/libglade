@@ -1,3 +1,14 @@
+2004-03-08  Damon Chaplin  <damon@gnome.org>
+
+	* glade/glade-gtk.c (toggle_tool_button_set_active)
+	(tool_button_set_icon, combo_box_set_items): implement custom
+	properties.
+
+	(_glade_init_gtk_widgets): register above custom properties, and
+	register GtkComboBoxEntry, GtkToolItem, GtkToolButton,
+	GtkToggleToolButton, GtkRadioToolButton & GtkSeparatorToolItem.
+	Bugs #127805 and #134835.
+
 2004-02-07  Steve Chaplin <stevech1097@yahoo.com.au>
 
 	* tests/Makefile.am (AM_LDFLAGS): Fix a warning with automake.
