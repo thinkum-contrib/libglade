@@ -117,10 +117,7 @@ done
 @GNOMEDB_SUPPORT_FALSE@fi
 
 if test "$echo_cflags" = "yes"; then
-    cflags="@XML_CFLAGS@"
-    if test "@includedir@" != /usr/include; then
-	cflags="$cflags -I@includedir@"
-    fi
+    cflags="@XML_CFLAGS@ -I@includedir@/libglade-1.0"
     if test "$lib_bonobo" = "yes"; then
 	cflags="$cflags @BONOBO_CFLAGS@"
     elif test "$lib_gnomedb" = "yes"; then

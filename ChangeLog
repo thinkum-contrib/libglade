@@ -1,5 +1,14 @@
 2001-09-01  James Henstridge  <james@daa.com.au>
 
+	* libgladeConf.sh.in (LIBGLADE_INCLUDEDIR): change include dir.
+
+	* libglade-config.in: change -I flag for --cflags
+
+	* libglade*.pc.in (Cflags): adjust cflags for new header location.
+
+	* glade/Makefile.am (gladeincludedir): install headers under a
+	versioned directory.
+
 	* glade/glade-xml.c (glade_xml_init): use g_new0 to allocate
 	private structure.
 	(*): use GQuarks when setting/getting data for a marginal speed

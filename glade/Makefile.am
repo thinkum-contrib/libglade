@@ -58,7 +58,7 @@ libglade_gnomedb_la_SOURCES = glade-gnomedb.c glade-build.h glade-xml.h
 libglade_gnomedb_la_LIBADD = $(GNOMEDB_LIBS) $(XML_LIBS)
 libglade_gnomedb_la_LDFLAGS = -version-info $(LTVERSION)
 
-gladeincludedir      = $(includedir)/glade
+gladeincludedir      = $(includedir)/libglade-1.0/glade
 gladeinclude_HEADERS = $(the_headers)
 
 EXTRA_DIST = $(the_headers) \
