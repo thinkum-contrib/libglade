@@ -827,7 +827,7 @@ optionmenu_new(GladeXML *xml, GNode *node)
 	for (; info; info = info->next) {
 		char *content = xmlNodeGetContent(info);
 
-		if (!strcmp(info->name, "items")) {
+		if (!strcmp(info->name, "items") && content) {
 			char *pos = content;
 			char *items_end = &content[strlen(content)];
 			while (pos < items_end) {
@@ -854,7 +854,8 @@ optionmenu_new(GladeXML *xml, GNode *node)
 }
 
 static GtkWidget *
-combo_new(GladeXML *xml, GNode *node) {
+combo_new (GladeXML *xml, GNode *node)
+{
 	GtkWidget *combo = gtk_combo_new();
 	xmlNodePtr info = ((xmlNodePtr)node->data)->childs;
 
@@ -867,7 +868,7 @@ combo_new(GladeXML *xml, GNode *node) {
 				gtk_combo_set_case_sensitive(GTK_COMBO(combo), content[0]=='T');
 			break;
 		case 'i':
-			if (!strcmp(info->name, "items")) {
+			if (!strcmp(info->name, "items") && content) {
 				char *pos = content;
 				char *items_end = &content[strlen(content)];
 				GList *item_list = NULL;
