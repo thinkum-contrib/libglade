@@ -107,7 +107,7 @@ static GladeWidgetInfo *glade_widget_info_new(void) {
     info->visible = TRUE;
     info->sensitive = TRUE;
     info->can_default = FALSE;
-    info->can_focus = TRUE;
+    info->can_focus = FALSE;
     info->has_default = FALSE;
     info->has_focus = FALSE;
 

@@ -1,3 +1,8 @@
+1999-09-18  Miguel de Icaza  <miguel@gnu.org>
+
+	* glade/glade-sax.c: Set can_focus to zero initially.  If the
+	widget can focus, Glade will explicitly list it.
+
 1999-09-14  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-sax.c (gladeEndElement): extract has_default, has_focus
