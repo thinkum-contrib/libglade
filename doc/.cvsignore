@@ -9,3 +9,4 @@ libglade-decl-list.txt
 libglade-decl.txt
 *.bak
 *-unused.txt
+.libs
