@@ -62,7 +62,7 @@
 	  </packing>
         </child>
 	<child internal-child="action_area">
-	  <widget class="GtkVButtonBox" id="buttonbox1">
+	  <widget class="GtkHButtonBox" id="buttonbox1">
 	    <child>
               <widget class="GtkButton" id="button2">
                 <property name="visible">yes</property>

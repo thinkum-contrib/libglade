@@ -1,5 +1,14 @@
 2001-08-15  James Henstridge  <james@daa.com.au>
 
+	* libglade-convert: rewrite large portions of the script to make
+	it easier to extend.  It now parses the old file into a tree of
+	WidgetDef instances.  It then runs a fixup routine on the tree,
+	and finally dumps the modified tree in the new format.
+	(fixup_widget): add missing GtkAccelLabel child to menu items with
+	a label property but no children.
+	(fixup_widget): add internal_child settings for GtkDialog special
+	children.
+
 	* examples/first.glade: add another example, based on one Chema
 	sent me.
 

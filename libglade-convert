@@ -1,78 +1,151 @@
 #!/usr/bin/env python
 
-# yes, this required python 2.x
+# yes, this requires python 2.x and an XML parser module (eg. PyExpat)
 
 import sys
 import string
 import xml.dom.minidom
 
-def munge_widget_properties(properties):
-    props = []
-    seen_visible = 0
-    for name, value in properties:
-	if name == 'visible': seen_visible = 1
-	
-	if value == 'True': value = 'yes'
-	elif value == 'False': value = 'no'
-	props.append((name, value))
-    if not seen_visible:
-	props.append(('visible', 'yes'))
-    return props
 
-def munge_child_properties(properties):
-    props = []
-    has_xoptions = 0
-    xoptions = []
-    has_yoptions = 0
-    yoptions = []
-    for name, value in properties:
-	if value == 'True': value = 'yes'
-	elif value == 'False': value = 'no'
+# --- Code to represent a widget in memory, and dump it to stdout ---
 
-	if name == 'xpad': name = 'x_padding'
-	elif name == 'ypad': name = 'y_padding'
-	elif name == 'xexpand':
-	    if value == 'yes':
-		xoptions.append('expand')
-		has_xoptions = 1
-	    continue
-	elif name == 'xshrink':
-	    if value == 'yes':
-		xoptions.append('shrink')
-		has_xoptions = 1
-	    continue
-	elif name == 'xfill':
-	    if value == 'yes':
-		xoptions.append('fill')
-		has_xoptions = 1
-	    continue
-	elif name == 'yexpand':
-	    if value == 'yes':
-		yoptions.append('expand')
-		has_yoptions = 1
-	    continue
-	elif name == 'yshrink':
-	    if value == 'yes':
-		yoptions.append('shrink')
-		has_yoptions = 1
-	    continue
-	elif name == 'yfill':
-	    if value == 'yes':
-		yoptions.append('fill')
-		has_yoptions = 1
-	    continue
-	
-	props.append((name, value))
-    if has_xoptions:
-	props.append(('x_options', string.join(xoptions,'|')))
-    if has_yoptions:
-	props.append(('y_options', string.join(yoptions,'|')))
-    return props
+class WidgetDef:
+    def __init__(self):
+        self.wclass = None
+        self.name = None
+        self.property_names = [ 'visible' ]
+        self.properties = { 'visible': 'yes' }
+        self.signals = []
+        self.accels = []
+        self.children = []
+
+    def __getitem__(self, name):
+        if name == 'name':
+            return self.name
+        if name == 'class':
+            return self.wclass
+        return self.properties[name]
+    def __setitem__(self, name, value):
+        if name == 'name':
+            self.name = value
+            return
+        if name == 'class':
+            self.wclass = value
+            return
+        if self.properties.has_key(name):
+            self.property_names.remove(name)
+            del self.properties[name]
+        if value == 'True': value = 'yes'
+        if value == 'False': value = 'no'
+        self.property_names.append(name)
+        self.properties[name] = value
+    def __delitem__(self, name):
+        if self.properties.has_key(name):
+            self.property_names.remove(name)
+            del self.properties[name]
+        else:
+            raise KeyError, "unknown property `%s'" % name
+    def has_prop(self, name):
+        return self.properties.has_key(name)
+    def rename_prop(self, old_name, new_name):
+        if self.has_prop(old_name):
+            self[new_name] = self[old_name]
+            del self[old_name]
+
+    def add_signal(self, name, handler, object=None, after=0):
+        self.signals.append((name, handler, object, after))
+    def add_accel(self, key, modifiers, signal):
+        self.accels.append((key, modifiers, signal))
+
+    class ChildDef:
+        def __init__(self, widget, internal_child=None):
+            self.internal_child = None
+            self.property_names = []
+            self.properties = {}
+            self.widget = widget
+        def __getitem__(self, name):
+            return self.properties[name]
+        def __setitem__(self, name, value):
+            if self.properties.has_key(name):
+                self.property_names.remove(name)
+                del self.properties[name]
+            if value == 'True': value = 'yes'
+            if value == 'False': value = 'no'
+            self.property_names.append(name)
+            self.properties[name] = value
+        def __delitem__(self, name):
+            if self.properties.has_key(name):
+                self.property_names.remove(name)
+                del self.properties[name]
+            else:
+                raise KeyError, "unknown property `%s'" % name
+        def has_prop(self, name):
+            return self.properties.has_key(name)
+        def rename_prop(self, old_name, new_name):
+            if self.has_prop(old_name):
+                self[new_name] = self[old_name]
+                del self[old_name]
+        def dump(self, indent):
+            if self.internal_child:
+                print '%s<child internal-child="%s">' % \
+                      (indent, self.internal_child)
+            else:
+                print '%s<child>' % indent
+            self.widget.dump(indent + '  ')
+            if self.properties:
+                print '%s  <packing>' % indent
+                for name in self.property_names:
+                    print '%s    <property name="%s">%s</property>' % \
+                          (indent, name, self.properties[name])
+                print '%s  </packing>' % indent
+            print '%s</child>' % indent
+
+    def add_child(self, widget, internal_child=None):
+        child = self.ChildDef(widget, internal_child)
+        self.children.append(child)
+        return child
+
+    def dump(self, indent):
+        print '%s<widget class="%s" id="%s">' %(indent, self.wclass, self.name)
+        want_newline = 0
+        for name in self.property_names:
+            print '%s  <property name="%s">%s</property>' % \
+                  (indent, name, self.properties[name])
+            want_newline = 1
+        if want_newline and (self.signals or self.accels or self.children):
+            print
+
+        want_newline = 0
+        for name, handler, object, after in self.signals:
+            print '%s  <signal name="%s" handler="%s"' % (indent, name,
+                                                          handler),
+            if object: print 'object="%s"' % object,
+            if after: print 'after="yes"',
+            print '/>'
+            want_newline = 1
+        if want_newline and (self.accels or self.children): print
+
+        want_newline = 0
+        for key, modifiers, signal in self.accels:
+            print '%s  <accelerator key="%s" modifiers="%s" signal="%s" />' % \
+                  (indent, key, modifiers, signal)
+            want_newline = 1
+        if want_newline and self.children: print
+
+        want_newline = 0
+        for child in self.children:
+            if want_newline: print
+            child.dump(indent + '  ')
+            want_newline = 1
+        print '%s</widget>' % indent
+
+
+# --- Code to parse the glade1 XML files into WidgetDef instances ---
 
 def totext(nodelist):
     return string.join(map(lambda node: node.toxml(), nodelist), '')
 
-def handle_signal(signalnode):
+def handle_signal(widget, signalnode):
     name = None
     handler = None
     object = None
@@ -88,12 +161,9 @@ def handle_signal(signalnode):
 	    object = totext(node.childNodes)
 	elif node.nodeName == 'after':
 	    after = (totext(node.childNodes) == 'True')
-    ret = '<signal name="%s" handler="%s"' % (name, handler)
-    if object: ret = ret + ' object="' + object + '"'
-    if after: ret = ret + ' after="no"'
-    return ret + ' />'
+    widget.add_signal(name, handler, object, after)
 
-def handle_accel(accelnode):
+def handle_accel(widget, accelnode):
     key = None
     modifiers = None
     signal = None
@@ -107,11 +177,9 @@ def handle_accel(accelnode):
 	    modifiers = totext(node.childNodes)
 	elif node.nodeName == 'signal':
 	    signal = totext(node.childNodes)
+    widget.add_accel(key, modifiers, signal)
 
-    return '<accelerator key="%s" modifiers="%s" signal="%s" />' % \
-	   (key, modifiers, signal)
-
-def get_child_props(widgetnode):
+def get_child_props(childdef, widgetnode):
     for node in widgetnode.childNodes:
 	if node.nodeType != node.ELEMENT_NODE:
 	    continue
@@ -120,16 +188,13 @@ def get_child_props(widgetnode):
 	    break
     else:
 	return []
-    childprops = []
     for node in child.childNodes:
 	if node.nodeType != node.ELEMENT_NODE:
 	    continue
-	childprops.append((node.nodeName, totext(node.childNodes)))
-    return munge_child_properties(childprops)
+        childdef[node.nodeName] = totext(node.childNodes)
 
-def handle_widget(widgetnode, indent):
-    name = None
-    klass = None
+def handle_widget(widgetnode):
+    widget = WidgetDef()
     properties = []
     signals = []
     accels = []
@@ -138,74 +203,121 @@ def handle_widget(widgetnode, indent):
 	if node.nodeType != node.ELEMENT_NODE:
 	    continue
 	if node.nodeName == 'widget':
-	    children.append(node)
-	elif node.nodeName == 'name':
-	    name = totext(node.childNodes)
-	elif node.nodeName == 'class':
-	    klass = totext(node.childNodes)
+            child_widget = handle_widget(node)
+            childdef = widget.add_child(child_widget)
+            get_child_props(childdef, node)
 	elif node.nodeName in ('signal', 'Signal'):
-	    signals.append(handle_signal(node))
+	    handle_signal(widget, node)
 	elif node.nodeName in ('accelerator', 'Accelerator'):
-	    accels.append(handle_accel(node))
+	    handle_accel(widget, node)
 	elif node.nodeName == 'child':
-	    pass
+	    pass # handled by the parent widget
 	else:
-	    properties.append((node.nodeName, totext(node.childNodes)))
+            widget[node.nodeName] = totext(node.childNodes)
+    return widget
 
-    # start element:
-    print '%s<widget class="%s" id="%s">' % (indent, klass, name)
 
-    # properties:
-    properties = munge_widget_properties(properties)
-    for name, value in properties:
-	print '%s  <property name="%s">%s</property>' % (indent, name, value)
+# --- Code to do widget type specific cleanups ---
 
-    if properties and (signals or accels or children): print
+name_counter = 0
+def make_name():
+    global name_counter
+    name_counter += 1
+    return 'convertwidget' + str(name_counter)
 
-    # signals
-    for signal in signals:
-	print '%s  %s' % (indent, signal)
+def fixup_widget(widget):
+    do_children = 1
+    
+    # fix up child packing properties for tables
+    if widget['class'] == 'GtkTable':
+        for childdef in widget.children:
+            childdef.rename_prop('xpad', 'x_padding')
+            childdef.rename_prop('ypad', 'y_padding')
+            
+            options = []
+            if childdef.has_prop('xexpand'):
+                if childdef['xexpand'] == 'yes':
+                    options.append('expand')
+                del childdef['xexpand']
+            if childdef.has_prop('xshrink'):
+                if childdef['xshrink'] == 'yes':
+                    options.append('shrink')
+                del childdef['xshrink']
+            if childdef.has_prop('xfill'):
+                if childdef['xfill'] == 'yes':
+                    options.append('fill')
+                del childdef['xfill']
+            if options:
+                childdef['x_options'] = string.join(options,'|')
+            
+            options = []
+            if childdef.has_prop('yexpand'):
+                if childdef['yexpand'] == 'yes':
+                    options.append('expand')
+                del childdef['yexpand']
+            if childdef.has_prop('yshrink'):
+                if childdef['yshrink'] == 'yes':
+                    options.append('shrink')
+                del childdef['yshrink']
+            if childdef.has_prop('yfill'):
+                if childdef['yfill'] == 'yes':
+                    options.append('fill')
+                del childdef['yfill']
+            if options:
+                childdef['y_options'] = string.join(options,'|')
 
-    if signals and (accels or children): print
+    # add label children to menu items.
+    if widget['class'] in ('GtkMenuItem', 'GtkCheckMenuItem',
+                           'GtkRadioMenuItem'):
+        if widget.has_prop('label'):
+            label = WidgetDef()
+            label['class'] = 'GtkAccelLabel'
+            label['name'] = make_name()
+            label['accel-object'] = widget['name']
+            label['label'] = widget['label']
+            label['use-underline'] = 'yes'
+            widget.add_child(label)
+            del widget['label']
 
-    # accels
-    for accel in accels:
-	print '%s  %s' % (indent, accel)
+    if widget['class'] == 'GtkPixmapMenuItem':
+        widget['class'] = 'GtkImageMenuItem'
 
-    if accels and children: print
+    if widget['class'] == 'GtkDialog':
+        childdef = widget.children[0]
+        childdef.internal_child = 'vbox'
+        del childdef.widget['child_name']
 
-    # children
-    for child in children:
-	print '%s  <child>' % (indent,)
+        childdef = filter(lambda x: x.widget.has_prop('child_name'),
+                          childdef.widget.children)[0]
+        childdef.widget['class'] = 'GtkHButtonBox'
+        childdef.internal_child = 'action_area'
+        del childdef.widget['child_name']
 
-	childprops = get_child_props(child)
-	for name, value in childprops:
-	    print '%s    <property name="%s">%s</property>' % \
-		  (indent, name, value)
+    if do_children:
+        for childdef in widget.children:
+            fixup_widget(childdef.widget)
 
-	if childprops: print
 
-	handle_widget(child, indent + '    ')
-
-	print '%s  </child>' % (indent,)
-
-    # close off
-    print '%s</widget>' % (indent,)
+# --- parse the file for widget definitions, fixup problems and dump.
 
 def handle_file(filename):
     document = xml.dom.minidom.parse(filename)
-    root = document.documentElement
+    
+    widgets = []
+    for node in document.documentElement.childNodes:
+	if node.nodeType == node.ELEMENT_NODE and \
+	   node.nodeName == 'widget':
+            widgets.append(handle_widget(node))
 
-    print '<?xml version="1.0" standalone="no"?>'
+    print '<?xml version="1.0" standalone="no"?> <!--*- mode: xml -*-->'
     print '<!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd" >'
     print
     print '<glade-interface>'
     indent = '  '
 
-    for node in root.childNodes:
-	if node.nodeType == node.ELEMENT_NODE and \
-	   node.nodeName == 'widget':
-	    handle_widget(node, indent)
+    for widgetdef in widgets:
+        fixup_widget(widgetdef)
+        widgetdef.dump(indent)
 
     print '</glade-interface>'
     document.unlink() # only needed for python interpreters without cyclic gc
