@@ -33,6 +33,13 @@
 
 void _glade_init_gtk_widgets(void);
 
+static void
+set_tooltip(GladeXML *xml, GtkWidget *widget,
+	    const gchar *prop_name, const gchar *prop_value)
+{
+    gtk_tooltips_set_tip(xml->priv->tooltips, widget, prop_value, NULL);
+}
+
 static GtkWidget *
 build_window(GladeXML *xml, GType widget_type, GladeWidgetInfo *info)
 {
@@ -486,6 +493,8 @@ combo_find_internal_child(GladeXML *xml, GtkWidget *parent,
 void
 _glade_init_gtk_widgets(void)
 {
+    glade_register_custom_prop (GTK_TYPE_WIDGET, "tooltip", set_tooltip);
+
     glade_register_widget (GTK_TYPE_ACCEL_LABEL, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_ALIGNMENT, glade_standard_build_widget,

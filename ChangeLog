@@ -1,5 +1,15 @@
 2001-11-23  James Henstridge  <james@daa.com.au>
 
+	* glade/glade-xml.c (get_custom_prop_info): don't dereference
+	prop_info if it is NULL.
+	(glade_xml_init): ref/sink the tooltips object, so we don't get
+	the "unrefing floating object message".
+
+	* glade/glade-gtk.c (set_tooltip): function to set a tooltip on a
+	widget.
+	(_glade_init_gtk_widgets): register set_tooltip as a custom
+	property handler for "tooltip" on GtkWidgets.
+
 	* glade/glade-xml.c (glade_xml_add_atk_relations): change to match
 	ATK API change.
 	(glade_xml_add_atk_actions): don't warn when the action name can't

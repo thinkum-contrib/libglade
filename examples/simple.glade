@@ -34,6 +34,7 @@
         </child>
         <child>
           <widget class="GtkButton" id="button1">
+            <property name="tooltip">I am a tooltip</property>
             <property name="visible">yes</property>
 
             <accessibility>

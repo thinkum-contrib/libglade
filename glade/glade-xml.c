@@ -117,6 +117,8 @@ glade_xml_init (GladeXML *self)
     priv->tree = NULL;
     priv->tooltips = gtk_tooltips_new();
     gtk_tooltips_enable(priv->tooltips);
+    gtk_object_ref(GTK_OBJECT(priv->tooltips));
+    gtk_object_sink(GTK_OBJECT(priv->tooltips));
     priv->name_hash = g_hash_table_new(g_str_hash, g_str_equal);
     priv->signals = g_hash_table_new(g_str_hash, g_str_equal);
     priv->radio_groups = g_hash_table_new (g_str_hash, g_str_equal);
@@ -1391,8 +1393,10 @@ get_custom_prop_info(GType type)
 		   sizeof(CustomPropInfo) * array->len);
     }
     /* make sure it is null terminated */
-    prop_info[length].name_quark = 0;
-    prop_info[length].apply_prop = NULL;
+    if (prop_info != NULL) {
+	prop_info[length].name_quark = 0;
+	prop_info[length].apply_prop = NULL;
+    }
 
     g_type_set_qdata(type, glade_custom_props_cache_id, prop_info);
     return prop_info;
