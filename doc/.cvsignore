@@ -13,3 +13,5 @@ libglade.args
 libglade.hierarchy
 libglade.signals
 sgml
+libglade-dtd.sgml
+

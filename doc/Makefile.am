@@ -17,12 +17,14 @@ LDFLAGS = ../glade/libglade-2.0.la $(LIBGLADE_LIBS)
 
 SCANOBJ_FILES = $(DOC_MODULE).signals $(DOC_MODULE).hierachy $(DOC_MODULE).args
 
-tmpl_sources =				\
-	tmpl/glade.sgml			\
-	tmpl/glade-xml.sgml		\
-	tmpl/glade-parser.sgml		\
-	tmpl/glade-build.sgml		\
-	tmpl/libglade-unused.sgml
+content_files = libglade-dtd.sgml
+
+tmpl_sources = \
+  tmpl/glade.sgml \
+  tmpl/glade-xml.sgml \
+  tmpl/glade-parser.sgml \
+  tmpl/glade-build.sgml \
+  tmpl/libglade-unused.sgml
 
 if HAVE_GTK_DOC
 html_stamp = html.stamp
@@ -30,11 +32,17 @@ endif
 
 noinst_DATA = $(html_stamp)
 
-EXTRA_DIST = 				\
-	libglade-decl.txt		\
-	libglade-sections.txt		\
-	libglade-docs.sgml		\
-	libglade.types
+EXTRA_DIST = \
+  libglade-decl.txt \
+  libglade-sections.txt \
+  libglade-docs.sgml \
+  libglade-dtd.sgml \
+  libglade.types
+
+libglade-dtd.sgml: $(top_srcdir)/glade-2.0.dtd
+	echo "<![CDATA[" > $(srcdir)/libglade-dtd.sgml
+	cat $(top_srcdir)/glade-2.0.dtd >> $(srcdir)/libglade-dtd.sgml
+	echo "]]>" >> $(srcdir)/libglade-dtd.sgml
 
 scan-build.stamp: $(top_srcdir)/glade/*.h
 	@echo '*** Scanning header files ***'
@@ -78,7 +86,7 @@ clean-local:
 	rm -f *.stamp
 
 maintainer-clean-local: clean
-	cd $(srcdir) && rm -rf sgml html $(DOC_MODULE)-decl-list.txt $(DOC_MODULE)-decl.txt 
+	cd $(srcdir) && rm -rf sgml html $(DOC_MODULE)-decl-list.txt $(DOC_MODULE)-decl.txt
 
 install-data-local: 
 	$(mkinstalldirs) $(DESTDIR)$(TARGET_DIR)

@@ -3,6 +3,7 @@
 <!entity libglade-glade-parser SYSTEM "sgml/glade-parser.sgml">
 <!entity libglade-glade-xml SYSTEM "sgml/glade-xml.sgml">
 <!entity libglade-glade SYSTEM "sgml/glade.sgml">
+<!entity libglade-dtd SYSTEM "libglade-dtd.sgml">
 ]>
 
 <book id="libglade">
@@ -233,30 +234,50 @@ AC_SUBST(MYPROG_LIBS)
 GtkWidget *custom_func(gchar *widget_name, gchar *string1, gchar *string2,
                        gint int1, gint int2);
 </programlisting>
-      <para>When calling this function, widget_name is the name of the
-      widget given in the XML file, and string1, string2, int1 and
-      int2 are arbitrary constants whose values also come from the XML
-      file.  Libglade supports the custom widget using gmodule.  For
-      most cases, this is sufficient.</para>
 
-      <para>If you wish to get libglade to recognise new widget types,
-      you will need to do a bit more work.  You will need to write a
-      function that will create the widget from a node in the XML tree
-      (the function need not worry about standard options like whether
-      the widget is visible or not, or how it is added to its parent).
-      If the widget is also a container, you will need to specify a
-      child building function (which is also responsible for adding
-      the widgets to container).  If the container uses the standard
-      <function>gtk_container_add</function> interface, you can use
-      the <function>glade_standard_build_children</function> function
-      that is provided by libglade.</para>
+      <para>When calling this function, widget_name is the name of the
+      widget given in the XML file, and
+      <parameter>string1</parameter>, <parameter>string2</parameter>,
+      <parameter>int1</parameter> and <parameter>int2</parameter> are
+      arbitrary constants whose values also come from the XML file.
+      Libglade supports the custom widget using gmodule.  For most
+      cases, this is sufficient.</para>
+
+
+      <para>If you wish to get libglade to recognise a new widget type
+      directly, your best option is to ensure that it implements
+      properties for all settings required to construct the widget,
+      and packing properties if the widget happens to be a container.
+      If the widget satisifies this requirement, libglade will support
+      the widget with no extra code (provided the widget's
+      <function>get_type()</function> function has been called to
+      register it with GLib).</para>
+
+      <para>If a widget has more complex requirements, a libglade
+      module must be written (or if the library containing the widget
+      already depends on libglade, it may build the module in).  In
+      the module, a widget construction routine and a build children
+      routine must be registered.  If the widget can be manipulated
+      via properties for construction or adding children, <link
+      linkend="glade-standard-build-widget"><function>glade_standard_build_widget</function></link>
+      or <link
+      linkend="glade-standard-build-children"><function>glade_standard_build_children</function></link>
+      can be used here.</para>
+
+      <para>If the widget mostly supports properties, custom handlers
+      for particular properties can be registered with <link
+      linkend="glade-register-custom-prop"><function>glade_register_custom_prop</function></link>.</para>
+
+      <para>If the widget implements no properties (and you have no
+      way to convince the author to do so), you will most likely need
+      to implement custom handlers for construction and adding
+      children.</para>
 
       <para>For a more extensive example of registering new widget
-      types and build functions, see the files
-      <filename>glade/glade-gtk.c</filename> or
-      <filename>glade/glade-gnome.c</filename> in the libglade
-      package.  For more information on the exact API's used to
-      register new widget types with libglade, see the <link
+      types and build functions, see
+      <filename>glade/glade-gtk.c</filename> in the libglade package.
+      For more information on the exact API's used to register new
+      widget types with libglade, see the <link
       linkend="libglade-Libglade-Build">Libglade Build</link> section
       of this manual.</para>
 
@@ -271,42 +292,47 @@ GtkWidget *custom_func(gchar *widget_name, gchar *string1, gchar *string2,
       when needed (note that libglade caches the XML parse tree
       between calls to <function>glade_xml_new</function>, so you will
       not suffer the performance hit of parsing a particular XML file
-      more than once).  On the other hand, you may want to use
-      libglade to generate just the menubar or just a notebook for a
-      dialog or something.  Libglade allows this as well.</para>
+      more than once).</para>
 
-      <para>Libglade allows you to build only part of the interface if
-      you want to.  The second argument to
+      <para>On the other hand, you may want to use libglade to
+      generate just part of the UI, such as the menubar or a notebook
+      or something.  Libglade allows you to build only part of the
+      interface if you want to.  The second argument to
       <function>glade_xml_new</function> specifies the name of the
       base widget to build the interface from.  This way we can limit
       the widgets that are constructed by libglade.</para>
 
       <para>For the menubar example, we would create a dummy window in
       Glade, and insert a menubar widget into the window.  We would
-      then name the menubar in glade ("menubar" isn't a bad name :),
-      and customise it as much as we want.  Now in the program, we can
-      use the following code:</para>
+      then name the menubar in glade ("menubar" would be a good choice
+      for the widget name ), and customise it as much as we want.  Now
+      in the program, we can use the following code:</para>
+
 <programlisting>
 GladeXML *xml;
 GtkWidget *menubar;
 
-xml = glade_xml_new("some-interface-file", "menubar");
+xml = glade_xml_new("some-interface-file", "menubar", NULL);
+
 glade_xml_signal_autoconnect(xml);
+
 menubar = glade_xml_get_widget(xml, "menubar");
 /* do whatever we want to with the menubar */
 </programlisting>
+
       <para>From here, we can do what ever we want with the menubar
       widget.  The dummy window we created in Glade is never created,
       so does not affect the program.  You can also use similar code
-      to only build a single dialog from a file that contains many
-      dialogs.</para>
+      to only build a single dialog from a glade file that contains
+      many dialogs.</para>
 
       <para>One thing to note -- if you don't want a widget to be
-      displayed as soon as it is built with
-      <function>glade_xml_new</function>, you should turn off the
-      visible flag on that widget in Glade.  This is the correct
-      solution to the problem (putting a hack into libglade so that it
-      never shows the toplevel windows is not The Right Thing).</para>
+      displayed as soon as it is constructed with
+      <function>glade_xml_new</function>, you should set the
+      <parameter>visible</parameter> property on that widget to "no"
+      in Glade.  This is the correct solution to the problem (putting
+      a hack into libglade so that it never shows the toplevel windows
+      is not The Right Thing).</para>
 
     </sect1>
   </chapter>
@@ -322,62 +348,160 @@ menubar = glade_xml_get_widget(xml, "menubar");
     &libglade-glade-parser;
     &libglade-glade-build;
   </chapter>
+
   <chapter id="libglade-dtd">
-    <title>Glade 2.0 DTD</title>
+    <title>Glade 2.0 File Format</title>
 
-    <para>The following DTD defines the format used as input for
-    libglade:</para>
+    <para>Libglade 2.0 introduces a new file format for storing the
+    user interface.  Unlike the previous format, this one does not
+    introduce a new element for each new property.  This was done so
+    that the format could be described with a fairly small DTD:</para>
 
-<programlisting><![CDATA[
-<!-- proposed DTD for new glade format -->
+    <programlisting>&libglade-dtd;</programlisting>
 
-<!ELEMENT glade-interface (requires*, widget*) >
-<!ATTLIST glade-interface
-  xmlns CDATA #FIXED 'http://glade.gnome.org/glade-2.0.dtd' >
+    <para>The <sgmltag>&lt;widget&gt;</sgmltag> elements contain
+    <sgmltag>&lt;property&gt;</sgmltag> elements which define widget
+    properties.  In general these map to
+    <classname>GObject</classname> properties.</para>
 
-<!ELEMENT requires EMPTY >
-<!ATTLIST requires
-  lib CDATA #REQUIRED >
+    <para>The <sgmltag>&lt;signal&gt;</sgmltag> and
+    <sgmltag>&lt;accelerator&gt;</sgmltag> elements are used to define
+    signals and accelerators on the widget.</para>
 
-<!ELEMENT widget (property*, accessibility?, signal*, accelerator*, child*) >
-<!ATTLIST widget
-  class CDATA #REQUIRED
-  id ID #REQUIRED >
+    <para>The <sgmltag>&lt;widget&gt;</sgmltag> element may also
+    contain an <sgmltag>&lt;accessibility&gt;</sgmltag> element, which
+    contains accessibility related properties.  These set various ATK
+    options (such as ATK properties, relations and actions).</para>
 
-<!ELEMENT property (#PCDATA) >
-<!-- type is an optional tag, and should be the string name of the
-     GType for the property -->
-<!-- translatable specifies whether the property should be translated
-     before use. -->
-<!ATTLIST property
-  name CDATA #REQUIRED
-  type CDATA #IMPLIED
-  translatable (yes|no) 'no' >
+    <para>For each child of the widget, there is an
+    <sgmltag>&lt;child&gt;</sgmltag> element.  The
+    <parameter>internal-child</parameter> attribute is used to mark
+    "internal children of the parent.  These children are widgets that
+    are created when the parent is constructed, such as the
+    <classname>GtkVBox</classname> and
+    <classname>GtkHButtonBox</classname> in a
+    <classname>GtkDialog</classname>.</para>
 
-<!ELEMENT accessibility (property+) >
+    <para>The <sgmltag>&lt;child&gt;</sgmltag> element contains either
+    a <sgmltag>&lt;widget&gt;</sgmltag> element representing the child
+    widget, or a <sgmltag>&lt;placeholder&gt;</sgmltag> element, which
+    is ignored when building the interface.  It may also contain a
+    <sgmltag>&lt;packing&gt;</sgmltag> element, which contains
+    <sgmltag>&lt;property&gt;</sgmltag> elements defining packing
+    properties.  These map to GtkContainer child packing
+    properties.</para>
 
-<!ELEMENT signal EMPTY >
-<!ATTLIST signal
-  name CDATA #REQUIRED
-  handler CDATA #REQUIRED
-  after (yes|no) 'no'
-  object IDREF #IMPLIED >
+    <sect1 id="property-representations">
 
-<!ELEMENT accelerator EMPTY >
-<!ATTLIST accelerator
-  key CDATA #REQUIRED
-  modifiers CDATA #REQUIRED
-  signal CDATA #REQUIRED >
+      <title>Property Representations</title>
 
-<!ELEMENT child (widget, packing?) >
-<!-- composite children should not have any properties set on them.
-     (Composite children are things like the scrollbars in a
-     GtkScrolledWindow, or the vbox in a GtkDialog). -->
-<!ATTLIST child
-  internal-child CDATA #IMPLIED >
+      <para>Properties are represented as straight content data in the
+      glade file.  All programs working with glade files must
+      represent the various types in the same way.</para>
 
-<!ELEMENT packing (property+) >
-]]></programlisting>
+    </sect1>
+
+    <sect1 id="libglade-dtd-exceptions">
+
+      <title>Exceptions</title>
+
+      <para>As some widgets do not implement properties for all
+      required properties.  This section documents some of the
+      exceptions built into libglade's logic.</para>
+
+      <para>The following properties have custom handlers in libglade.
+      Most of these will probably become real properties in GTK+
+      2.2.</para>
+
+      <itemizedlist>
+	<listitem>
+	  <para><parameter>GtkWidget::visible</parameter> is handled
+	  specially so that it gets applied after children have been
+	  added.  This works around some sizing bugs in certain
+	  widgets (and is the same behaviour libglade-0.x had).</para>
+	</listitem>
+	<listitem>
+	  <para><parameter>GtkWidget::tooltip</parameter> implements
+	  tooltips for the widget.  The property value is the tooltip
+	  to set on the widget.</para>
+	</listitem>
+	<listitem>
+	  <para><parameter>GtkOptionMenu::history</parameter> sets
+	  which menu item index in the list should be selected
+	  initially with
+	  <function>gtk_option_menu_set_history()</function>.</para>
+	</listitem>
+	<listitem>
+	  <para><parameter>GtkTextView::text</parameter> offers an
+	  easy way to set the contents of a text view's buffer.</para>
+	</listitem>
+	<listitem>
+	  <para><parameter>GtkCallendar::display_options</parameter>
+	  sets display options of a calendar with
+	  <function>gtk_calendar_display_options()</function>.</para>
+	</listitem>
+	<listitem>
+	  <para><parameter>GtkRadioMenuItem::group</parameter> sets
+	  the group for the radio item.  The property value is the
+	  name of another widget in the group.  This property won't
+	  handle forward references like the
+	  <parameter>GtkRadioButton::group</parameter>
+	  property.</para>
+	</listitem>
+	<listitem>
+	  <para><parameter>GtkToolbar::tooltips</parameter> sets
+	  whether the toolbar shows tooltips with
+	  <function>gtk_toolbar_set_tooltips()</function>.</para>
+	</listitem>
+	<listitem>
+	  <para><parameter>GtkStatusbar::has_resize_grip</parameter>
+	  sets whether the status bar has a resize grip in the bottom
+	  corner with
+	  <function>gtk_statusbar_set_has_resize_grip()</function>.</para>
+	</listitem>
+	<listitem>
+	  <para><parameter>GtkRuler::metric</parameter> sets the
+	  bounds and metric type for the ruler with
+	  <function>gtk_ruler_set_metric()</function>.</para>
+	</listitem>
+	<listitem>
+	  <para><parameter>GtkMenuItem::label</parameter>,
+	  <parameter>GtkMenuItem::use_underline</parameter> and
+	  <parameter>GtkMenuItem::use_stock</parameter> are used to
+	  create a label inside a menu item, and set whether it has a
+	  mnemonic (underlined letter), and whether it should be a
+	  stock item (standardised, translated label and an icon, if
+	  it is a GtkImageMenuItem).  These properties act similarly
+	  to the identically named <classname>GtkButton</classname>
+	  properties.</para>
+	</listitem>
+      </itemizedlist>
+
+      <para>There are custom handlers for a number of deprecated
+      widgets, and deprecated settings for some widgets.  These most
+      likely won't be converted to real properties in the
+      future.  These include:</para>
+
+      <simplelist>
+	<member><parameter>GtkPixmap::build_insensitive</parameter></member>
+	<member><parameter>GtkPixmap::filename</parameter></member>
+	<member><parameter>GtkProgress::format</parameter></member>
+	<member><parameter>GtkCalendar::display_options</parameter></member>
+	<member><parameter>GtkCList::column_widths</parameter></member>
+	<member><parameter>GtkCList::selection_mode</parameter></member>
+	<member><parameter>GtkCList::shadow_type</parameter></member>
+	<member><parameter>GtkCList::show_titles</parameter></member>
+	<member><parameter>GtkTree::selection_mode</parameter></member>
+	<member><parameter>GtkTree::view_mode</parameter></member>
+	<member><parameter>GtkTree::view_line</parameter></member>
+	<member><parameter>GtkList::selection_mode</parameter></member>
+	<member><parameter>GtkCheckMenuItem::always_show_toggle</parameter></member>
+	<member><parameter>GtkText::text</parameter></member>
+      </simplelist>
+
+      <para><emphasis>XXXX - To be done</emphasis></para>
+
+    </sect1>
 
   </chapter>
 
