@@ -1,3 +1,7 @@
+1999-06-20  James Henstridge  <james@daa.com.au>
+
+	* doc/libglade-docs.sgml: a few more changes to the documentation.
+
 1999-06-19  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-gnome.c (gnomedialog_build_children): connect signals

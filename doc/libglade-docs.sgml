@@ -7,6 +7,44 @@
 <book id="libglade">
   <bookinfo>
     <title>Libglade Reference Manual</title>
+    <authorgroup>
+      <author>
+	<firstname>James</firstname>
+	<surname>Henstridge</surname>
+	<affiliation>
+	  <address>
+	    <email>james@daa.com.au</email>
+	  </address>
+	</affiliation>
+      </author>
+    </authorgroup>
+
+    <copyright>
+      <year>1999</year>
+      <holder>James Henstridge</holder>
+    </copyright>
+
+    <legalnotice>
+      <para>Permission is granted to make and distribute verbatim
+      copies of this manual provided the copyright notice and this
+      permission notice are preserved on all copies.</para>
+
+      <para>Permission is granted to copy and distribute modified
+      versions of this manual under the conditions for verbatim
+      copying, provided also that the entire resulting derived work is
+      distributed under the terms of a permission notice identical to
+      this one.</para>
+
+      <para>Permission is granted to copy and distribute translations
+      of this manual into another language, under the above conditions
+      for modified versions.</para>
+    </legalnotice>
+
+    <abstract>
+      <para>This manual documents the interfaces of the libglade
+      library and has some short notes to help get you up to speed
+      with using the library.</para>
+    </abstract>
   </bookinfo>
 
   <chapter id="libglade-notes">
@@ -76,7 +114,7 @@ int main(int argc, char *argv[]) {
       <function>some_signal_handler_func</function> to be
       connected:</para>
 <programlisting>
-&lt;widget&lt;
+&lt;widget&gt;
   &lt;class&gt;GtkWindow&lt;/class&gt;
   &lt;name&gt;MainWindow&lt;/name&gt;
   &lt;signal&gt;
@@ -251,19 +289,8 @@ menubar = glade_xml_get_widget(xml, "menubar");
   <chapter id="libglade-lib">
     <title>Libglade Library Reference</title>
 
-    <para>Libglade offers an alternative to Glade's code generation
-    features.  Instead of producing code that when compiled will
-    display your interface, libglade parses the XML description of the
-    interface at runtime.  This way, it is possible for the user or
-    developer to modify the interface without having to recompile the
-    program.</para>
-
-    <para>Libglade supports all standard GTK widgets that Glade does,
-    and is written in such a way that this could be extended to all
-    GNOME widgets at a later point in time.  I have not written code
-    to display these widgets yet, since Glade does not support them
-    (libglade would loose its usefulness if it expected input in a
-    different form to the output of Glade).</para>
+    <para>This section contains the API reference for libglade.  All
+    the public interfaces are documented here.</para>
 
     &libglade-glade;
     &libglade-glade-xml;
