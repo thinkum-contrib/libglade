@@ -37,6 +37,17 @@ XML_CFLAGS=`xml-config --cflags`
 AC_SUBST(XML_LIBS)
 AC_SUBST(XML_CFLAGS)
 
+dnl Check to make sure that we have libxml >= 1.3 installed
+old_LIBS="$LIBS"
+LIBS="$XML_LIBS $LIBS"
+AC_TRY_LINK([#include <stdio.h>],dnl
+[extern char *xmlParserVersion;
+
+printf("%s", xmlParserVersion);],,dnl
+AC_MSG_ERROR([*** libxml >= 1.3 is required to compile gnorpm]))
+LIBS="$old_LIBS"
+
+
 have_gnome=false
 GNOME_INIT_HOOK([
 	have_gnome=true

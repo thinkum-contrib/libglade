@@ -1,5 +1,6 @@
+/* -*- Mode: C; c-basic-offset: 8 -*- */
 /* libglade - a library for building interfaces from XML files at runtime
- * Copyright (C) 1998  James Henstridge <james@daa.com.au>
+ * Copyright (C) 1998, 1999  James Henstridge <james@daa.com.au>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -567,6 +568,18 @@ glade_xml_add_accels(GtkWidget *w, GladeWidgetInfo *info)
 					   accel->key, accel->modifiers,
 					   GTK_ACCEL_VISIBLE);
 	}
+}
+
+static void
+glade_style_attach (GtkWidget *widget, const char *style)
+{
+	const char *name = glade_get_widget_long_name (widget);
+	char *full_name;
+				
+	full_name = g_strconcat ("widget \"", name, "\" style \"GLADE_",
+				 style, "_style\"\n", NULL);
+	gtk_rc_parse_string(full_name);
+	g_free (full_name);
 }
 
 static void

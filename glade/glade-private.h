@@ -1,5 +1,6 @@
+/* -*- Mode: C; c-basic-offset: 8 -*- */
 /* libglade - a library for building interfaces from XML files at runtime
- * Copyright (C) 1998  James Henstridge <james@daa.com.au>
+ * Copyright (C) 1998, 1999  James Henstridge <james@daa.com.au>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -54,10 +55,6 @@ struct _GladeXMLPrivate {
  * build interfaces
  */
 GladeWidgetTree *glade_tree_get   (const char *filename);
-
-/* from glade-styles.c */
-/* get a named style from a previously parsed XML file */
-void glade_style_attach         (GtkWidget *widget, const char *style);
 
 /* from glade-xml.c */
 /* get the widget name */

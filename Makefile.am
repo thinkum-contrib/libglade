@@ -2,8 +2,8 @@ if GNOME_SUPPORT
 THE_FLAGS = $(GNOME_INCLUDEDIR)
 THE_LIBS  = glade/libglade-gnome.la glade/libglade.la $(GNOME_LIBDIR) $(GNOMEUI_LIBS)
 else
-THE_FLAGS = glade/libglade.la $(GTK_CFLAGS)
-THE_LIBS  = $(GTK_LIBS)
+THE_FLAGS = $(GTK_CFLAGS)
+THE_LIBS  = glade/libglade.la $(GTK_LIBS)
 endif
 
 INCLUDES = $(THE_FLAGS) $(XML_CFLAGS)

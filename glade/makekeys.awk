@@ -1,6 +1,7 @@
 BEGIN {
+  printf "/* -*- Mode: C; c-basic-offset: 8 -*- */\n"
   printf "/* libglade - a library for building interfaces from XML files at runtime\n";
-  printf " * Copyright (C) 1998  James Henstridge <james@daa.com.au>\n";
+  printf " * Copyright (C) 1998, 1999  James Henstridge <james@daa.com.au>\n";
   printf " *\n";
   printf " * This library is free software; you can redistribute it and/or\n";
   printf " * modify it under the terms of the GNU Library General Public\n";

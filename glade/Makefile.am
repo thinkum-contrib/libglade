@@ -13,7 +13,6 @@ the_sources =		\
 	glade-xml.c 	\
 	glade-gtk.c 	\
 	glade-tree.c 	\
-	glade-styles.c 	\
 	glade-keys.c 	\
 	glade-private.h
 

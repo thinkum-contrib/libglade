@@ -1,3 +1,21 @@
+1999-07-29  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-styles.c: removed file.  Most of its functionality was
+	moved to the glade-sax parser, so there was not much reason for
+	keeping glade_style_attach in a single file.
+	
+	* glade/glade-xml.c (glade_style_attach): moved this function in
+	from glade-styles.c.
+
+	* configure.in: added a check to make sure you are using a new
+	enough libxml.  This is required because the SAX API underwent a
+	number of changes, so old versions of libxml are not good enough.
+
+	* Makefile.am (THE_FLAGS, THE_LIBS): these variables had the wrong
+	values when gnome support was disabled.
+
+	* glade/*.c, glade/*.h: updated copyright messages to include 1999.
+
 1999-07-28  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-sax.c: the parser was saving the border_width attribute
