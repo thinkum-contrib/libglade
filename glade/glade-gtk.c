@@ -1217,7 +1217,7 @@ _glade_init_gtk_widgets(void)
     glade_register_widget (GTK_TYPE_FILE_CHOOSER, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_FILE_CHOOSER_DIALOG, glade_standard_build_widget,
-			   NULL, NULL);
+			   gtk_dialog_build_children, dialog_find_internal_child);
     glade_register_widget (GTK_TYPE_FILE_CHOOSER_BUTTON, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_FILE_SELECTION, NULL,
