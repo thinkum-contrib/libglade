@@ -354,6 +354,8 @@ parent_table = {
     'GtkCheckButton'    : 'GtkToggleButton',
 }
 
+global_group_map = { }
+
 def find_parent(type):
     if parent_table.has_key(type):
         return parent_table[type]
@@ -599,6 +601,16 @@ def fixup_as_type(widget, type):
     if type == 'GnomeDialog':
         widget['class'] = 'GtkDialog'
         fixup_as_type (widget, 'GtkDialog')
+
+    # Fixup radio groups, the 'group' property has to
+    # have the glade id of the root group widget.
+    if type == 'GtkRadioButton' or type == 'GtkRadioMenuItem':
+        if widget.has_prop ('group'):
+            if global_group_map.has_key (widget['group']):
+                widget['group'] = global_group_map[widget['group']]
+            else:
+                global_group_map[widget['group']] = widget['name']
+                del widget['group']
 
     return 0
 

@@ -1,3 +1,9 @@
+2001-10-23  Michael Meeks  <michael@ximian.com>
+
+	* libglade-convert (fixup_as_type): fixup radio button
+	groups so they point to the root id, and not a global
+	pseudo group name.
+
 2001-10-20  jacob berkman  <jacob@ximian.com>
 
 	* libglade-convert (fixup_as_type): fix some typos
