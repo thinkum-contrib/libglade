@@ -1429,7 +1429,7 @@ glade_standard_build_widget(GladeXML *xml, GType widget_type,
  * This sets the packing property on container @parent of widget
  * @child with @name to @value
  **/
-void
+static void
 glade_xml_set_packing_property (GladeXML   *self,
 				GtkWidget  *parent, GtkWidget  *child,
 				const char *name,   const char *value)

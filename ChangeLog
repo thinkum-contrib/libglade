@@ -1,5 +1,16 @@
 2001-10-10  Michael Meeks  <michael@ximian.com>
 
+	* glade/glade-gtk.c (notebook_build_children): remove
+	packing property assignments.
+
+	* glade/glade-xml.c (glade_xml_set_packing_property):
+	privatize.
+
+	* libglade-convert (fixup_as_type): re-write.
+	(WidgetDef.append_prop): kill.
+
+2001-10-10  Michael Meeks  <michael@ximian.com>
+
 	* test-libglade.c (main): re-do the init so we
 	don't get gnome-program moanings.
 

@@ -101,10 +101,6 @@ gboolean glade_xml_set_value_from_string (GladeXML *xml,
 GtkWidget *glade_standard_build_widget(GladeXML *xml, GType widget_type,
 				       GladeWidgetInfo *info);
 
-void glade_xml_set_packing_property (GladeXML   *self,
-				     GtkWidget  *parent, GtkWidget  *child,
-				     const char *name,   const char *value);
-
 /* A standard child building routine that can be used in widget builders */
 void glade_standard_build_children(GladeXML *self, GtkWidget *parent,
 				   GladeWidgetInfo *info);

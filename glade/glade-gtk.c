@@ -83,9 +83,6 @@ notebook_build_children(GladeXML *self, GtkWidget *parent,
 	    }
 	}
 
-	g_object_ref(G_OBJECT(child));
-	gtk_widget_freeze_child_notify(child);
-
 	if (type == TAB_ITEM) { /* The GtkNotebook API blows */
 	    GtkWidget *body;
 
@@ -95,18 +92,6 @@ notebook_build_children(GladeXML *self, GtkWidget *parent,
 	    gtk_notebook_append_page (GTK_NOTEBOOK (parent), child, NULL);
 	    tab++;
 	}
-
-	for (j = 0; j < info->children[i].n_properties; j++) {
-	    const char *name = info->children[i].properties[j].name;
-
-	    if (strcmp (name, "type"))
-		glade_xml_set_packing_property (
-		    self, parent, child, name,
-		    info->children[i].properties[j].value);
-	}
-	
-	gtk_widget_thaw_child_notify(child);
-	g_object_unref(G_OBJECT(child));
     }
     g_object_unref(G_OBJECT(parent));
 }
