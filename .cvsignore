@@ -33,4 +33,5 @@ NO-AUTO-GEN
 ABOUT-NLS
 intl
 *.pc
-.tar.gz
+*.tar.gz
+
