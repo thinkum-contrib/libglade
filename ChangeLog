@@ -1,5 +1,9 @@
 2001-11-12  jacob berkman  <jacob@ximian.com>
 
+	* glade/glade-parser.c (glade_parser_parse_file): 
+	(glade_parser_parse_buffer): destroy the interface if it is in
+	fact NULL
+
 	* glade/glade-xml.c (glade_xml_build_widget): also print out the
 	name of the widget when debugging is on
 
