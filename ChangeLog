@@ -1,3 +1,10 @@
+<<<<<<< ChangeLog
+1999-06-05  Michael Meeks  <michael@edenproject.org>
+
+	* glade/glade-gtk.c: Add extern glade_init_gtk_widget to kill
+	warning.
+
+=======
 1999-06-06  Erik Walthinsen  <omega@cse.ogi.edu>
 
 	* converted libglade.spec to libglade.spec.in, made appropiate
@@ -131,6 +138,7 @@
 	both gtk and gnome code.
 	(glade_get_adjustment): similar to above.
 
+>>>>>>> 1.31
 1999-06-04  Miguel de Icaza  <miguel@nuclecu.unam.mx>
 
 	* glade/glade-gtk.c (optionmenu_new): Only add items if there are

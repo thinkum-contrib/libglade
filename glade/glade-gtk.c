@@ -29,6 +29,8 @@
 #include <gtk/gtk.h>
 #include <tree.h>
 
+extern void glade_init_gtk_widgets (void);
+
 /* functions to actually build the widgets */
 
 static void
