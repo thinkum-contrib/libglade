@@ -22,7 +22,6 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <ctype.h>
 #include <glade/glade.h>
 #include <glade/glade-build.h>
 #include <glade/glade-private.h>
@@ -38,6 +37,200 @@ set_tooltip(GladeXML *xml, GtkWidget *widget,
 	    const gchar *prop_name, const gchar *prop_value)
 {
     gtk_tooltips_set_tip(xml->priv->tooltips, widget, prop_value, NULL);
+}
+
+static void
+pixmap_set_build_insensitive (GladeXML *xml, GtkWidget *w,
+			      const char *name, const char *value)
+{
+    gtk_pixmap_set_build_insensitive (GTK_PIXMAP (w),
+				      *value == 'T' || *value == 'y');
+}
+
+static void
+pixmap_set_filename (GladeXML *xml, GtkWidget *w,
+		     const char *name, const char *value)
+{
+    GdkPixbuf *pb;
+    char *file;
+    GdkPixmap *pixmap = NULL;
+    GdkBitmap *bitmap = NULL;
+    
+    file = glade_xml_relative_file (xml, value);
+    pb = gdk_pixbuf_new_from_file (file, NULL);
+    g_free (file);
+
+    if (!pb)
+	return;
+
+    gdk_pixbuf_render_pixmap_and_mask (pb, &pixmap, &bitmap, 127);
+    gtk_pixmap_set (GTK_PIXMAP (w), pixmap, bitmap);
+
+    if (pixmap) gdk_pixmap_unref (pixmap);
+    if (bitmap) gdk_bitmap_unref (bitmap);
+
+    gdk_pixbuf_unref (pb);
+}
+
+static void
+progress_set_format (GladeXML *xml, GtkWidget *w,
+		     const char *name, const char *value)
+{
+    gtk_progress_set_format_string (GTK_PROGRESS (w), value);
+}
+
+static void
+option_menu_set_history (GladeXML *xml, GtkWidget *w,
+			 const char *name, const char *value)
+{
+    gtk_option_menu_set_history (GTK_OPTION_MENU (w),
+				 strtol (value, NULL, 10));
+}
+
+static void
+text_view_set_text (GladeXML *xml, GtkWidget *w,
+		    const char *name, const char *value)
+{
+    GtkTextBuffer *buffy;
+
+    buffy = gtk_text_buffer_new (NULL);
+    gtk_text_buffer_set_text (buffy, value, strlen (value));
+    gtk_text_view_set_buffer (GTK_TEXT_VIEW (w), buffy);
+    g_object_unref (G_OBJECT (buffy));
+}
+
+static void
+calendar_set_display_options (GladeXML *xml, GtkWidget *w,
+			      const char *name, const char *value)
+{
+    gtk_calendar_display_options (
+	GTK_CALENDAR (w),
+	glade_flags_from_string (GTK_TYPE_CALENDAR_DISPLAY_OPTIONS,
+				 value));
+}
+
+static void
+clist_set_column_widths (GladeXML *xml, GtkWidget *w,
+			 const char *name, const char *value)
+{
+    char *pos = (char *)value;
+    int cols = 0;
+    while (pos && *pos) {
+	int width = strtol (pos, &pos, 10);
+	if (*pos == ',') pos++;
+	gtk_clist_set_column_width (GTK_CLIST (w), cols++, width);
+    }
+}
+
+static void
+clist_set_selection_mode (GladeXML *xml, GtkWidget *w,
+			  const char *name, const char *value)
+{
+    gtk_clist_set_selection_mode (
+	GTK_CLIST (w),
+	glade_enum_from_string (GTK_TYPE_SELECTION_MODE,
+				value));
+}
+
+static void
+clist_set_shadow_type (GladeXML *xml, GtkWidget *w,
+		       const char *name, const char *value)
+{
+    gtk_clist_set_shadow_type (
+	GTK_CLIST (w),
+	glade_enum_from_string (GTK_TYPE_SHADOW_TYPE,
+				value));
+}
+
+static void
+clist_set_show_titles (GladeXML *xml, GtkWidget *w,
+		       const char *name, const char *value)
+{
+    if (*value == 'T' || *value == 'y')
+	gtk_clist_column_titles_show (GTK_CLIST (w));
+    else
+	gtk_clist_column_titles_hide (GTK_CLIST (w));
+}
+
+static void
+tree_set_selection_mode (GladeXML *xml, GtkWidget *w,
+			 const char *name, const char *value)
+{
+    gtk_tree_set_selection_mode (
+	GTK_TREE (w),
+	glade_enum_from_string (GTK_TYPE_SELECTION_MODE, value));
+}
+
+static void
+tree_set_view_mode (GladeXML *xml, GtkWidget *w,
+		    const char *name, const char *value)
+{
+    gtk_tree_set_view_mode (
+	GTK_TREE (w),
+	glade_enum_from_string (GTK_TYPE_TREE_VIEW_MODE, value));
+}
+
+static void
+tree_set_view_line (GladeXML *xml, GtkWidget *w,
+		    const char *name, const char *value)
+{
+    gtk_tree_set_view_lines (GTK_TREE (w), *value == 'T' || *value == 'y');
+}
+
+static void
+list_set_selection_mode (GladeXML *xml, GtkWidget *w,
+			 const char *name, const char *value)
+{
+    gtk_list_set_selection_mode (
+	GTK_LIST (w),
+	glade_enum_from_string (GTK_TYPE_SELECTION_MODE, value));
+}
+
+static void
+check_menu_item_set_always_show_toggle (GladeXML *xml, GtkWidget *w,
+					const char *name, const char *value)
+{
+    gtk_check_menu_item_set_show_toggle (GTK_CHECK_MENU_ITEM (w),
+					 *value == 'T' || *value == 'y');
+}
+
+static void
+text_set_text (GladeXML *xml, GtkWidget *w,
+	       const char *name, const char *value)
+{
+    int pos = 0;
+
+    gtk_editable_insert_text (GTK_EDITABLE (w), value, -1, &pos);
+}
+
+static void
+radio_menu_item_set_group (GladeXML *xml, GtkWidget *w,
+			   const char *name, const char *value)
+{
+    GtkWidget *group;
+
+    group = glade_xml_get_widget (xml, value);
+    if (!group) {
+	g_warning ("Radio button group %s could not be found", value);
+	return;
+    }
+
+    if (group == w) {
+	g_message ("Group is self, skipping.");
+	return;
+    }
+
+    gtk_radio_menu_item_set_group (
+	GTK_RADIO_MENU_ITEM (w),
+	gtk_radio_menu_item_get_group (
+	    GTK_RADIO_MENU_ITEM (group)));
+}
+
+static void
+toolbar_set_tooltips (GladeXML *xml, GtkWidget *w,
+		      const char *name, const char *value)
+{
+    gtk_toolbar_set_tooltips (GTK_TOOLBAR (w), *value == 'T' || *value == 'y');
 }
 
 static GtkWidget *
@@ -154,148 +347,30 @@ notebook_build_children(GladeXML *self, GtkWidget *parent,
 }
 
 static GtkWidget *
-build_progress (GladeXML *xml, GType widget_type,
-		GladeWidgetInfo *info)
+build_preview (GladeXML *xml, GType widget_type,
+	       GladeWidgetInfo *info)
 {
-    GtkWidget *pbar;
-    char *format = NULL;
+    GtkWidget *preview;
+
+    GtkPreviewType type = GTK_PREVIEW_COLOR;
+    gboolean expand = TRUE;
+
     int i;
 
     for (i = 0; i < info->n_properties; i++) {
-	if (!strcmp (info->properties[i].name, "format")) {
-	    format = info->properties[i].value;
-	    break;
-	}
+	const char *name  = info->properties[i].name;
+	const char *value = info->properties[i].value;
+
+	if (!strcmp (name, "expand"))
+	    expand = (*value == 'T' || *value == 'y');
+	else if (!strcmp (name, "type"))
+	    type = glade_enum_from_string (GTK_TYPE_PREVIEW_TYPE, value);
     }
 
-    g_message ("ignore warnings about the following: format");
+    preview = gtk_preview_new (type);
+    gtk_preview_set_expand (GTK_PREVIEW (preview), expand);
 
-    pbar = glade_standard_build_widget (xml, widget_type, info);
-
-    if (format && *format)
-	gtk_progress_set_format_string (GTK_PROGRESS (pbar), format);
-
-    return pbar;
-}
-
-static GtkWidget *
-build_option_menu (GladeXML *xml, GType widget_type,
-		   GladeWidgetInfo *info)
-{
-    GtkWidget *option_menu;
-    int i, history = 0;
-
-    for (i = 0; i < info->n_properties; i++) {
-	if (!strcmp (info->properties[i].name, "history")) {
-	    history = strtol (info->properties[i].value, NULL, 10);
-	    break;
-	}
-    }
-
-    g_message ("ignore warnings about the following: history");
-
-    option_menu = glade_standard_build_widget (xml, widget_type, info);
-
-    if (history)
-	gtk_option_menu_set_history (GTK_OPTION_MENU (option_menu), history);
-
-    return option_menu;
-}
-
-static GtkWidget *
-build_text_view (GladeXML *xml, GType widget_type,
-		 GladeWidgetInfo *info)
-{
-    GtkWidget *text_view;
-    char *text = NULL;
-    int i;
-
-    for (i = 0; i < info->n_properties; i++) {
-	if (!strcmp (info->properties[i].name, "text")) {
-	    text = info->properties[i].value;
-	    break;
-	}
-    }
-
-    g_message ("ignore warnings about the following: text");
-
-    text_view = glade_standard_build_widget (xml, widget_type, info);
-
-    if (text && *text) {
-	GtkTextBuffer *buffy;
-
-	buffy = gtk_text_buffer_new (NULL);
-	gtk_text_buffer_set_text (buffy, text, strlen (text));
-	gtk_text_view_set_buffer (GTK_TEXT_VIEW (text_view), buffy);
-	g_object_unref (G_OBJECT (buffy));
-    }
-
-    return text_view;
-}
-
-static GtkWidget *
-build_clist (GladeXML *xml, GType widget_type,
-	     GladeWidgetInfo *info)
-{
-    GtkWidget *clist;
-    int cols = 1;
-    int i;
-
-    const char *name, *value;
-
-    /* "fake" properties */
-    char *column_widths = NULL;
-    GtkSelectionMode selection_mode = GTK_SELECTION_SINGLE;
-    GtkShadowType shadow_type = GTK_SHADOW_IN;
-    gboolean show_titles = TRUE;
-
-    /* collect our custom properties */
-    for (i = 0; i < info->n_properties; i++) {
-	name = info->properties[i].name;
-	value = info->properties[i].value;
-
-	if (!strcmp (name, "column_widths"))
-	    column_widths = g_strdup (value);
-
-	else if (!strcmp (name, "columns"))
-	    cols = strtol (value, NULL, 0);
-
-	else if (!strcmp (name, "selection_mode"))
-	    selection_mode = glade_enum_from_string (
-		GTK_TYPE_SELECTION_MODE, value);
-
-	else if (!strcmp (name, "shadow_type"))
-	    shadow_type = glade_enum_from_string (
-		GTK_TYPE_SHADOW_TYPE, value);
-
-	else if (!strcmp (name, "show_titles"))
-	    show_titles = 
-		(tolower(value[0]) == 't' || tolower(value[0]) == 'y' || atoi(value));
-    }
-
-    g_message ("ignore warnings about the following: column_widths, columns, selection_mode, shadow_type, show_titles");
-
-    clist = glade_standard_build_widget (xml, widget_type, info);
-
-    if (column_widths) {
-	char *pos = column_widths;
-	while (pos && *pos) {
-	    int width = strtol (pos, &pos, 0);
-	    if (*pos == ',') pos++;
-	    gtk_clist_set_column_width (GTK_CLIST (clist), cols++, width);
-	}
-	g_free (column_widths);
-    }
-
-    gtk_clist_set_selection_mode (GTK_CLIST (clist), selection_mode);
-    gtk_clist_set_shadow_type (GTK_CLIST (clist), shadow_type);
-
-    if (show_titles)
-	gtk_clist_column_titles_show (GTK_CLIST (clist));
-    else
-	gtk_clist_column_titles_hide (GTK_CLIST (clist));
-
-    return clist;
+    return preview;
 }
 
 static void
@@ -320,6 +395,8 @@ clist_build_children(GladeXML *self, GtkWidget *parent,
 		if (!strcmp (childinfo->properties[j].name, "label")) {
 		    label = childinfo->properties[j].value;
 		    break;
+		} else {
+		    g_warning ("Unknown CList child property: %s", childinfo->properties[j].name);
 		}
 	    }
 
@@ -339,6 +416,154 @@ clist_build_children(GladeXML *self, GtkWidget *parent,
     }
 
     g_object_unref (G_OBJECT (parent));
+}
+
+static void
+toolbar_build_children (GladeXML *xml, GtkWidget *parent,
+			GladeWidgetInfo *info)
+{
+    int i;
+
+    g_object_ref (G_OBJECT (parent));
+
+    for (i = 0; i < info->n_children; i++) {
+	GladeChildInfo *childinfo;
+	GtkWidget *child = NULL;
+
+	childinfo = &info->children[i];
+
+	if (!strcmp (childinfo->child->class, "toggle") ||
+	    !strcmp (childinfo->child->class, "radio") ||
+	    !strcmp (childinfo->child->class, "button")) {
+	    const char *label = NULL, *stock = NULL, *group_name = NULL;
+	    char *icon = NULL;
+	    gboolean active = FALSE, new_group = FALSE;
+	    GtkWidget *iconw = NULL;
+	    int j;
+
+	    for (j = 0; j < childinfo->child->n_properties; j++) {
+		const char *name  = childinfo->child->properties[j].name;
+		const char *value = childinfo->child->properties[j].value;
+
+		if (!strcmp (name, "label")) {
+		    label = value;
+		} else if (!strcmp (name, "icon")) {
+		    g_free (icon);
+		    stock = NULL;
+		    icon = glade_xml_relative_file (xml, value);
+		} else if (!strcmp (name, "stock_pixmap")) {
+		    g_free (icon);
+		    icon = NULL;
+		    stock = value;
+		} else if (!strcmp (name, "active")) {
+		    active = (*value == 'T' || *value == 'y');
+		} else  if (!strcmp (name, "group")) {
+		    group_name = value;
+		} else if (!strcmp (name, "new_group")) {
+		    new_group = (*value == 'T' || *value == 'y');
+		} else if (!strcmp (name, "visible")) {
+		    /* ignore for now */
+		} else {
+		    g_warning ("Unknown GtkToolbar child property: %s", name);
+		}
+	    }
+
+	    if (stock) {
+		iconw = gtk_image_new_from_stock (
+		    stock, GTK_TOOLBAR (parent)->icon_size);
+		if (!iconw)
+		    g_warning ("Could not create stock item: %s", stock);
+	    } else if (icon) {
+		iconw = gtk_image_new_from_file (icon);
+	    }
+
+	    if (iconw)
+		gtk_widget_show (iconw);
+
+	    if (new_group)
+		gtk_toolbar_append_space (GTK_TOOLBAR (parent));
+
+	    /* FIXME: these should be translated */
+	    if (!strcmp (childinfo->child->class, "toggle")) {
+		child = gtk_toolbar_append_element (
+		    GTK_TOOLBAR (parent),
+		    GTK_TOOLBAR_CHILD_TOGGLEBUTTON, NULL,
+		    label, NULL, NULL, iconw, NULL, NULL);
+		gtk_toggle_button_set_active(
+		    GTK_TOGGLE_BUTTON (child), active);
+	    } else if (!strcmp (childinfo->child->class, "radio")) {
+		child = gtk_toolbar_append_element (
+		    GTK_TOOLBAR (parent),
+		    GTK_TOOLBAR_CHILD_RADIOBUTTON, NULL,
+		    label, NULL, NULL, iconw, NULL, NULL);
+
+		if (group_name) {
+		    g_object_set (G_OBJECT (child),
+				  "group", glade_xml_get_widget (xml, group_name),
+				  NULL);
+		}
+	    } else
+		child = gtk_toolbar_append_item (
+		    GTK_TOOLBAR (parent),
+		    label, NULL, NULL, iconw, NULL, NULL);
+	    
+	    glade_xml_set_common_params (xml, child, childinfo->child);
+	} else {
+	    child = glade_xml_build_widget (xml, childinfo->child);
+	    gtk_toolbar_append_widget (GTK_TOOLBAR (parent), child, NULL, NULL);
+	}
+    }
+}
+
+static void
+paned_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
+{
+    int i;
+    GtkWidget *child;
+    gboolean resize, shrink;
+    GladeChildInfo *cinfo;
+
+    if (info->n_children == 0)
+	return;
+    
+    cinfo = &info->children[0];
+    child = glade_xml_build_widget (xml, cinfo->child);
+    
+    resize = FALSE; shrink = TRUE;
+    for (i = 0; i < cinfo->n_properties; i++) {
+	const char *name  = cinfo->properties[i].name;
+	const char *value = cinfo->properties[i].value;
+
+	if (!strcmp (name, "resize"))
+	    resize = (*value == 'T' || *value == 'y');
+	else if (!strcmp (name, "shrink"))
+	    shrink = (*value == 'T' || *value == 'y');
+	else
+	    g_warning ("Unknown GtkPaned child property: %s", name);
+    }
+
+    gtk_paned_pack1 (GTK_PANED(w), child, resize, shrink);
+    
+    if (info->n_children == 1)
+	return;
+
+    cinfo = &info->children[1];
+    child = glade_xml_build_widget (xml, cinfo->child);
+    resize = TRUE; shrink = TRUE;
+
+    for (i = 0; i < cinfo->n_properties; i++) {
+	const char *name  = cinfo->properties[i].name;
+	const char *value = cinfo->properties[i].value;
+
+	if (!strcmp (name, "resize"))
+	    resize = (*value == 'T' || *value == 'y');
+	else if (!strcmp (name, "shrink"))
+	    shrink = (*value == 'T' || *value == 'y');
+	else
+	    g_warning ("Unknown GtkPaned child property: %s", name);
+    }
+	
+    gtk_paned_pack2 (GTK_PANED(w), child, resize, shrink);
 }
 
 static GtkWidget *
@@ -483,7 +708,7 @@ combo_find_internal_child(GladeXML *xml, GtkWidget *parent,
 	return GTK_COMBO(parent)->button;
     if (!strcmp(childname, "popup"))
 	return GTK_COMBO(parent)->popup;
-    if (!strcmp(childname, "pupwin"))
+    if (!strcmp(childname, "popwin"))
 	return GTK_COMBO(parent)->popwin;
     if (!strcmp(childname, "list"))
 	return GTK_COMBO(parent)->list;
@@ -494,6 +719,26 @@ void
 _glade_init_gtk_widgets(void)
 {
     glade_register_custom_prop (GTK_TYPE_WIDGET, "tooltip", set_tooltip);
+    glade_register_custom_prop (GTK_TYPE_PIXMAP, "build_insensitive", pixmap_set_build_insensitive);
+    glade_register_custom_prop (GTK_TYPE_PIXMAP, "filename", pixmap_set_filename);
+    glade_register_custom_prop (GTK_TYPE_PROGRESS, "format", progress_set_format);
+    glade_register_custom_prop (GTK_TYPE_OPTION_MENU, "history", option_menu_set_history);
+    glade_register_custom_prop (GTK_TYPE_TEXT_VIEW, "text", text_view_set_text);
+    glade_register_custom_prop (GTK_TYPE_CALENDAR, "display_options", calendar_set_display_options);
+    glade_register_custom_prop (GTK_TYPE_CLIST, "column_widths", clist_set_column_widths);
+    glade_register_custom_prop (GTK_TYPE_CLIST, "selection_mode", clist_set_selection_mode);
+    glade_register_custom_prop (GTK_TYPE_CLIST, "shadow_type", clist_set_shadow_type);
+    glade_register_custom_prop (GTK_TYPE_CLIST, "show_titles", clist_set_show_titles);
+    glade_register_custom_prop (GTK_TYPE_TREE, "selection_mode", tree_set_selection_mode);
+    glade_register_custom_prop (GTK_TYPE_TREE, "view_mode", tree_set_view_mode);
+    glade_register_custom_prop (GTK_TYPE_TREE, "view_line", tree_set_view_line);
+    glade_register_custom_prop (GTK_TYPE_LIST, "selection_mode", list_set_selection_mode);
+    glade_register_custom_prop (GTK_TYPE_CHECK_MENU_ITEM, "always_show_toggle",
+				check_menu_item_set_always_show_toggle);
+    glade_register_custom_prop (GTK_TYPE_TEXT, "text", text_set_text);
+    glade_register_custom_prop (GTK_TYPE_RADIO_MENU_ITEM, "group",
+				radio_menu_item_set_group);
+    glade_register_custom_prop (GTK_TYPE_TOOLBAR, "tooltips", toolbar_set_tooltips);
 
     glade_register_widget (GTK_TYPE_ACCEL_LABEL, glade_standard_build_widget,
 			   NULL, NULL);
@@ -511,7 +756,7 @@ _glade_init_gtk_widgets(void)
 			   glade_standard_build_children, NULL);
     glade_register_widget (GTK_TYPE_CHECK_MENU_ITEM, glade_standard_build_widget,
 			   menuitem_build_children, NULL);
-    glade_register_widget (GTK_TYPE_CLIST, build_clist,
+    glade_register_widget (GTK_TYPE_CLIST, glade_standard_build_widget,
 			   clist_build_children, NULL);
     glade_register_widget (GTK_TYPE_COLOR_SELECTION, glade_standard_build_widget,
 			   NULL, NULL);
@@ -519,7 +764,7 @@ _glade_init_gtk_widgets(void)
 			   glade_standard_build_children, colorseldlg_find_internal_child);
     glade_register_widget (GTK_TYPE_COMBO, glade_standard_build_widget,
 			   glade_standard_build_children, combo_find_internal_child);
-    glade_register_widget (GTK_TYPE_CTREE, build_clist,
+    glade_register_widget (GTK_TYPE_CTREE, glade_standard_build_widget,
 			   clist_build_children, NULL);
     glade_register_widget (GTK_TYPE_CURVE, glade_standard_build_widget,
 			   NULL, NULL);
@@ -550,7 +795,7 @@ _glade_init_gtk_widgets(void)
     glade_register_widget (GTK_TYPE_HBOX, glade_standard_build_widget,
 			   glade_standard_build_children, NULL);
     glade_register_widget (GTK_TYPE_HPANED, glade_standard_build_widget,
-			   glade_standard_build_children, NULL);
+			   paned_build_children, NULL);
     glade_register_widget (GTK_TYPE_HRULER, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_HSCALE, glade_standard_build_widget,
@@ -583,15 +828,17 @@ _glade_init_gtk_widgets(void)
 			   glade_standard_build_children, NULL);
     glade_register_widget (GTK_TYPE_NOTEBOOK, glade_standard_build_widget,
 			   notebook_build_children, NULL);
-    glade_register_widget (GTK_TYPE_OPTION_MENU, build_option_menu,
+    glade_register_widget (GTK_TYPE_OPTION_MENU, glade_standard_build_widget,
 			   glade_standard_build_children, option_menu_find_internal_child);
     glade_register_widget (GTK_TYPE_PIXMAP, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_PLUG, build_window,
 			   NULL, NULL);
-    glade_register_widget (GTK_TYPE_PROGRESS, build_progress,
+    glade_register_widget (GTK_TYPE_PREVIEW, build_preview,
 			   NULL, NULL);
-    glade_register_widget (GTK_TYPE_PROGRESS_BAR, build_progress,
+    glade_register_widget (GTK_TYPE_PROGRESS, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_PROGRESS_BAR, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_RADIO_BUTTON, glade_standard_build_widget,
 			   glade_standard_build_children, NULL);
@@ -612,14 +859,14 @@ _glade_init_gtk_widgets(void)
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_TEXT, glade_standard_build_widget,
 			   NULL, NULL);
-    glade_register_widget (GTK_TYPE_TEXT_VIEW, build_text_view,
+    glade_register_widget (GTK_TYPE_TEXT_VIEW, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_TIPS_QUERY, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_TOGGLE_BUTTON, glade_standard_build_widget,
 			   glade_standard_build_children, NULL);
     glade_register_widget (GTK_TYPE_TOOLBAR, glade_standard_build_widget,
-			   glade_standard_build_children, NULL);
+			   toolbar_build_children, NULL);
     glade_register_widget (GTK_TYPE_TREE, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_TREE_VIEW, glade_standard_build_widget,
@@ -629,7 +876,7 @@ _glade_init_gtk_widgets(void)
     glade_register_widget (GTK_TYPE_VBOX, glade_standard_build_widget,
 			   glade_standard_build_children, NULL);
     glade_register_widget (GTK_TYPE_VPANED, glade_standard_build_widget,
-			   glade_standard_build_children, NULL);
+			   paned_build_children, NULL);
     glade_register_widget (GTK_TYPE_VRULER, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_VSCALE, glade_standard_build_widget,

@@ -86,6 +86,79 @@
 
       <widget>
 	<class>GtkMenuItem</class>
+	<name>radios1</name>
+	<label>Radios</label>
+	<right_justify>False</right_justify>
+
+	<widget>
+	  <class>GtkMenu</class>
+	  <name>radios1_menu</name>
+
+	  <widget>
+	    <class>GtkRadioMenuItem</class>
+	    <name>radio_1</name>
+	    <signal>
+	      <name>activate</name>
+	      <handler>on_radio_1_activate</handler>
+	      <last_modification_time>Thu, 15 Nov 2001 00:16:16 GMT</last_modification_time>
+	    </signal>
+	    <label>radio 1</label>
+	    <active>False</active>
+	    <always_show_toggle>True</always_show_toggle>
+	    <group>idiotheque</group>
+	  </widget>
+
+	  <widget>
+	    <class>GtkRadioMenuItem</class>
+	    <name>radio_2</name>
+	    <signal>
+	      <name>activate</name>
+	      <handler>on_radio_2_activate</handler>
+	      <last_modification_time>Thu, 15 Nov 2001 00:16:16 GMT</last_modification_time>
+	    </signal>
+	    <label>radio 2</label>
+	    <active>False</active>
+	    <always_show_toggle>True</always_show_toggle>
+	    <group>idiotheque</group>
+	  </widget>
+
+	  <widget>
+	    <class>GtkRadioMenuItem</class>
+	    <name>radio_3</name>
+	    <signal>
+	      <name>activate</name>
+	      <handler>on_radio_3_activate</handler>
+	      <last_modification_time>Thu, 15 Nov 2001 00:16:16 GMT</last_modification_time>
+	    </signal>
+	    <label>radio 2</label>
+	    <active>True</active>
+	    <always_show_toggle>True</always_show_toggle>
+	    <group>idiotheque</group>
+	  </widget>
+
+	  <widget>
+	    <class>GtkMenuItem</class>
+	    <name>separator2</name>
+	    <right_justify>False</right_justify>
+	  </widget>
+
+	  <widget>
+	    <class>GtkCheckMenuItem</class>
+	    <name>check_1</name>
+	    <signal>
+	      <name>activate</name>
+	      <handler>on_check_1_activate</handler>
+	      <last_modification_time>Thu, 15 Nov 2001 00:18:28 GMT</last_modification_time>
+	    </signal>
+	    <label>check 1</label>
+	    <active>False</active>
+	    <always_show_toggle>True</always_show_toggle>
+	  </widget>
+	</widget>
+      </widget>
+
+      <widget>
+	<class>GtkMenuItem</class>
 	<name>help2</name>
 	<label>Help</label>
 	<right_justify>False</right_justify>
@@ -128,21 +201,68 @@
 	<class>GtkButton</class>
 	<child_name>Toolbar:button</child_name>
 	<name>button1</name>
-	<label>button1</label>
+	<label>New</label>
+	<stock_pixmap>GNOME_STOCK_PIXMAP_NEW</stock_pixmap>
       </widget>
 
       <widget>
 	<class>GtkButton</class>
-	<child_name>Toolbar:button</child_name>
-	<name>button2</name>
-	<label>button2</label>
+	<name>button21</name>
+	<can_focus>True</can_focus>
+	<label>Clickme</label>
+	<relief>GTK_RELIEF_NORMAL</relief>
+	<child>
+	  <new_group>True</new_group>
+	</child>
       </widget>
 
       <widget>
-	<class>GtkButton</class>
+	<class>GtkOptionMenu</class>
+	<name>optionmenu3</name>
+	<can_focus>True</can_focus>
+	<items>test
+test2
+test3
+</items>
+	<initial_choice>0</initial_choice>
+	<child>
+	  <new_group>True</new_group>
+	</child>
+      </widget>
+
+      <widget>
+	<class>GtkToggleButton</class>
 	<child_name>Toolbar:button</child_name>
-	<name>button3</name>
-	<label>button3</label>
+	<name>togglebutton3</name>
+	<label>Bold</label>
+	<stock_pixmap>GNOME_STOCK_PIXMAP_TEXT_BOLD</stock_pixmap>
+	<active>True</active>
+	<child>
+	  <new_group>True</new_group>
+	</child>
+      </widget>
+
+      <widget>
+	<class>GtkRadioButton</class>
+	<child_name>Toolbar:button</child_name>
+	<name>radiobutton2</name>
+	<label>Left</label>
+	<stock_pixmap>GNOME_STOCK_PIXMAP_ALIGN_LEFT</stock_pixmap>
+	<active>False</active>
+	<group>justify_group</group>
+	<child>
+	  <new_group>True</new_group>
+	</child>
+      </widget>
+
+      <widget>
+	<class>GtkRadioButton</class>
+	<child_name>Toolbar:button</child_name>
+	<name>radiobutton3</name>
+	<label>Right</label>
+	<stock_pixmap>GNOME_STOCK_PIXMAP_ALIGN_RIGHT</stock_pixmap>
+	<active>False</active>
+	<group>justify_group</group>
       </widget>
     </widget>
 
@@ -313,7 +433,10 @@
 	  <class>GtkOptionMenu</class>
 	  <name>optionmenu2</name>
 	  <can_focus>True</can_focus>
-	  <items></items>
+	  <items>test 1
+test 2
+test 3
+</items>
 	  <initial_choice>0</initial_choice>
 	  <child>
 	    <left_attach>0</left_attach>
@@ -754,29 +877,6 @@
 	</widget>
 
 	<widget>
-	  <class>GtkRadioButton</class>
-	  <name>radiobutton1</name>
-	  <can_focus>True</can_focus>
-	  <label>radiobutton1</label>
-	  <active>False</active>
-	  <draw_indicator>True</draw_indicator>
-	  <child>
-	    <left_attach>1</left_attach>
-	    <right_attach>2</right_attach>
-	    <top_attach>1</top_attach>
-	    <bottom_attach>2</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
-	</widget>
-
-	<widget>
 	  <class>GtkScrolledWindow</class>
 	  <name>scrolledwindow2</name>
 	  <hscrollbar_policy>GTK_POLICY_ALWAYS</hscrollbar_policy>
@@ -822,16 +922,13 @@
 	    </widget>
 
 	    <widget>
-	      <class>GtkLabel</class>
+	      <class>GtkCheckButton</class>
 	      <child_name>CList:title</child_name>
-	      <name>label3</name>
-	      <label>label3</label>
-	      <justify>GTK_JUSTIFY_CENTER</justify>
-	      <wrap>False</wrap>
-	      <xalign>0.5</xalign>
-	      <yalign>0.5</yalign>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
+	      <name>checkbutton2</name>
+	      <can_focus>True</can_focus>
+	      <label>checkbutton2</label>
+	      <active>False</active>
+	      <draw_indicator>True</draw_indicator>
 	    </widget>
 	  </widget>
 	</widget>
@@ -1181,6 +1278,72 @@
 	    <yfill>False</yfill>
 	  </child>
 	</widget>
+
+	<widget>
+	  <class>GtkVBox</class>
+	  <name>vbox3</name>
+	  <homogeneous>False</homogeneous>
+	  <spacing>0</spacing>
+	  <child>
+	    <left_attach>1</left_attach>
+	    <right_attach>2</right_attach>
+	    <top_attach>1</top_attach>
+	    <bottom_attach>2</bottom_attach>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <xexpand>False</xexpand>
+	    <yexpand>False</yexpand>
+	    <xshrink>False</xshrink>
+	    <yshrink>False</yshrink>
+	    <xfill>True</xfill>
+	    <yfill>True</yfill>
+	  </child>
+
+	  <widget>
+	    <class>GtkRadioButton</class>
+	    <name>radiobutton4</name>
+	    <can_focus>True</can_focus>
+	    <label>radiobutton4</label>
+	    <active>False</active>
+	    <draw_indicator>True</draw_indicator>
+	    <group>radiohead</group>
+	    <child>
+	      <padding>0</padding>
+	      <expand>False</expand>
+	      <fill>False</fill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkRadioButton</class>
+	    <name>radiobutton5</name>
+	    <can_focus>True</can_focus>
+	    <label>radiobutton5</label>
+	    <active>False</active>
+	    <draw_indicator>True</draw_indicator>
+	    <group>radiohead</group>
+	    <child>
+	      <padding>0</padding>
+	      <expand>False</expand>
+	      <fill>False</fill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkRadioButton</class>
+	    <name>radiobutton6</name>
+	    <can_focus>True</can_focus>
+	    <label>radiobutton6</label>
+	    <active>False</active>
+	    <draw_indicator>True</draw_indicator>
+	    <group>radiohead</group>
+	    <child>
+	      <padding>0</padding>
+	      <expand>False</expand>
+	      <fill>False</fill>
+	    </child>
+	  </widget>
+	</widget>
       </widget>
 
       <widget>
@@ -1336,7 +1499,15 @@
 	  </child>
 
 	  <widget>
-	    <class>Placeholder</class>
+	    <class>GtkLabel</class>
+	    <name>label42</name>
+	    <label>label42</label>
+	    <justify>GTK_JUSTIFY_CENTER</justify>
+	    <wrap>False</wrap>
+	    <xalign>0.5</xalign>
+	    <yalign>0.5</yalign>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
 	  </widget>
 	</widget>
 
@@ -1359,7 +1530,15 @@
 	  </child>
 
 	  <widget>
-	    <class>Placeholder</class>
+	    <class>GtkLabel</class>
+	    <name>label43</name>
+	    <label>label43</label>
+	    <justify>GTK_JUSTIFY_CENTER</justify>
+	    <wrap>False</wrap>
+	    <xalign>0</xalign>
+	    <yalign>0.5</yalign>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
 	  </widget>
 	</widget>
 
@@ -1495,7 +1674,15 @@
 	  </child>
 
 	  <widget>
-	    <class>Placeholder</class>
+	    <class>GtkLabel</class>
+	    <name>label44</name>
+	    <label>label44</label>
+	    <justify>GTK_JUSTIFY_CENTER</justify>
+	    <wrap>False</wrap>
+	    <xalign>0.5</xalign>
+	    <yalign>0.5</yalign>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
 	  </widget>
 	</widget>
 
@@ -1650,9 +1837,10 @@
 	<widget>
 	  <class>Custom</class>
 	  <name>custom1</name>
+	  <creation_function>test_create</creation_function>
 	  <int1>0</int1>
 	  <int2>0</int2>
-	  <last_modification_time>Mon, 12 Nov 2001 20:52:46 GMT</last_modification_time>
+	  <last_modification_time>Wed, 14 Nov 2001 19:36:36 GMT</last_modification_time>
 	  <child>
 	    <left_attach>2</left_attach>
 	    <right_attach>3</right_attach>
@@ -1693,6 +1881,32 @@
 	    <yfill>True</yfill>
 	  </child>
 	</widget>
+
+	<widget>
+	  <class>GtkLabel</class>
+	  <name>label45</name>
+	  <label>label45</label>
+	  <justify>GTK_JUSTIFY_CENTER</justify>
+	  <wrap>False</wrap>
+	  <xalign>0</xalign>
+	  <yalign>0.5</yalign>
+	  <xpad>0</xpad>
+	  <ypad>0</ypad>
+	  <child>
+	    <left_attach>3</left_attach>
+	    <right_attach>4</right_attach>
+	    <top_attach>2</top_attach>
+	    <bottom_attach>3</bottom_attach>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <xexpand>False</xexpand>
+	    <yexpand>False</yexpand>
+	    <xshrink>False</xshrink>
+	    <yshrink>False</yshrink>
+	    <xfill>True</xfill>
+	    <yfill>False</yfill>
+	  </child>
+	</widget>
       </widget>
 
       <widget>
@@ -1700,6 +1914,48 @@
 	<child_name>Notebook:tab</child_name>
 	<name>label19</name>
 	<label>label19</label>
+	<justify>GTK_JUSTIFY_CENTER</justify>
+	<wrap>False</wrap>
+	<xalign>0.5</xalign>
+	<yalign>0.5</yalign>
+	<xpad>0</xpad>
+	<ypad>0</ypad>
+      </widget>
+
+      <widget>
+	<class>GtkVBox</class>
+	<name>vbox2</name>
+	<homogeneous>False</homogeneous>
+	<spacing>0</spacing>
+
+	<widget>
+	  <class>GtkColorSelection</class>
+	  <name>colorselection1</name>
+	  <policy>GTK_UPDATE_CONTINUOUS</policy>
+	  <child>
+	    <padding>0</padding>
+	    <expand>True</expand>
+	    <fill>True</fill>
+	  </child>
+	</widget>
+
+	<widget>
+	  <class>GtkFontSelection</class>
+	  <name>fontselection1</name>
+	  <can_focus>True</can_focus>
+	  <child>
+	    <padding>0</padding>
+	    <expand>True</expand>
+	    <fill>True</fill>
+	  </child>
+	</widget>
+      </widget>
+
+      <widget>
+	<class>GtkLabel</class>
+	<child_name>Notebook:tab</child_name>
+	<name>label46</name>
+	<label>label46</label>
 	<justify>GTK_JUSTIFY_CENTER</justify>
 	<wrap>False</wrap>
 	<xalign>0.5</xalign>
@@ -1754,56 +2010,50 @@
       </child>
 
       <widget>
-	<class>GtkHButtonBox</class>
-	<name>hbuttonbox3</name>
-	<layout_style>GTK_BUTTONBOX_DEFAULT_STYLE</layout_style>
-	<spacing>30</spacing>
-	<child_min_width>85</child_min_width>
-	<child_min_height>27</child_min_height>
-	<child_ipad_x>7</child_ipad_x>
-	<child_ipad_y>0</child_ipad_y>
+	<class>GtkButton</class>
+	<name>button22</name>
+	<can_focus>True</can_focus>
+	<label>button22</label>
+	<relief>GTK_RELIEF_NORMAL</relief>
 	<child>
 	  <padding>0</padding>
 	  <expand>False</expand>
 	  <fill>False</fill>
 	</child>
+      </widget>
 
-	<widget>
-	  <class>GtkButton</class>
-	  <name>button18</name>
-	  <can_default>True</can_default>
-	  <can_focus>True</can_focus>
-	  <label>button18</label>
-	  <relief>GTK_RELIEF_NORMAL</relief>
-	</widget>
+      <widget>
+	<class>GtkButton</class>
+	<name>button23</name>
+	<can_focus>True</can_focus>
+	<label>button23</label>
+	<relief>GTK_RELIEF_NORMAL</relief>
+	<child>
+	  <padding>0</padding>
+	  <expand>False</expand>
+	  <fill>False</fill>
+	</child>
+      </widget>
 
-	<widget>
-	  <class>GtkButton</class>
-	  <name>button19</name>
-	  <can_default>True</can_default>
-	  <can_focus>True</can_focus>
-	  <label>button19</label>
-	  <relief>GTK_RELIEF_NORMAL</relief>
-	</widget>
-
-	<widget>
-	  <class>GtkButton</class>
-	  <name>button20</name>
-	  <can_default>True</can_default>
-	  <can_focus>True</can_focus>
-	  <label>button20</label>
-	  <relief>GTK_RELIEF_NORMAL</relief>
-	</widget>
+      <widget>
+	<class>GtkButton</class>
+	<name>button24</name>
+	<can_focus>True</can_focus>
+	<label>button24</label>
+	<relief>GTK_RELIEF_NORMAL</relief>
+	<child>
+	  <padding>0</padding>
+	  <expand>False</expand>
+	  <fill>False</fill>
+	</child>
       </widget>
     </widget>
 
     <widget>
-      <class>GtkScrolledWindow</class>
-      <name>scrolledwindow11</name>
-      <hscrollbar_policy>GTK_POLICY_ALWAYS</hscrollbar_policy>
-      <vscrollbar_policy>GTK_POLICY_ALWAYS</vscrollbar_policy>
-      <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
-      <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
+      <class>GtkHBox</class>
+      <name>hbox1</name>
+      <homogeneous>False</homogeneous>
+      <spacing>0</spacing>
       <child>
 	<padding>0</padding>
 	<expand>True</expand>
@@ -1811,53 +2061,35 @@
       </child>
 
       <widget>
-	<class>GtkCList</class>
-	<name>clist2</name>
+	<class>GtkLabel</class>
+	<name>label41</name>
+	<label>label41</label>
+	<justify>GTK_JUSTIFY_CENTER</justify>
+	<wrap>False</wrap>
+	<xalign>0.5</xalign>
+	<yalign>0.5</yalign>
+	<xpad>0</xpad>
+	<ypad>0</ypad>
+	<child>
+	  <padding>0</padding>
+	  <expand>False</expand>
+	  <fill>False</fill>
+	</child>
+      </widget>
+
+      <widget>
+	<class>GtkEntry</class>
+	<name>entry3</name>
 	<can_focus>True</can_focus>
-	<columns>3</columns>
-	<column_widths>80,80,80</column_widths>
-	<selection_mode>GTK_SELECTION_SINGLE</selection_mode>
-	<show_titles>True</show_titles>
-	<shadow_type>GTK_SHADOW_IN</shadow_type>
-
-	<widget>
-	  <class>GtkLabel</class>
-	  <child_name>CList:title</child_name>
-	  <name>label39</name>
-	  <label>label39</label>
-	  <justify>GTK_JUSTIFY_CENTER</justify>
-	  <wrap>False</wrap>
-	  <xalign>0.5</xalign>
-	  <yalign>0.5</yalign>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	</widget>
-
-	<widget>
-	  <class>GtkLabel</class>
-	  <child_name>CList:title</child_name>
-	  <name>label40</name>
-	  <label>label40</label>
-	  <justify>GTK_JUSTIFY_CENTER</justify>
-	  <wrap>False</wrap>
-	  <xalign>0.5</xalign>
-	  <yalign>0.5</yalign>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	</widget>
-
-	<widget>
-	  <class>GtkLabel</class>
-	  <child_name>CList:title</child_name>
-	  <name>label41</name>
-	  <label>label41</label>
-	  <justify>GTK_JUSTIFY_CENTER</justify>
-	  <wrap>False</wrap>
-	  <xalign>0.5</xalign>
-	  <yalign>0.5</yalign>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	</widget>
+	<editable>True</editable>
+	<text_visible>True</text_visible>
+	<text_max_length>0</text_max_length>
+	<text></text>
+	<child>
+	  <padding>0</padding>
+	  <expand>True</expand>
+	  <fill>True</fill>
+	</child>
       </widget>
     </widget>
   </widget>
@@ -1982,11 +2214,6 @@
     <label>Cancel</label>
     <relief>GTK_RELIEF_NORMAL</relief>
   </widget>
-</widget>
-
-<widget>
-  <class>GtkMenu</class>
-  <name>menu1</name>
 </widget>
 
 </GTK-Interface>

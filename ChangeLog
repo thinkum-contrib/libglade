@@ -1,3 +1,45 @@
+2001-11-27  jacob berkman  <jacob@ximian.com>
+
+	* tests/test-libglade-gtk-noupgrade.c:
+	* tests/test-libglade-gtk.c (test_create): test custom widgets
+	(main): make warnings fatal, and add an env var to show the
+	toplevel window too
+
+	* glade/glade-gtk.c (pixmap_set_build_insensitive): 
+	(pixmap_set_filename): 
+	(progress_set_format): 
+	(option_menu_set_history): 
+	(text_view_set_text): 
+	(calendar_set_display_options): 
+	(clist_set_column_widths): 
+	(clist_set_selection_mode): 
+	(clist_set_shadow_type): 
+	(clist_set_show_titles): 
+	(tree_set_selection_mode): 
+	(tree_set_view_mode): 
+	(tree_set_view_line): 
+	(list_set_selection_mode): 
+	(check_menu_item_set_always_show_toggle): 
+	(text_set_text): 
+	(radio_menu_item_set_group): 
+	(toolbar_set_tooltips): add support for missing properties
+	(build_progress):
+	(build_option_menu):
+	(build_text_view):
+	(build_clist): remove unnecessary functions
+	(build_preview): this widget is really broken
+	(toolbar_build_children): make toolbars work
+	(paned_build_children): ported from glade 1
+	(_glade_init_gtk_widgets): reflect changes above
+
+	* glade/glade-xml.c (glade_flags_from_string): don't increment i
+	twice some times (this is a nasty bug)
+	(custom_new): port from glade 1
+	(glade_xml_build_widget): enable custom widget support
+
+	* libglade-convert.in: fix up tons of deprecated / renamed /
+	removed properties; fix toolbar, calendar, dialog support
+
 2001-11-27  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-parser.c (glade_parser_parse_file): revert

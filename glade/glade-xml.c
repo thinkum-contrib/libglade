@@ -1067,6 +1067,37 @@ glade_create_custom(GladeXML *xml, gchar *func_name, gchar *name,
 				  int1, int2, custom_user_data);
 }
 
+static GtkWidget *
+custom_new (GladeXML *xml, GladeWidgetInfo *info)
+{
+    GtkWidget *wid = NULL;
+    gchar *func_name = NULL, *string1 = NULL, *string2 = NULL;
+    gint int1 = 0, int2 = 0;
+    int i;
+    
+    for (i = 0; i < info->n_properties; i++) {
+	char *name  = info->properties[i].name;
+	char *value = info->properties[i].value;
+	
+	if (!strcmp(name, "creation_function"))
+	    func_name = value;
+	else if (!strcmp(name, "string1"))
+	    string1 = value;
+	else if (!strcmp(name, "string2"))
+	    string2 = value;
+	else if (!strcmp(name, "int1"))
+	    int1 = strtol(value, NULL, 0);
+	else if (!strcmp(name, "int2"))
+	    int2 = strtol(value, NULL, 0);
+    }
+    wid = glade_create_custom(xml, func_name, info->name, string1,
+			      string2, int1, int2);
+    /* fallback to prevent segfault */
+    if (wid == NULL)
+	wid = gtk_label_new("[custom widget creation failed]");
+    return wid;
+}
+
 /**
  * glade_enum_from_string
  * @type: the GType for this enum type.
@@ -1157,8 +1188,7 @@ glade_flags_from_string (GType type, const char *string)
 
 	    if (eos)
 		break;
-	} else
-	    i++;
+	}
     }
     
     g_free (flagstr);
@@ -1823,6 +1853,8 @@ glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info)
 	ret = gtk_label_new("[placeholder]");
 	gtk_widget_show(ret);
 	return ret;
+    } else if (!strcmp (info->class, "Custom")) {
+	return custom_new (self, info);
     }
     type = g_type_from_name(info->class);
     if (type == G_TYPE_INVALID) {
