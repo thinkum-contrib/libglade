@@ -1,5 +1,10 @@
 1999-08-02  James Henstridge  <james@daa.com.au>
 
+	* doc/Makefile.am (scan): yet another fix.  Now it runs gtkdoc-scanobj
+	in the build directory rather than srcdir.  This one actually works
+	correctly with builddir != srcdir and libglade not installed when I
+	do a distcheck.
+	
 	* doc/Makefile.am (scan): set CC to "$(LIBTOOL) $(CC)" for
 	gtkdoc-scanobj, and make it link the test program with the libtool
 	libraries rather than the installed libraries.

@@ -13,12 +13,14 @@ HTML_DIR=$(datadir)/gnome/html
 TARGET_DIR=$(HTML_DIR)/$(DOC_MODULE)
 
 if GNOME_SUPPORT
-CFLAGS = $(GNOME_INCLUDEDIR) $(XML_CFLAGS) -I..
+CFLAGS = $(GNOME_INCLUDEDIR) $(XML_CFLAGS) -I$(srcdir)/..
 LDFLAGS = ../glade/libglade.la $(GNOME_LIBDIR) $(GNOMEUI_LIBS) $(XML_LIBS)
 else
-CFLAGS = $(GTK_CFLAGS) $(XML_CFLAGS) -I..
+CFLAGS = $(GTK_CFLAGS) $(XML_CFLAGS) -I$(srcdir)/..
 LDFLAGS = ../glade/libglade.la $(GTK_LIBS) $(XML_LIBS)
 endif
+
+SCANOBJ_FILES = $(DOC_MODULE).signals $(DOC_MODULE).hierachy $(DOC_MODULE).args
 
 tmpl_sources =				\
 	tmpl/glade.sgml			\
@@ -48,9 +50,10 @@ libglade.hierarchy libglade-decl.txt:
 	$(MAKE) templates
 
 scan:
-	cd $(srcdir) \
-	&& env CC="$(LIBTOOL) $(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
-		gtkdoc-scanobj --module=$(DOC_MODULE)
+	env CC="$(LIBTOOL) $(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
+		gtkdoc-scanobj --module=$(DOC_MODULE) \
+		--types=$(srcdir)/$(DOC_MODULE).types
+	-mv -f $(SCANOBJ_FILES) $(srcdir)
 	cd $(srcdir) \
 	&& gtkdoc-scan --module=$(DOC_MODULE) \
 		       --source-dir=$(DOC_SOURCE_DIR) \
