@@ -51,6 +51,9 @@ struct _GladeXML {
 
 struct _GladeXMLClass {
     GObjectClass parent_class;
+
+    /* Virtual function: gets the appropriate gtype for the typename.*/
+    GType (* lookup_type) (GladeXML*self, const char *gtypename);
 };
 
 GType      glade_xml_get_type            (void);

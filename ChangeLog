@@ -1,3 +1,9 @@
+2002-04-25  Murray Cumming  <murrayc@usa.net>
+
+	* glade/glade-xml.[h|c]: Added lookup_type() virtual
+	function to GladeXMLClass, so that libglademm language bindings
+	can instantiate their own derived gtypes.
+
 2002-04-22  Murray Cumming  <murrayc@usa.net>
 	
 	* glade/glade-parser.[h|c}: Renamed GladeWidgetInfo::class field

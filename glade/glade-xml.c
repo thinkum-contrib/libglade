@@ -58,6 +58,8 @@ static void glade_xml_finalize(GObject *object);
 static void glade_xml_build_interface(GladeXML *xml, GladeInterface *iface,
 				      const char *root);
 
+static GType glade_xml_real_lookup_type(GladeXML*self, const char *gtypename);
+
 /**
  * glade_xml_get_type:
  *
@@ -96,6 +98,8 @@ glade_xml_class_init (GladeXMLClass *class)
     parent_class = g_type_class_peek_parent (class);
 
     G_OBJECT_CLASS(class)->finalize = glade_xml_finalize;
+
+    class->lookup_type = glade_xml_real_lookup_type;
 
     glade_xml_tree_id = g_quark_from_static_string(glade_xml_tree_key);
     glade_xml_name_id = g_quark_from_static_string(glade_xml_name_key);
@@ -1804,7 +1808,7 @@ glade_standard_build_children(GladeXML *self, GtkWidget *parent,
 GtkWidget *
 glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info)
 {
-    GType type;
+    GType type = G_TYPE_INVALID;
     GtkWidget *ret;
     
     GLADE_NOTE(BUILD, g_message("Widget class: %s\tname: %s",
@@ -1812,7 +1816,9 @@ glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info)
     if (!strcmp (info->classname, "Custom")) {
 	ret = custom_new (self, info);
     } else {
-	type = g_type_from_name(info->classname);
+		/* Call GladeXml's lookup_type() virtual function to get the gtype: */
+		type = (* GLADE_XML_GET_CLASS(self)->lookup_type) (self, info->classname);
+
 	if (type == G_TYPE_INVALID) {
 	    char buf[50];
 	    g_warning("unknown widget class '%s'", info->classname);
@@ -2046,4 +2052,15 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 
     if (g_object_get_qdata(G_OBJECT(widget), visible_id))
 	gtk_widget_show(widget);
+}
+
+/**
+ * glade_xml_real_lookup_type
+ *
+ * Default implementation of the lookup_type() virtual function.
+ */
+static GType
+glade_xml_real_lookup_type(GladeXML*self, const char *gtypename)
+{
+  return g_type_from_name(gtypename);
 }
