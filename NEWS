@@ -1,5 +1,15 @@
-XXXXXXXX
+libglade-0.2:
 	- Radio group support
+	- The start of gnome support -- this code has been split off into a
+	  separate library called libglade-gnome.  You can get the cflags or
+	  libraries to link with the gnome code by calling `libglade-config
+	  --cflags --libs gnome`.  Also, if you want gnome support, you
+	  should call glade_gnome_init() instead of glade_init().
+	- I18N support.  Libglade can either use the current translation
+	  domain when building the widget tree, or you can specify a
+	  different one with glade_xml_new_with_domain().  There is also
+	  a program called libglade-xgettext to help extract strings for
+	  translation from an XML file.
 
 libglade-0.1: 27-May-1999
 	- Many fixes from many people.  This version should actually be

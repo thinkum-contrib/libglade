@@ -50,9 +50,16 @@ GNOME_COMPILE_WARNINGS
 AC_CHECK_PROG(GTKDOC, gtkdoc-mkdb, true, false)
 AM_CONDITIONAL(HAVE_GTK_DOC, $GTKDOC)
 
+dnl gettext stuff ... there is no message catalog for libglade -- libglade
+dnl provides translation for the XML files it reads in.
+ALL_LINGUAS=
+AM_GNOME_GETTEXT
+
 AC_OUTPUT([Makefile
 libglade.spec
 macros/Makefile
+intl/Makefile
+po/Makefile.in
 glade/Makefile
 doc/Makefile
 libglade-config

@@ -1,3 +1,11 @@
+1999-06-12  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c: fixed up gettext call.
+
+	* configure.in: added a call to AM_GNOME_GETTEXT so that the i18n
+	stuff should get included correctly.  Note that there is no libglade
+	translation domain -- libglade should not give any of its own output.
+
 1999-06-11  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-xml.[ch] (glade_xml_construct): added a third argument -

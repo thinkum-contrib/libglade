@@ -686,8 +686,6 @@ glade_register_widgets(const GladeWidgetBuildData *widgets)
 /* a slight optimisation when gettext is off */
 #define glade_xml_gettext(xml, msgid) (msgid)
 #endif
-#undef _
-#define _(msgid) (glade_xml_gettext(xml, msgid))
 
 /**
  * GladeNewFunc
@@ -881,7 +879,8 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 				if (self->priv->tooltips == NULL)
 					self->priv->tooltips = gtk_tooltips_new();
 				gtk_tooltips_set_tip(self->priv->tooltips,
-						     widget, _(value), NULL);
+					widget, glade_xml_gettext(self, value),
+					NULL);
 			}
 			break;
 		case 'v':

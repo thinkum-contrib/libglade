@@ -2068,6 +2068,12 @@ colorselection_new(GladeXML *xml, GNode *node)
 }
 
 static GtkWidget *
+fontselection_new(GladeXML *xml, GNode *node)
+{
+	return gtk_font_selection_new();
+}
+
+static GtkWidget *
 preview_new(GladeXML *xml, GNode *node)
 {
 	GtkWidget *preview;
@@ -2319,6 +2325,7 @@ static const GladeWidgetBuildData widget_data[] = {
 	{"GtkCurve",         curve_new,         NULL},
 	{"GtkGammaCurve",    gammacurve_new,    NULL},
 	{"GtkColorSelection",colorselection_new,NULL},
+	{"GtkFontSelection", fontselection_new, NULL},
 	{"GtkPreview",       preview_new,       NULL},
 
   /* toplevel widgets */
