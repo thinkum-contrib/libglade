@@ -1,3 +1,9 @@
+2000-03-25  Peter Teichman <peter@helixcode.com>
+
+	* glade/glade-xml.c (glade_xml_build_widget): add set_common_params
+	logic for bonobo control + clean flow. (glade_xml_set_common_params):
+	update for bonobo controls.
+
 2000-03-13  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-xml.h: added prototypes for new functions.

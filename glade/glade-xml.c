@@ -1121,11 +1121,10 @@ glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info,
 			ret = gtk_label_new(buf);
 			gtk_widget_show(ret);
 		}
-		
-		return ret;
+	} else {
+		g_assert(data->new);
+		ret = data->new(self, info);
 	}
-	g_assert(data->new);
-	ret = data->new(self, info);
 	glade_xml_set_common_params(self, ret, info, parent_long);
 	return ret;
 }
@@ -1252,7 +1251,7 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 	if (info->style)
 		glade_style_attach(widget, info->style->name);
 
-	if (data->build_children && info->children)
+	if (data && data->build_children && info->children)
 		data->build_children(self, widget, info, w_longname);
 	if (info->visible)
 		gtk_widget_show(widget);
