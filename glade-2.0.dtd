@@ -23,7 +23,22 @@
   type CDATA #IMPLIED
   translatable (yes|no) 'no' >
 
-<!ELEMENT accessibility (property+) >
+<!ELEMENT atkproperty (accessibility | #PCDATA)? >
+<!ATTLIST atkproperty
+  name CDATA #REQUIRED
+  type CDATA #IMPLIED >
+
+<!ELEMENT atkrelation >
+<!ATTLIST atkrelation
+  target CDATA #REQUIRED
+  type CDATA #REQUIRED >
+
+<!ELEMENT atkaction >
+<!ATTLIST atkaction
+  target CDATA #REQUIRED
+  description CDATA #IMPLIED >
+
+<!ELEMENT accessibility (atkrelation | atkaction | atkproperty)* >
 
 <!ELEMENT signal EMPTY >
 <!ATTLIST signal
