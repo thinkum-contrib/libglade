@@ -27,6 +27,8 @@
 #include <glib.h>
 #include <gmodule.h>
 
+#include <pango/pango-utils.h>
+
 #include "glade-init.h"
 #include "glade-build.h"
 
@@ -61,6 +63,84 @@ glade_module_check_version(gint version)
 
 static GPtrArray *loaded_packages = NULL;
 
+static gchar **
+get_module_path (void)
+{
+    const gchar *module_path_env = g_getenv ("LIBGLADE_MODULE_PATH");
+    const gchar *exe_prefix = g_getenv("LIBGLADE_EXE_PREFIX");
+    gchar **result;
+    gchar *module_path;
+    gchar *default_dir;
+    
+    if (exe_prefix)
+	default_dir = g_build_filename (exe_prefix, "lib", NULL);
+    else
+	default_dir = g_strdup (GLADE_LIBDIR);
+    
+    module_path = g_strconcat (module_path_env ? module_path_env : "",
+			       module_path_env ? G_SEARCHPATH_SEPARATOR_S : "",
+			       default_dir, NULL);
+    
+    result = pango_split_file_list (module_path);
+    
+    g_free (default_dir);
+    g_free (module_path);
+    
+    return result;
+}
+
+static GModule *
+find_module (gchar      **module_path,
+	     const gchar *subdir,
+	     const gchar *name)
+{
+    GModule *module;
+    gchar *module_name;
+    gint i;
+    
+    if (g_path_is_absolute (name))
+	return g_module_open (name, G_MODULE_BIND_LAZY);
+    
+    for (i = 0; module_path[i]; i++) {
+	gchar *version_directory;
+	
+#ifndef G_OS_WIN32 /* ignoring GTK_BINARY_VERSION elsewhere too */
+	version_directory = g_build_filename (module_path[i], subdir, NULL);
+	module_name = g_module_build_path (version_directory, name);
+	g_free (version_directory);
+	
+	/*g_print ("trying: %s\n", module_name);*/
+
+	if (g_file_test (module_name, G_FILE_TEST_EXISTS)) {
+	    module = g_module_open (module_name, G_MODULE_BIND_LAZY);
+	    g_free (module_name);
+	    return module;
+	}
+      
+	g_free (module_name);
+#endif
+	
+	module_name = g_module_build_path (module_path[i], name);
+	
+	if (g_file_test (module_name, G_FILE_TEST_EXISTS)) {
+	    module = g_module_open (module_name, G_MODULE_BIND_LAZY);
+	    g_free (module_name);
+	    return module;
+	}
+	
+	g_free (module_name);
+    }
+    
+    /* As last resort, try loading without an absolute path (using system
+     * library path)
+     */
+    module_name = g_module_build_path (NULL, name);
+    module = g_module_open (module_name, G_MODULE_BIND_LAZY);
+    g_free(module_name);
+    
+    return module;
+}
+
 /**
  * glade_require:
  * @library: the required library
@@ -74,9 +154,9 @@ void
 glade_require(const gchar *library)
 {
     gboolean already_loaded = FALSE;
-    gchar *filename;
     GModule *module;
     void (* init_func)(void);
+    static char **module_path = NULL;
 
     /* a call to glade_init here to make sure libglade is initialised */
     glade_init();
@@ -94,15 +174,16 @@ glade_require(const gchar *library)
     if (already_loaded)
 	return;
 
-    filename = g_module_build_path (GLADE_MODULE_DIR, library);
-    module = g_module_open(filename, G_MODULE_BIND_LAZY);
+    if (!module_path)
+	module_path = get_module_path ();
+
+    module = find_module (module_path, "libglade/2.0", library);
+
     if (!module) {
 	g_warning("Could not load support for `%s': %s", library,
 		  g_module_error());
-	g_free(filename);
 	return;
     }
-    g_free(filename);
 
     if (!g_module_symbol(module, "glade_module_register_widgets",
 			 (gpointer)&init_func)) {
