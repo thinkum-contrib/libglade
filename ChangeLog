@@ -1,3 +1,8 @@
+Fri Jan 23 01:56:03 2004  Matthias Clasen  <maclas@gmx.de>
+
+	* glade/glade-xml.c (glade_flags_from_string): Handle spaces 
+	and UTF-8.  (#128013, Pedro Abelleira Seco and Damon Chaplin)
+
 Fri Jan 23 01:46:59 2004  Matthias Clasen  <maclas@gmx.de>
 
 	Fix #126181, reported by Steve Chaplin:	

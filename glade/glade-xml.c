@@ -1107,7 +1107,7 @@ guint
 glade_flags_from_string (GType type, const char *string)
 {
     GFlagsClass *fclass;
-    gchar *endptr;
+    gchar *endptr, *prevptr;
     guint i, j, ret = 0;
     char *flagstr;
 
@@ -1127,21 +1127,47 @@ glade_flags_from_string (GType type, const char *string)
 	if (eos || flagstr [i] == '|') {
 	    GFlagsValue *fv;
 	    const char  *flag;
+	    gunichar ch;
 
 	    flag = &flagstr [j];
+            endptr = &flagstr [i];
 
 	    if (!eos) {
 		flagstr [i++] = '\0';
 		j = i;
 	    }
 
-	    fv = g_flags_get_value_by_name (fclass, flag);
+            /* trim spaces */
+	    for (;;)
+	      {
+		ch = g_utf8_get_char (flag);
+		if (!g_unichar_isspace (ch))
+		  break;
+		flag = g_utf8_next_char (flag);
+	      }
 
-	    if (!fv)
-		fv = g_flags_get_value_by_nick (fclass, flag);
+	    while (endptr > flag)
+	      {
+		prevptr = g_utf8_prev_char (endptr);
+		ch = g_utf8_get_char (prevptr);
+		if (!g_unichar_isspace (ch))
+		  break;
+		endptr = prevptr;
+	      }
 
-	    if (fv)
-		ret |= fv->value;
+	    if (endptr > flag)
+	      {
+		*endptr = '\0';
+		fv = g_flags_get_value_by_name (fclass, flag);
+
+		if (!fv)
+		  fv = g_flags_get_value_by_nick (fclass, flag);
+
+		if (fv)
+		  ret |= fv->value;
+		else
+		  g_warning ("Unknown flag: '%s'", flag);
+	      }
 
 	    if (eos)
 		break;
