@@ -1219,11 +1219,11 @@ glade_register_widget(GType type,
     if (glade_build_data_id == 0)
 	glade_build_data_id = g_quark_from_static_string(glade_build_data_key);
 
-    if (!new) new = glade_standard_build_widget;
+    if (!new_func) new_func = glade_standard_build_widget;
 
     data = g_new(GladeWidgetBuildData, 1);
 
-    data->new = new;
+    data->new = new_func;
     data->build_children = build_children;
     data->find_internal_child = find_internal_child;
 
