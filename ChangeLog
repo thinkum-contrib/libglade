@@ -1,4 +1,31 @@
+2004-05-19  Daniel Elstner  <daniel.elstner@gmx.net>
+
+	* glade/glade-gtk.c (combo_box_entry_find_internal_child): New
+	function that exposes GtkComboBoxEntry's child GtkEntry widget as
+	internal-child "entry".
+	(_glade_init_gtk_widgets): Add glade_standard_build_children and
+	combo_box_entry_find_internal_child to the glade_register_widget()
+	call for GTK_TYPE_COMBO_BOX_ENTRY.
+
+2004-11-11  James Henstridge  <james@jamesh.id.au>
+
+	* glade/glade-parser.c (glade_parser_start_element): Apply Damon's
+	changes to ignore the comments attribute on various elements.
+	This is also from bug #154806.
+
+	* glade/glade-parser.c (handle_atk_action): translate the action
+	description.  Fixes bug #154804.
+
+	* glade-2.0.dtd (property): add comments attribute.
+	(atkproperty): add translatable, context and
+	comments attributes.
+	(atkaction): add note that description is translated.  Patch from
+	Damon Chaplin on bug #154806.
+
 2004-11-09  James Henstridge  <james@jamesh.id.au>
+
+	* glade/glade-gtk.c (toolbar_build_children): fix a few errors in
+	the conversion of old style toolbar items.
 
 	* Makefile.am (install-data-local, uninstall-local): fix up rules
 	so that they aren't run if the XML catalog isn't found.  They
@@ -55,14 +82,6 @@
 	on GtkToolItems instead of gtk_tooltips_set_tip().
 	(toolbar_build_children): call gtk_tool_item_set_tooltip() to set
 	the tip on tool items in the compatibility code.
-
-Sat Oct 23 23:56:14 2004  Jonathan Blandford  <jrb@redhat.com>
-
-	* glade/glade-gtk.c (_glade_init_gtk_widgets): add
-	GtkFileChooserButton, GtkIconView, GtkAboutDialog, and
-	GtkMenuToolButton
-
-	* configure.in: Add dependency on GTK+-2.5
 
 2004-09-23  Matthias Clasen  <mclasen@redhat.com>
 

@@ -851,16 +851,8 @@ toolbar_build_children (GladeXML *xml, GtkWidget *parent,
 	       here, partly because GTK+ doesn't have direct support for stock
 	       toggle & radio items. */
 	    if (use_stock) {
-		GtkStockItem item;
-
-		if (gtk_stock_lookup (label, &item)) {
-		    /* Set stock to label, so the icon is created below. */
-		    stock = label;
-		    label = item.label;
-
-		    /* Most stock items have mnemonic accelerators. */
-		    use_underline = TRUE;
-		}
+		stock = label;
+		label = NULL;
 	    }
 
 	    if (stock) {
@@ -887,24 +879,26 @@ toolbar_build_children (GladeXML *xml, GtkWidget *parent,
 	    if (!strcmp (childinfo->child->classname, "toggle")) {
 		child = g_object_new (GTK_TYPE_TOGGLE_TOOL_BUTTON,
 				      "label", label,
-				      "use_stock", use_stock,
-				      "toggled", active,
+				      "stock_id", stock,
 				      NULL);
+		gtk_toggle_tool_button_set_active
+		    (GTK_TOGGLE_TOOL_BUTTON (child), active);
 	    } else if (!strcmp (childinfo->child->classname, "radio")) {
 		child = g_object_new (GTK_TYPE_RADIO_TOOL_BUTTON,
 				      "label", label,
-				      "use_stock", use_stock,
-				      "toggled", active,
+				      "stock_id", stock,
 				      NULL);
 		if (group_name) {
 		    g_object_set (G_OBJECT (child),
 				  "group", glade_xml_get_widget (xml, group_name),
 				  NULL);
 		}
+		gtk_toggle_tool_button_set_active
+		    (GTK_TOGGLE_TOOL_BUTTON (child), active);
 	    } else {
 		child = g_object_new (GTK_TYPE_TOOL_BUTTON,
 				      "label", label,
-				      "use_stock", use_stock,
+				      "stock_id", stock,
 				      NULL);
 	    }
 	    if (iconw)
@@ -1142,6 +1136,15 @@ combo_find_internal_child(GladeXML *xml, GtkWidget *parent,
     return NULL;
 }
 
+static GtkWidget *
+combo_box_entry_find_internal_child(GladeXML *xml, GtkWidget *parent,
+				    const gchar *childname)
+{
+    if (!strcmp(childname, "entry"))
+	return gtk_bin_get_child(GTK_BIN(parent));
+    return NULL;
+}
+
 void
 _glade_init_gtk_widgets(void)
 {
@@ -1184,8 +1187,6 @@ _glade_init_gtk_widgets(void)
     glade_register_custom_prop (GTK_TYPE_TOOL_BUTTON, "icon", tool_button_set_icon);
     glade_register_custom_prop (GTK_TYPE_COMBO_BOX, "items", combo_box_set_items);
 
-    glade_register_widget (GTK_TYPE_ABOUT_DIALOG, NULL,
-			   NULL, NULL);
     glade_register_widget (GTK_TYPE_ACCEL_LABEL, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_ALIGNMENT, glade_standard_build_widget,
@@ -1215,7 +1216,7 @@ _glade_init_gtk_widgets(void)
     glade_register_widget (GTK_TYPE_COMBO_BOX, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_COMBO_BOX_ENTRY, glade_standard_build_widget,
-			   NULL, NULL);
+			   glade_standard_build_children, combo_box_entry_find_internal_child);
     glade_register_widget (GTK_TYPE_CTREE, glade_standard_build_widget,
 			   clist_build_children, NULL);
     glade_register_widget (GTK_TYPE_CURVE, glade_standard_build_widget,
@@ -1233,8 +1234,6 @@ _glade_init_gtk_widgets(void)
     glade_register_widget (GTK_TYPE_FILE_CHOOSER, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_FILE_CHOOSER_DIALOG, glade_standard_build_widget,
-			   NULL, NULL);
-    glade_register_widget (GTK_TYPE_FILE_CHOOSER_BUTTON, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_FILE_SELECTION, NULL,
 			   glade_standard_build_children, filesel_find_internal_child);
@@ -1266,8 +1265,6 @@ _glade_init_gtk_widgets(void)
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_HSEPARATOR, glade_standard_build_widget,
 			   NULL, NULL);
-    glade_register_widget (GTK_TYPE_ICON_VIEW, glade_standard_build_widget,
-			   NULL, NULL);
     glade_register_widget (GTK_TYPE_IMAGE, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_IMAGE_MENU_ITEM, glade_standard_build_widget,
@@ -1288,8 +1285,6 @@ _glade_init_gtk_widgets(void)
 			   glade_standard_build_children, NULL);
     glade_register_widget (GTK_TYPE_MENU_ITEM, glade_standard_build_widget,
 			   menuitem_build_children, NULL);
-    glade_register_widget (GTK_TYPE_MENU_TOOL_BUTTON, glade_standard_build_widget,
-			   NULL, NULL);
     glade_register_widget (GTK_TYPE_MESSAGE_DIALOG, NULL,
 			   glade_standard_build_children, NULL);
     glade_register_widget (GTK_TYPE_NOTEBOOK, glade_standard_build_widget,

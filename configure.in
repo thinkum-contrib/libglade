@@ -2,11 +2,11 @@
 AC_PREREQ(2.52)
 
 m4_define([required_libxml_version], [2.4.10])
-m4_define([required_glib_version],   [2.5.0])
+m4_define([required_glib_version],   [2.4.0])
 m4_define([required_atk_version],    [1.0.0])
-m4_define([required_gtk_version],    [2.5.0])
+m4_define([required_gtk_version],    [2.4.0])
 
-AC_INIT([libglade], [2.5.0],
+AC_INIT([libglade], [2.4.1],
         [http://bugzilla.gnome.org/enter_bug.cgi?product=libglade])
 
 AC_CONFIG_SRCDIR([test-libglade.c])
@@ -187,7 +187,7 @@ AC_OUTPUT
 
 rm -f po/po2tbl.sed
 
-if test -z "$jh_cv_path_python"; then
+if ! $have_python; then
   echo "*****************************************************"
   echo "  A usable version of python was not found, so the"
   echo "  libglade-convert program was not installed.  This"
