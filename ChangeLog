@@ -1,3 +1,9 @@
+2001-06-17  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gtk.c (widget_data): add entries to the widget_data
+	array so that it will recognise all the GTK+ widgets.  It won't
+	handle them all correctly though :)
+
 2001-06-16  James Henstridge  <james@daa.com.au>
 
 	* examples/simple.glade: update so that we have a window with a
