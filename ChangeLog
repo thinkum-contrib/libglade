@@ -1,3 +1,10 @@
+2002-02-25  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gtk.c (fontseldlg_find_internal_child): add
+	"font_selection" internal child.
+	(colorseldlg_find_internal_child): add "color_selection" internal
+	child.
+
 2002-02-21  James Henstridge  <james@daa.com.au>
 
 	* tests/Makefile.am: update tests.

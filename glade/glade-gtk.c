@@ -860,6 +860,8 @@ colorseldlg_find_internal_child(GladeXML *xml, GtkWidget *parent,
 	return GTK_COLOR_SELECTION_DIALOG(parent)->cancel_button;
     if (!strcmp(childname, "help_button"))
 	return GTK_COLOR_SELECTION_DIALOG(parent)->help_button;
+    if (!strcmp(childname, "color_selection"))
+	return GTK_COLOR_SELECTION_DIALOG(parent)->colorsel;
     return NULL;
 }
 
@@ -877,6 +879,8 @@ fontseldlg_find_internal_child(GladeXML *xml, GtkWidget *parent,
 	return GTK_FONT_SELECTION_DIALOG(parent)->cancel_button;
     if (!strcmp(childname, "apply_button"))
 	return GTK_FONT_SELECTION_DIALOG(parent)->apply_button;
+    if (!strcmp(childname, "font_selection"))
+	return GTK_FONT_SELECTION_DIALOG(parent)->fontsel;
     return NULL;
 }
 
