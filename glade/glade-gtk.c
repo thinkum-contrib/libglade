@@ -262,6 +262,8 @@ static GladeWidgetBuildData widget_data[] = {
       gtk_vscrollbar_get_type },
     { "GtkVSeparator", glade_standard_build_widget, NULL,
       gtk_vseparator_get_type },
+    { "GtkViewport", glade_standard_build_widget, glade_standard_build_children,
+      gtk_viewport_get_type },
     { "GtkWindow", window_new, glade_standard_build_children,
       gtk_window_get_type },
     { NULL, NULL, NULL, 0, 0 }

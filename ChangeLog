@@ -1,3 +1,11 @@
+2001-08-25  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gtk.c: add GtkViewport support (missed it for some
+	reason).
+
+	* configure.in (build_bonobo): add a --enable-bonobo=yes/no/auto
+	switch
+
 2001-08-24  James Henstridge  <james@daa.com.au>
 
 	* libglade-convert (WidgetDef.dump, ChildDef.dump): look at
