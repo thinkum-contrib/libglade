@@ -32,62 +32,11 @@
 #include <gtk/gtk.h>
 
 #include <parser.h>
-#include <parserInternals.h>
 
 #include "glade-widget-tree.h"
 
 /* define this if you want placeholders removed from the GladeWidgetTree. */
 #define REMOVE_PLACEHOLDERS
-
-/* This function is like xmlSAXParseFile, but allows us to set the user_data.
- * It also does not assume we are building the DOM tree.  It returns a
- * negative value on error.
- */
-static int my_xmlSAXParseFile(xmlSAXHandlerPtr sax, void *user_data,
-			      const char *filename) {
-    int ret = 0;
-    xmlParserCtxtPtr ctxt;
-    
-    ctxt = xmlCreateFileParserCtxt(filename);
-    if (ctxt == NULL) return -1;
-    ctxt->sax = sax;
-    ctxt->userData = user_data;
-    
-    xmlParseDocument(ctxt);
-    
-    if (ctxt->wellFormed)
-	ret = 0;
-    else
-	ret = -1;
-    if (sax != NULL)
-	ctxt->sax = NULL;
-    xmlFreeParserCtxt(ctxt);
-    
-    return ret;
-}
-
-static int my_xmlSAXParseMemory(xmlSAXHandlerPtr sax, void *user_data,
-				char *buffer, int size) {
-    int ret = 0;
-    xmlParserCtxtPtr ctxt;
-    
-    ctxt = xmlCreateMemoryParserCtxt(buffer, size);
-    if (ctxt == NULL) return -1;
-    ctxt->sax = sax;
-    ctxt->userData = user_data;
-    
-    xmlParseDocument(ctxt);
-    
-    if (ctxt->wellFormed)
-	ret = 0;
-    else
-	ret = -1;
-    if (sax != NULL)
-	ctxt->sax = NULL;
-    xmlFreeParserCtxt(ctxt);
-    
-    return ret;
-}
 
 static GladeWidgetTree *glade_widget_tree_new(void) {
     GladeWidgetTree *self = g_new0(GladeWidgetTree, 1);
@@ -738,7 +687,7 @@ GladeWidgetTree *glade_widget_tree_parse_file(const char *file) {
     struct stat statbuf;
 
     state.tree = NULL;
-    if (my_xmlSAXParseFile(&gladeSAXParser, &state, file) < 0) {
+    if (xmlSAXUserParseFile(&gladeSAXParser, &state, file) < 0) {
 	g_warning("document not well formed!");
 	if (state.tree)
 	    glade_widget_tree_unref(state.tree);
@@ -765,7 +714,7 @@ GladeWidgetTree *glade_widget_tree_parse_memory(char *buffer, int size) {
     GladeParseState state;
 
     state.tree = NULL;
-    if (my_xmlSAXParseMemory(&gladeSAXParser, &state, buffer, size) < 0) {
+    if (xmlSAXUserParseMemory(&gladeSAXParser, &state, buffer, size) < 0) {
 	g_warning("document not well formed!");
 	if (state.tree)
 	    glade_widget_tree_unref(state.tree);

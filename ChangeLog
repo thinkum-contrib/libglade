@@ -1,3 +1,22 @@
+1999-11-01  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gtk.c (label_new, accellabel_new): understand the wrap
+	property of label widgets.
+
+	* glade/glade-gnome.c: understand GNOME_STOCK_PIXMAP_EXIT and
+	GNOME_STOCK_MENU_EXIT as well as the QUIT variants.
+
+	* configure.in: make sure a new enough version of libxml is installed
+	on the system.  AFAIK, 1.7.2 was the first version to contain the
+	required functions.
+
+	* glade/glade-sax.c (glade_widget_tree_parse_file): use the
+	xmlSAXUserParseFile function instead of my_xmlSAXParseFile.
+	(glade_widget_tree_parse_memory): similar with xmlSAXUserParseMemory.
+
+	Now we don't need to include parserInternals.h, so libglade will be
+	less likely to break when libxml internals change.
+
 1999-10-28  James Henstridge  <james@daa.com.au>
 
 	* gnome-widgets.glade: added GnomeDruid example to file.

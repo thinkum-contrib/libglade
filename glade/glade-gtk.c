@@ -722,6 +722,7 @@ label_new (GladeXML *xml, GladeWidgetInfo *info)
 	guint key;
 	gchar *string = NULL, *focus_target = NULL;
 	GtkJustification just = GTK_JUSTIFY_CENTER;
+	gboolean wrap = FALSE;
 
 	for (tmp = info->attributes; tmp; tmp = tmp->next) {
 		GladeAttribute *attr = tmp->data;
@@ -735,6 +736,8 @@ label_new (GladeXML *xml, GladeWidgetInfo *info)
 			if (!focus_target) focus_target = attr->value;
 		} else if (!strcmp(attr->name, "focus_target"))
 			focus_target = attr->value;
+		else if (!strcmp(attr->name, "wrap"))
+			wrap = attr->value[0] == 'T';
 	}
 
 	label = gtk_label_new("");
@@ -749,6 +752,8 @@ label_new (GladeXML *xml, GladeWidgetInfo *info)
 		glade_xml_handle_label_accel(xml, focus_target, key);
 	if (just != GTK_JUSTIFY_CENTER)
 		gtk_label_set_justify(GTK_LABEL(label), just);
+	if (wrap)
+		gtk_label_set_line_wrap(GTK_LABEL(label), wrap);
 	misc_set (GTK_MISC(label), info);
 	return label;
 }
@@ -760,6 +765,7 @@ accellabel_new (GladeXML *xml, GladeWidgetInfo *info)
 	GtkWidget *label;
 	gchar *string = NULL;
 	GtkJustification just = GTK_JUSTIFY_CENTER;
+	gboolean wrap = FALSE;
 
 	for (tmp = info->attributes; tmp; tmp = tmp->next) {
 		GladeAttribute *attr = tmp->data;
@@ -769,11 +775,15 @@ accellabel_new (GladeXML *xml, GladeWidgetInfo *info)
 		} else if (!strcmp(attr->name, "justify"))
 			just = glade_enum_from_string(GTK_TYPE_JUSTIFICATION,
 						      attr->value);
+		else if (!strcmp(attr->name, "wrap"))
+			wrap = attr->value[0] == 'T';
 	}
 
 	label = gtk_accel_label_new(_(string));
 	if (just != GTK_JUSTIFY_CENTER)
 		gtk_label_set_justify(GTK_LABEL(label), just);
+	if (wrap)
+		gtk_label_set_line_wrap(GTK_LABEL(label), wrap);
 	misc_set(GTK_MISC(label), info);
 
 	return label;
