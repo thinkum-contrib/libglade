@@ -1,3 +1,9 @@
+libglade-1.99.11: 28-April-2002
+	- don't ref the AtkRelationSet unless we are going to actually
+	  set up relations.
+	- Support for GtkFrame::label_item and GtkEntry::invisible_char.
+	- some changes from Murray Cumming needed for the C++ bindings.
+
 libglade-1.99.10: 30-March-2002
 	- give GtkListItem widgets a "label" attribute; mainly for use
 	  by GtkCombo (bug 75471)
