@@ -1288,7 +1288,16 @@ glade_standard_build_children(GladeXML *self, GtkWidget *w,
     g_object_ref(G_OBJECT(w));
     for (i = 0; i < info->n_children; i++) {
 	GladeWidgetInfo *childinfo = info->children[i].child;
-	GtkWidget *child = glade_xml_build_widget(self, childinfo, longname);
+	GtkWidget *child;
+
+	/* handle any internal children */
+	if (info->children[i].internal_child) {
+	    glade_xml_handle_internal_child(self, w, &info->children[i],
+					    longname);
+	    continue;
+	}
+
+	child = glade_xml_build_widget(self, childinfo, longname);
 
 	g_object_ref(G_OBJECT(child));
 	gtk_widget_freeze_child_notify(child);
@@ -1414,6 +1423,47 @@ glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info,
     glade_xml_set_common_params(self, ret, info, parent_long);
     return ret;
 }
+
+void
+glade_xml_handle_internal_child(GladeXML *self, GtkWidget *parent,
+				GladeChildInfo *child_info,
+				const gchar *parent_long)
+{
+    GladeWidgetBuildData *parent_build_data = NULL;
+    GtkWidget *child;
+
+    /* walk up the widget heirachy until we find a parent with a
+     * find_internal_child handler */
+    while (parent_build_data == NULL && parent != NULL) {
+	parent_build_data = g_hash_table_lookup(widget_table,
+						G_OBJECT_TYPE_NAME(parent));
+
+	if (parent_build_data != NULL &&
+	    parent_build_data->find_internal_child != NULL)
+	    break;
+
+	parent_build_data = NULL; /* set to NULL if no find_internal_child */
+	parent = parent->parent;
+    }
+
+    if (!parent_build_data || !parent_build_data->find_internal_child) {
+	g_warning("could not find a parent that handles internal"
+		  " children for `%s'", child_info->internal_child);
+	return;
+    }
+
+    child = parent_build_data->find_internal_child(self, parent,
+						   child_info->internal_child);
+
+    if (!child) {
+	g_warning("could not find internal child `%s' in parent of type `%s'",
+		  child_info->internal_child, G_OBJECT_TYPE_NAME(parent));
+	return;
+    }
+
+    glade_xml_set_common_params(self, child, child_info->child, parent_long);
+}
+
 
 /**
  * glade_xml_set_common_params
@@ -1589,6 +1639,7 @@ glade_get_adjustment(GladeWidgetInfo *info)
 					      hstep, hpage, hpage_size));
 }
 
+#if 0
 /**
  * glade_xml_set_window_props
  * @window: the GtkWindow to set the properties of.
@@ -1662,3 +1713,4 @@ glade_xml_set_window_props(GtkWindow *window, GladeWidgetInfo *info)
 			       wmname  ? wmname  : "",
 			       wmclass ? wmclass : "");
 }
+#endif

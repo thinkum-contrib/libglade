@@ -1,3 +1,25 @@
+2001-08-14  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gtk.c (dialog_find_internal_child): handle vbox and
+	action_area internal children for GtkDialogs.
+
+	* examples/simple.glade: add a GtkDialog to the interface to test
+	internal child handling.
+
+	* glade/glade-xml.c (glade_xml_handle_internal_child):
+	implemenentation.
+	(glade_standard_build_children): call
+	glade_xml_handle_internal_child to handle any internal children.
+	(glade_xml_set_window_props): comment out this function.
+
+2001-08-13  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-build.h: add a function pointer to the
+	GladeWidgetBuildData to handle internal children (such as the vbox
+	in a GtkDialog that gets created for you).
+	(glade_xml_handle_internal_child): prototype for internal child
+	handler.
+
 2001-07-29  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-parser.c (handle_child): handle internal-child

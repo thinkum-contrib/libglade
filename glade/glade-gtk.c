@@ -56,6 +56,20 @@ menuitem_build_children(GladeXML *self, GtkWidget *w,
     g_object_unref(G_OBJECT(w));
 }
 
+static GtkWidget *
+dialog_find_internal_child(GladeXML *xml, GtkWidget *parent,
+			   const gchar *childname)
+{
+    GtkDialog *dialog = GTK_DIALOG(parent);
+
+    if (!strcmp(childname, "vbox"))
+	return dialog->vbox;
+    if (!strcmp(childname, "action_area"))
+	return dialog->action_area;
+
+    return NULL;
+}
+
 static GladeWidgetBuildData widget_data[] = {
     { "GtkAccelLabel", glade_standard_build_widget, NULL,
       gtk_accel_label_get_type },
@@ -86,7 +100,7 @@ static GladeWidgetBuildData widget_data[] = {
     { "GtkCurve", glade_standard_build_widget, NULL,
       gtk_curve_get_type },
     { "GtkDialog", glade_standard_build_widget, glade_standard_build_children,
-      gtk_dialog_get_type },
+      gtk_dialog_get_type, 0, dialog_find_internal_child },
     { "GtkDrawingArea", glade_standard_build_widget, NULL,
       gtk_drawing_area_get_type },
     { "GtkEntry", glade_standard_build_widget, NULL,

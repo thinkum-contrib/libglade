@@ -41,9 +41,12 @@ typedef GtkWidget *(* GladeNewFunc) (GladeXML *xml,
 				     GladeWidgetInfo *info);
 /* call glade_xml_build_widget on each child node, and pack in self */
 typedef void (* GladeBuildChildrenFunc) (GladeXML *xml,
-					 GtkWidget *w,
+					 GtkWidget *parent,
 					 GladeWidgetInfo *info,
 					 const char *longname);
+typedef GtkWidget *(* GladeFindInternalChildFunc) (GladeXML *xml,
+						   GtkWidget *parent,
+						   const char *childname);
 
 typedef struct _GladeWidgetBuildData GladeWidgetBuildData;
 struct _GladeWidgetBuildData {
@@ -52,6 +55,7 @@ struct _GladeWidgetBuildData {
     GladeBuildChildrenFunc build_children;
     GType (* get_type_func)(void);
     GType typecode;  /* this member takes precedence over get_type_func */
+    GladeFindInternalChildFunc find_internal_child;
 };
 
 /* widgets is a static, NULL terminated array of GladeWidgetBuildData's.
@@ -87,6 +91,14 @@ void           glade_xml_set_window_props (GtkWindow *window,
 /* this function is called to build the interface by GladeXML */
 GtkWidget *glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info,
 				  const char *parent_long);
+
+/* this function is used to get a pointer to the internal child of a
+ * container widget.  It would generally be called by the
+ * build_children callback for any children with the internal_child
+ * name set. */
+void glade_xml_handle_internal_child(GladeXML *self, GtkWidget *parent,
+				     GladeChildInfo *child_info,
+				     const gchar *parent_long);
 
 /* This function performs half of what glade_xml_build_widget does.  It is
  * useful when the widget has already been created.  Usually it would not
