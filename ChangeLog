@@ -1,5 +1,10 @@
 2004-11-29  James Henstridge  <james@jamesh.id.au>
 
+	* configure.in: require ATK 1.9.0
+
+	* glade/glade-xml.c: remove the add_relation() helper function,
+	and use atk_relation_set_add_relation_by_type() instead.
+
 	* NEWS: add news items.
 
 	* glade/glade-xml.c (add_relation): apply Padraig O'brian's patch

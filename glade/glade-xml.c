@@ -776,42 +776,6 @@ glade_xml_add_atk_actions(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
     }
 }
 
-/* helper function for adding relations */
-static void
-add_relation(AtkRelationSet *relations, AtkRelationType relation_type,
-	     AtkObject *target_accessible)
-{
-    AtkRelation *relation;
-
-    relation = atk_relation_set_get_relation_by_type (relations,
-						      relation_type);
-    if (relation) {
-	/* add new target accessible to relation */
-	GPtrArray* target_array = atk_relation_get_target (relation);
-	GPtrArray* new_target_array;
-	AtkRelation *new_relation;
-	guint i;
-
-	/* first check if target occurs in array ... */
-	for (i = 0; i < target_array->len; i++)
-	    if (g_ptr_array_index(target_array, i) == target_accessible)
-		return;
-        new_target_array = g_ptr_array_sized_new (target_array->len + 1);
-	for (i = 0; i < target_array->len; i++)
-	    g_ptr_array_add (new_target_array, g_ptr_array_index (target_array, i));
-	g_ptr_array_add (new_target_array, target_accessible);
-        new_relation = atk_relation_new (&g_ptr_array_index (new_target_array, 0), new_target_array->len, relation_type);
-	atk_relation_set_remove (relations, relation);
-	atk_relation_set_add (relations, new_relation);
-        g_ptr_array_free (new_target_array, TRUE);
-    } else {
-	/* the relation hasn't been created yet ... */
-	relation = atk_relation_new(&target_accessible, 1, relation_type);
-	atk_relation_set_add (relations, relation);
-	g_object_unref(relation);
-    }
-}
-
 /* this is a private function */
 static void
 glade_xml_add_atk_relations(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
@@ -837,7 +801,8 @@ glade_xml_add_atk_relations(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
 
 	    target_accessible = gtk_widget_get_accessible (target_widget);
 
-	    add_relation(relations, relation_type, target_accessible);
+	    atk_relation_set_add_relation_by_type (relations, relation_type,
+						   target_accessible);
 	} else {
 	    GladeDeferredProperty *dprop = g_new(GladeDeferredProperty, 1);
 
@@ -2087,8 +2052,9 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 		{
 		    AtkObject *target = gtk_widget_get_accessible(widget);
 
-		    add_relation(dprop->d.rel.relation_set,
-				 dprop->d.rel.relation_type, target);
+		    atk_relation_set_add_relation_by_type
+			(dprop->d.rel.relation_set,
+			 dprop->d.rel.relation_type, target);
 		    g_object_unref(dprop->d.rel.relation_set);
 		}
 		break;
