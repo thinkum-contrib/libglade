@@ -1,0 +1,10 @@
+libglade-0.0.3: 2-November-1998
+	- Forgot to include makekeys.awk -- this may have caused problems
+	  for some people.
+
+libglade-0.0.2: 1-November-1998
+	- Updated to work with the changes Daniel made to libxml.
+	- Added support for keyboard accelerators.
+
+libglade-0.0.1: 25-October-1998
+	- Initial release

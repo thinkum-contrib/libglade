@@ -1,0 +1,61 @@
+LIBGLADE
+========
+
+Author: James Henstridge <james@daa.com.au>
+
+This library allows you to load glade interface files in a program at runtime.
+It doesn't require GLADE to be used, but GLADE is by far the easiest way to
+create the interface files.
+
+For an idea of how to use the library, see test-libglade.c and
+glade/glade-xml.h.
+
+To compile, you will need the gnome-xml package out of the GNOME CVS tree
+(you won't need gnome-libs, as libglade doesn't support that widget set yet).
+A fairly recent version is needed.
+
+The speed of this library is pretty good on my 486, so no one else should have
+problems :)
+
+I would like to thank Damon Chaplin for his wonderful interface builder.
+
+
+LIBGLADE INTERNALS
+==================
+
+If you are interested in how libglade works, here is a small description:
+
+First, when glade_xml_new is called, the XML interface is loaded, any styles
+are parsed, so they can be used by the GTK RC style code, and a GNode tree
+of the xmlNode's corresponding to the <widget> tags are created.  This
+information is stored in a GCache, in case the same interface is loaded again
+in this program.
+
+Then glade_xml_build_interface is called.  It calls glade_xml_build_widget on
+the toplevel widgets (either the one given as second argument to glade_xml_new,
+or all the toplevel ones).
+
+Glade_xml_build_widget checks the widget class for this node, and looks the
+class up in a hash table.  The hash value holds a function for creating the
+widget from the information in that node, and optionally one for adding
+children to this widget.
+
+The new_widget function should create the widget, but not worry about any of
+the global widget options.  Then the global widget options are evaluated, and
+signals are added to a signal handler hash.
+
+If a child creation routine was specified, this is now called.  It should call
+glade_xml_build_widget on any child widgets, and then add them to itself.
+
+New widget types are added to the widget class hash with the
+glade_register_widgets function.  For an example, see the end of glade-gtk.c.
+
+The automatic signal connection system uses the introspective capabilities of
+dynamic linking.  By openning a handle on NULL, we can get at all the global
+symbols (global functions, global variables) in the executable, and the
+libraries it is linked against.  This is used to find the address of a signal
+handler from its name, so that gtk_signal_connect can be called automatically
+for you.
+
+Of course, there are other ways of connecting the signals if your platform
+doesn't support this feature.

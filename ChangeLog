@@ -1,0 +1,58 @@
+1998-11-05  James Henstridge  <james@daa.com.au>
+	* everything: added copyright messages to the code.
+
+1998-11-02  James Henstridge  <james@daa.com.au>
+	* glade/Makefile.am, configure.in: I forgot to include the makekeys.awk
+	file in the distribution.  This may have caused problems for some
+	people.
+
+1998-11-01  James Henstridge  <james@daa.com.au>
+	* configure.in: added option --enable-debug.  This will turn on
+	debugging output, which is what has been the default in the previous
+	version.  Without this flag, the library is quiet, except for errors.
+	* glade/glade-xml.c, glade/makekeys.awk: added support for keyboard
+	accelerators.  Makekeys.awk creates glade-keys.c, which handles
+	keysym to int conversion.  If no accelerators are used in the UI
+	description, this adds no overhead.  If there are accelerators, there
+	will be a hash table initialisation, and a hash table lookup for each
+	accelerator.
+
+1998-10-31  James Henstridge  <james@daa.com.au>
+	* glade/glade-xml.c, glade/glade-gtk.c: made changes so that libglade
+	works correctly with the changes Daniel made to libxml.  Note that
+	since xmlNodeGetContent doesn't use g_malloc, free is used instead
+	of g_free.
+	Also, no strings inside the xmlDoc structure are referenced in the
+	GladeXML widget, so it should be possible to free the xmlDoc
+	structure without problems.
+
+1998-10-25  James Henstridge  <james@daa.com.au>
+	* glade/glade-gtk.c: updated for glade-0.3.5 widgets.  It now supports
+	menus.  I also fixed up the dialog child packing function.
+	* test.glade, simple.glade, example.glade: added some examples.
+	* glade/glade-init.c: added interface to extend libglade's list of
+	widgets dynamically.  Maybe this could be used so that interfaces
+	are listed in the XML, and loaded on call.
+	* libglade.spec: a spec file for this package.
+
+1998-10-23  James Henstridge  <james@daa.com.au>
+	* glade/glade-gtk.c: new file -- this holds all the widget specific
+	code for all the widgets in glade-0.3.3.
+	* test-libglade.c: new file -- a tester program that can load
+	arbitrary interface files.  I can actually get most interfaces to
+	load without problem now.
+	* glade/glade-xml.c: added support for automatic connection of signals
+	with gmodule (you can get access to the global namespace with
+	g_module_open(NULL, 0)).
+
+1998-10-20  James Henstridge  <james@daa.com.au>
+	* glade/glade-init.c: new file -- initialisation of libglade.
+	* glade/glade-tree.c: new file -- handles reading in and caching of
+	XML descriptions.  It also extracts the widget tree, and gets the
+	styles parsed.
+	* glade/glade-styles.c: new file -- Parses styles from an XML tree
+	by translating them to the same format as gtkrc files and passing
+	them to gtk_rc_parse_string.
+	* glade/glade-xml.c: new file -- This file is the exposed interface
+	to libglade, and has code used to glue in widget sets to libglade.
+
