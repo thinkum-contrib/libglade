@@ -649,11 +649,30 @@ glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window)
 	glade_xml_pop_accel(xml);
     /* maybe put an assert that xml->priv->accel_groups == NULL here? */
     xml->priv->accel_groups = NULL;
-    /* the window should hold a reference to the tooltips object */
-    gtk_object_ref(GTK_OBJECT(xml->priv->tooltips));
-    g_object_set_qdata_full(G_OBJECT(window), glade_xml_tooltips_id,
-			    xml->priv->tooltips,
-			    (GDestroyNotify)gtk_object_unref);
+
+    if (GTK_IS_WINDOW (window)) {
+	/* the window should hold a reference to the tooltips object */
+	gtk_object_ref(GTK_OBJECT(xml->priv->tooltips));
+	g_object_set_qdata_full(G_OBJECT(window), glade_xml_tooltips_id,
+				xml->priv->tooltips,
+				(GDestroyNotify)gtk_object_unref);
+    }
+}
+
+/**
+ * glade_xml_get_toplevel:
+ * @xml: the GladeXML object.
+ *
+ * Description:
+ * This is used while the tree is being built to get the toplevel window that
+ * is currently being built.
+ *
+ * Returns: The current GtkWindow being built
+ */
+GtkWindow *
+glade_xml_get_toplevel (GladeXML *xml)
+{
+    return xml->priv->toplevel;
 }
 
 /**
@@ -1214,21 +1233,11 @@ glade_xml_build_interface(GladeXML *self, GladeInterface *iface,
 	wid = g_hash_table_lookup(iface->names, root);
 	g_return_if_fail(wid != NULL);
 	w = glade_xml_build_widget(self, wid);
-	if (GTK_IS_WINDOW(w)) {
-	    if (self->priv->focus_widget)
-		gtk_widget_grab_focus(self->priv->focus_widget);
-	    if (self->priv->default_widget)
-		gtk_widget_grab_default(self->priv->default_widget);
-	}
     } else {
 	/* build all toplevel nodes */
 	for (i = 0; i < iface->n_toplevels; i++) {
 	    w = glade_xml_build_widget(self, iface->toplevels[i]);
 	}
-	if (self->priv->focus_widget)
-	    gtk_widget_grab_focus(self->priv->focus_widget);
-	if (self->priv->default_widget)
-	    gtk_widget_grab_default(self->priv->default_widget);
     }
 }
 
@@ -1700,7 +1709,7 @@ glade_standard_build_widget(GladeXML *xml, GType widget_type,
  * This sets the packing property on container @parent of widget
  * @child with @name to @value
  **/
-static void
+void
 glade_xml_set_packing_property (GladeXML   *self,
 				GtkWidget  *parent, GtkWidget  *child,
 				const char *name,   const char *value)
@@ -1764,7 +1773,7 @@ glade_standard_build_children(GladeXML *self, GtkWidget *parent,
 		self, parent, child,
 		info->children[i].properties[j].name,
 		info->children[i].properties[j].value);
-
+	
 	gtk_widget_thaw_child_notify(child);
 	g_object_unref(G_OBJECT(child));
     }
@@ -1844,29 +1853,35 @@ glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info)
 {
     GType type;
     GtkWidget *ret;
-
+    
     debug(g_message("Widget class: %s\tname: %s", info->class, info->name));
     if (!strcmp(info->class, "Placeholder")) {
 	static int warned = 0;
 	if (!warned++)
 	    g_warning("placeholders exist in interface description");
 	ret = gtk_label_new("[placeholder]");
-	gtk_widget_show(ret);
-	return ret;
     } else if (!strcmp (info->class, "Custom")) {
-	return custom_new (self, info);
-    }
-    type = g_type_from_name(info->class);
-    if (type == G_TYPE_INVALID) {
-	char buf[50];
-	g_warning("unknown widget class '%s'", info->class);
-	g_snprintf(buf, 49, "[a %s]", info->class);
-	ret = gtk_label_new(buf);
-	gtk_widget_show(ret);
+	ret = custom_new (self, info);
     } else {
-	ret = get_build_data(type)->new(self, type, info);
+	type = g_type_from_name(info->class);
+	if (type == G_TYPE_INVALID) {
+	    char buf[50];
+	    g_warning("unknown widget class '%s'", info->class);
+	    g_snprintf(buf, 49, "[a %s]", info->class);
+	    ret = gtk_label_new(buf);
+	} else {
+	    ret = get_build_data(type)->new(self, type, info);
+	}
     }
+
+    if (GTK_IS_WINDOW (ret))
+	glade_xml_set_toplevel (self, GTK_WINDOW (ret));
+
     glade_xml_set_common_params(self, ret, info);
+
+    if (GTK_IS_WINDOW (ret))
+	glade_xml_set_toplevel (self, NULL);
+
     return ret;
 }
 
@@ -2020,8 +2035,13 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 	}
     }
 
-    if (data && data->build_children && info->children)
-	data->build_children(self, widget, info);
+    if (data && data->build_children && info->children) {
+	if (GTK_IS_CONTAINER (widget))
+	    data->build_children(self, widget, info);
+	else
+	    g_warning ("widget %s (%s) has children, but is not a GtkContainer.",
+		       info->name, g_type_name (G_INSTANCE_TYPE (widget)));
+    }
 }
 
 gchar **

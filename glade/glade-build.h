@@ -66,7 +66,8 @@ void glade_register_custom_prop(GType type,
 				GladeApplyCustomPropFunc apply_prop);
 
 /* set the current toplevel widget while building (use NULL to unset) */
-void glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window);
+void       glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window);
+GtkWindow *glade_xml_get_toplevel(GladeXML *xml);
 
 /* push and pop accelerator groups on a stack */
 GtkAccelGroup *glade_xml_push_accel(GladeXML *xml);
@@ -78,6 +79,10 @@ GtkAccelGroup *glade_xml_ensure_accel(GladeXML *xml);
 void glade_xml_handle_widget_prop(GladeXML *self, GtkWidget *widget,
 				  const gchar *prop_name,
 				  const gchar *value_name);
+
+void glade_xml_set_packing_property (GladeXML   *self,
+				     GtkWidget  *parent, GtkWidget  *child,
+				     const char *name,   const char *value);
 
 /* this function is called to build the interface by GladeXML */
 GtkWidget *glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info);

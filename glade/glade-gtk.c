@@ -234,16 +234,6 @@ toolbar_set_tooltips (GladeXML *xml, GtkWidget *w,
 }
 
 static GtkWidget *
-build_window(GladeXML *xml, GType widget_type, GladeWidgetInfo *info)
-{
-    GtkWidget *window = glade_standard_build_widget(xml, widget_type, info);
-
-    glade_xml_set_toplevel(xml, GTK_WINDOW(window));
-
-    return window;
-}
-
-static GtkWidget *
 placeholder_create (void)
 {
     GtkWidget *pl = gtk_alignment_new (0.5, 0.5, 1.0, 1.0);
@@ -463,6 +453,8 @@ toolbar_build_children (GladeXML *xml, GtkWidget *parent,
 		    new_group = (*value == 'T' || *value == 'y');
 		} else if (!strcmp (name, "visible")) {
 		    /* ignore for now */
+		} else if (!strcmp (name, "tooltip")) {
+		    /* ignore for now */
 		} else {
 		    g_warning ("Unknown GtkToolbar child property: %s", name);
 		}
@@ -606,10 +598,15 @@ image_menu_find_internal_child(GladeXML *xml, GtkWidget *parent,
 			       const gchar *childname)
 {
     if (!strcmp(childname, "image")) {
-	GtkWidget *pl = placeholder_create ();
+	GtkWidget *pl;
 
-	gtk_image_menu_item_set_image (
-	    GTK_IMAGE_MENU_ITEM (parent), pl);
+	pl = gtk_image_menu_item_get_image (GTK_IMAGE_MENU_ITEM (parent));
+	if (!pl) {
+	    pl = placeholder_create ();
+
+	    gtk_image_menu_item_set_image (
+		GTK_IMAGE_MENU_ITEM (parent), pl);
+	}
 
 	return pl;
     }
@@ -760,7 +757,7 @@ _glade_init_gtk_widgets(void)
 			   clist_build_children, NULL);
     glade_register_widget (GTK_TYPE_COLOR_SELECTION, glade_standard_build_widget,
 			   NULL, NULL);
-    glade_register_widget (GTK_TYPE_COLOR_SELECTION_DIALOG, build_window,
+    glade_register_widget (GTK_TYPE_COLOR_SELECTION_DIALOG, NULL,
 			   glade_standard_build_children, colorseldlg_find_internal_child);
     glade_register_widget (GTK_TYPE_COMBO, glade_standard_build_widget,
 			   glade_standard_build_children, combo_find_internal_child);
@@ -768,7 +765,7 @@ _glade_init_gtk_widgets(void)
 			   clist_build_children, NULL);
     glade_register_widget (GTK_TYPE_CURVE, glade_standard_build_widget,
 			   NULL, NULL);
-    glade_register_widget (GTK_TYPE_DIALOG, glade_standard_build_widget,
+    glade_register_widget (GTK_TYPE_DIALOG, NULL,
 			   gtk_dialog_build_children, dialog_find_internal_child);
     glade_register_widget (GTK_TYPE_DRAWING_AREA, glade_standard_build_widget,
 			   NULL, NULL);
@@ -776,13 +773,13 @@ _glade_init_gtk_widgets(void)
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_EVENT_BOX, glade_standard_build_widget,
 			   glade_standard_build_children, NULL);
-    glade_register_widget (GTK_TYPE_FILE_SELECTION, build_window,
+    glade_register_widget (GTK_TYPE_FILE_SELECTION, NULL,
 			   glade_standard_build_children, filesel_find_internal_child);
     glade_register_widget (GTK_TYPE_FIXED, glade_standard_build_widget,
 			   glade_standard_build_children, NULL);
     glade_register_widget (GTK_TYPE_FONT_SELECTION, glade_standard_build_widget,
 			   NULL, NULL);
-    glade_register_widget (GTK_TYPE_FONT_SELECTION_DIALOG, build_window,
+    glade_register_widget (GTK_TYPE_FONT_SELECTION_DIALOG, NULL,
 			   glade_standard_build_children, fontseldlg_find_internal_child);
     glade_register_widget (GTK_TYPE_FRAME, glade_standard_build_widget,
 			   glade_standard_build_children, NULL);
@@ -808,7 +805,7 @@ _glade_init_gtk_widgets(void)
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_IMAGE_MENU_ITEM, glade_standard_build_widget,
 			   menuitem_build_children, image_menu_find_internal_child);
-    glade_register_widget (GTK_TYPE_INPUT_DIALOG, build_window,
+    glade_register_widget (GTK_TYPE_INPUT_DIALOG, NULL,
 			   glade_standard_build_children, NULL);
     glade_register_widget (GTK_TYPE_LABEL, glade_standard_build_widget,
 			   NULL, NULL);
@@ -824,7 +821,7 @@ _glade_init_gtk_widgets(void)
 			   glade_standard_build_children, NULL);
     glade_register_widget (GTK_TYPE_MENU_ITEM, glade_standard_build_widget,
 			   menuitem_build_children, NULL);
-    glade_register_widget (GTK_TYPE_MESSAGE_DIALOG, build_window,
+    glade_register_widget (GTK_TYPE_MESSAGE_DIALOG, NULL,
 			   glade_standard_build_children, NULL);
     glade_register_widget (GTK_TYPE_NOTEBOOK, glade_standard_build_widget,
 			   notebook_build_children, NULL);
@@ -832,7 +829,7 @@ _glade_init_gtk_widgets(void)
 			   glade_standard_build_children, option_menu_find_internal_child);
     glade_register_widget (GTK_TYPE_PIXMAP, glade_standard_build_widget,
 			   NULL, NULL);
-    glade_register_widget (GTK_TYPE_PLUG, build_window,
+    glade_register_widget (GTK_TYPE_PLUG, NULL,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_PREVIEW, build_preview,
 			   NULL, NULL);
@@ -887,7 +884,7 @@ _glade_init_gtk_widgets(void)
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_VIEWPORT, glade_standard_build_widget,
 			   glade_standard_build_children, NULL);
-    glade_register_widget (GTK_TYPE_WINDOW, build_window,
+    glade_register_widget (GTK_TYPE_WINDOW, NULL,
 			   glade_standard_build_children, NULL);
 
     glade_provide("gtk");

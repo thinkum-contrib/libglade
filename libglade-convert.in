@@ -292,6 +292,7 @@ obsolete_props = {
     'GtkImage' : [ 'image_width', 'image_height', 'image_visual', 'image_type'],
     'GtkColorSelection' : [ 'policy' ],
     'GtkColorSelectionDialog' : [ 'policy' ],
+    'GnomeIconEntry': [ 'max_saved' ],
 }
 
 renamed_props = {
@@ -315,6 +316,11 @@ renamed_props = {
     'GtkOptionMenu' : [ ('initial_choice', 'history') ],
     'GtkLayout' : [ ('area_width', 'width'), ('area_height', 'height') ],
     'GtkFileSelection' : [ ('show_file_op_buttons', 'show-fileops') ],
+    'GnomeDruidPageStandard' : [ ('title_color', 'title_foreground'),
+                                 ('background_color', 'background'),
+                                 ('logo_background_color', 'logo_background'),
+                                 ('logo_image', 'logo'),
+                                 ],
 }
 
 # child properties to change on specific widgets
@@ -365,11 +371,12 @@ parent_table = {
     'GtkContainer'      : 'GtkWidget',
     'GtkBin'            : 'GtkContainer',
     'GtkDialog'         : 'GtkWindow',
-    'GnomePropertyBox'  : 'GtkDialog',
+    'GnomePropertyBox'  : 'GnomeDialog',
     'GnomeAbout'        : 'GtkDialog',
-    'GnomeApp'          : 'GtkDialog',
-    'GnomeScores'       : 'GtkDialog',
+    'GnomeApp'          : 'GtkWindow',
+    'GnomeScores'       : 'GnomeDialog',
     'GnomeDialog'       : 'GtkWindow',
+    'GnomeMessageBox'   : 'GnomeDialog',
     'GnomeDruid'        : 'GtkContainer',
     'GnomeEntry'        : 'GtkCombo',
     'GtkCheckMenuItem'  : 'GtkMenuItem',
@@ -513,6 +520,11 @@ def stock_pixmap_translate(old_name):
             name = re.sub('_', '-', name)
             return 'gtk-' + name.lower ()
 
+def translate_color (color):
+    c = string.split (color, ',')
+    return '#%.2x%.2x%.2x' % (int (c[0]), int (c[1]), int (c[2]))
+
+
 def fixup_as_type(widget, type):
 
     if verbose:
@@ -595,7 +607,7 @@ def fixup_as_type(widget, type):
             if childdef.widget.has_prop ('child_name'):
                 if childdef.widget['child_name'] == 'Notebook:tab':
                     del childdef.widget['child_name']
-                    childdef['type'] = 'tab';
+                    childdef['type'] = 'tab'
                 else:
                     print >> sys.stderr , 'Unknown child_name', \
                           childdef.widget['child_name']
@@ -639,7 +651,7 @@ def fixup_as_type(widget, type):
 
     # add label children to menu items.
     if type == 'GtkMenuItem':
-        if widget.has_prop('label'):
+        if widget.has_prop('label') and not widget.has_prop('stock_item'):
             widget.add_child ( \
                 new_label('GtkAccelLabel', \
                           widget['label'], \
@@ -662,12 +674,34 @@ def fixup_as_type(widget, type):
             widget['use_underline'] = 'yes'
             del widget['stock_button']
 
-    if type == 'GtkDialog':
-        childdef = widget.children[0]
-        if childdef.widget.has_prop ('child_name'):
-            childdef.internal_child = 'vbox'
-            del childdef.widget['child_name']
+        # GnomeDialog sucks, and this is tricky to get right so just
+        # ignore the pixmap for now
+        if widget.has_prop('stock_pixmap'):
+            del widget['stock_pixmap']
 
+    if type == 'GtkDialog':
+        if widget.children:
+            childdef = widget.children[0]
+            if childdef.widget.has_prop ('child_name'):
+                childdef.internal_child = 'vbox'
+                del childdef.widget['child_name']
+                
+                try:
+                    childdef = filter(lambda x: x.widget.has_prop('child_name'),
+                                      childdef.widget.children)[0]
+                except IndexError:
+                    return 0
+                childdef.widget['class'] = 'GtkHButtonBox'
+                childdef.internal_child = 'action_area'
+                del childdef.widget['child_name']
+
+    if type == 'GnomeDialog':
+        if widget.children:
+            childdef = widget.children[0]
+            if childdef.widget.has_prop ('child_name'):
+                childdef.internal_child = 'vbox'
+                del childdef.widget['child_name']
+                
             try:
                 childdef = filter(lambda x: x.widget.has_prop('child_name'),
                                   childdef.widget.children)[0]
@@ -752,12 +786,7 @@ def fixup_as_type(widget, type):
         childdef.internal_child = 'notebook'
         del childdef.widget['child_name']
         fixup_as_type (widget, 'GtkWindow')
-        return 1 # don't let GtkDialog mangle us ...
-
-    # Whole hog conversion - GnomeDialog is a dead duck.
-    if type == 'GnomeDialog':
-        widget['class'] = 'GtkDialog'
-        fixup_as_type (widget, 'GtkDialog')
+        return 1
 
     # Fixup radio groups, the 'group' property has to
     # have the glade id of the root group widget.
@@ -817,13 +846,138 @@ def fixup_as_type(widget, type):
         else:
             widget['display_options'] = ''
 
+    if type == 'GnomeApp':
+        for childdef in widget.children:
+            if childdef.widget.has_prop('child_name'):
+                if childdef.widget['child_name'] == 'GnomeApp:dock':
+                    del childdef.widget['child_name']
+                    childdef.internal_child = 'dock'
+                elif childdef.widget['child_name'] == 'GnomeApp:appbar':
+                    del childdef.widget['child_name']
+                    childdef.internal_child = 'appbar'
+                    
+    if type == 'BonoboDock':
+        for childdef in widget.children:
+            if childdef.widget.has_prop('child_name'):
+                if childdef.widget['child_name'] == 'GnomeDock:contents':
+                    del childdef.widget['child_name']
+
+            if childdef.widget['class'] == 'BonoboDockItem':
+                behavior = []
+                if childdef.widget.has_prop('placement'):
+                    name = childdef.widget['placement']
+                    if re.match ('GNOME_.*', name):
+                        name = re.sub('GNOME_', 'BONOBO_', name, 1)
+                    childdef['placement'] = name
+                    del childdef.widget['placement']
+                if childdef.widget.has_prop('band'):
+                    childdef['band'] = childdef.widget['band']
+                    del childdef.widget['band']
+                if childdef.widget.has_prop ('position'):
+                    childdef['position'] = childdef.widget['position']
+                    del childdef.widget['position']
+                if childdef.widget.has_prop ('offset'):
+                    childdef['offset'] = childdef.widget['offset']
+                    del childdef.widget['offset']
+                                    
+                if childdef.widget.has_prop ('locked'):
+                    if childdef.widget['locked'] == 'yes':
+                        behavior.append ('BONOBO_DOCK_ITEM_BEH_LOCKED')
+                    del childdef.widget['locked']
+                if childdef.widget.has_prop ('exclusive'):
+                    if childdef.widget['exclusive'] == 'yes':
+                        behavior.append ('BONOBO_DOCK_ITEM_BEH_EXCLUSIVE')
+                    del childdef.widget['exclusive']
+                if childdef.widget.has_prop ('never_floating'):
+                    if childdef.widget['never_floating'] == 'yes':
+                        behavior.append ('BONOBO_DOCK_ITEM_BEH_NEVER_FLOATING')
+                    del childdef.widget['never_floating']
+                if childdef.widget.has_prop ('never_vertical'):
+                    if childdef.widget['never_vertical'] == 'yes':
+                        behavior.append ('BONOBO_DOCK_ITEM_BEH_NEVER_VERTICAL')
+                    del childdef.widget['never_vertical']
+                if childdef.widget.has_prop ('never_horizontal'):
+                    if childdef.widget['never_horizontal'] == 'yes':
+                        behavior.append ('BONOBO_DOCK_ITEM_BEH_NEVER_HORIZONTAL')
+                    del childdef.widget['never_horizontal']
+                if behavior:
+                    childdef['behavior'] = string.join(behavior, '|')
+                else:
+                    childdef['behavior'] = 'BONOBO_DOCK_ITEM_BEH_NORMAL'
+
+    if type == 'GnomeDateEdit':
+        flags = []
+        if widget.has_prop('show_time'):
+            if widget['show_time'] == 'yes':
+                flags.append ('GNOME_DATE_EDIT_SHOW_TIME')
+            del widget['show_time']
+        if widget.has_prop('use_24_format'):
+            if widget['use_24_format'] == 'yes':
+                flags.append ('GNOME_DATE_EDIT_24_HR')
+            del widget['use_24_format']
+        if widget.has_prop('week_start_monday'):
+            if widget['week_start_monday'] == 'yes':
+                flags.append ('GNOME_DATE_EDIT_WEEK_STARTS_ON_MONDAY')
+            del widget['week_start_monday']
+        if flags:
+            widget['dateedit_flags'] = string.join(flags, '|')
+        else:
+            widget['dateedit_flags'] = '0'
+
+    if type == 'GnomeMessageBox':
+        try:
+            name = widget['message_box_type']
+        except KeyError:
+            name = 'GNOME_MESSAGE_BOX_GENERIC'
+        name = re.sub ('GNOME_MESSAGE_BOX_', '', name)
+        widget['message_box_type'] = name.lower ()
+
+    if type == 'GnomeDruidPageEdge':
+        for color in ( 'title_color', 'text_color', 'background_color', 'logo_background_color', 'textbox_color' ):
+            if widget.has_prop (color):
+                widget[color] = translate_color (widget[color])
+
+    if type == 'GnomeDruidPageStandard':
+        for color in ( 'title_foreground', 'background', 'logo_background' ):
+            if widget.has_prop (color):
+                widget[color] = translate_color (widget[color])
+        if widget.children:
+            if widget.children[0].widget.has_prop ('child_name'):
+                widget.children[0].internal_child = 'vbox'
+                del widget.children[0].widget['child_name']
+
     return 0
 
 # upgrade widgets to their gtk/gnome 2.0 equivalents
 def upgrade_widget(widget):
     do_children = 1
 
+    # some widgets are totally removed, so upgrade anyway
+    if widget['class'] == 'GnomeDockItem':
+        widget['class'] = 'BonoboDockItem'
+    elif widget['class'] == 'GnomeDock':
+        widget['class'] = 'BonoboDock'
+    elif widget['class'] == 'GnomeAnimator':
+        widget['class'] = 'GtkImage'
+        if widget.has_prop ('loop_type'):
+            del widget['loop_type']
+        if widget.has_prop ('playback_direction'):
+            del widget['playback_direction']
+        if widget.has_prop ('playback_speed'):
+            del widget['playback_speed']
+    elif widget['class'] == 'GnomeDruidPageStart':
+        widget['class'] = 'GnomeDruidPageEdge'
+        widget['position'] = 'GNOME_EDGE_START'
+    elif widget['class'] == 'GnomeDruidPageFinish':
+        widget['class'] = 'GnomeDruidPageEdge'
+        widget['position'] = 'GNOME_EDGE_FINISH'
+    elif widget['class'] == 'GtkPixmapMenuItem':
+        widget['class'] = 'GtkImageMenuItem'
+
     if not upgrade:
+        if do_children:
+            for childdef in widget.children:
+                upgrade_widget(childdef.widget)
         return
 
     # use GtkImage for image display now.
@@ -836,8 +990,6 @@ def upgrade_widget(widget):
     elif widget['class'] == 'GnomePixmap':
         widget['class'] = 'GtkImage'
         widget.rename_prop('filename', 'pixbuf')
-    elif widget['class'] == 'GtkPixmapMenuItem':
-        widget['class'] = 'GtkImageMenuItem'
 
     elif widget['class'] == 'GtkText':
         widget['class'] = 'GtkTextView'
@@ -858,6 +1010,13 @@ def upgrade_widget(widget):
         widget.remove_prop('view_mode')
         widget.remove_prop('view_line')
 
+    elif widget['class'] == 'GnomeDialog':
+        widget['class'] = 'GtkDialog'
+        if widget.has_prop ('auto_close'):
+            del widget['auto_close']
+        if widget.has_prop ('hide_on_close'):
+            del widget['hide_on_close']
+
     if do_children:
         for childdef in widget.children:
             upgrade_widget(childdef.widget)
@@ -872,9 +1031,16 @@ bad_widgets = {
     'GtkCTree': 'deprecated',
     'GtkPixmap': 'deprecated',
     'GnomePixmap': 'deprecated',
-    'GnomeFontPicker': 'removed',
+#    'GnomeFontPicker': 'removed',
     'GtkPixmapMenuItem': 'removed',
     'GtkPacker': 'removed',
+    'GnomeDialog': 'deprecated',
+    'GnomeNumberEntry': 'removed',
+    'GtkDial': 'removed',
+    'GtkClock': 'removed',
+    'GnomeCalculator': 'removed',
+    'GnomeLess': 'removed',
+    'GnomeSpell': 'removed',
 }
 def check_widget(widget, requirelist=[]):
     try:

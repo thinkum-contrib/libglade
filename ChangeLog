@@ -1,3 +1,24 @@
+2001-12-06  jacob berkman  <jacob@ximian.com>
+
+	* glade/glade-xml.c (glade_xml_set_common_params): print a warning
+	if a widget has children but is not a container
+	(glade_xml_set_toplevel): don't set the tooltips if the window is
+	NULL
+	(glade_xml_get_toplevel): return the current toplevel window
+	(glade_xml_build_interface): don't do the grab focus stuff here...
+	(glade_xml_build_widget): ...move it to here.  if we just created
+	a GtkWindow, set ourselves as the toplevel, build our child
+	widgets, then unset the toplevel
+	(glade_xml_set_packing_property): make public
+
+	* glade/glade-gtk.c (build_window): removed, as
+	glade_xml_build_widget() handles this for us
+	(image_menu_find_internal_child): if there is already an image,
+	return that rather than creating a blank one
+	(_glade_init_gtk_widgets): s/build_window/NULL/
+
+	* libglade-convert.in: intense libgnomeui support fixage
+
 2001-11-28  Peter Williams  <peterw@ximian.com>
 
 	* tests/Makefile.am (test-libglade-gtk-noupgrade.glade2): libglade-convert
