@@ -1667,7 +1667,7 @@ glade_standard_build_widget(GladeXML *xml, GType widget_type,
 
 	glade_xml_handle_widget_prop(xml, widget, prop->name, prop->value);
     }
-    g_list_free(tmp);
+    g_list_free(deferred_props);
 
     g_array_set_size(props_array, 0);
     g_array_set_size(custom_props_array, 0);

@@ -103,6 +103,7 @@ pixmap_set_filename (GladeXML *xml, GtkWidget *w,
     char *file;
     GdkPixmap *pixmap = NULL;
     GdkBitmap *bitmap = NULL;
+    GdkColormap *cmap;
     
     file = glade_xml_relative_file (xml, value);
     pb = gdk_pixbuf_new_from_file (file, NULL);
@@ -111,7 +112,8 @@ pixmap_set_filename (GladeXML *xml, GtkWidget *w,
     if (!pb)
 	return;
 
-    gdk_pixbuf_render_pixmap_and_mask (pb, &pixmap, &bitmap, 127);
+    cmap = gtk_widget_get_colormap (w);
+    gdk_pixbuf_render_pixmap_and_mask_for_colormap (pb, cmap, &pixmap, &bitmap, 127);
     gtk_pixmap_set (GTK_PIXMAP (w), pixmap, bitmap);
 
     if (pixmap) g_object_unref (pixmap);

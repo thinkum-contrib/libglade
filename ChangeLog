@@ -1,3 +1,9 @@
+2003-07-23  Morten Welinder  <terra@gnome.org>
+
+	* glade/glade-xml.c (glade_standard_build_widget): Plug leak.
+
+	* glade/glade-gtk.c (pixmap_set_filename): Use the right colormap.
+
 2003-06-13  Michael Meeks  <michael@ximian.com>
 
 	* doc/Makefile.am: define content_files and HTML_IMAGES
