@@ -1,3 +1,10 @@
+1999-07-30  James Henstridge  <james@daa.com.au>
+
+	* test-libglade.c (main): give an error if glade_xml_new returns an
+	error.
+
+	* glade/glade-sax.c: make the parser more graceful for bad documents.
+
 1999-07-29  James Henstridge  <james@daa.com.au>
 
 	* doc/tmpl/glade-sax.sgml: added a small description of these

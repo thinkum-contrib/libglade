@@ -33,8 +33,6 @@ int main (int argc, char **argv)
 
   list = poptGetArgs (ctx);
   if (list){
-	  int i;
-
 	  for (i = 0; list [i]; i++){
 		  if (filename == NULL)
 			  filename = list [i];
@@ -69,6 +67,11 @@ int main (int argc, char **argv)
 #endif
   
   xml = glade_xml_new(filename, rootnode);
+
+  if (!xml) {
+    g_warning("something bad happened while creating the interface");
+    return;
+  }
 
   if (!no_connect)
     glade_xml_signal_autoconnect(xml);

@@ -674,9 +674,11 @@ static xmlSAXHandler gladeSAXParser = {
 GladeWidgetTree *glade_widget_tree_parse_file(const char *file) {
     GladeParseState state;
 
+    state.tree = NULL;
     if (my_xmlSAXParseFile(&gladeSAXParser, &state, file) < 0) {
 	g_warning("document not well formed!");
-	glade_widget_tree_free(state.tree);
+	if (state.tree)
+	    glade_widget_tree_free(state.tree);
 	return NULL;
     }
     return state.tree;
