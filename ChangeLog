@@ -1,5 +1,8 @@
 2002-05-12  James Henstridge  <james@daa.com.au>
 
+	* glade/glade-xml.c (add_relation): get reference counting right
+	for the case where we are adding a target to an existing relation.
+
 	* doc/Makefile.am: use CFLAGS and LDFLAGS when building docs, to
 	fix 64-bit build issues brought up in bug #81347 by Shivram U.
 

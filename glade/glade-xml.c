@@ -788,8 +788,13 @@ add_relation(AtkRelationSet *relations, AtkRelationType relation_type,
     if (relation) {
 	/* add new target accessible to relation */
 	GPtrArray* target_array = atk_relation_get_target (relation);
+	guint i;
 
-	g_ptr_array_remove (target_array, target_accessible);
+	/* first check if target occurs in array ... */
+	for (i = 0; i < target_array->len; i++)
+	    if (g_ptr_array_index(target_array, i) == target_accessible)
+		return;
+	g_object_ref(target_accessible);
 	g_ptr_array_add (target_array, target_accessible);
     } else {
 	/* the relation hasn't been created yet ... */
