@@ -1,3 +1,7 @@
+libglade-2.4.2: 11-February-2004
+        - Fix toolbar breakage from the 2.4.1 release.
+        - Fix handling of GtkFileChooserDialog internal children.
+
 libglade-2.4.1: 29-November-2004
 	- Register GtkFileChooserDialog correctly.
 	- Fix a number of bugs in the libglade-convert utility.
