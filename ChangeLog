@@ -1,3 +1,13 @@
+2003-10-24  Mark McLoughlin  <mark@skynet.ie>
+
+	* configure.in: bump version to 2.3.0 (in sync with
+	gtk+), require gtk+ 2.3.0 and kill the crufty
+	development branch warning.
+	
+	* glade/glade-gtk.c: (expander_build_children),
+	(_glade_init_gtk_widgets): implement support
+	for GtkExpander.
+
 2003-07-23  Morten Welinder  <terra@gnome.org>
 
 	* glade/glade-xml.c (glade_standard_build_widget): Plug leak.

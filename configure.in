@@ -1,6 +1,6 @@
 -*- mode: autoconf -*-
 AC_PREREQ(2.52)
-AC_INIT(libglade, 2.0.1,
+AC_INIT(libglade, 2.3.0,
         [http://bugzilla.gnome.org/enter_bug.cgi?product=libglade])
 
 AC_CONFIG_SRCDIR([test-libglade.c])
@@ -27,7 +27,7 @@ AC_HEADER_STDC
 AC_LIBTOOL_WIN32_DLL
 AM_PROG_LIBTOOL
 
-AM_PATH_GTK_2_0(2.0.0)
+AM_PATH_GTK_2_0(2.3.0)
 
 save_LIBS=$LIBS
 LIBS="$GTK_LIBS $LIBS"
@@ -37,7 +37,7 @@ LIBS=$save_LIBS
 
 AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
 
-PKG_CHECK_MODULES(LIBGLADE, libxml-2.0 >= 2.4.10 atk >= 1.0.0 gtk+-2.0 >= 2.0.0)
+PKG_CHECK_MODULES(LIBGLADE, libxml-2.0 >= 2.4.10 atk >= 1.0.0 gtk+-2.0 >= 2.3.0)
 AC_SUBST(LIBGLADE_LIBS)
 AC_SUBST(LIBGLADE_CFLAGS)
 
@@ -163,13 +163,6 @@ libglade-convert
 ])
 
 rm -f po/po2tbl.sed
-
-echo
-echo "This is the development branch of libglade"
-echo "If you want something that works with gtk+ 1.2, checkout the"
-echo "libglade-1-0 branch with the following command"
-echo "  cvs update -r libglade-1-0 ."
-echo
 
 if test -z "$jh_cv_path_python"; then
   echo "*****************************************************"

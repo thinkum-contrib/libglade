@@ -518,6 +518,41 @@ frame_build_children(GladeXML *self, GtkWidget *parent,
 }
 
 static void
+expander_build_children (GladeXML        *self,
+			 GtkWidget       *parent,
+			 GladeWidgetInfo *info)
+{
+    int i;
+
+    g_object_ref (parent);
+    for (i = 0; i < info->n_children; i++) {
+	GladeWidgetInfo *childinfo = info->children [i].child;
+	GtkWidget       *child;
+	gboolean         label_item = FALSE;
+	int              j;
+	
+	child = glade_xml_build_widget (self, childinfo);
+
+	/* there should really only be 2 children */
+	for (j = 0; j < info->children [i].n_properties; j++) {
+	    if (!strcmp (info->children [i].properties[j].name, "type")) {
+		const char *value = info->children [i].properties [j].value;
+
+		if (!strcmp (value, "label_item"))
+		    label_item = TRUE;
+		break;
+	    }
+	}
+
+	if (label_item)
+	    gtk_expander_set_label_widget (GTK_EXPANDER (parent), child);
+	else
+	    gtk_container_add (GTK_CONTAINER (parent), child);
+    }
+    g_object_unref (parent);
+}
+
+static void
 notebook_build_children(GladeXML *self, GtkWidget *parent,
 			GladeWidgetInfo *info)
 {
@@ -1070,6 +1105,8 @@ _glade_init_gtk_widgets(void)
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_EVENT_BOX, glade_standard_build_widget,
 			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_EXPANDER, glade_standard_build_widget,
+			   expander_build_children, NULL);
     glade_register_widget (GTK_TYPE_FILE_SELECTION, NULL,
 			   glade_standard_build_children, filesel_find_internal_child);
     glade_register_widget (GTK_TYPE_FIXED, glade_standard_build_widget,
