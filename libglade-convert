@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 # yes, this requires python 2.x and an XML parser module (eg. PyExpat)
 
@@ -60,6 +60,9 @@ class WidgetDef:
         if self.properties.has_key(name):
             self.property_names.remove(name)
             del self.properties[name]
+            
+    def mark_obsolete (self):
+        self.properties ['obsolete'] = 'yes'
 
     def add_signal(self, name, handler, object=None, after=0):
         self.signals.append((name, handler, object, after))
@@ -99,6 +102,9 @@ class WidgetDef:
                 self.property_names.remove(name)
                 del self.properties[name]
         def dump(self, indent):
+            if self.widget.has_prop('obsolete'):
+                return
+
             if self.internal_child:
                 print '%s<child internal-child="%s">' % \
                       (indent, self.internal_child)
@@ -122,7 +128,7 @@ class WidgetDef:
         self.children.append(child)
         return child
 
-    def dump(self, indent):
+    def dump(self, indent):        
         print '%s<widget class="%s" id="%s">' %(indent, self.wclass, self.name)
         want_newline = 0
         for name in self.property_names:
@@ -243,7 +249,7 @@ def handle_widget(widgetnode):
 name_counter = 0
 def make_name():
     global name_counter
-    name_counter += 1
+    name_counter = name_counter + 1
     return 'convertwidget' + str(name_counter)
 
 # properties to change on all widgets
@@ -256,7 +262,7 @@ global_renamed_props = [
 # properties to change on specific widgets
 obsolete_props = {
     'GtkWindow': [ 'auto_shrink' ],
-    'GtkDialog': [ 'auto_shrink' ],
+    'GnomePropertyBox': [ 'auto_shrink' ],
     'GtkMenuItem': [ 'right_justify' ],
     'GtkGammaCurve': [ 'curve_type', 'min_x', 'max_x', 'min_y', 'max_y' ],
     'GtkHPaned': [ 'handle_size', 'gutter_size' ],
@@ -268,9 +274,9 @@ obsolete_props = {
     'GtkHRuler': [ 'metric' ],
     'GtkVRuler': [ 'metric' ],
 }
+
 renamed_props = {
     'GtkWindow': [ ('position', 'window-position') ],
-    'GtkDialog': [ ('position', 'window-position') ],
     'GtkEntry': [ ('text_max_length', 'max-length'),
                   ('text_visible', 'visibility') ],
     'GtkFrame': [ ('shadow_type', 'shadow') ],
@@ -318,32 +324,72 @@ def collect_adjustment(widgetdef, prop_prefix, new_name):
         widgetdef[new_name] = '%s %s %s %s %s %s' % (value, lower, upper,
                                                      step, page, page_size)
 
+
+parent_table = {
+    'GtkContainer'      : 'GtkWidget',
+    'GtkBin'            : 'GtkContainer',
+    'GtkDialog'         : 'GtkWindow',
+    'GnomePropertyBox'  : 'GtkDialog',
+    'GnomeAbout'        : 'GtkDialog',
+    'GnomeApp'          : 'GtkDialog',
+    'GnomeScores'       : 'GtkDialog',
+    'GnomeDialog'       : 'GtkDialog',
+    'GnomeDruid'        : 'GtkContainer',
+    'GnomeEntry'        : 'GtkCombo',
+    'GtkCheckMenuItem'  : 'GtkMenuItem',
+    'GtkRadioMenuItem'  : 'GtkMenuItem',
+    'GtkFontSelectionDialog' : 'GtkDialog',
+    'GnomeColorPicker'  : 'GtkButton'
+}
+
+def find_parent(type):
+    if parent_table.has_key(type):
+        return parent_table[type]
+    return ''
+
 # fix up attribute naming, and possibly adding missing children.
 def fixup_widget(widget):
-    do_children = 1
+
+    type = widget['class']
+    while (type and not fixup_as_type (widget, type)):
+        type = find_parent (type)
+        
+    for childdef in widget.children:
+        fixup_widget(childdef.widget)
+
+
+def fixup_as_type(widget, type):
 
     # table based property removals/renames
     for name in global_obsolete_props:
         widget.remove_prop(name)
     for old, new in global_renamed_props:
         widget.rename_prop(old, new)
-    if obsolete_props.has_key(widget['class']):
-        for name in obsolete_props[widget['class']]:
+
+    if obsolete_props.has_key(type):
+        for name in obsolete_props[type]:
             widget.remove_prop(name)
-    if renamed_props.has_key(widget['class']):
-        for old, new in renamed_props[widget['class']]:
+
+    if renamed_props.has_key(type):
+        for old, new in renamed_props[type]:
             widget.rename_prop(old, new)
-    if obsolete_child_props.has_key(widget['class']):
-        for name in obsolete_child_props[widget['class']]:
+
+    if obsolete_child_props.has_key(type):
+        for name in obsolete_child_props[type]:
             for childdef in widget.children:
                 childdef.remove_prop(name)
-    if renamed_child_props.has_key(widget['class']):
-        for old, new in renamed_child_props[widget['class']]:
+
+    if renamed_child_props.has_key(type):
+        for old, new in renamed_child_props[type]:
             for childdef in widget.children:
                 childdef.rename_prop(old, new)
 
+    # add the visible property if missing:
+    if not widget.has_prop('visible'):
+        widget['visible'] = 'yes'
+
     # fix up child packing properties for tables
-    if widget['class'] == 'GtkTable':
+    if type == 'GtkTable':
         for childdef in widget.children:
             options = []
             if childdef.has_prop('xexpand'):
@@ -378,19 +424,18 @@ def fixup_widget(widget):
                 childdef['y_options'] = string.join(options,'|')
 
     # fix up adjustment properties
-    if widget['class'] in ('GtkHScale', 'GtkHScrollbar',
+    if type in ('GtkHScale', 'GtkHScrollbar',
                            'GtkVScale', 'GtkVScrollbar',
                            'GtkSpinButton'):
         collect_adjustment(widget, 'h', 'adjustment') # compat
         collect_adjustment(widget, 'v', 'adjustment') # compat
         collect_adjustment(widget, '', 'adjustment')
-    if widget['class'] in ('GtkViewport', 'GtkLayout', 'GtkScrolledWindow'):
+    if type in ('GtkViewport', 'GtkLayout', 'GtkScrolledWindow'):
         collect_adjustment(widget, 'h', 'hadjustment')
         collect_adjustment(widget, 'v', 'vadjustment')
 
     # add label children to menu items.
-    if widget['class'] in ('GtkMenuItem', 'GtkCheckMenuItem',
-                           'GtkRadioMenuItem'):
+    if type == 'GtkMenuItem':
         if widget.has_prop('label'):
             label = WidgetDef()
             label['class'] = 'GtkAccelLabel'
@@ -402,10 +447,7 @@ def fixup_widget(widget):
             widget.add_child(label)
             del widget['label']
 
-    if widget['class'] == 'GtkPixmapMenuItem':
-        widget['class'] = 'GtkImageMenuItem'
-
-    if widget['class'] == 'GtkDialog':
+    if type == 'GtkDialog':
         childdef = widget.children[0]
         childdef.internal_child = 'vbox'
         del childdef.widget['child_name']
@@ -416,7 +458,7 @@ def fixup_widget(widget):
         childdef.internal_child = 'action_area'
         del childdef.widget['child_name']
 
-    if widget['class'] == 'GtkCombo':
+    if type == 'GtkCombo':
         childdef = widget.children[0]
         childdef.internal_child = 'entry'
         del childdef.widget['child_name']
@@ -439,14 +481,15 @@ def fixup_widget(widget):
                 label['xalign'] = '0.0'
                 label['label'] = item
                 listitem.add_child(label)
+                
+    if type == 'GnomePropertyBox':
+        childdef = widget.children[0]
+        childdef.internal_child = 'notebook'
+        del childdef.widget['child_name']
 
-    # add the visible property if missing:
-    if not widget.has_prop('visible'):
-        widget['visible'] = 'yes'
+        return 1 # don't let GtkDialog mangle us ...
 
-    if do_children:
-        for childdef in widget.children:
-            fixup_widget(childdef.widget)
+    return 0
 
 # upgrade widgets to their gtk/gnome 2.0 equivalents
 def upgrade_widget(widget):
@@ -457,11 +500,11 @@ def upgrade_widget(widget):
         widget['class'] = 'GtkImage'
         widget.rename_prop('filename', 'pixbuf')
         widget.remove_prop('build_insensitive')
+    if widget['class'] == 'GnomeFontSelector':
+        widget['class'] = 'GtkFontSelectionDialog'
     if widget['class'] == 'GnomePixmap':
         widget['class'] = 'GtkImage'
         widget.rename_prop('filename', 'pixbuf')
-
-    # get rid of GtkPixmapMenuItem
     if widget['class'] == 'GtkPixmapMenuItem':
         widget['class'] = 'GtkImageMenuItem'
 
@@ -478,7 +521,8 @@ bad_widgets = {
     'GtkCTree': 'deprecated',
     'GtkPixmap': 'deprecated',
     'GnomePixmap': 'deprecated',
-    'GtkPixmapMenuItem': 'removed',
+    'GnomeFontPicker': 'removed',
+    'GtkPixmapMenuItem': 'removed'
 }
 def check_widget(widget, requirelist=[]):
     try:
@@ -486,7 +530,7 @@ def check_widget(widget, requirelist=[]):
         print >> sys.stderr , 'widget %s of class %s is %s.' % \
               (widget['name'], widget['class'], error)
         if error == 'removed':
-            sys.exit(1)
+                widget.mark_obsolete ()
     except KeyError:
         pass
     if widget['class'][:5] == 'Gnome' and 'gnome' not in requirelist:

@@ -1,5 +1,17 @@
 2001-10-09  Michael Meeks  <michael@ximian.com>
 
+	* libglade-convert (fixup_widget): split out recursion into
+	(fixup_as_type): here. Traverse up a widget hierarchy mapping
+	properties as appropriate, use passed 'type' not
+	widget['class']
+	(upgrade_widget): move GtkPixmapMenuItem handling here,
+	GnomeFontPicker -> GtkFontSelection
+	(WidgetDef.dump): ignore widgets marked 'obsolete', don't
+	output them.
+	(check_widget): mark removed widgets instead of dying.
+
+2001-10-09  Michael Meeks  <michael@ximian.com>
+
 	* glade/glade-xml.c (glade_standard_build_children):
 	ref counting fix.
 
