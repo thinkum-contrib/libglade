@@ -1,3 +1,7 @@
+2002-04-23  James Henstridge  <james@daa.com.au>
+
+	* configure.in: increment version number.
+
 2002-04-22  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-xml.c (glade_xml_add_atk_relations): small
@@ -5,6 +9,9 @@
 	for the widget in the glade file.
 	(glade_xml_add_atk_actions): small changes to match style of other
 	functions in the file.
+	(glade_xml_add_accessibility_info): use G_OBJECT_GET_CLASS() to
+	get the type of the atk object rather than g_type_class_ref(),
+	which fixes a reference leak.
 
 2002-04-19  Mark McLoughlin  <mark@skynet.ie>
 
