@@ -1,5 +1,8 @@
 2004-11-08  James Henstridge  <james@jamesh.id.au>
 
+	* glade/glade-parser.c (widget_info_free): free the atk actions
+	and relations.  Should fix bug #125042.
+
 	* libglade-convert.in (fixup_as_type): add code to convert x/y
 	properties of GtkFixed children to child properties.  Fixes bug
 	#155708 and #82986.

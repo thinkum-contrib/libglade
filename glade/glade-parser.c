@@ -1129,6 +1129,8 @@ widget_info_free(GladeWidgetInfo *info)
     g_free(info->properties);
     g_free(info->atk_props);
     g_free(info->signals);
+    g_free(info->atk_actions);
+    g_free(info->relations);
     g_free(info->accels);
 
     for (i = 0; i < info->n_children; i++) {
