@@ -1,5 +1,9 @@
 2002-02-25  James Henstridge  <james@daa.com.au>
 
+	* glade/glade-xml.c (glade_xml_handle_internal_child): add code to
+	hanlde widget properties on internal children (this was missing
+	before).
+
 	* libglade-convert.in (ChildDef.dump): add agent="cxx" for
 	properties beginning with cxx.
 	(WidgetDef.dump): same here.

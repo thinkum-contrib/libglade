@@ -1844,6 +1844,10 @@ glade_xml_handle_internal_child(GladeXML *self, GtkWidget *parent,
 {
     const GladeWidgetBuildData *parent_build_data = NULL;
     GtkWidget *child;
+    GladeWidgetInfo *info;
+    GObjectClass *oclass;
+    CustomPropInfo *custom_props;
+    guint i;
 
     /* walk up the widget heirachy until we find a parent with a
      * find_internal_child handler */
@@ -1870,6 +1874,59 @@ glade_xml_handle_internal_child(GladeXML *self, GtkWidget *parent,
 	g_warning("could not find internal child `%s' in parent of type `%s'",
 		  child_info->internal_child, G_OBJECT_TYPE_NAME(parent));
 	return;
+    }
+
+    info = child_info->child;
+    oclass = G_OBJECT_GET_CLASS(child);
+    custom_props = get_custom_prop_info(G_OBJECT_TYPE(child));
+    for (i = 0; i < info->n_properties; i++) {
+	GQuark name_quark;
+	GValue value = { 0, };
+	GParamSpec *pspec;
+
+	if (custom_props &&
+	    (name_quark = g_quark_try_string(info->properties[i].name)) != 0) {
+	    gint j = 0;
+
+	    while (custom_props[j].name_quark) {
+		if (custom_props[j].name_quark == name_quark) {
+		    (* custom_props[j].apply_prop)(self, child,
+						   info->properties[i].name,
+						   info->properties[i].value);
+		    break;
+		}
+		j++;
+	    }
+	    if (custom_props[j].name_quark != 0) /* a prop was matched */
+		continue;
+	}
+	pspec = g_object_class_find_property(oclass, info->properties[i].name);
+	if (!pspec) {
+            g_warning("unknown property `%s' for class `%s'",
+                      info->properties[i].name, G_OBJECT_TYPE_NAME(child));
+            continue;
+	}	    
+        /* this should catch all properties wanting a GtkWidget
+         * subclass.  We also look for types that could hold a *
+         * GtkWidget in order to catch things like the *
+         * GtkAccelLabel::accel_object property.  Since we don't do
+         * any * handling of GObject or GtkObject directly in *
+         * glade_xml_set_value_from_string, this shouldn't be a *
+         * problem. */
+       if (g_type_is_a(GTK_TYPE_WIDGET, G_PARAM_SPEC_VALUE_TYPE(pspec)) ||
+           g_type_is_a(G_PARAM_SPEC_VALUE_TYPE(pspec), GTK_TYPE_WIDGET)) {
+	   glade_xml_handle_widget_prop(self, child,
+					pspec->name,
+					info->properties[i].value);
+	   continue;
+       }
+
+       if (glade_xml_set_value_from_string(self, pspec,
+					   info->properties[i].value,
+					   &value)) {
+	   g_object_set_property(child, pspec->name, &value);
+	   g_value_unset(&value);
+       }
     }
 
     glade_xml_set_common_params(self, child, child_info->child);
