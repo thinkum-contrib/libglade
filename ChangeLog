@@ -1,3 +1,9 @@
+2001-12-12  jacob berkman  <jacob@ximian.com>
+
+	* glade/glade-gtk.c (option_menu_build_children): set the history
+	property here, since it only works after setting the menu on the
+	option menu
+
 2001-12-12  James Henstridge  <james@daa.com.au>
 
 	* configure.in: increment libtool version number.

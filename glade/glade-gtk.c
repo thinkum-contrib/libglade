@@ -37,6 +37,13 @@
 void _glade_init_gtk_widgets(void);
 
 static void
+custom_noop (GladeXML *xml, GtkWidget *widget,
+	     const char *name, const char *value)
+{
+    ;
+}
+
+static void
 set_tooltip(GladeXML *xml, GtkWidget *widget,
 	    const gchar *prop_name, const gchar *prop_value)
 {
@@ -80,13 +87,6 @@ progress_set_format (GladeXML *xml, GtkWidget *w,
 		     const char *name, const char *value)
 {
     gtk_progress_set_format_string (GTK_PROGRESS (w), value);
-}
-
-static void
-option_menu_set_history (GladeXML *xml, GtkWidget *w,
-			 const char *name, const char *value)
-{
-    gtk_option_menu_set_history (GTK_OPTION_MENU (w), INT (value));
 }
 
 static void
@@ -362,6 +362,29 @@ build_preview (GladeXML *xml, GType widget_type,
     gtk_preview_set_expand (GTK_PREVIEW (preview), expand);
 
     return preview;
+}
+
+static void
+option_menu_build_children (GladeXML *xml, GtkWidget *parent,
+			    GladeWidgetInfo *info)
+{
+    int i, history = 0;
+
+    glade_standard_build_children (xml, parent, info);
+
+    for (i = 0; i < info->n_properties; i++) {
+	const char *name  = info->properties[i].name;
+	const char *value = info->properties[i].value;
+
+	if (strcmp (name, "history"))
+	    continue;
+
+	history = INT (value);
+	break;
+    }
+
+    /* we have to set the history *after* building the child menu */
+    gtk_option_menu_set_history (GTK_OPTION_MENU (parent), history);
 }
 
 static void
@@ -720,7 +743,7 @@ _glade_init_gtk_widgets(void)
     glade_register_custom_prop (GTK_TYPE_PIXMAP, "build_insensitive", pixmap_set_build_insensitive);
     glade_register_custom_prop (GTK_TYPE_PIXMAP, "filename", pixmap_set_filename);
     glade_register_custom_prop (GTK_TYPE_PROGRESS, "format", progress_set_format);
-    glade_register_custom_prop (GTK_TYPE_OPTION_MENU, "history", option_menu_set_history);
+    glade_register_custom_prop (GTK_TYPE_OPTION_MENU, "history", custom_noop);
     glade_register_custom_prop (GTK_TYPE_TEXT_VIEW, "text", text_view_set_text);
     glade_register_custom_prop (GTK_TYPE_CALENDAR, "display_options", calendar_set_display_options);
     glade_register_custom_prop (GTK_TYPE_CLIST, "column_widths", clist_set_column_widths);
@@ -827,7 +850,7 @@ _glade_init_gtk_widgets(void)
     glade_register_widget (GTK_TYPE_NOTEBOOK, glade_standard_build_widget,
 			   notebook_build_children, NULL);
     glade_register_widget (GTK_TYPE_OPTION_MENU, glade_standard_build_widget,
-			   glade_standard_build_children, option_menu_find_internal_child);
+			   option_menu_build_children, option_menu_find_internal_child);
     glade_register_widget (GTK_TYPE_PIXMAP, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_PLUG, NULL,
