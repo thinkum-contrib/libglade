@@ -1,3 +1,10 @@
+2001-05-3  James Henstridge  <james@daa.com.au>
+
+	* *.po: removed all translations.  There library never uses
+	the libglade translation domain (it uses the translation domain
+	of the app).  The one string in the pot file comes from the
+	test program that isn't installed.
+
 2001-03-28  Pablo Saratxaga  <pablo@mandrakesoft.com>
 
 	* ko.po: Korean file taken from a Korean magazine
