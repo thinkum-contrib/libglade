@@ -1,3 +1,9 @@
+2002-04-26  Murray Cumming  <murrayc@usa.net>
+
+	* glade/glade-xml.c: gtkmm's derived gtypes don't use 
+	glade_register_widget(), so check the base type for a
+	find_internal_child() function. 
+
 2002-04-25  Murray Cumming  <murrayc@usa.net>
 
 	* glade/glade-xml.[h|c]: Added lookup_type() virtual
