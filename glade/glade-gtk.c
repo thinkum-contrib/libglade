@@ -21,6 +21,7 @@
  */
 
 #include <string.h>
+#include <stdlib.h>
 #include <glade/glade.h>
 #include <glade/glade-build.h>
 #include <glade/glade-private.h>
@@ -63,21 +64,23 @@ gtk_dialog_build_children(GladeXML *self, GtkWidget *w,
 
 {
     GtkDialog *dialog = GTK_DIALOG (w);
-    GtkWidget *button;
     GList *children, *list;
 
     glade_standard_build_children (self, w, info);
 
     if (dialog->action_area == NULL)
 	return;
+
     children = gtk_container_get_children (GTK_CONTAINER (dialog->action_area));
     for (list = children; list; list = list->next) {
 	gtk_widget_ref (GTK_WIDGET (list->data));
 	gtk_container_remove (GTK_CONTAINER (dialog->action_area), GTK_WIDGET (list->data));
     }
+
     for (list = children; list; list = list->next) {
 	gint response_id;
-	response_id = GPOINTER_TO_INT (g_object_steal_data (G_OBJECT (list->data), "response_id"));
+	response_id = GPOINTER_TO_INT (g_object_steal_data (
+	    G_OBJECT (list->data), "response_id"));
 	gtk_dialog_add_action_widget (dialog, GTK_WIDGET (list->data), response_id);
     }
     g_list_foreach (children, (GFunc)gtk_widget_unref, NULL);
@@ -124,50 +127,25 @@ notebook_build_children(GladeXML *self, GtkWidget *parent,
     g_object_unref(G_OBJECT(parent));
 }
 
-void
-option_menu_build_children(GladeXML *self, GtkWidget *parent,
-			  GladeWidgetInfo *info)
-{
-    GtkWidget *child;
-
-    if (info->n_children == 0)
-	return;
-    if (info->n_children != 1) {
-	g_warning ("Multiple children added to a GtkOptionMenu\n");
-	return;
-    }
-
-    child = glade_xml_build_widget(self, info->children[0].child);
-    if (child == NULL || !GTK_IS_MENU (child)) {
-	g_warning ("Tried to add a widget of type '%s' to an GtkOptionMenu.  Only GtkMenu widgets are valid children.\n",
-		   g_type_name (G_OBJECT_TYPE (child)));
-	if (child)
-	    gtk_object_sink (GTK_OBJECT (child));
-	return;
-    }
-    gtk_option_menu_set_menu (GTK_OPTION_MENU (parent), GTK_MENU (child));
-}
-
 static GtkWidget *
 build_button(GladeXML *xml, GType widget_type,
 	     GladeWidgetInfo *info)
 {
     GtkWidget *widget;
-    gint i, response_id;
-    gboolean response_id_set = FALSE;
+    gint i, response_id = 0;
 
     for (i = 0; i < info->n_properties; i++) {
 	if (!strcmp (info->properties[i].name, "response_id")) {
-	    response_id = strtol (info->properties[i].value, 0, NULL);
-	    response_id_set = TRUE;
+	    response_id = strtol (info->properties[i].value, NULL, 10);
 	    break;
 	}
     }
 
     widget = glade_standard_build_widget (xml, widget_type, info);
 
-    if (response_id_set)
-	g_object_set_data (G_OBJECT (widget), "response_id", GINT_TO_POINTER (response_id));
+    if (response_id)
+	g_object_set_data (G_OBJECT (widget), "response_id",
+			   GINT_TO_POINTER (response_id));
 
     return widget;
 }
@@ -180,6 +158,26 @@ dialog_find_internal_child(GladeXML *xml, GtkWidget *parent,
 	return GTK_DIALOG(parent)->vbox;
     if (!strcmp(childname, "action_area"))
 	return GTK_DIALOG(parent)->action_area;
+
+    return NULL;
+}
+
+static GtkWidget *
+option_menu_find_internal_child(GladeXML *xml, GtkWidget *parent,
+				const gchar *childname)
+{
+    if (!strcmp(childname, "menu")) {
+	GtkWidget *ret;
+	
+	if ((ret = gtk_option_menu_get_menu (GTK_OPTION_MENU (parent))))
+	    return ret;
+
+	ret = gtk_menu_new ();
+	gtk_widget_show (ret);
+	gtk_option_menu_set_menu (GTK_OPTION_MENU (parent), ret);
+
+	return ret;
+    }
 
     return NULL;
 }
@@ -341,8 +339,8 @@ static GladeWidgetBuildData widget_data[] = {
       gtk_message_dialog_get_type },
     { "GtkNotebook", glade_standard_build_widget, notebook_build_children,
       gtk_notebook_get_type },
-    { "GtkOptionMenu", glade_standard_build_widget, option_menu_build_children,
-      gtk_option_menu_get_type },
+    { "GtkOptionMenu", glade_standard_build_widget, glade_standard_build_children,
+      gtk_option_menu_get_type, 0, option_menu_find_internal_child },
 /*    { "GtkPacker", glade_standard_build_widget, glade_standard_build_children,
       gtk_packer_get_type }, */
     { "GtkPixmap", glade_standard_build_widget, NULL,

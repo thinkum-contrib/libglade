@@ -71,7 +71,7 @@ class WidgetDef:
 
     class ChildDef:
         def __init__(self, widget, internal_child=None):
-            self.internal_child = None
+            self.internal_child = internal_child
             self.property_names = []
             self.properties = {}
             self.widget = widget
@@ -289,7 +289,7 @@ renamed_props = {
     'GtkSpinButton' : [ ('snap', 'snap_to_ticks') ],
     'GtkCombo' : [ ('use_arrows', 'enable_arrow_keys'),
                    ('use_arrows_always', 'enable_arrows_always'),
-                   ('ok_if_empty', 'enable_empty') ],
+                   ('ok_if_empty', 'allow_empty') ],
     'GnomeFileEntry' : [ ( 'directory', 'directory_entry' ) ]
 }
 
@@ -364,6 +364,20 @@ def fixup_widget(widget):
     for childdef in widget.children:
         fixup_widget(childdef.widget)
 
+def new_label(class_type, text, accel_object):
+    label = WidgetDef()
+    label['class'] = class_type
+    label['name'] = make_name()
+    label['label'] = text;
+
+    if not class_type == 'GtkMenuItem':
+        label['xalign'] = '0.0'
+
+    if class_type == 'GtkAccelLabel':
+        label['accel-object'] = accel_object
+        label['use-underline'] = 'yes'        
+
+    return label
 
 def fixup_as_type(widget, type):
 
@@ -459,14 +473,10 @@ def fixup_as_type(widget, type):
     # add label children to menu items.
     if type == 'GtkMenuItem':
         if widget.has_prop('label'):
-            label = WidgetDef()
-            label['class'] = 'GtkAccelLabel'
-            label['name'] = make_name()
-            label['accel-object'] = widget['name']
-            label['xalign'] = '0.0'
-            label['label'] = widget['label']
-            label['use-underline'] = 'yes'
-            widget.add_child(label)
+            widget.add_child ( \
+                new_label('GtkAccelLabel', \
+                          widget['label'], \
+                          widget['name']))
             del widget['label']
 
     if type == 'GtkDialog':
@@ -479,6 +489,26 @@ def fixup_as_type(widget, type):
         childdef.widget['class'] = 'GtkHButtonBox'
         childdef.internal_child = 'action_area'
         del childdef.widget['child_name']
+
+    if type == 'GtkOptionMenu':
+        if widget.has_prop('items'):
+            # FIXME: this needs continuing, we need a GtkMenu
+            # item, and a hacked up special case to do the
+            # set_menu on the optionmenu with it, then we need
+            # to pack these ( working ) MenuItems into it
+            if not widget['items'] == '':
+                menu = WidgetDef()
+                menu['class'] = 'GtkMenu'
+                menu['name'] = make_name ()
+                widget.add_child (menu, 'menu')
+                items = widget['items'].split ('\n')
+                for item in items:
+                    menu.add_child (new_label ('GtkMenuItem', \
+                                               item, widget['name']))
+            del widget['items']
+        if widget.has_prop('initial_choice'):
+            widget['history'] = widget['initial_choice']
+            del widget['initial_choice']
 
     if type == 'GtkCombo':
         childdef = widget.children[0]
@@ -497,13 +527,8 @@ def fixup_as_type(widget, type):
                 listitem['class'] = 'GtkListItem'
                 listitem['name'] = make_name()
                 list.add_child(listitem)
-                label = WidgetDef()
-                label['class'] = 'GtkLabel'
-                label['name'] = make_name()
-                label['xalign'] = '0.0'
-                label['label'] = item
-                listitem.add_child(label)
-                
+                listitem.add_child (new_label ('GtkLabel', item, ''))
+
     if type == 'GnomePropertyBox':
         childdef = widget.children[0]
         childdef.internal_child = 'notebook'
