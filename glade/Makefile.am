@@ -1,7 +1,13 @@
 
-INCLUDES = $(GTK_CFLAGS) $(XML_CFLAGS)
+if GNOME_SUPPORT
+THE_FLAGS = $(GNOME_INCLUDEDIR)
+THE_LIBS  = $(GNOME_LIBDIR) $(GNOMEUI_LIBS)
+else
+THE_FLAGS = $(GTK_CFLAGS)
+THE_LIBS  = $(GTK_LIBS)
+endif
 
-#CFLAGS += -Wall -Wpointer-arith -Wstrict-prototypes
+INCLUDES = $(THE_FLAGS) $(XML_CFLAGS)
 
 lib_LTLIBRARIES = libglade.la
 libglade_la_SOURCES = \
@@ -12,7 +18,8 @@ libglade_la_SOURCES = \
 	glade-styles.c \
 	glade-keys.c \
 	glade-private.h
-libglade_la_LIBADD = $(GTK_LIBS) $(XML_LIBS)
+
+libglade_la_LIBADD = $(THE_LIBS) $(XML_LIBS)
 
 gladeincludedir = $(includedir)/glade
 

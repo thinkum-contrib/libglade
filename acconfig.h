@@ -11,6 +11,9 @@
 /* extra debugging output */
 #undef DEBUG
 
+/* If true, include GNOME support */
+#undef ENABLE_GNOME
+
 @BOTTOM@
 
 #ifdef DEBUG

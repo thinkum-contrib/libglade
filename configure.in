@@ -33,6 +33,14 @@ XML_CFLAGS=`xml-config --cflags`
 AC_SUBST(XML_LIBS)
 AC_SUBST(XML_CFLAGS)
 
+have_gnome=false
+GNOME_INIT_HOOK([
+	have_gnome=true
+	AC_DEFINE(ENABLE_GNOME)
+])
+AM_CONDITIONAL(GNOME_SUPPORT, $have_gnome)
+GNOME_COMPILE_WARNINGS
+
 LIBGLADE_LIBDIR='-L${libdir}'
 LIBGLADE_INCLUDEDIR='-I${includedir}'
 LIBGLADE_LIBS="-lglade $XML_LIBS"

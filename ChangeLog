@@ -1,3 +1,18 @@
+1999-04-22  Miguel de Icaza  <miguel@nuclecu.unam.mx>
+
+	* test-libglade.c (main): Add GNOME support.  Use
+	gnome_init_with_popt_table here.  Use argument parsing the popt
+	way. 
+
+	* Makefile.am, glade/Makefile.am: Setup for dual GTK+/GNOME
+	compilation. 
+	
+	* glade/glade-gtk.c (button_stock_new): Add support for GNOME
+	stock labels.
+
+	* configure.in (have_gnome): Add autodetection for GNOME
+	components. 
+
 1999-04-22  James Henstridge  <james@daa.com.au>
 
 	* test-libglade.c (main): argument parsing code wasn't recognising

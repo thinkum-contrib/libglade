@@ -23,7 +23,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include "glade-build.h"
-#include <gtk/gtk.h>
+#ifdef ENABLE_GNOME
+#   include <gnome.h>
+#else
+#   include <gtk/gtk.h>
+#endif
 #include <stdio.h>
 #include <stdio.h>
 #include <tree.h>
@@ -504,11 +508,70 @@ static GtkWidget *text_new(GladeXML *xml, GNode *node) {
   return wid;
 }
 
+#ifdef ENABLE_GNOME
+
+#define ELEMENTS(x) ((sizeof (x)) / (sizeof (x [0])))
+typedef struct {
+	const char *extension;
+	const char *mapping;
+} gnome_map_t;
+
+/* Keep these sorted */
+static gnome_map_t gnome_stock_button_mapping [] = {
+	{ "APPLY",  GNOME_STOCK_BUTTON_APPLY  },
+	{ "CANCEL", GNOME_STOCK_BUTTON_CANCEL },
+	{ "CLOSE",  GNOME_STOCK_BUTTON_CLOSE  },
+	{ "DOWN",   GNOME_STOCK_BUTTON_DOWN   },
+	{ "FONT",   GNOME_STOCK_BUTTON_FONT   },
+	{ "HELP",   GNOME_STOCK_BUTTON_HELP   },
+	{ "NEXT",   GNOME_STOCK_BUTTON_NEXT   },
+	{ "NO",     GNOME_STOCK_BUTTON_NO     },
+	{ "OK",     GNOME_STOCK_BUTTON_OK     },
+	{ "PREV",   GNOME_STOCK_BUTTON_PREV   },
+	{ "UP",     GNOME_STOCK_BUTTON_UP     },
+	{ "YES",    GNOME_STOCK_BUTTON_YES    },
+};
+
+static int
+stock_compare (const void *a, const void *b)
+{
+	const gnome_map_t *ga = a;
+	const gnome_map_t *gb = b;
+
+	return strcmp (ga->extension, gb->extension);
+}
+
+static GtkWidget *button_stock_new (const char *stock_name)
+{
+	GtkWidget *w;
+	const len = strlen ("GNOME_STOCK_BUTTON_");
+	gnome_map_t *v;
+	gnome_map_t base;
+		
+	/* If an error happens, return this */
+	if (strncmp (stock_name, "GNOME_STOCK_BUTTON_", len) != 0)
+		return gtk_button_new_with_label (stock_name);
+
+	base.extension = stock_name + len;
+	v = bsearch (
+		&base,
+		gnome_stock_button_mapping,
+		ELEMENTS(gnome_stock_button_mapping),
+		sizeof (gnome_stock_button_mapping [0]),
+		stock_compare);
+	if (v)
+		return gnome_stock_button (v->mapping);
+	else
+		return gtk_button_new_with_label (stock_name);
+}
+#endif
+
 static GtkWidget *button_new(GladeXML *xml, GNode *node) {
   GtkWidget *button;
   xmlNodePtr info = ((xmlNodePtr)node->data)->childs;
   char *string = NULL;
-
+  char *stock = NULL;
+  
   /* This should really be a container, but GLADE is wierd in this respect.
    * If the label property is set for this widget, insert a label.
    * Otherwise, allow a widget to be packed */
@@ -516,15 +579,29 @@ static GtkWidget *button_new(GladeXML *xml, GNode *node) {
     char *content = xmlNodeGetContent(info);
     if (!strcmp(info->name, "label")) {
       if (string) g_free(string);
+      if (stock) g_free (stock);
       string = g_strdup(content);
+      stock = NULL;
+    } else if (!strcmp(info->name, "stock_button")) {
+      if (string) g_free(string);
+      if (stock) g_free(stock);
+      stock = g_strdup(content);
+      string = NULL;
     }
     if (content) free(content);
   }
   if (string != NULL) {
     button = gtk_button_new_with_label(string);
-    g_free(string);
-  } else
+  }
+#ifdef ENABLE_GNOME
+  else if (stock != NULL){
+    button = button_stock_new (stock);
+  }
+#endif
+  else
     button = gtk_button_new();
+  if (stock) g_free (stock);
+  if (string) g_free (string);
   return button;
 }
 
