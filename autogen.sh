@@ -98,12 +98,14 @@ fi
 $ACLOCAL $ACLOCAL_FLAGS
 
 libtoolize --force
+gtkdocize
 
-$AUTOMAKE -a
 autoconf
 
 # optionally feature autoheader
 autoheader
+
+$AUTOMAKE -a
 
 cd $ORIGDIR
 

@@ -34,6 +34,7 @@ clean-local:
 	rm -f intl/po2tbl.sed .memdump
 
 EXTRA_DIST = \
+  gtk-doc.make \
   glade-2.0.dtd \
   libglade.spec.in \
   libglade.spec \

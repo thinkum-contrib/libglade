@@ -9,9 +9,11 @@ Makefile.in
 html
 libglade-decl-list.txt
 libglade-decl.txt
+libglade-symbols.txt
 libglade.args
 libglade.hierarchy
 libglade.signals
-sgml
-libglade-dtd.sgml
+libglade.interfaces
+libglade.prerequisites
+xml
 
