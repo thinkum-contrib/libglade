@@ -278,7 +278,7 @@ menu_item_set_label (GladeXML *xml, GtkWidget *w,
     }
 
     if (GTK_IS_LABEL (child))
-	gtk_label_set_label (GTK_LABEL (child), value);
+	gtk_label_set_text (GTK_LABEL (child), value);
 }
 
 static void
@@ -313,7 +313,7 @@ menu_item_set_use_stock (GladeXML *xml, GtkWidget *w,
 	gtk_widget_show(child);
     }
 
-    if (GTK_IS_LABEL (child)) {
+    if (GTK_IS_LABEL (child) && BOOL(value)) {
 	const gchar *stock_id = gtk_label_get_label(GTK_LABEL(child));
 	GtkStockItem stock_item;
 
@@ -329,12 +329,11 @@ menu_item_set_use_stock (GladeXML *xml, GtkWidget *w,
 		gtk_widget_show(image);
 	    }
 
-	    gtk_label_set_label(GTK_LABEL(child), stock_item.label);
-	    gtk_label_set_use_underline(GTK_LABEL(child), BOOL (value));
+	    gtk_label_set_text(GTK_LABEL(child), stock_item.label);
+	    gtk_label_set_use_underline(GTK_LABEL(child), TRUE);
 	} else {
 	    g_warning("could not look up stock id '%s'", stock_id);
 	}
-	g_free(stock_id);
     }
 }
 

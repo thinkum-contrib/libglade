@@ -1,5 +1,9 @@
 2002-01-31  James Henstridge  <james@daa.com.au>
 
+	* glade/glade-gtk.c (menu_item_set_label): use set_text() instead
+	(menu_item_set_use_stock): only set the stock icon if the value is
+	true, and use gtk_label_set_text() to set the stock label text.
+
 	* libglade-convert.in (stock_menu_translate): new function for
 	translating stock menu item names to new names.
 	(fixup_as_type): translate menu items correctly.
