@@ -14,6 +14,9 @@
 /* If true, include GNOME support */
 #undef ENABLE_GNOME
 
+/* Whether we are using Bonobo */
+#undef ENABLE_BONOBO
+
 /* for gettext ... */
 #undef HAVE_LC_MESSAGES
 #undef HAVE_STPCPY

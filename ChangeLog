@@ -1,3 +1,16 @@
+2000-05-04  Michael Meeks  <michael@helixcode.com>
+
+	* glade/Makefile.am: update.
+
+	* glade/glade-gnome.c (gnome_control_new): move here.
+	(glade_gnome_init): update for bonobo case.
+
+	* glade/glade-bonobo.c: from here; kill this file.
+	
+	* configure.in (have_bonobo): add define for bonobo.
+
+	* acconfig.h: and here.
+
 2000-04-15  James Henstridge  <james@daa.com.au>
 
 	Notebook patch from Jon K Hellan:

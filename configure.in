@@ -51,7 +51,9 @@ AM_CONDITIONAL(GNOME_SUPPORT, $have_gnome)
 
 have_bonobo=false
 AM_PATH_BONOBO(0.10, have_bonobo=true)
-AM_CONDITIONAL(BONOBO_SUPPORT, $have_bonobo)
+if $have_bonobo; then
+	AC_DEFINE(ENABLE_BONOBO)
+fi
 
 GNOME_COMPILE_WARNINGS
 

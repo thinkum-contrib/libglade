@@ -25,23 +25,15 @@ the_headers =		\
 	glade-build.h	\
 	glade-widget-tree.h
 
-lib_LTLIBRARIES      = libglade.la $(build_glade_gnome) $(build_glade_bonobo)
+lib_LTLIBRARIES      = libglade.la $(build_glade_gnome)
 
 if GNOME_SUPPORT
 build_glade_gnome = libglade-gnome.la
 endif
 
-if BONOBO_SUPPORT
-build_glade_bonobo = libglade-bonobo.la
-endif
-
 libglade_gnome_la_SOURCES  = glade-gnome.c glade-build.h glade-xml.h
-libglade_gnome_la_LIBADD   = $(GNOME_LIBDIR) $(GNOMEUI_LIBS) $(XML_LIBS)
+libglade_gnome_la_LIBADD   = $(GNOME_LIBDIR) $(GNOMEUI_LIBS) $(XML_LIBS) $(BONOBO_LIBS)
 libglade_gnome_la_LDFLAGS  = -version-info $(LTVERSION)
-
-libglade_bonobo_la_SOURCES  = glade-bonobo.c glade-build.h glade-xml.h
-libglade_bonobo_la_LIBADD   = $(GNOME_LIBDIR) $(GNOMEUI_LIBS) $(XML_LIBS) $(BONOBO_LIBS)
-libglade_bonobo_la_LDFLAGS  = -version-info $(LTVERSION)
 
 libglade_la_SOURCES  = $(the_sources)
 libglade_la_LIBADD   = $(GTK_LIBS) $(XML_LIBS)
