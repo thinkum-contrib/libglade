@@ -1,3 +1,8 @@
+1998-11-17  James Henstridge  <james@daa.com.au>
+	* glade/glade-styles.c: changed to recognise new style tags.  Basically
+	occurences of "fg:" have been changed to "fg-", and similar for other
+	parts of the style code.
+
 1998-11-05  James Henstridge  <james@daa.com.au>
 	* autogen.sh: added a simple autogen shell script to help with CVS
 	builds.

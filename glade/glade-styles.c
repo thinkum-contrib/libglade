@@ -43,7 +43,7 @@ static void fill_style(xmlNodePtr style_node, char *style_name) {
       g_string_append(str, "  font = \"");
       g_string_append(str, content);
       g_string_append(str, "\"\n");
-    } else if (!strncmp(node->name, "fg:", 3)) {
+    } else if (!strncmp(node->name, "fg-", 3)) {
       g_string_append(str, "  fg[");
       g_string_append(str, node->name + 3);
       sscanf(content, "%d,%d,%d",&r, &g, &b);
@@ -52,7 +52,7 @@ static void fill_style(xmlNodePtr style_node, char *style_name) {
 		 CLAMP(g, 0, 255)/255.0,
 		 CLAMP(b, 0, 255)/255.0);
       g_string_append(str, buf);
-    } else if (!strncmp(node->name, "bg:", 3)) {
+    } else if (!strncmp(node->name, "bg-", 3)) {
       g_string_append(str, "  bg[");
       g_string_append(str, node->name + 3);
       sscanf(content, "%d,%d,%d",&r, &g, &b);
@@ -61,7 +61,7 @@ static void fill_style(xmlNodePtr style_node, char *style_name) {
 		 CLAMP(g, 0, 255)/255.0,
 		 CLAMP(b, 0, 255)/255.0);
       g_string_append(str, buf);
-    } else if (!strncmp(node->name, "text:", 5)) {
+    } else if (!strncmp(node->name, "text-", 5)) {
       g_string_append(str, "  text[");
       g_string_append(str, node->name + 5);
       sscanf(content, "%d,%d,%d",&r, &g, &b);
@@ -70,7 +70,7 @@ static void fill_style(xmlNodePtr style_node, char *style_name) {
 		 CLAMP(g, 0, 255)/255.0,
 		 CLAMP(b, 0, 255)/255.0);
       g_string_append(str, buf);
-    } else if (!strncmp(node->name, "base:", 5)) {
+    } else if (!strncmp(node->name, "base-", 5)) {
       g_string_append(str, "  base[");
       g_string_append(str, node->name + 5);
       sscanf(content, "%d,%d,%d",&r, &g, &b);
@@ -79,7 +79,7 @@ static void fill_style(xmlNodePtr style_node, char *style_name) {
 		 CLAMP(g, 0, 255)/255.0,
 		 CLAMP(b, 0, 255)/255.0);
       g_string_append(str, buf);
-    } else if (!strncmp(node->name, "bg_pixmap:", 10)) {
+    } else if (!strncmp(node->name, "bg_pixmap-", 10)) {
       g_string_append(str, "  bg_pixmap[");
       g_string_append(str, node->name + 10);
       g_string_append(str, "] = \"");
