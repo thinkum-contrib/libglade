@@ -1,5 +1,8 @@
 1999-06-06  Miguel de Icaza  <miguel@gnu.org>
 
+	* glade/glade-xml.c (glade_xml_destroy): Ok, another fix to my
+	previous fix: there was no actual memory leak.
+
 	* glade/glade-gtk.c (radiobutton_new): Small bug fix to my
 	previous change: Glade might output radio buttons without groups. 
 

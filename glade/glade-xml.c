@@ -494,10 +494,7 @@ glade_xml_destroy(GtkObject *object)
 	if (self->filename)
 		g_free(self->filename);
 
-	g_hash_table_foreach (priv->name_hash, free_name, NULL);
 	g_hash_table_destroy(priv->name_hash);
-
-	g_hash_table_foreach (priv->longname_hash, free_name, NULL);
 	g_hash_table_destroy(priv->longname_hash);
 
 	g_hash_table_foreach(priv->signals, (GHFunc)glade_xml_destroy_signals, NULL);
