@@ -1,4 +1,8 @@
 1998-11-05  James Henstridge  <james@daa.com.au>
+	* autogen.sh: added a simple autogen shell script to help with CVS
+	builds.
+
+1998-11-05  James Henstridge  <james@daa.com.au>
 	* everything: added copyright messages to the code.
 
 1998-11-02  James Henstridge  <james@daa.com.au>
