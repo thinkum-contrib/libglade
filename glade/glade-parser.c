@@ -1092,6 +1092,7 @@ glade_parser_parse_file(const gchar *file, const gchar *domain)
 	state.domain = domain;
     else
 	state.domain = textdomain(NULL);
+    bind_textdomain_codeset (state.domain, "UTF-8");
 
     if (xmlSAXUserParseFile(&glade_parser, &state, file) < 0) {
 	g_warning("document not well formed!");
@@ -1130,6 +1131,7 @@ glade_parser_parse_buffer(const gchar *buffer, gint len, const gchar *domain)
 	state.domain = domain;
     else
 	state.domain = textdomain(NULL);
+    bind_textdomain_codeset (state.domain, "UTF-8");
 
     if (xmlSAXUserParseMemory(&glade_parser, &state, buffer, len) < 0) {
 	g_warning("document not well formed!");
