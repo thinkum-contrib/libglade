@@ -23,7 +23,7 @@
   type CDATA #IMPLIED
   translatable (yes|no) 'no' >
 
-<!ELEMENT accessibility (property*) >
+<!ELEMENT accessibility (property+) >
 
 <!ELEMENT signal EMPTY >
 <!ATTLIST signal
@@ -38,9 +38,11 @@
   modifiers CDATA #REQUIRED
   signal CDATA #REQUIRED >
 
-<!ELEMENT child (property*, widget) >
+<!ELEMENT child (widget, packing?) >
 <!-- composite children should not have any properties set on them.
      (Composite children are things like the scrollbars in a
      GtkScrolledWindow, or the vbox in a GtkDialog). -->
 <!ATTLIST child
   internal-child CDATA #IMPLIED >
+
+<!ELEMENT packing (property+) >

@@ -45,8 +45,10 @@ typedef enum {
     PARSER_WIDGET_ACCEL,
     PARSER_WIDGET_AFTER_ACCEL,
     PARSER_WIDGET_CHILD,
-    PARSER_WIDGET_CHILD_PROPERTY,
     PARSER_WIDGET_CHILD_AFTER_WIDGET,
+    PARSER_WIDGET_CHILD_PACKING,
+    PARSER_WIDGET_CHILD_PACKING_PROPERTY,
+    PARSER_WIDGET_CHILD_AFTER_PACKING,
     PARSER_FINISH,
     PARSER_UNKNOWN
 } ParserState;
@@ -66,8 +68,10 @@ static gchar *state_names[] = {
     "WIDGET_ACCEL",
     "WIDGET_AFTER_ACCEL",
     "WIDGET_CHILD",
-    "WIDGET_CHILD_PROPERTY",
     "WIDGET_CHILD_AFTER_WIDGET",
+    "WIDGET_CHILD_PACKING",
+    "WIDGET_CHILD_PACKING_PROPERTY",
+    "WIDGET_CHILD_AFTER_PACKING",
     "FINISH",
     "UNKNOWN"
 };
@@ -570,25 +574,9 @@ glade_parser_start_element(GladeParseState *state,
 	}
 	break;
     case PARSER_WIDGET_CHILD:
-	if (!strcmp(name, "property")) {
-	    if (state->prop_type != PROP_NONE &&
-		state->prop_type != PROP_CHILD)
-		g_warning("non child properties defined here (oh no!)");
-	    state->prop_type = PROP_CHILD;
-	    for (i = 0; attrs && attrs[i] != NULL; i += 2) {
-		if (!strcmp(attrs[i], "name"))
-		    state->prop_name = alloc_string(state->interface,
-						    attrs[i+1]);
-		else
-		    g_warning("unknown attribute `%s' for <property>.",
-			      attrs[i]);
-	    }
-	    state->state = PARSER_WIDGET_CHILD_PROPERTY;
-	} else if (!strcmp(name, "widget")) {
+	if (!strcmp(name, "widget")) {
 	    GladeWidgetInfo *parent = state->widget;
 	    GladeChildInfo *info = &parent->children[parent->n_children-1];
-
-	    flush_properties(state);
 
 	    if (info->child)
 		g_warning("widget pointer already set!! not good");
@@ -612,14 +600,46 @@ glade_parser_start_element(GladeParseState *state,
 	    state->unknown_depth++;
 	}
 	break;
-    case PARSER_WIDGET_CHILD_PROPERTY:
+    case PARSER_WIDGET_CHILD_AFTER_WIDGET:
+	if (!strcmp(name, "packing")) {
+	    state->state = PARSER_WIDGET_CHILD_PACKING;
+	} else {
+	    g_warning("Unexpected element <%s> inside <child>.", name);
+	    state->prev_state = state->state;
+	    state->state = PARSER_UNKNOWN;
+	    state->unknown_depth++;
+	}
+	break;
+    case PARSER_WIDGET_CHILD_PACKING:
+	if (!strcmp(name, "property")) {
+	    if (state->prop_type != PROP_NONE &&
+		state->prop_type != PROP_CHILD)
+		g_warning("non child properties defined here (oh no!)");
+	    state->prop_type = PROP_CHILD;
+	    for (i = 0; attrs && attrs[i] != NULL; i += 2) {
+		if (!strcmp(attrs[i], "name"))
+		    state->prop_name = alloc_string(state->interface,
+						    attrs[i+1]);
+		else
+		    g_warning("unknown attribute `%s' for <property>.",
+			      attrs[i]);
+	    }
+	    state->state = PARSER_WIDGET_CHILD_PACKING_PROPERTY;
+	} else {
+	    g_warning("Unexpected element <%s> inside <child>.", name);
+	    state->prev_state = state->state;
+	    state->state = PARSER_UNKNOWN;
+	    state->unknown_depth++;
+	}
+	break;
+    case PARSER_WIDGET_CHILD_PACKING_PROPERTY:
 	g_warning("<property> element should be empty.  Found <%s>.", name);
 	state->prev_state = state->state;
 	state->state = PARSER_UNKNOWN;
 	state->unknown_depth++;
 	break;
-    case PARSER_WIDGET_CHILD_AFTER_WIDGET:
-	g_warning("<child> should have no elements after <widget>.  Found <%s>.", name);
+    case PARSER_WIDGET_CHILD_AFTER_PACKING:
+	g_warning("<child> should have no elements after <packing>.  Found <%s>.", name);
 	state->prev_state = state->state;
 	state->state = PARSER_UNKNOWN;
 	state->unknown_depth++;
@@ -725,7 +745,18 @@ glade_parser_end_element(GladeParseState *state, const xmlChar *name)
 	state->widget->n_children--;
 	state->state = PARSER_WIDGET_AFTER_ACCEL;
 	break;
-    case PARSER_WIDGET_CHILD_PROPERTY:
+    case PARSER_WIDGET_CHILD_AFTER_WIDGET:
+	if (strcmp(name, "child") != 0)
+	    g_warning("should find </child> here.  Found </%s>", name);
+	state->state = PARSER_WIDGET_AFTER_ACCEL;
+	break;
+    case PARSER_WIDGET_CHILD_PACKING:
+	if (strcmp(name, "packing") != 0)
+	    g_warning("should find </packing> here.  Found </%s>", name);
+	state->state = PARSER_WIDGET_CHILD_AFTER_PACKING;
+	flush_properties(state); /* flush the properties. */
+	break;
+    case PARSER_WIDGET_CHILD_PACKING_PROPERTY:
 	if (strcmp(name, "property") != 0)
 	    g_warning("should find </property> here.  Found </%s>", name);
 	if (!state->props)
@@ -734,9 +765,9 @@ glade_parser_end_element(GladeParseState *state, const xmlChar *name)
 	prop.value = alloc_string(state->interface, state->content->str);
 	g_array_append_val(state->props, prop);
 	state->prop_name = NULL;
-	state->state = PARSER_WIDGET_CHILD;
+	state->state = PARSER_WIDGET_CHILD_PACKING;
 	break;
-    case PARSER_WIDGET_CHILD_AFTER_WIDGET:
+    case PARSER_WIDGET_CHILD_AFTER_PACKING:
 	if (strcmp(name, "child") != 0)
 	    g_warning("should find </child> here.  Found </%s>", name);
 	state->state = PARSER_WIDGET_AFTER_ACCEL;
@@ -760,7 +791,7 @@ glade_parser_characters(GladeParseState *state, const xmlChar *chars, int len)
     switch (state->state) {
     case PARSER_WIDGET_PROPERTY:
     case PARSER_WIDGET_ATK_PROPERTY:
-    case PARSER_WIDGET_CHILD_PROPERTY:
+    case PARSER_WIDGET_CHILD_PACKING_PROPERTY:
 	for (i = 0; i < len; i++)
 	    g_string_append_c(state->content, chars[i]);
 	break;

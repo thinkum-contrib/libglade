@@ -1,3 +1,18 @@
+2001-08-15  James Henstridge  <james@daa.com.au>
+
+	* examples/first.glade: add another example, based on one Chema
+	sent me.
+
+	* examples/simple.glade: update example file.
+
+	* glade-2.0.dtd: update DTD to match.
+
+	* glade/glade-parser.c (glade_parser_start_element): handle child
+	packing properties in a <packing> element rather than directly in
+	<child>.
+	(glade_parser_end_element): same here.
+	(glade_parser_characters): same here.
+
 2001-08-14  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-gtk.c (dialog_find_internal_child): handle vbox and

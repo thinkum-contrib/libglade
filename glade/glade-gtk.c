@@ -49,7 +49,7 @@ menuitem_build_children(GladeXML *self, GtkWidget *w,
 	GtkWidget *child = glade_xml_build_widget(self, childinfo, longname);
 
 	if (GTK_IS_MENU(child))
-	    gtk_menu_item_set_submenu(GTK_MENU_ITEM(w), GTK_MENU(child));
+	    gtk_menu_item_set_submenu(GTK_MENU_ITEM(w), child);
 	else
 	    gtk_container_add(GTK_CONTAINER(w), child);
     }
@@ -60,13 +60,62 @@ static GtkWidget *
 dialog_find_internal_child(GladeXML *xml, GtkWidget *parent,
 			   const gchar *childname)
 {
-    GtkDialog *dialog = GTK_DIALOG(parent);
-
     if (!strcmp(childname, "vbox"))
-	return dialog->vbox;
+	return GTK_DIALOG(parent)->vbox;
     if (!strcmp(childname, "action_area"))
-	return dialog->action_area;
+	return GTK_DIALOG(parent)->action_area;
 
+    return NULL;
+}
+
+static GtkWidget *
+filesel_find_internal_child(GladeXML *xml, GtkWidget *parent,
+			    const gchar *childname)
+{
+    if (!strcmp(childname, "vbox"))
+	return GTK_DIALOG(parent)->vbox;
+    if (!strcmp(childname, "action_area"))
+	return GTK_DIALOG(parent)->action_area;
+    if (!strcmp(childname, "ok_button"))
+	return GTK_FILE_SELECTION(parent)->ok_button;
+    if (!strcmp(childname, "cancel_button"))
+	return GTK_FILE_SELECTION(parent)->cancel_button;
+    if (!strcmp(childname, "help_button"))
+	return GTK_FILE_SELECTION(parent)->help_button;
+    return NULL;
+}
+
+static GtkWidget *
+colorseldlg_find_internal_child(GladeXML *xml, GtkWidget *parent,
+				const gchar *childname)
+{
+    if (!strcmp(childname, "vbox"))
+	return GTK_DIALOG(parent)->vbox;
+    if (!strcmp(childname, "action_area"))
+	return GTK_DIALOG(parent)->action_area;
+    if (!strcmp(childname, "ok_button"))
+	return GTK_COLOR_SELECTION_DIALOG(parent)->ok_button;
+    if (!strcmp(childname, "cancel_button"))
+	return GTK_COLOR_SELECTION_DIALOG(parent)->cancel_button;
+    if (!strcmp(childname, "help_button"))
+	return GTK_COLOR_SELECTION_DIALOG(parent)->help_button;
+    return NULL;
+}
+
+static GtkWidget *
+fontseldlg_find_internal_child(GladeXML *xml, GtkWidget *parent,
+			       const gchar *childname)
+{
+    if (!strcmp(childname, "vbox"))
+	return GTK_DIALOG(parent)->vbox;
+    if (!strcmp(childname, "action_area"))
+	return GTK_DIALOG(parent)->action_area;
+    if (!strcmp(childname, "ok_button"))
+	return GTK_FONT_SELECTION_DIALOG(parent)->ok_button;
+    if (!strcmp(childname, "cancel_button"))
+	return GTK_FONT_SELECTION_DIALOG(parent)->cancel_button;
+    if (!strcmp(childname, "apply_button"))
+	return GTK_FONT_SELECTION_DIALOG(parent)->apply_button;
     return NULL;
 }
 
@@ -92,7 +141,7 @@ static GladeWidgetBuildData widget_data[] = {
     { "GtkColorSelection", glade_standard_build_widget, NULL,
       gtk_color_selection_get_type },
     { "GtkColorSelectionDialog", window_new, glade_standard_build_children,
-      gtk_color_selection_dialog_get_type },
+      gtk_color_selection_dialog_get_type, 0, colorseldlg_find_internal_child },
     { "GtkCombo", glade_standard_build_widget, glade_standard_build_children,
       gtk_combo_get_type },
     { "GtkCTree", glade_standard_build_widget, glade_standard_build_children,
@@ -108,13 +157,13 @@ static GladeWidgetBuildData widget_data[] = {
     { "GtkEventBox", glade_standard_build_widget, glade_standard_build_children,
       gtk_event_box_get_type },
     { "GtkFileSelection", window_new, glade_standard_build_children,
-      gtk_file_selection_get_type },
+      gtk_file_selection_get_type, 0, filesel_find_internal_child },
     { "GtkFixed", glade_standard_build_widget, glade_standard_build_children,
       gtk_fixed_get_type },
     { "GtkFontSelection", glade_standard_build_widget, NULL,
       gtk_font_selection_get_type },
     { "GtkFontSelectionDialog", window_new, glade_standard_build_children,
-      gtk_font_selection_dialog_get_type },
+      gtk_font_selection_dialog_get_type, 0, fontseldlg_find_internal_child },
     { "GtkFrame", glade_standard_build_widget, glade_standard_build_children,
       gtk_frame_get_type },
     { "GtkGammaCurve", glade_standard_build_widget, NULL,
