@@ -4,7 +4,10 @@
 <FILE>glade</FILE>
 <TITLE>Libglade Initialisation</TITLE>
 glade_init
+glade_gnome_init
 glade_load_module
+<SUBSECTION Private>
+glade_init_gnome_widgets
 </SECTION>
 
 <SECTION>
@@ -22,6 +25,7 @@ glade_get_widget_name
 glade_get_widget_long_name
 glade_get_widget_tree
 <SUBSECTION Private>
+GladeXMLPrivate
 GladeSignalData
 <SUBSECTION Standard>
 glade_xml_get_type

@@ -1,8 +1,8 @@
 if GNOME_SUPPORT
 THE_FLAGS = $(GNOME_INCLUDEDIR)
-THE_LIBS  = $(GNOME_LIBDIR) $(GNOMEUI_LIBS)
+THE_LIBS  = glade/libglade-gnome.la glade/libglade.la $(GNOME_LIBDIR) $(GNOMEUI_LIBS)
 else
-THE_FLAGS = $(GTK_CFLAGS)
+THE_FLAGS = glade/libglade.la $(GTK_CFLAGS)
 THE_LIBS  = $(GTK_LIBS)
 endif
 
@@ -21,7 +21,7 @@ EXTRA_DIST =			\
 if LIBGLADE_FULLDIST
 bin_SCRIPTS = libglade-config
 noinst_PROGRAMS = test-libglade
-test_libglade_LDADD = glade/libglade.la $(THE_LIBS) $(XML_LIBS)
+test_libglade_LDADD = $(THE_LIBS) $(XML_LIBS)
 extra_dirs = macros doc
 m4datadir = $(datadir)/aclocal
 m4data_DATA = libglade.m4

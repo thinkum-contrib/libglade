@@ -21,7 +21,10 @@
 
 /* must be called before use of libglade */
 void glade_init(void);
-void glade_init_gnome_widgets(void);
+
+/* this is defined in libglade-gnome -- it should be used instead of
+ * glade_init() if you want to use the GNOME widget set with libglade */
+void glade_gnome_init(void);
 
 /* Load the named dynamic module.  Basically it is loaded, and the
  * glade_init_module function is called.  This function should

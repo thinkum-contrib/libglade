@@ -1,5 +1,18 @@
 1999-06-10  James Henstridge  <james@daa.com.au>
 
+	* test-libglade.c (main): updated to call glade_gnome_init() instead
+	of glade_init() if GNOME support is enabled.
+
+	* libglade.m4 (module_args): modified macro so that you can pass
+	`gnome' as the third argument to get GNOME support.
+
+	* libglade-config.in: you can now pass it the arguments gtk and gnome
+	to indicate which widget sets you wish to use.  If you specify
+	GNOME, the --libs output will include -lglade-gnome.
+
+	* glade/Makefile.am: create a separate libglade-gnome library if
+	GNOME support is enabled.
+	
 	* glade/glade-gnome.c: implemented the GnomeApp, GnomeAppBar,
 	GnomeDock, GnomeDockItem and GtkPixmapItem (sort of).  Just about
 	everything displays, except that the GNOMEUIINFO stuff, which is

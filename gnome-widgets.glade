@@ -438,7 +438,7 @@
       <position>0</position>
       <offset>0</offset>
       <locked>False</locked>
-      <exclusive>True</exclusive>
+      <exclusive>False</exclusive>
       <never_floating>False</never_floating>
       <never_vertical>False</never_vertical>
       <never_horizontal>False</never_horizontal>
