@@ -1,3 +1,7 @@
+2001-12-07  jacob berkman  <jacob@ximian.com>
+
+	* libglade-convert.in (renamed_props): added some for Gnome*Entry
+
 2001-12-06  jacob berkman  <jacob@ximian.com>
 
 	* glade/glade-xml.c (glade_xml_set_common_params): fix tyop
