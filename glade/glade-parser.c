@@ -270,7 +270,8 @@ handle_atk_action(GladeParseState *state, const xmlChar **attrs)
 	if (!strcmp(attrs[i], "action_name"))
 	    info.action_name = alloc_string(state->interface, attrs[i+1]);
 	else if (!strcmp(attrs[i], "description"))
-	    info.description = alloc_string(state->interface, attrs[i+1]);
+	    info.description = alloc_string(state->interface,
+				    dgettext(state->domain, attrs[i+1]));
 	else
 	    g_warning("unknown attribute `%s' for <action>.", attrs[i]);
     }

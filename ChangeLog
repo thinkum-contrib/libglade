@@ -1,3 +1,14 @@
+2004-11-11  James Henstridge  <james@jamesh.id.au>
+
+	* glade/glade-parser.c (handle_atk_action): translate the action
+	description.  Fixes bug #154804.
+
+	* glade-2.0.dtd (property): add comments attribute.
+	(atkproperty): add translatable, context and
+	comments attributes.
+	(atkaction): add note that description is translated.  Patch from
+	Damon Chaplin on bug #154806.
+
 2004-11-09  James Henstridge  <james@jamesh.id.au>
 
 	* glade/glade-gtk.c (toolbar_build_children): fix a few errors in
