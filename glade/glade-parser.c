@@ -119,8 +119,10 @@ create_widget_info(GladeInterface *interface, const xmlChar **attrs)
 	else if (!strcmp(attrs[i], "id"))
 	    info->name = alloc_string(interface, attrs[i+1]);
 	else
-	    g_warning("unknowne attribute `%s' for <widget>.", attrs[i]);
+	    g_warning("unknown attribute `%s' for <widget>.", attrs[i]);
     }
+    if (info->class == NULL || info->name == NULL)
+	g_warning("<widget> element missing required attributes!");
     return info;
 }
 
@@ -339,7 +341,10 @@ glade_parser_start_document(GladeParseState *state)
     state->content = g_string_sized_new(128);
 
     state->interface = g_new0(GladeInterface, 1);
-    state->interface->strings = g_hash_table_new(g_str_hash, g_str_equal);
+    state->interface->strings = g_hash_table_new_full(g_str_hash,
+						      g_str_equal,
+						      (GDestroyNotify)g_free,
+						      NULL);
     state->widget = NULL;
 
     state->prop_type = PROP_NONE;
@@ -455,7 +460,7 @@ glade_parser_start_element(GladeParseState *state,
 	} else if (!strcmp(name, "accessibility")) {
 	    flush_properties(state);
 
-	    if (attrs[0] != NULL)
+	    if (attrs != NULL && attrs[0] != NULL)
 		g_warning("<accessibility> element should have no attributes");
 	    state->state = PARSER_WIDGET_ATK;
 	} else if (!strcmp(name, "signal")) {
@@ -826,6 +831,47 @@ static xmlSAXHandler glade_parser = {
     (fatalErrorSAXFunc)glade_parser_fatal_error, /* fatalError */
 };
 
+static void
+widget_info_free(GladeWidgetInfo *info)
+{
+    gint i;
+
+    g_return_if_fail(info != NULL);
+
+    g_free(info->properties);
+    g_free(info->atk_props);
+    g_free(info->signals);
+    g_free(info->accels);
+
+    for (i = 0; i < info->n_children; i++) {
+	g_free(info->children[i].properties);
+	widget_info_free(info->children[i].child);
+    }
+    g_free(info->children);
+    g_free(info);
+}
+
+void
+glade_interface_destroy(GladeInterface *interface)
+{
+    gint i;
+
+    g_return_if_fail(interface != NULL);
+
+    /* free requirements */
+    g_free(interface->requires);
+
+    for (i = 0; i < interface->n_toplevels; i++)
+	widget_info_free(interface->toplevels[i]);
+    g_free(interface->toplevels);
+
+    /* free the strings hash table.  The destroy notify will take care
+     * of the strings. */
+    g_hash_table_destroy(interface->strings);
+
+    g_free(interface);
+}
+
 GladeInterface *
 glade_parser_parse_file(const gchar *file)
 {
@@ -834,7 +880,8 @@ glade_parser_parse_file(const gchar *file)
     state.interface = NULL;
     if (xmlSAXUserParseFile(&glade_parser, &state, file) < 0) {
 	g_warning("document not well formed!");
-	return NULL; /* fix leak here */
+	glade_interface_destroy(state.interface);
+	return NULL;
     }
     if (state.state != PARSER_FINISH) {
 	g_warning("did not finish in PARSER_FINISH state!");
@@ -842,13 +889,192 @@ glade_parser_parse_file(const gchar *file)
     return state.interface;
 }
 
+GladeInterface *
+glade_parser_parse_buffer(const gchar *buffer, gint size)
+{
+    GladeParseState state = { 0 };
+
+    state.interface = NULL;
+    if (xmlSAXUserParseMemory(&glade_parser, &state, buffer, size) < 0) {
+	g_warning("document not well formed!");
+	glade_interface_destroy(state.interface);
+	return NULL;
+    }
+    if (state.state != PARSER_FINISH) {
+	g_warning("did not finish in PARSER_FINISH state!");
+    }
+    return state.interface;
+}
+
+static void
+dump_widget(xmlNode *parent, GladeWidgetInfo *info, gint indent)
+{
+    xmlNode *widget = xmlNewNode(NULL, "widget");
+    gint i, j;
+
+    xmlSetProp(widget, "class", info->class);
+    xmlSetProp(widget, "id", info->name);
+    xmlAddChild(parent, widget);
+    xmlNodeAddContent(widget, "\n");
+
+    for (i = 0; i < info->n_properties; i++) { 
+	xmlNode *node;
+
+	for (j = 0; j < indent + 1; j++)
+	    xmlNodeAddContent(widget, "  ");
+	node = xmlNewNode(NULL, "property");
+	xmlSetProp(node, "name", info->properties[i].name);
+	xmlNodeSetContent(node, info->properties[i].value);
+	xmlAddChild(widget, node);
+	xmlNodeAddContent(widget, "\n");
+    }
+
+    if (info->n_atk_props != 0) {
+	xmlNode *atk;
+
+	for (j = 0; j < indent + 1; j++)
+	    xmlNodeAddContent(widget, "  ");
+	atk = xmlNewNode(NULL, "accessibility");
+	xmlAddChild(widget, atk);
+	xmlNodeAddContent(widget, "\n");
+	xmlNodeAddContent(atk, "\n");
+
+	for (i = 0; i < info->n_atk_props; i++) {
+	    xmlNode *node;
+
+	    for (j = 0; j < indent + 2; j++)
+		xmlNodeAddContent(atk, "  ");
+	    node = xmlNewNode(NULL, "property");
+	    xmlSetProp(node, "name", info->atk_props[i].name);
+	    xmlNodeSetContent(node, info->atk_props[i].value);
+	    xmlAddChild(atk, node);
+	    xmlNodeAddContent(atk, "\n");
+	}
+	for (j = 0; j < indent + 1; j++)
+	    xmlNodeAddContent(atk, "  ");
+    }
+
+    for (i = 0; i < info->n_signals; i++) {
+	xmlNode *node;
+
+	for (j = 0; j < indent + 1; j++)
+	    xmlNodeAddContent(widget, "  ");
+
+	node = xmlNewNode(NULL, "signal");
+	xmlSetProp(node, "name", info->signals[i].name);
+	xmlSetProp(node, "handler", info->signals[i].handler);
+	if (info->signals[i].after)
+	    xmlSetProp(node, "after", "yes");
+	if (info->signals[i].object)
+	    xmlSetProp(node, "object", info->signals[i].object);
+	xmlAddChild(widget, node);
+	xmlNodeAddContent(widget, "\n");
+    }
+
+    for (i = 0; i < info->n_accels; i++) {
+	xmlNode *node;
+
+	for (j = 0; j < indent + 1; j++)
+	    xmlNodeAddContent(widget, "  ");
+
+	node = xmlNewNode(NULL, "accelerator");
+	xmlSetProp(node, "key", gdk_keyval_name(info->accels[i].key));
+	xmlSetProp(node, "modifier", "something"/*info->accels[i].modifiers*/);
+	xmlSetProp(node, "signal", info->accels[i].signal);
+	xmlAddChild(widget, node);
+	xmlNodeAddContent(widget, "\n");
+    }
+
+    for (i = 0; i < info->n_children; i++) {
+	xmlNode *child;
+	GladeChildInfo *childinfo = &info->children[i];
+	gint k;
+
+	for (j = 0; j < indent + 1; j++)
+	    xmlNodeAddContent(widget, "  ");
+
+	child = xmlNewNode(NULL, "child");
+	if (childinfo->composite_child)
+	    xmlSetProp(child, "composite-child", "yes");
+	xmlAddChild(widget, child);
+	xmlNodeAddContent(widget, "\n");
+	xmlNodeAddContent(child, "\n");
+
+	for (k = 0; k < childinfo->n_properties; k++) { 
+	    xmlNode *node;
+
+	    for (j = 0; j < indent + 2; j++)
+		xmlNodeAddContent(child, "  ");
+	    node = xmlNewNode(NULL, "property");
+	    xmlSetProp(node, "name", childinfo->properties[i].name);
+	    xmlNodeSetContent(node, childinfo->properties[i].value);
+	    xmlAddChild(child, node);
+	    xmlNodeAddContent(child, "\n");
+	}
+
+	for (j = 0; j < indent + 2; j++)
+	    xmlNodeAddContent(child, "  ");
+	dump_widget(child, childinfo->child, indent + 2);
+	xmlNodeAddContent(child, "\n");
+
+	for (j = 0; j < indent + 1; j++)
+	    xmlNodeAddContent(child, "  ");
+    }
+
+    for (j = 0; j < indent; j++)
+	xmlNodeAddContent(widget, "  ");
+}
+
+void
+glade_interface_dump(GladeInterface *interface, const gchar *filename)
+{
+    xmlDoc *doc;
+    xmlNode *root;
+    gint i;
+
+    doc = xmlNewDoc("1.0");
+    doc->standalone = FALSE;
+    xmlCreateIntSubset(doc, "glade-interface",
+		       NULL, "glade-2.0.dtd");
+    root = xmlNewNode(NULL, "glade-interface");
+    xmlDocSetRootElement(doc, root);
+
+    xmlNodeAddContent(root, "\n");
+
+    for (i = 0; i < interface->n_requires; i++) {
+	xmlNode *node = xmlNewNode(NULL, "requires");
+
+	xmlSetProp(node, "lib", interface->requires[i]);
+
+	xmlNodeAddContent(root, "  ");
+	xmlAddChild(root, node);
+	xmlNodeAddContent(root, "\n");
+    }
+
+    for (i = 0; i < interface->n_toplevels; i++) {
+	xmlNodeAddContent(root, "  ");
+	dump_widget(root, interface->toplevels[i], 1);
+	xmlNodeAddContent(root, "\n");
+    }
+
+    /* output */
+    
+    xmlSaveFileEnc(filename, doc, "UTF-8");
+    xmlFreeDoc(doc);
+}
+
 #if 0
 int
 main(int argc, char **argv) {
     gtk_init(&argc, &argv);
-    if (argc > 1)
-	g_message("output: %p", glade_parser_parse_file(argv[1]));
-    else
+    if (argc > 1) {
+	GladeInterface *interface = glade_parser_parse_file(argv[1]);
+	g_message("output: %p", interface);
+	if (interface) {
+	    glade_interface_dump(interface, "/dev/stdout");
+	    glade_interface_destroy(interface);
+	}
+    } else
 	g_message("need filename");
     return 0;
 }

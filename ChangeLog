@@ -1,3 +1,11 @@
+2001-05-17  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-parser.h (glade_interface_dump): add extra prototype.
+
+	* glade/glade-parser.c: bug fixes to parser.
+	(glade_interface_dump): new function to dump the contents of the
+	interface.  Used for debugging purposes.
+
 2001-05-16  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-parser.[ch]: first checkin of parser for new glade
