@@ -129,7 +129,7 @@ class WidgetDef:
                     if name in translatable_properties:
                         attrs += ' translatable="yes"'
                     if name[:3] == 'cxx':
-                        attrs += ' agent="cxx"'
+                        attrs += ' agent="glademm"'
                     print '%s    <property name="%s"%s>%s</property>' % \
                           (indent, name, attrs, self.properties[name])
                 print '%s  </packing>' % indent
@@ -152,7 +152,7 @@ class WidgetDef:
             if translatable:
                 attrs += ' translatable="yes"'
             if name[:3] == 'cxx':
-                attrs += ' agent="cxx"'
+                attrs += ' agent="glademm"'
             print '%s  <property name="%s"%s>%s</property>' % \
                   (indent, name, attrs, self.properties[name])
             want_newline = 1
