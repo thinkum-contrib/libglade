@@ -3,7 +3,7 @@ AUTOMAKE_OPTIONS = 1.6
 # The name of the module.
 DOC_MODULE = libglade
 
-content_files=
+content_files=version.xml
 HTML_IMAGES=
 
 # The top-level SGML file.
@@ -21,3 +21,6 @@ INCLUDES = -I$(top_srcdir) $(LIBGLADE_CFLAGS)
 GTKDOC_LIBS = ../glade/libglade-2.0.la $(LIBGLADE_LIBS)
 
 include $(top_srcdir)/gtk-doc.make
+
+# Other files to distribute
+EXTRA_DIST += version.xml.in

@@ -157,6 +157,7 @@ Makefile
 libglade.spec
 glade/Makefile
 doc/Makefile
+doc/version.xml
 tests/Makefile
 libglade-2.0.pc
 libglade-convert
