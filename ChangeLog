@@ -1,5 +1,8 @@
 2002-01-29  James Henstridge  <james@daa.com.au>
 
+	* configure.in: add long prominant warning message if
+	libglade-convert wasn't built.
+
 	* glade-2.0.dtd: change the child element list for <child>
 	elements to allow <placeholder> in place of <widget>.
 
