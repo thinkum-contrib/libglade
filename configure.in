@@ -50,7 +50,7 @@ GNOME_INIT_HOOK([
 AM_CONDITIONAL(GNOME_SUPPORT, $have_gnome)
 
 have_bonobo=false
-AM_PATH_BONOBO(0.17, have_bonobo=true)
+AM_PATH_BONOBO(0.27, have_bonobo=true)
 AM_CONDITIONAL(BONOBO_SUPPORT, $have_bonobo)
 
 

@@ -1,3 +1,7 @@
+2000-11-02  Michael Meeks  <michael@helixcode.com>
+
+	* configure.in (have_bonobo): require Bonobo 0.27
+
 2000-10-08  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-xml.h: remove "#pragma }", which was stuffing up a
