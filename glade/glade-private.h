@@ -35,10 +35,17 @@ struct _GladeXMLPrivate {
 	GHashTable *name_hash;
 	GHashTable *longname_hash;
 	
-	/* hash table of signals.  The Data is a GList of GladeSignalData
+	/*
+	 * hash table of signals.  The Data is a GList of GladeSignalData
 	 * structures which get freed when the GladeXML object is destroyed
 	 */
 	GHashTable *signals;
+
+	/*
+	 * This hash table contains GSLists that are the radio groups
+	 * bound to each name.
+	 */
+	GHashTable *radio_groups;
 };
 
 /* from glade-tree.c */

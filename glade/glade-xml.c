@@ -83,14 +83,16 @@ glade_xml_class_init (GladeXMLClass *klass)
 static void
 glade_xml_init (GladeXML *self)
 {
-	self->priv = g_new (GladeXMLPrivate, 1);
+	GladeXMLPrivate *priv;
+	
+	self->priv = priv = g_new (GladeXMLPrivate, 1);
 
 	self->filename = NULL;
-	self->priv->tooltips = NULL;
-	self->priv->name_hash = g_hash_table_new(g_str_hash, g_str_equal);
-	self->priv->longname_hash = g_hash_table_new(g_str_hash, g_str_equal);
-
-	self->priv->signals = g_hash_table_new(g_str_hash, g_str_equal);
+	priv->tooltips = NULL;
+	priv->name_hash = g_hash_table_new(g_str_hash, g_str_equal);
+	priv->longname_hash = g_hash_table_new(g_str_hash, g_str_equal);
+	priv->signals = g_hash_table_new(g_str_hash, g_str_equal);
+	priv->radio_groups = g_hash_table_new (g_str_hash, g_str_equal);
 }
 
 /**
@@ -478,17 +480,32 @@ glade_xml_destroy_signals(char *key, GList *signal_datas)
 }
 
 static void
+free_name (gpointer key, gpointer value, gpointer user_data)
+{
+	g_free (key);
+}
+
+static void
 glade_xml_destroy(GtkObject *object)
 {
 	GladeXML *self = GLADE_XML(object);
-
+	GladeXMLPrivate *priv = self->priv;
+	
 	if (self->filename)
 		g_free(self->filename);
-	g_hash_table_destroy(self->priv->name_hash);
-	g_hash_table_destroy(self->priv->longname_hash);
-	g_hash_table_foreach(self->priv->signals, (GHFunc)glade_xml_destroy_signals, NULL);
-	g_hash_table_destroy(self->priv->signals);
 
+	g_hash_table_foreach (priv->name_hash, free_name, NULL);
+	g_hash_table_destroy(priv->name_hash);
+
+	g_hash_table_foreach (priv->longname_hash, free_name, NULL);
+	g_hash_table_destroy(priv->longname_hash);
+
+	g_hash_table_foreach(priv->signals, (GHFunc)glade_xml_destroy_signals, NULL);
+	g_hash_table_destroy(priv->signals);
+
+	g_hash_table_foreach (priv->radio_groups, free_name, NULL);
+	g_hash_table_destroy (priv->radio_groups);
+	
 	g_free (self->priv);
 	if (parent_class->destroy)
 		(* parent_class->destroy)(object);

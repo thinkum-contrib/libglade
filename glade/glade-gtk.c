@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <glade/glade-build.h>
+#include <glade/glade-private.h>
 #include <gmodule.h>
 #include <gtk/gtk.h>
 #include <tree.h>
@@ -660,8 +661,9 @@ radiobutton_new(GladeXML *xml, GNode *node)
 	xmlNodePtr info = ((xmlNodePtr)node->data)->childs;
 	char *string = NULL;
 	gboolean active = FALSE, draw_indicator = TRUE;
-
-	/* XXXX do something about radio button groups */
+	GSList *group = NULL;
+	char *group_name = NULL;
+	
 	for (; info; info = info->next) {
 		char *content = xmlNodeGetContent(info);
 
@@ -672,16 +674,39 @@ radiobutton_new(GladeXML *xml, GNode *node)
 			active = content[0] == 'T';
 		else if (!strcmp(info->name, "draw_indicator"))
 			draw_indicator = content[0] == 'T';
-
+		else if (!strcmp(info->name, "group")){
+			group = g_hash_table_lookup (xml->priv->radio_groups, content);
+			if (!group){
+				if (group_name)
+					g_free (group_name);
+				group_name = g_strdup (content);
+			}
+		}
+		
 		if (content)
 			free(content);
 	}
 	if (string != NULL) {
-		button = gtk_radio_button_new_with_label(NULL, string);
+		button = gtk_radio_button_new_with_label(group, string);
 		g_free(string);
 	} else
-		button = gtk_radio_button_new(NULL);
+		button = gtk_radio_button_new (group);
 
+	/*
+	 * If this is the first radio item within this group
+	 * add it.
+	 */
+	if (group == NULL){
+		GtkRadioButton *radio = GTK_RADIO_BUTTON (button);
+		
+		g_hash_table_insert (xml->priv->radio_groups,
+				     group_name,
+				     gtk_radio_button_group (radio));
+	}
+
+	if (group_name)
+		g_free (group_name);
+	
 	gtk_toggle_button_set_state(GTK_TOGGLE_BUTTON(button), active);
 	gtk_toggle_button_set_mode(GTK_TOGGLE_BUTTON(button), draw_indicator);
 	return button;
