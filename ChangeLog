@@ -1,5 +1,9 @@
 2004-11-08  James Henstridge  <james@jamesh.id.au>
 
+	* libglade-convert.in (WidgetDef.ChildDef.dump): encode property
+	value in UTF-8.
+	(WidgetDef.dump): same here.
+
 	* glade/glade-parser.c (widget_info_free): free the atk actions
 	and relations.  Should fix bug #125042.
 
