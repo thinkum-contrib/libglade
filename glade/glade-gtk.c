@@ -717,6 +717,7 @@ toolbar_build_children (GladeXML *xml, GtkWidget *parent,
 	    !strcmp (childinfo->child->classname, "radio") ||
 	    !strcmp (childinfo->child->classname, "button")) {
 	    const char *label = NULL, *stock = NULL, *group_name = NULL;
+	    const char *tooltip = NULL;
 	    char *icon = NULL;
 	    gboolean use_stock = FALSE, active = FALSE, new_group = FALSE;
 	    gboolean use_underline = FALSE;
@@ -748,7 +749,7 @@ toolbar_build_children (GladeXML *xml, GtkWidget *parent,
 		} else if (!strcmp (name, "visible")) {
 		    /* ignore for now */
 		} else if (!strcmp (name, "tooltip")) {
-		    /* ignore for now */
+		    tooltip = value;
 		} else if (!strcmp (name, "use_underline")) {
 		    use_underline = BOOL (value);
 		} else if (!strcmp (name, "inconsistent")) {
@@ -795,14 +796,14 @@ toolbar_build_children (GladeXML *xml, GtkWidget *parent,
 		child = gtk_toolbar_append_element (
 		    GTK_TOOLBAR (parent),
 		    GTK_TOOLBAR_CHILD_TOGGLEBUTTON, NULL,
-		    label, NULL, NULL, iconw, NULL, NULL);
+		    label, tooltip, NULL, iconw, NULL, NULL);
 		gtk_toggle_button_set_active(
 		    GTK_TOGGLE_BUTTON (child), active);
 	    } else if (!strcmp (childinfo->child->classname, "radio")) {
 		child = gtk_toolbar_append_element (
 		    GTK_TOOLBAR (parent),
 		    GTK_TOOLBAR_CHILD_RADIOBUTTON, NULL,
-		    label, NULL, NULL, iconw, NULL, NULL);
+		    label, tooltip, NULL, iconw, NULL, NULL);
 
 		if (group_name) {
 		    g_object_set (G_OBJECT (child),
@@ -812,7 +813,7 @@ toolbar_build_children (GladeXML *xml, GtkWidget *parent,
 	    } else
 		child = gtk_toolbar_append_item (
 		    GTK_TOOLBAR (parent),
-		    label, NULL, NULL, iconw, NULL, NULL);
+		    label, tooltip, NULL, iconw, NULL, NULL);
 	    
 	    /* GTK+ doesn't support use_underline directly, so we have to hack
 	       it. */
