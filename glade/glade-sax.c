@@ -543,7 +543,8 @@ static void gladeEndElement(GladeParseState *state, const CHAR *name) {
 			pos += 12;
 		    } else
 			pos++;
-		}
+		} else
+		    pos++;
 	} else if (!strcmp(name, "signal"))
 	    state->cur_accel->signal = g_strdup(state->content->str);
 	break;

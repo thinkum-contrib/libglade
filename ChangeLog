@@ -1,3 +1,8 @@
+1999-09-12  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-sax.c: got rid of an infinite loop in the accelerator
+	modifier parsing code.  This fixes bug #2098
+
 1999-09-06  James Henstridge  <james@daa.com.au>
 
 	* NEWS: added news items for stuff I have added for this release.
