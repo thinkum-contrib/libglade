@@ -98,6 +98,8 @@ glade_xml_init (GladeXML *self)
 
 	self->filename = NULL;
 	self->txtdomain = NULL;
+
+	priv->tree = NULL;
 	priv->tooltips = NULL;
 	priv->name_hash = g_hash_table_new(g_str_hash, g_str_equal);
 	priv->longname_hash = g_hash_table_new(g_str_hash, g_str_equal);
