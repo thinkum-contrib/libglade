@@ -363,14 +363,6 @@ menu_item_set_use_stock (GladeXML *xml, GtkWidget *w,
 }
 
 
-static GtkWidget *
-placeholder_create (void)
-{
-    GtkWidget *pl = gtk_alignment_new (0.5, 0.5, 1.0, 1.0);
-    gtk_widget_show (pl);
-    return pl;
-}
-
 static void
 menuitem_build_children(GladeXML *self, GtkWidget *w,
 			GladeWidgetInfo *info)
@@ -743,6 +735,39 @@ paned_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
     gtk_paned_pack2 (GTK_PANED(w), child, resize, shrink);
 }
 
+static void
+layout_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
+{
+    gint i;
+
+    for (i = 0; i < info->n_children; i++) {
+	GladeWidgetInfo *childinfo = info->children[i].child;
+	GtkWidget *child = NULL;
+	gint j, x = 0, y = 0;
+
+	if (info->children[i].internal_child) {
+	    glade_xml_handle_internal_child(xml, w, &info->children[i]);
+	    continue;
+	}
+
+	child = glade_xml_build_widget(xml, childinfo);
+	for (j = 0; j < info->children[i].n_properties; j++) {
+	    const gchar *name = info->children[i].properties[j].name;
+	    const gchar *value = info->children[i].properties[j].value;
+
+	    if (name[0] == 'x' && name[1] == '\0')
+		x = INT(value);
+	    else if (name[0] == 'y' && name[1] == '\0')
+		y = INT(value);
+	    else
+		g_warning("unknown child packing property %s for GtkLayout",
+			  name);
+	}
+
+	gtk_layout_put(GTK_LAYOUT(w), child, x, y);
+    }
+}
+
 static GtkWidget *
 build_button(GladeXML *xml, GType widget_type,
 	     GladeWidgetInfo *info)
@@ -1008,7 +1033,7 @@ _glade_init_gtk_widgets(void)
     glade_register_widget (GTK_TYPE_LABEL, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_LAYOUT, glade_standard_build_widget,
-			   glade_standard_build_children, NULL);
+			   layout_build_children, NULL);
     glade_register_widget (GTK_TYPE_LIST, glade_standard_build_widget,
 			   glade_standard_build_children, NULL);
     glade_register_widget (GTK_TYPE_LIST_ITEM, glade_standard_build_widget,

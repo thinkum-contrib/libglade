@@ -1,3 +1,9 @@
+2002-03-10  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gtk.c (layout_build_children): new function to pack
+	children of GtkLayout.
+	(_glade_init_gtk_widgets): register build_children routine.
+
 2002-02-26  James Henstridge  <james@daa.com.au>
 
 	* NEWS: retrospectively update the NEWS file for the devel branch.
