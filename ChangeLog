@@ -1,5 +1,7 @@
 2001-09-05  James Henstridge  <james@daa.com.au>
 
+	* configure.in: increment version number.
+
 	* doc/Makefile.am: copy build stuff from head branch, as it works
 	better.  Also, get rid of the "if GNOME_SUPPORT" stuff.  The
 	object scanning code doesn't need gnome support.
