@@ -103,7 +103,7 @@ glade_require(const gchar *library)
     g_free(filename);
 
     if (!g_module_symbol(module, "glade_module_register_widgets",
-			 (gpointer)init_func)) {
+			 (gpointer)&init_func)) {
 	g_warning("could not find `%s' init function: %s", library,
 		  g_module_error());
 	g_module_close(module);

@@ -1,3 +1,20 @@
+2001-08-22  James Henstridge  <james@daa.com.au>
+
+	* examples/bonobo.glade: test case for bonobo control embedding.
+	It creates a BonoboWidget representing an
+	OAFIID:Bonobo_Sample_Entry.
+
+	* test-libglade.c (main): get rid of gnome arg parsing code.
+	Reindent to match the rest of libglade.
+
+	* glade/glade-bonobo.c (glade_bonobo_widget_new): handle both
+	GObject properties and properties in the control's property bag.
+
+	* glade/glade-init.c (glade_require): add a missing '&' symbol so
+	that the g_module_symbol call doesn't clobber memory.  Loading a
+	glade file which uses bonobo controls should work now (provided
+	bonobo_ui_init() is called).
+
 2001-08-20  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-xml.c (glade_xml_build_widget): remove extended
