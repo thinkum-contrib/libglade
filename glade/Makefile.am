@@ -9,6 +9,7 @@ INCLUDES = -I$(srcdir)/.. $(THE_FLAGS) $(XML_CFLAGS) -I$(srcdir)/..
 
 the_sources =		\
 	glade-init.c 	\
+	glade-sax.c	\
 	glade-xml.c 	\
 	glade-gtk.c 	\
 	glade-tree.c 	\
@@ -19,7 +20,8 @@ the_sources =		\
 the_headers =		\
 	glade.h 	\
 	glade-xml.h 	\
-	glade-build.h
+	glade-build.h	\
+	glade-widget-tree.h
 
 if LIBGLADE_FULLDIST
 

@@ -19,11 +19,10 @@
 #ifndef GLADE_PRIVATE_H
 #define GLADE_PRIVATE_H
 #include <stdio.h>
-#include <tree.h>
 #include <glib.h>
 #include <gtk/gtkwidget.h>
 #include <glade/glade-xml.h>
-
+#include <glade/glade-widget-tree.h>
 
 struct _GladeXMLPrivate {
 	GtkTooltips *tooltips; /* if not NULL, holds all tooltip info */
@@ -48,29 +47,15 @@ struct _GladeXMLPrivate {
 	GHashTable *radio_groups;
 };
 
-/* from glade-tree.c */
-typedef struct _GladeTreeData GladeTreeData;
-struct _GladeTreeData {
-	xmlDocPtr xml;
-	GNode *tree;      /* a tree of the <widget> tags */
-	GHashTable *hash; /* a hash of the GNodes */
-};
-
 /*
  * parse an XML document, evaluating any styles found.  Uses a cached copy
- * of the xmlDocPtr structure if this file has been parsed previously.
+ * of the GladeWidgetTree structure if this file has been parsed previously.
  * It also extracts a tree of all the <widget> tags to make it easier to
  * build interfaces
  */
-GladeTreeData *glade_tree_get   (const char *filename);
-
-/* may return NULL if no matching nodes are found */
-xmlNodePtr glade_tree_find_node (xmlNodePtr parent, const char *childname);
+GladeWidgetTree *glade_tree_get   (const char *filename);
 
 /* from glade-styles.c */
-/* evaluate the styles in the given XML tree */
-void glade_style_parse          (xmlDocPtr tree);
-
 /* get a named style from a previously parsed XML file */
 void glade_style_attach         (GtkWidget *widget, const char *style);
 

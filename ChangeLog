@@ -1,4 +1,28 @@
+1999-07-28  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gnome.c (*_build_children): converted over all the
+	child building routines.  Now I just need to do all the *_new
+	functions.
+
+	* glade/glade-gtk.c (*): converted over to using glade-sax parser.
+	Now libglade.la builds again.  Whether it works or not is another
+	matter :)
+
+1999-07-27  James Henstridge  <james@daa.com.au>
+
+	* glade/Makefile.am (the_sources): added glade-sax.c.
+	(the_headers): added glade-widget-tree.h.
+
+	* glade/glade-xml.c: updated to use the glade-sax parser.  It no
+	longer includes the libxml headers.
+
 1999-07-26  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-styles.c (glade_style_parse): stripped out all the
+	style parsing code -- this is handled by glade-sax now.
+
+	* glade/glade-tree.c: converted to cache the output of the glade-sax
+	parser instead of the libxml one.
 
 	* glade/glade-widget-info.h: the structures that the new SAX parser.
 	This is the public interface to the parser.

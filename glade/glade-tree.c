@@ -28,69 +28,25 @@
 #include <stdlib.h>
 #include <string.h>
 #include <glade/glade-private.h>
-#include <parser.h>
-
-static void
-recurse_tree (xmlNodePtr xmlnode, GNode *parent, GHashTable *hash)
-{
-	xmlNodePtr tmp;
-	GNode *self = g_node_new(xmlnode);
-
-	g_node_append(parent, self);
-	for (tmp = xmlnode->childs; tmp != NULL; tmp = tmp->next) {
-		char *content = xmlNodeGetContent(tmp);
-		if (tmp->name && !strcmp(tmp->name, "name"))
-			g_hash_table_insert(hash, g_strdup(content), self);
-		else if (tmp->name && !strcmp(tmp->name, "widget"))
-			recurse_tree(tmp, self, hash);
-		if (content) free(content);
-	}
-}
 
 static gpointer
 new_func(gpointer key)
 {
-	GladeTreeData *tree;
-	xmlNodePtr tmp;
+        gchar *filename = key;
 
-	tree = g_new(GladeTreeData, 1);
-	tree->xml =  xmlParseFile((char *)key);
-	debug(g_message("Base node: '%s'", tree->xml->root->name));
-
-	if (!tree->xml || strcmp(tree->xml->root->name, "GTK-Interface")) {
-		g_warning("%s doesn't appear to be a GLADE XML file", (char *)key);
-		xmlFreeDoc(tree->xml);
-		g_free(tree);
-		return NULL;
-	}
-	glade_style_parse(tree->xml);
-	tree->tree = g_node_new(NULL); /* root node */
-	tree->hash = g_hash_table_new(g_str_hash, g_str_equal);
-	g_hash_table_freeze(tree->hash);
-
-	for (tmp = tree->xml->root->childs; tmp != NULL; tmp = tmp->next)
-		if (tmp->name && !strcmp(tmp->name, "widget"))
-			recurse_tree(tmp, tree->tree, tree->hash);
-	g_hash_table_thaw(tree->hash);
-	return tree;
+	return glade_widget_tree_parse_file(filename);
 }
 
 static void
 destroy_func(gpointer val)
 {
-	GladeTreeData *tree = (GladeTreeData *)val;
+	GladeWidgetTree *tree = (GladeWidgetTree *)val;
   
-	if (val == NULL)
-		return;
-	xmlFreeDoc(tree->xml);
-	g_node_destroy(tree->tree);
-	/* free all the keys in the widget name hash */
-	g_hash_table_foreach(tree->hash, (GHFunc)g_free, NULL);
-	g_hash_table_destroy(tree->hash);
-	g_free(tree);
+	if (tree)
+		glade_widget_tree_free(tree);
 }
 
-GladeTreeData *
+GladeWidgetTree *
 glade_tree_get(const char *filename)
 {
 	static GCache *cache = NULL;
@@ -105,18 +61,6 @@ glade_tree_get(const char *filename)
 				    (GHashFunc)g_direct_hash,   /* value hash */
 				    (GCompareFunc)g_str_equal); /* key compare */
 	}
-	return (GladeTreeData *)g_cache_insert(cache, (gpointer) filename);
-}
-
-xmlNodePtr
-glade_tree_find_node(xmlNodePtr parent, const char *childname)
-{
-	xmlNodePtr ptr;
-
-	for (ptr = parent->childs; ptr != NULL; ptr = ptr->next) {
-		if (!strcmp(ptr->name, childname))
-			break;
-	}
-	return ptr;
+	return (GladeWidgetTree *)g_cache_insert(cache, (gpointer) filename);
 }
 

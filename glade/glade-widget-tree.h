@@ -1,3 +1,5 @@
+#ifndef GLADE_WIDGET_TREE_H
+#define GLADE_WIDGET_TREE_H
 
 #include <gtk/gtk.h>
 
@@ -72,3 +74,5 @@ GladeWidgetTree *glade_widget_tree_parse_file(const char *file);
 void glade_widget_tree_free(GladeWidgetTree *tree);
 /* print the info stored in a GladeWidgetTree structure */
 void glade_widget_tree_print(GladeWidgetTree *tree);
+
+#endif

@@ -24,17 +24,19 @@
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkadjustment.h>
 
+#include <glade/glade-widget-tree.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 	
 /* create a new widget of some type.  Don't parse `standard' widget options */
 typedef GtkWidget *(* GladeNewFunc) (GladeXML *xml,
-				     GNode *node);
+				     GladeWidgetInfo *info);
 /* call glade_xml_build_widget on each child node, and pack in self */
 typedef void (* GladeBuildChildrenFunc) (GladeXML *xml,
 					 GtkWidget *w,
-					 GNode *node,
+					 GladeWidgetInfo *info,
 					 const char *longname);
 typedef struct {
   char *name;
@@ -48,7 +50,7 @@ typedef struct {
 void glade_register_widgets(const GladeWidgetBuildData *widgets);
 
 /* this function is called to build the interface by GladeXML */
-GtkWidget *glade_xml_build_widget(GladeXML *self, GNode *node,
+GtkWidget *glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info,
 				  const char *parent_long);
 
 /* This function performs half of what glade_xml_build_widget does.  It is
@@ -56,16 +58,15 @@ GtkWidget *glade_xml_build_widget(GladeXML *self, GNode *node,
  * have any use at all. */
 void       glade_xml_set_common_params(GladeXML *self,
 				       GtkWidget *widget,
-				       GNode *node,
-				       const char *parent_long,
-				       const char *widget_class);
+				       GladeWidgetInfo *info,
+				       const char *parent_long);
 
 /* A standard child building routine that can be used in widget builders */
 void glade_standard_build_children(GladeXML *self, GtkWidget *w,
-				   GNode *node, const char *longname);
+				   GladeWidgetInfo *info,const char *longname);
 
 /* create an adjustment object for a widget */
-GtkAdjustment *glade_get_adjustment(GNode *gnode);
+GtkAdjustment *glade_get_adjustment(GladeWidgetInfo *info);
 
 /* this is a wrapper for gtk_type_enum_find_value, that just returns the
  * integer value for the enum */
