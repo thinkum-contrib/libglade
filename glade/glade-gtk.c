@@ -404,6 +404,14 @@ window_set_wmclass_class (GladeXML *xml, GtkWidget *w,
 }
 
 static void
+button_set_response_id (GladeXML *xml, GtkWidget *w,
+			const gchar *name, const gchar *value)
+{
+    g_object_set_data (G_OBJECT (w), "response_id",
+		       GINT_TO_POINTER (INT (value)));
+}
+
+static void
 menuitem_build_children(GladeXML *self, GtkWidget *w,
 			GladeWidgetInfo *info)
 {
@@ -442,19 +450,24 @@ gtk_dialog_build_children(GladeXML *self, GtkWidget *w,
     if (dialog->action_area == NULL)
 	return;
 
-    children = gtk_container_get_children (GTK_CONTAINER (dialog->action_area));
+    /* repack children of action_area */
+    children = gtk_container_get_children(GTK_CONTAINER(dialog->action_area));
     for (list = children; list; list = list->next) {
-	gtk_widget_ref (GTK_WIDGET (list->data));
-	gtk_container_remove (GTK_CONTAINER (dialog->action_area), GTK_WIDGET (list->data));
-    }
+	GtkWidget *child = GTK_WIDGET(list->data);
 
-    for (list = children; list; list = list->next) {
-	gint response_id;
-	response_id = GPOINTER_TO_INT (g_object_steal_data (
-	    G_OBJECT (list->data), "response_id"));
-	gtk_dialog_add_action_widget (dialog, GTK_WIDGET (list->data), response_id);
+	g_object_ref(child);
+	gtk_container_remove (GTK_CONTAINER (dialog->action_area), child);
     }
-    g_list_foreach (children, (GFunc)gtk_widget_unref, NULL);
+    for (list = children; list; list = list->next) {
+	GtkWidget *child = GTK_WIDGET(list->data);
+	gint response_id;
+
+	response_id = GPOINTER_TO_INT(g_object_steal_data(G_OBJECT(child),
+							  "response_id"));
+	gtk_dialog_add_action_widget(dialog, child, response_id);
+	g_object_unref(child);
+
+    }
     g_list_free (children);
 }
 
@@ -809,29 +822,6 @@ layout_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
 }
 
 static GtkWidget *
-build_button(GladeXML *xml, GType widget_type,
-	     GladeWidgetInfo *info)
-{
-    GtkWidget *widget;
-    gint i, response_id = 0;
-
-    for (i = 0; i < info->n_properties; i++) {
-	if (!strcmp (info->properties[i].name, "response_id")) {
-	    response_id = INT (info->properties[i].value);
-	    break;
-	}
-    }
-
-    widget = glade_standard_build_widget (xml, widget_type, info);
-
-    if (response_id)
-	g_object_set_data (G_OBJECT (widget), "response_id",
-			   GINT_TO_POINTER (response_id));
-
-    return widget;
-}
-
-static GtkWidget *
 dialog_find_internal_child(GladeXML *xml, GtkWidget *parent,
 			   const gchar *childname)
 {
@@ -1002,6 +992,7 @@ _glade_init_gtk_widgets(void)
     glade_register_custom_prop (GTK_TYPE_WINDOW, "wmclass_name", window_set_wmclass_name);
     glade_register_custom_prop (GTK_TYPE_WINDOW, "wmclass_class", window_set_wmclass_class);
     glade_register_custom_prop (GTK_TYPE_LIST_ITEM, "label", list_item_set_label);
+    glade_register_custom_prop (GTK_TYPE_BUTTON, "response_id", button_set_response_id);
 
     glade_register_widget (GTK_TYPE_ACCEL_LABEL, glade_standard_build_widget,
 			   NULL, NULL);
@@ -1011,7 +1002,7 @@ _glade_init_gtk_widgets(void)
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_ASPECT_FRAME, glade_standard_build_widget,
 			   glade_standard_build_children, NULL);
-    glade_register_widget (GTK_TYPE_BUTTON, build_button,
+    glade_register_widget (GTK_TYPE_BUTTON, glade_standard_build_widget,
 			   glade_standard_build_children, NULL);
     glade_register_widget (GTK_TYPE_CALENDAR, glade_standard_build_widget,
 			   NULL, NULL);

@@ -1,3 +1,11 @@
+2002-03-23  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gtk.c (button_set_response_id): new function to
+	handle response_id as a custom property.
+	(_glade_init_gtk_widgets): use standard_build_widget to build
+	buttons, and register custom prop.
+	(gtk_dialog_build_children): small cleanups.
+
 2002-03-21  jacob berkman  <jacob@ximian.com>
 
 	* glade/glade-gtk.c (list_item_set_label): new custom property
