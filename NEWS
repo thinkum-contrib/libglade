@@ -1,3 +1,8 @@
+libglade-0.16:
+	- GNOME-DB support contributed by David Marin Carreno.
+	- various other bug fixes and a few memory leaks plugged.  See
+	  changelog for details.
+
 libglade-0.15: 22-November-2000
 	- many bug fixes and memory leak plugs (me, Morten, Federico, others)
 	- libglade now does `visible accel group' handling for

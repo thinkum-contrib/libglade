@@ -581,6 +581,7 @@ toolbar_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info,
 		}
 		if (is_button) {
 			char *label = NULL, *icon = NULL;
+			gboolean active = FALSE;
 			GtkWidget *iconw = NULL;
 
 			for (tmp2 = cinfo->attributes;tmp2;tmp2 = tmp2->next) {
@@ -590,6 +591,8 @@ toolbar_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info,
 				else if (!strcmp(attr->name, "icon"))
 					icon = glade_xml_relative_file(xml,
 								attr->value);
+				else if (!strcmp(attr->name, "active"))
+					active = (attr->value[0] == 'T');
 			}
 			if (icon) {
 				GdkPixmap *pix;
@@ -606,13 +609,15 @@ toolbar_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info,
 				if (pix) gdk_pixmap_unref(pix);
 				if (mask) gdk_bitmap_unref(mask);
 			}
-			if (!strcmp(cinfo->class, "GtkToggleButton"))
+			if (!strcmp(cinfo->class, "GtkToggleButton")) {
 				child = gtk_toolbar_append_element(
 					GTK_TOOLBAR(w),
 					GTK_TOOLBAR_CHILD_TOGGLEBUTTON, NULL,
 					_(label), NULL, NULL, iconw, NULL,
 					NULL);
-			else if (!strcmp(cinfo->class, "GtkRadioButton")) {
+				gtk_toggle_button_set_active(
+					GTK_TOGGLE_BUTTON(child), active);
+			} else if (!strcmp(cinfo->class, "GtkRadioButton")) {
 				child = gtk_toolbar_append_element(
 					GTK_TOOLBAR(w),
 					GTK_TOOLBAR_CHILD_RADIOBUTTON, NULL,

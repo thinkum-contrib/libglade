@@ -1,3 +1,19 @@
+2001-02-12  James Henstridge  <james@daa.com.au>
+
+	* NEWS: added news items.
+
+	* glade/glade-gnomedb.c: changed copyright notice for this file at
+	author's request.
+
+	* glade/glade-gtk.c (toolbar_build_children): interpret active
+	attribute.
+
+	* glade/glade-gnome.c (gnomedialog_build_children): translate the
+	label if it is not a stock button.
+	(toolbar_build_children): interpret the "active" attribute of
+	toolbar toggle button children.  Based on patch from Byron
+	Ellacott.
+
 2001-02-10  James Henstridge  <james@daa.com.au>
 
 	* libglade.m4 (module_args): recognise "gnomedb" addon library.
