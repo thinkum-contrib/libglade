@@ -1,5 +1,7 @@
 2002-03-30  James Henstridge  <james@daa.com.au>
 
+	* configure.in (AC_INIT): increment version number.
+
 	* glade/glade-gtk.c (_glade_init_gtk_widgets): register
 	GtkSeparatorMenuItem so that it can be used in glade files. (fixes
 	bug 76682).

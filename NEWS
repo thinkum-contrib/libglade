@@ -1,3 +1,14 @@
+libglade-1.99.10: 30-March-2002
+	- give GtkListItem widgets a "label" attribute; mainly for use
+	  by GtkCombo (bug 75471)
+	- get rid of the response_id warnings when using GtkDialogs
+	  (bug 75300)
+	- memory leak fix in use of AtkRelations (bug 75782)
+	- better handling of the menu in GtkOptionMenu.  This also
+	  fixes the weird sizing bug where the option menu would
+	  sometimes grow the first time you popped it up (bug 75590)
+	- register GtkSeparatorMenuItem (bug 76682)
+
 libglade-1.99.9: 11-March-2002
 	- make build stuff compatible with autoconf-2.53.  This tarball
 	  is built with autoconf-2.53 and automake-1.6.
