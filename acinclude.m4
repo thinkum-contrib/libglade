@@ -21,8 +21,10 @@ dnl
       IFS=$jh_save_IFS
       test -z "$jh_dir" && jh_dir=.
       if test -x "$jh_dir/$jh_python"; then
+        echo "checking $jh_dir/$jh_python" >&AS_MESSAGE_LOG_FD
         if "$jh_dir/$jh_python" -c "$jh_python_check" 1>&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD
         then
+          echo "$jh_dir/$jh_python looks okay" >&AS_MESSAGE_LOG_FD
           jh_cv_path_python="$jh_dir/$jh_python"
           break
         fi

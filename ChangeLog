@@ -1,5 +1,7 @@
 2002-03-11  James Henstridge  <james@daa.com.au>
 
+	* acinclude.m4: add some extra messages to the config.log file.
+
 	* configure.in: update version number.
 
 	* NEWS: news updates.
