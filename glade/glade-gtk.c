@@ -265,6 +265,39 @@ ruler_set_metric (GladeXML *xml, GtkWidget *w,
 	glade_enum_from_string (GTK_TYPE_METRIC_TYPE, value));
 }
 
+static void
+menu_item_set_label (GladeXML *xml, GtkWidget *w,
+		     const char *name, const char *value)
+{
+    GtkWidget *child = GTK_BIN (w)->child;
+
+    if (!child) {
+	GtkWidget *label = gtk_label_new (value);
+	gtk_widget_show (label);
+	gtk_container_add (GTK_CONTAINER (w), label);
+    } else {
+	if (GTK_IS_LABEL (child))
+	    gtk_label_set_label (GTK_LABEL (child), value);
+    }
+}
+
+static void
+menu_item_set_use_underline (GladeXML *xml, GtkWidget *w,
+			     const char *name, const char *value)
+{
+    GtkWidget *child = GTK_BIN (w)->child;
+
+    if (!child) {
+	GtkWidget *label = gtk_label_new (NULL);
+	gtk_widget_show (label);
+	gtk_container_add (GTK_CONTAINER (w), label);
+	gtk_label_set_use_underline (GTK_LABEL (label), BOOL (value));
+    } else {
+	if (GTK_IS_LABEL (child))
+	    gtk_label_set_use_underline (GTK_LABEL (child), BOOL (value));
+    }
+}
+
 
 
 static GtkWidget *
@@ -397,6 +430,59 @@ build_preview (GladeXML *xml, GType widget_type,
     return preview;
 }
 
+static GtkWidget *
+build_image_menu_item (GladeXML *xml, GType widget_type,
+		       GladeWidgetInfo *info)
+{
+    GtkWidget *menuitem;
+
+    const char *stock_id = NULL, *label = NULL;
+    gboolean use_underline = FALSE;
+    gboolean visible = FALSE;
+
+    int i;
+
+    for (i = 0; i < info->n_properties; i++) {
+	const char *name  = info->properties[i].name;
+	const char *value = info->properties[i].value;
+
+	if (!strcmp (name, "stock"))
+	    stock_id = value;
+	else if (!strcmp (name, "label"))
+	    label = value;
+	else if (!strcmp (name, "use_underline"))
+	    use_underline = BOOL (value);
+	/* FIXME: There should be some way to set all the standard widget
+	   properties. */
+	else if (!strcmp (name, "visible"))
+	    visible = BOOL (value);
+    }
+
+    if (stock_id) {
+	GtkAccelGroup *accel_group;
+
+	accel_group = glade_xml_ensure_accel (xml);
+
+	menuitem = gtk_image_menu_item_new_from_stock (stock_id, accel_group);
+
+	/* Stock 'New' items can have different labels, e.g. 'New _Project'.
+	   They still get the stock icon and accelerator. */
+	if (label && !strcmp (stock_id, GTK_STOCK_NEW))
+	    gtk_label_set_text_with_mnemonic (GTK_LABEL (GTK_BIN (menuitem)->child), label);
+    } else if (label && use_underline) {
+	menuitem = gtk_image_menu_item_new_with_mnemonic (label);
+    } else if (label) {
+	menuitem = gtk_image_menu_item_new_with_label (label);
+    } else {
+	menuitem = gtk_image_menu_item_new ();
+    }
+
+    if (visible)
+	gtk_widget_show (menuitem);
+
+    return menuitem;
+}
+
 static void
 option_menu_build_children (GladeXML *xml, GtkWidget *parent,
 			    GladeWidgetInfo *info)
@@ -484,7 +570,8 @@ toolbar_build_children (GladeXML *xml, GtkWidget *parent,
 	    !strcmp (childinfo->child->class, "button")) {
 	    const char *label = NULL, *stock = NULL, *group_name = NULL;
 	    char *icon = NULL;
-	    gboolean active = FALSE, new_group = FALSE;
+	    gboolean use_stock = FALSE, active = FALSE, new_group = FALSE;
+	    gboolean use_underline = FALSE;
 	    GtkWidget *iconw = NULL;
 	    int j;
 
@@ -494,6 +581,8 @@ toolbar_build_children (GladeXML *xml, GtkWidget *parent,
 
 		if (!strcmp (name, "label")) {
 		    label = value;
+		} else if (!strcmp (name, "use_stock")) {
+		    use_stock = TRUE;
 		} else if (!strcmp (name, "icon")) {
 		    g_free (icon);
 		    stock = NULL;
@@ -512,8 +601,28 @@ toolbar_build_children (GladeXML *xml, GtkWidget *parent,
 		    /* ignore for now */
 		} else if (!strcmp (name, "tooltip")) {
 		    /* ignore for now */
+		} else if (!strcmp (name, "use_underline")) {
+		    use_underline = BOOL (value);
+		} else if (!strcmp (name, "inconsistent")) {
+		    /* ignore for now */
 		} else {
 		    g_warning ("Unknown GtkToolbar child property: %s", name);
+		}
+	    }
+
+	    /* For stock items, we create the stock icon and get the label
+	       here, partly because GTK+ doesn't have direct support for stock
+	       toggle & radio items. */
+	    if (use_stock) {
+		GtkStockItem item;
+
+		if (gtk_stock_lookup (label, &item)) {
+		    /* Set stock to label, so the icon is created below. */
+		    stock = label;
+		    label = item.label;
+
+		    /* Most stock items have mnemonic accelerators. */
+		    use_underline = TRUE;
 		}
 	    }
 
@@ -556,6 +665,15 @@ toolbar_build_children (GladeXML *xml, GtkWidget *parent,
 		    GTK_TOOLBAR (parent),
 		    label, NULL, NULL, iconw, NULL, NULL);
 	    
+	    /* GTK+ doesn't support use_underline directly, so we have to hack
+	       it. */
+	    if (use_underline) {
+		GList *elem = g_list_last (GTK_TOOLBAR (parent)->children);
+		GtkToolbarChild *toolbar_child = elem->data;
+		gtk_label_set_use_underline (GTK_LABEL (toolbar_child->label),
+					     TRUE);
+	    }
+
 	    glade_xml_set_common_params (xml, child, childinfo->child);
 	} else {
 	    child = glade_xml_build_widget (xml, childinfo->child);
@@ -659,7 +777,7 @@ image_menu_find_internal_child(GladeXML *xml, GtkWidget *parent,
 
 	pl = gtk_image_menu_item_get_image (GTK_IMAGE_MENU_ITEM (parent));
 	if (!pl) {
-	    pl = placeholder_create ();
+	    pl = gtk_image_new ();
 
 	    gtk_image_menu_item_set_image (
 		GTK_IMAGE_MENU_ITEM (parent), pl);
@@ -796,6 +914,8 @@ _glade_init_gtk_widgets(void)
     glade_register_custom_prop (GTK_TYPE_TOOLBAR, "tooltips", toolbar_set_tooltips);
     glade_register_custom_prop (GTK_TYPE_STATUSBAR, "has_resize_grip", statusbar_set_has_resize_grip);
     glade_register_custom_prop (GTK_TYPE_RULER, "metric", ruler_set_metric);
+    glade_register_custom_prop (GTK_TYPE_MENU_ITEM, "label", menu_item_set_label);
+    glade_register_custom_prop (GTK_TYPE_MENU_ITEM, "use_underline", menu_item_set_use_underline);
 
     glade_register_widget (GTK_TYPE_ACCEL_LABEL, glade_standard_build_widget,
 			   NULL, NULL);
@@ -863,7 +983,7 @@ _glade_init_gtk_widgets(void)
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_IMAGE, glade_standard_build_widget,
 			   NULL, NULL);
-    glade_register_widget (GTK_TYPE_IMAGE_MENU_ITEM, glade_standard_build_widget,
+    glade_register_widget (GTK_TYPE_IMAGE_MENU_ITEM, build_image_menu_item,
 			   menuitem_build_children, image_menu_find_internal_child);
     glade_register_widget (GTK_TYPE_INPUT_DIALOG, NULL,
 			   glade_standard_build_children, NULL);

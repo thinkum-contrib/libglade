@@ -1,3 +1,19 @@
+2002-01-29  Damon Chaplin  <damon@ximian.com>
+
+	* glade/glade-gtk.c (menu_item_set_label): 
+	(menu_item_set_use_underline): new custom property handlers.
+	(build_image_menu_item): new custom build function.
+	(toolbar_build_children): updated to handle "use_stock" and
+	"use_underline". I'm not entirely sure what you are supposed to do/not
+	do in custom build functions, so this needs checking.
+	(image_menu_find_internal_child): create a GtkImage child rather than
+	a placeholder. The "image" child is a bit of a hack since it isn't
+	really created by the GtkImageMenuItem.
+
+	NOTE: the properties of the "image" child are not being set at present,
+	so that needs fixing, and I'm not sure where that is supposed to
+	happen.
+
 2002-01-29  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-parser.c (glade_parser_parse_file): if the parser
