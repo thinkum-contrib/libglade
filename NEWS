@@ -1,3 +1,15 @@
+libglade-0.6:  20-September-1999
+	- libglade now honours the has_focus and has_default flags for
+	  widgets.
+	- The correct default for can_focus (false) is now used.  This was
+	  found by Miguel.  It should prevent the segfaults caused by
+	  infinite recursion some people were seeing.
+	- Placeholders are removed from the interface as it gets parsed.  The
+	  warnings were not really very useful, and there are times when you
+	  want to leave some spaces blank (such as in tables).
+	- Fixed bug with setting accelerators that have no modifiers.  This
+	  one was found by Paul Clifford.
+
 libglade-0.5:  7-September-1999
 	- removed some stuff to do with glade-keys.c I missed in the last
 	  release.

@@ -1,3 +1,18 @@
+1999-09-20  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gnome.c (stock_button_new): carried Miguel's button
+	patch over to the gnome code.
+
+	* glade/glade-gtk.c (button_new, togglebutton_new, checkbutton_new):
+	(radiobutton_new):  do not translate the strings twice.  It could
+	cause weird problems.
+
+	* NEWS: added extra news items.
+
+	* configure.in: incremented package version.
+
+	* glade/Makefile.am (LTVERSION): incremented libtool library version.
+
 1999-09-19  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-xml.c (glade_xml_set_common_params): check if the widget
