@@ -39,8 +39,13 @@
 #  include <libintl.h>
 #endif
 
-static const char *glade_xml_tag = "GladeXML::";
-static const char *glade_xml_name_tag = "GladeXML::name";
+static const gchar *glade_xml_tree_key     = "GladeXML::tree";
+static GQuark       glade_xml_tree_id      = 0;
+static const gchar *glade_xml_name_key     = "GladeXML::name";
+static GQuark       glade_xml_name_id      = 0;
+static const gchar *glade_xml_tooltips_key = "GladeXML::tooltips";
+static GQuark       glade_xml_tooltips_id  = 0;
+
 
 static void glade_xml_init(GladeXML *xml);
 static void glade_xml_class_init(GladeXMLClass *class);
@@ -89,6 +94,10 @@ glade_xml_class_init (GladeXMLClass *class)
     parent_class = g_type_class_peek_parent (class);
 
     G_OBJECT_CLASS(class)->finalize = glade_xml_finalize;
+
+    glade_xml_tree_id = g_quark_from_static_string(glade_xml_tree_key);
+    glade_xml_name_id = g_quark_from_static_string(glade_xml_name_key);
+    glade_xml_tooltips_id = g_quark_from_static_string(glade_xml_tooltips_key);
 }
 
 static void
@@ -108,7 +117,6 @@ glade_xml_init (GladeXML *self)
     priv->radio_groups = g_hash_table_new (g_str_hash, g_str_equal);
     priv->toplevel = NULL;
     priv->accel_groups = NULL;
-    priv->focus_ulines = NULL;
     priv->default_widget = NULL;
     priv->focus_widget = NULL;
 }
@@ -615,8 +623,8 @@ glade_get_widget_name(GtkWidget *widget)
 {
     g_return_val_if_fail(widget != NULL, NULL);
 
-    return (const char *)gtk_object_get_data(GTK_OBJECT(widget),
-					     glade_xml_name_tag);
+    return (const char *)g_object_get_qdata(G_OBJECT(widget),
+					    glade_xml_name_id);
 }
 
 /**
@@ -633,7 +641,7 @@ glade_get_widget_tree(GtkWidget *widget)
 {
     g_return_val_if_fail(widget != NULL, NULL);
 
-    return gtk_object_get_data(GTK_OBJECT(widget), glade_xml_tag);
+    return g_object_get_qdata(G_OBJECT(widget), glade_xml_tree_id);
 }
 
 /* ------------------------------------------- */
@@ -651,8 +659,6 @@ glade_get_widget_tree(GtkWidget *widget)
 void
 glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window)
 {
-    static char *tooltips_key = "libglade::GladeXML::tooltips";
-
     if (xml->priv->focus_widget)
 	gtk_widget_grab_focus(xml->priv->focus_widget);
     if (xml->priv->default_widget)
@@ -667,9 +673,49 @@ glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window)
     xml->priv->accel_groups = NULL;
     /* the window should hold a reference to the tooltips object */
     gtk_object_ref(GTK_OBJECT(xml->priv->tooltips));
-    gtk_object_set_data_full(GTK_OBJECT(window), tooltips_key,
-			     xml->priv->tooltips,
-			     (GtkDestroyNotify)gtk_object_unref);
+    g_object_set_qdata_full(G_OBJECT(window), glade_xml_tooltips_id,
+			    xml->priv->tooltips,
+			    (GDestroyNotify)gtk_object_unref);
+}
+
+/**
+ * glade_xml_handle_widget_prop
+ * @xml: the GladeXML object
+ * @widget: the property the widget to set the property on.
+ * @prop_name: the name of the property.
+ * @value_name: the name of the widget used as the value for the property.
+ *
+ * Some widgets have properties of type GtkWidget.  These are
+ * represented as the widget name in the glade file.  When
+ * constructing the interface, the widget specified as the value for a
+ * property may not exist yet.
+ *
+ * Rather than setting the property directly, this function should be
+ * used.  It will perform the name to GtkWidget conversion, and if the
+ * widget is yet to be constructed, defer setting the property until
+ * the widget is constructed.
+ */
+void
+glade_xml_handle_widget_prop(GladeXML *self, GtkWidget *widget,
+			     const gchar *prop_name, const gchar *value_name)
+{
+    GtkWidget *value_widget;
+
+    g_return_if_fail(GLADE_IS_XML(self));
+
+    value_widget = g_hash_table_lookup(self->priv->name_hash, value_name);
+    if (value_widget) {
+	g_object_set(G_OBJECT(widget), prop_name, value_widget, NULL);
+    } else {
+	GladeDeferredProperty *dprop = g_new(GladeDeferredProperty, 1);
+
+	dprop->target = G_OBJECT(widget);
+	dprop->prop_name = prop_name;
+	dprop->prop_value = value_name;
+
+	self->priv->deferred_props = g_list_prepend(self->priv->deferred_props,
+						    dprop);
+    }
 }
 
 /**
@@ -732,64 +778,6 @@ glade_xml_ensure_accel(GladeXML *xml)
     }
     return (GtkAccelGroup *)xml->priv->accel_groups->data;
 }
-
-#if 0
-/**
- * glade_xml_handle_label_accel:
- * @xml: the GladeXML object.
- * @target: the target widget name (or %NULL).
- * @key: the key code for the accelerator.
- *
- * This function is called by the GtkLabel creation routine to register an
- * underline accelerator for the label.  If the target widget exists, the
- * accelerator is connected to the grab_focus signal.  If it does not exist
- * yet, the (target, key) pair is saved so that it can be attached when the
- * widget is created.
- * If @target is %NULL, then the accelerator should be attached to one of
- * the parents of this widget (typically a GtkButton).
- */
-void
-glade_xml_handle_label_accel(GladeXML *xml, const gchar *target, guint key)
-{
-	if (target) {
-		GtkWidget *twidget = glade_xml_get_widget(xml, target);
-
-		if (twidget)
-			gtk_widget_add_accelerator(twidget, "grab_focus",
-						   glade_xml_ensure_accel(xml),
-						   key, GDK_MOD1_MASK, 0);
-		else {
-			GladeFocusULine *uline = g_new(GladeFocusULine, 1);
-
-			uline->widget_name = target;
-			uline->key = key;
-			xml->priv->focus_ulines =
-				g_list_prepend(xml->priv->focus_ulines, uline);
-		}
-	} else
-		xml->priv->parent_accel = key;
-}
-
-/**
- * glade_xml_get_parent_accel:
- * @xml: the GladeXML object.
- *
- * This function gets the latest label underline accelerator directed at the
- * parent widget.  If there is no accelerator waiting, 0 is returned.  If
- * this function is called twice in a row, the second call will always return
- * 0.
- *
- * Returns: the key code for the accelerator, or zero.
- */
-guint
-glade_xml_get_parent_accel(GladeXML *xml)
-{
-	guint key = xml->priv->parent_accel;
-
-	xml->priv->parent_accel = 0;
-	return key;
-}
-#endif
 
 /* this is a private function */
 static void
@@ -854,8 +842,8 @@ remove_data_func(gpointer key, gpointer value, gpointer user_data)
     GObject *object = value;
     GladeXML *xml = user_data;
 
-    g_object_set_data(object, glade_xml_tag, NULL);
-    g_object_set_data(object, glade_xml_name_tag, NULL);
+    g_object_set_qdata(object, glade_xml_tree_id, NULL);
+    g_object_set_qdata(object, glade_xml_name_id, NULL);
 }
 
 static void
@@ -1244,6 +1232,7 @@ glade_standard_build_widget(GladeXML *xml, GType widget_type,
     static GArray *props_array = NULL;
     GObjectClass *oclass;
     GtkWidget *widget;
+    GList *deferred_props = NULL, *tmp;
     guint i;
 
     if (!props_array)
@@ -1264,6 +1253,20 @@ glade_standard_build_widget(GladeXML *xml, GType widget_type,
 	    continue;
 	}
 
+	/* this should catch all properties wanting a GtkWidget
+         * subclass.  We also look for types that could hold a
+         * GtkWidget in order to catch things like the
+         * GtkAccelLabel::accel_object property.  Since we don't do
+         * any handling of GObject or GtkObject directly in
+         * glade_xml_set_value_from_string, this shouldn't be a
+         * problem. */
+	if (g_type_is_a(GTK_TYPE_WIDGET, G_PARAM_SPEC_VALUE_TYPE(pspec)) ||
+	    g_type_is_a(G_PARAM_SPEC_VALUE_TYPE(pspec), GTK_TYPE_WIDGET)) {
+	    deferred_props = g_list_prepend(deferred_props,
+					    &info->properties[i]);
+	    continue;
+	}
+
 	if (glade_xml_set_value_from_string(pspec, info->properties[i].value,
 					    &param.value)) {
 	    param.name = info->properties[i].name;
@@ -1278,6 +1281,15 @@ glade_standard_build_widget(GladeXML *xml, GType widget_type,
 	g_array_index(props_array, GParameter, i).name = NULL;
 	g_value_unset(&g_array_index(props_array, GParameter, i).value);
     }
+
+    /* handle deferred properties */
+    for (tmp = deferred_props; tmp; tmp = tmp->next) {
+	GladeProperty *prop = tmp->data;
+
+	glade_xml_handle_widget_prop(xml, widget, prop->name, prop->value);
+    }
+    g_list_free(tmp);
+
     g_array_set_size(props_array, 0);
     g_type_class_unref(oclass);
 
@@ -1507,12 +1519,12 @@ glade_xml_widget_destroy(GtkObject *object, GladeXML *xml)
     g_return_if_fail(GTK_IS_OBJECT(object));
     g_return_if_fail(GLADE_IS_XML(xml));
 
-    name = g_object_get_data(G_OBJECT(object), glade_xml_name_tag);
+    name = g_object_get_qdata(G_OBJECT(object), glade_xml_name_id);
 
     if (!name) return;
     g_hash_table_remove(xml->priv->name_hash, name);
-    g_object_set_data(G_OBJECT(object), glade_xml_tag, NULL);
-    g_object_set_data(G_OBJECT(object), glade_xml_name_tag, NULL);
+    g_object_set_qdata(G_OBJECT(object), glade_xml_tree_id, NULL);
+    g_object_set_qdata(G_OBJECT(object), glade_xml_name_id, NULL);
 }
 
 /**
@@ -1552,8 +1564,8 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 #endif
 
     /* store this information as data of the widget. */
-    gtk_object_set_data(GTK_OBJECT(widget), glade_xml_tag, self);
-    gtk_object_set_data(GTK_OBJECT(widget), glade_xml_name_tag, info->name);
+    g_object_set_qdata(G_OBJECT(widget), glade_xml_tree_id, self);
+    g_object_set_qdata(G_OBJECT(widget), glade_xml_name_id, info->name);
     /* store widgets in hash table, for easy lookup */
     g_hash_table_insert(self->priv->name_hash, info->name, widget);
 
@@ -1564,6 +1576,25 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
     g_signal_connect_object(G_OBJECT(widget), "destroy",
 			    G_CALLBACK(glade_xml_widget_destroy),
 			    G_OBJECT(self), 0);
+
+    /* handle any deferred properties using this widget */
+    tmp = self->priv->deferred_props;
+    while (tmp) {
+	GladeDeferredProperty *dprop = tmp->data;
+
+	if (!strcmp(info->name, dprop->prop_value)) {
+	    tmp = tmp->next;
+	    self->priv->deferred_props =
+		g_list_remove(self->priv->deferred_props, dprop);
+
+	    g_object_set(G_OBJECT(dprop->target),
+			 dprop->prop_name, G_OBJECT(widget),
+			 NULL);
+	    g_free(dprop);
+	} else {
+	    tmp = tmp->next;
+	}
+    }
 
     if (data && data->build_children && info->children)
 	data->build_children(self, widget, info);

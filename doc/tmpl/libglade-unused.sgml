@@ -207,6 +207,15 @@ Libglade SAX Parser
 @msgid: 
 @Returns: 
 
+<!-- ##### FUNCTION glade_xml_handle_label_accel ##### -->
+<para>
+
+</para>
+
+@xml: 
+@target: 
+@key: 
+
 <!-- ##### FUNCTION glade_xml_new_from_memory ##### -->
 <para>
 

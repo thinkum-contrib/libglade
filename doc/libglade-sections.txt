@@ -84,6 +84,5 @@ glade_xml_set_toplevel
 glade_xml_push_accel
 glade_xml_pop_accel
 glade_xml_ensure_accel
-glade_xml_handle_label_accel
 </SECTION>
 

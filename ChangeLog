@@ -1,5 +1,11 @@
 2001-08-25  James Henstridge  <james@daa.com.au>
 
+	* glade/glade-xml.c (glade_xml_handle_widget_prop): add function
+	to handle GtkWidget type properties.
+	(glade_xml_set_common_params): apply any deferred properties.
+	(glade_standard_build_widget): pass deferred properties off to
+	glade_xml_handle_widget_prop.
+
 	* glade/glade-gtk.c: add GtkViewport support (missed it for some
 	reason).
 

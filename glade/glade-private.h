@@ -34,50 +34,38 @@ struct _GladeXMLPrivate {
 
     GtkTooltips *tooltips; /* if not NULL, holds all tooltip info */
 
-    /*
-     * hash tables of widgets.  The keys are stored as widget data,
-     * and get * freed with those widgets.
-     */
+    /* hash tables of widgets.  The keys are stored as widget data,
+     * and get freed with those widgets. */
     GHashTable *name_hash;
 	
-    /*
-     * hash table of signals.  The Data is a GList of GladeSignalData
+    /* hash table of signals.  The Data is a GList of GladeSignalData
      * structures which get freed when the GladeXML object is
-     * destroyed
-     */
+     * destroyed */
     GHashTable *signals;
 
-    /*
-     * This hash table contains GSLists that are the radio groups *
-     * bound to each name.
-     */
+    /* This hash table contains GSLists that are the radio groups
+     * bound to each name. */
     GHashTable *radio_groups;
 
     /* the current toplevel being built */
     GtkWindow *toplevel;
 
-    /*
-     * These items are for handling accelerator groups.  The first *
-     * is the main accelerator group for the current window.  The *
-     * second is an slist of groups, which is used for the uline *
-     * accel groups for menu entries.
-     */
+    /* These items are for handling accelerator groups.  The first is
+     * the main accelerator group for the current window.  The second
+     * is an slist of groups, which is used for the uline accel groups
+     * for menu entries. */
     GSList *accel_groups;
-
-    /* a list of label uline accels for widgets that don't exist yet */
-    GList *focus_ulines;
 
     /* these hold the focus and default widgets for a window until they
      * get packed into the window -- we can't call gtk_widget_grab_focus
      * or grab_default until this occurs */
     GtkWidget *focus_widget;
     GtkWidget *default_widget;
-};
 
-typedef struct _GladeFocusULine GladeFocusULine;
-struct _GladeFocusULine {
-    const gchar *widget_name;
-    guint key;
+    /* list of GtkWidget properties waiting to be set.  (they couldn't
+     * be set earlier because the value widget hadn't been created
+     * yet). */
+    GList *deferred_props;
 };
 
 typedef struct _GladeSignalData GladeSignalData;
@@ -86,6 +74,13 @@ struct _GladeSignalData {
     char *signal_name;
     char *connect_object; /* or NULL if there is none */
     gboolean signal_after;
+};
+
+typedef struct _GladeDeferredProperty GladeDeferredProperty;
+struct _GladeDeferredProperty {
+    GObject *target;
+    const gchar *prop_name;
+    const gchar *prop_value;
 };
 
 #endif

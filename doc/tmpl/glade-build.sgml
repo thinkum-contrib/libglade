@@ -213,13 +213,3 @@ the actual widgets from the XML node data structures.
 @Returns: 
 
 
-<!-- ##### FUNCTION glade_xml_handle_label_accel ##### -->
-<para>
-
-</para>
-
-@xml: 
-@target: 
-@key: 
-
-

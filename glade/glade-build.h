@@ -72,12 +72,9 @@ GtkAccelGroup *glade_xml_pop_accel(GladeXML *xml);
 /* make sure that xml->priv->accel_group is a valid AccelGroup */
 GtkAccelGroup *glade_xml_ensure_accel(GladeXML *xml);
 
-#if 0
-/* this is the handler for GtkLabel accelerators */
-void           glade_xml_handle_label_accel(GladeXML *xml, const gchar *target,
-					    guint key);
-guint          glade_xml_get_parent_accel  (GladeXML *xml);
-#endif
+void glade_xml_handle_widget_prop(GladeXML *self, GtkWidget *widget,
+				  const gchar *prop_name,
+				  const gchar *value_name);
 
 /* this function is called to build the interface by GladeXML */
 GtkWidget *glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info);

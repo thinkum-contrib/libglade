@@ -46,7 +46,7 @@
                               <widget class="GtkAccelLabel" id="convertwidget2">
                                 <property name="accel-object">Quit</property>
                                 <property name="xalign">0.0</property>
-                                <property name="label" translatable="yes">Quit</property>
+                                <property name="label" translatable="yes">_Quit</property>
                                 <property name="use-underline">yes</property>
                                 <property name="visible">yes</property>
                               </widget>
@@ -60,7 +60,7 @@
                       <widget class="GtkAccelLabel" id="convertwidget1">
                         <property name="accel-object">FileMenu</property>
                         <property name="xalign">0.0</property>
-                        <property name="label" translatable="yes">File</property>
+                        <property name="label" translatable="yes">_File</property>
                         <property name="use-underline">yes</property>
                         <property name="visible">yes</property>
                       </widget>
@@ -88,7 +88,7 @@
                               <widget class="GtkAccelLabel" id="convertwidget4">
                                 <property name="accel-object">About</property>
                                 <property name="xalign">0.0</property>
-                                <property name="label" translatable="yes">About...</property>
+                                <property name="label" translatable="yes">_About...</property>
                                 <property name="use-underline">yes</property>
                                 <property name="visible">yes</property>
                               </widget>
@@ -102,7 +102,7 @@
                       <widget class="GtkAccelLabel" id="convertwidget3">
                         <property name="accel-object">HelpMenu</property>
                         <property name="xalign">0.0</property>
-                        <property name="label" translatable="yes">Help</property>
+                        <property name="label" translatable="yes">_Help</property>
                         <property name="use-underline">yes</property>
                         <property name="visible">yes</property>
                       </widget>
