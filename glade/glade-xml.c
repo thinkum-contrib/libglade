@@ -735,42 +735,41 @@ glade_xml_add_signals(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
 static void
 glade_xml_add_atk_actions(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
 {
-    gint i;
-    gint n;
-    AtkObject *atko = gtk_widget_get_accessible (w);
+    gint i, n_actions;
+    AtkObject *accessible;
     AtkAction *action;
 
-    if (info->n_atk_actions) {
-        if (!ATK_IS_ACTION (atko)) {
-            g_warning("widgets of type %s don't have actions, but one is specified",
+    if (info->n_atk_actions == 0)
+	return;
+
+    accessible = gtk_widget_get_accessible (w);
+
+    if (!ATK_IS_ACTION (accessible)) {
+	g_warning("widgets of type %s don't have actions, but one is specified",
 	  	  G_OBJECT_TYPE_NAME (w));
-	    return;
-        }
+	return;
+    }
 
-        action = ATK_ACTION (atko);
-        n = atk_action_get_n_actions (action);    
+    action = ATK_ACTION (accessible);
+    n_actions = atk_action_get_n_actions (action);    
     
-        for (i = 0; i < info->n_atk_actions; i++) {
-    	    GladeAtkActionInfo *action_info = &info->atk_actions[i];
-	    int j;
-	    for (j=0; j<n; ++j) {
-	        if (strcmp (atk_action_get_name (action, j),
-			    action_info->action_name) == 0) {
-	            break;
-	        }
-	    }
-	    if (j < n) {
-	        atk_action_set_description (ATK_ACTION (atko),
-					    j,
-					    action_info->description);	
-	    } else {
-		/* don't show a warning -- the action names might not
-                 * be registered if libgail hasn't been loaded */
+    for (i = 0; i < info->n_atk_actions; i++) {
+	GladeAtkActionInfo *action_info = &info->atk_actions[i];
+	int j;
 
-		/* g_warning("could not find action named %s", action_info->action_name); */
+	for (j = 0; j < n_actions; j++) {
+	    if (strcmp (atk_action_get_name (action, j),
+			action_info->action_name) == 0) {
+		break;
 	    }
-        }
-    }	
+	}
+	if (j < n_actions) {
+	    atk_action_set_description (action, j, action_info->description);
+	} else {
+	    /* don't show a warning -- the action names might not
+	     * be registered if libgail hasn't been loaded */
+	}
+    }
 }
 
 /* helper function for adding relations */
@@ -801,8 +800,14 @@ static void
 glade_xml_add_atk_relations(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
 {
     gint i;
-    AtkObject *atko = gtk_widget_get_accessible (w);
-    AtkRelationSet *relations = atk_object_ref_relation_set (atko);
+    AtkObject *accessible;
+    AtkRelationSet *relations;
+
+    if (info->n_relations == 0)
+	return;
+
+    accessible = gtk_widget_get_accessible (w);
+    relations = atk_object_ref_relation_set (accessible);
     
     for (i = 0; i < info->n_relations; i++) {
 	GladeAtkRelationInfo *rinfo = &info->relations[i];
@@ -852,20 +857,23 @@ static void
 glade_xml_add_accessibility_info(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
 {
     gint i;
-    AtkObject *atko = gtk_widget_get_accessible (w);
+    AtkObject *accessible = gtk_widget_get_accessible (w);
     
     for (i = 0; i < info->n_atk_props; i++) {
 	GParamSpec *pspec;
 	GValue value = { 0 };
 
-	pspec = g_object_class_find_property(g_type_class_ref(ATK_TYPE_OBJECT),
+	pspec = g_object_class_find_property(G_OBJECT_GET_CLASS(accessible),
 					     info->atk_props[i].name);
 	if (!pspec) {
 	    g_warning("unknown property `%s' for class `%s'",
-		      info->atk_props[i].name, g_type_name(ATK_TYPE_OBJECT));
+		      info->atk_props[i].name, G_OBJECT_TYPE_NAME(accessible));
 	    continue;
-	} else if (glade_xml_set_value_from_string (xml, pspec, info->atk_props[i].value, &value)) {
-	    g_object_set_property (G_OBJECT (atko), info->atk_props[i].name, &value);
+	} else if (glade_xml_set_value_from_string (xml, pspec,
+						    info->atk_props[i].value,
+						    &value)) {
+	    g_object_set_property (G_OBJECT (accessible),
+				   info->atk_props[i].name, &value);
 	    g_value_unset (&value);
         }
 	

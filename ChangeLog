@@ -1,3 +1,11 @@
+2002-04-22  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c (glade_xml_add_atk_relations): small
+	optimisation for the case where there are no relations specified
+	for the widget in the glade file.
+	(glade_xml_add_atk_actions): small changes to match style of other
+	functions in the file.
+
 2002-04-19  Mark McLoughlin  <mark@skynet.ie>
 
 	* glade/glade-gtk.c: (entry_set_invisible_char),
