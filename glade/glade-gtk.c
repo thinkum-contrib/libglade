@@ -2745,20 +2745,10 @@ inputdialog_new (GladeXML *xml, GladeWidgetInfo *info)
 static GtkWidget *
 custom_new (GladeXML *xml, GladeWidgetInfo *info)
 {
-	typedef GtkWidget *(* create_func)(gchar *name,
-					   gchar *string1, gchar *string2,
-					   gint int1, gint int2);
 	GtkWidget *wid = NULL;
 	GList *tmp;
 	gchar *func_name = NULL, *string1 = NULL, *string2 = NULL;
 	gint int1 = 0, int2 = 0;
-	create_func func;
-	GModule *allsymbols;
-
-	if (!g_module_supported()) {
-		g_error("custom_new requires gmodule to work correctly");
-		return NULL;
-	}
 
 	for (tmp = info->attributes; tmp; tmp = tmp->next) {
 		GladeAttribute *attr = tmp->data;
@@ -2774,11 +2764,11 @@ custom_new (GladeXML *xml, GladeWidgetInfo *info)
 		else if (!strcmp(attr->name, "int2"))
 			int2 = strtol(attr->value, NULL, 0);
 	}
-	allsymbols = g_module_open(NULL, 0);
-	if (g_module_symbol(allsymbols, func_name, (gpointer *)&func))
-		wid = func(info->name, string1, string2, int1, int2);
-	else
-		g_warning("could not func widget creation function");
+	wid = glade_create_custom(xml, func_name, info->name, string1,
+				  string2, int1, int2);
+	/* fallback to prevent segfault */
+	if (wid == NULL)
+		wid = gtk_label_new("[custom widget creation failed]");
 	return wid;
 }
 

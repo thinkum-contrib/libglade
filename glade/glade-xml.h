@@ -117,6 +117,19 @@ const char *glade_get_widget_long_name (GtkWidget *widget);
 
 GladeXML   *glade_get_widget_tree      (GtkWidget *widget);
 
+/* interface for changing the custom widget handling */
+typedef GtkWidget *(* GladeXMLCustomWidgetHandler) (GladeXML *xml,
+						    gchar *func_name,
+						    gchar *name,
+						    gchar *string1,
+						    gchar *string2,
+						    gint int1,
+						    gint int2,
+						    gpointer user_data);
+
+void glade_set_custom_handler(GladeXMLCustomWidgetHandler handler,
+			      gpointer user_data);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

@@ -995,6 +995,70 @@ glade_xml_destroy(GtkObject *object)
 }
 
 /**
+ * glade_set_custom_handler
+ * @handler: the custom widget handler
+ * @user_data: user data passed to the custom handler
+ *
+ * Calling this function allows you to override the default behaviour
+ * when a Custom widget is found in an interface.  This could be used by
+ * a language binding to call some other function, or to limit what
+ * functions can be called to create custom widgets.
+ */
+static GtkWidget *
+default_custom_handler(GladeXML *xml, gchar *func_name, gchar *name,
+		       gchar *string1, gchar *string2, gint int1, gint int2,
+		       gpointer user_data)
+{
+	typedef GtkWidget *(* create_func)(gchar *name,
+					   gchar *string1, gchar *string2,
+					   gint int1, gint int2);
+	GModule *allsymbols;
+	create_func func;
+
+	if (!g_module_supported()) {
+		g_error("custom_new requires gmodule to work correctly");
+		return NULL;
+	}
+	allsymbols = g_module_open(NULL, 0);
+	if (g_module_symbol(allsymbols, func_name, (gpointer)&func))
+		return (* func)(name, string1, string2, int1, int2);
+	g_warning("could not find widget creation function");
+	return NULL;
+}
+
+static GladeXMLCustomWidgetHandler custom_handler = default_custom_handler;
+static gpointer custom_user_data = NULL;
+
+void
+glade_set_custom_handler(GladeXMLCustomWidgetHandler handler,
+			 gpointer user_data)
+{
+	custom_handler = handler;
+	custom_user_data = user_data;
+}
+
+/**
+ * glade_set_custom_handler
+ * @xml: the GladeXML object
+ * @func_name: the name of the widget creation function
+ * @name: the name of the widget
+ * @string1: the first string argument
+ * @string2: the second string argument
+ * @int1: the first integer argument
+ * @int2: the second integer argument
+ *
+ * Invokes the custom widget creation function.
+ * Returns: the new widget or NULL on error.
+ */
+GtkWidget *
+glade_create_custom(GladeXML *xml, gchar *func_name, gchar *name,
+		    gchar *string1, gchar *string2, gint int1, gint int2)
+{
+	return (* custom_handler)(xml, func_name, name, string1, string2,
+				  int1, int2, custom_user_data);
+}
+
+/**
  * glade_enum_from_string
  * @type: the GtkType for this flag or enum type.
  * @string: the string representation of the enum value.

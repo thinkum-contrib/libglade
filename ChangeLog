@@ -1,3 +1,16 @@
+2000-06-26  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gtk.c (custom_new): use glade_create_custom.
+
+	* glade/glade-build.h: prototype for glade_create_custom.
+
+	* glade/glade-xml.c (glade_set_custom_handler): implementation.
+	Default custom handler use GModule like before.
+	(glade_create_custom): function for use in glade-gtk.c
+
+	* glade/glade-xml.h: add prototype for setting a function used to
+	create custom widgets.
+
 2000-06-25  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-gnome.c (pixmapmenuitem_new): revert visible accels.
