@@ -1,3 +1,8 @@
+1999-04-10  Miguel de Icaza  <miguel@nuclecu.unam.mx>
+
+	* glade/glade-xml.h: Tag return values as "const char *" to warn
+	the user not to free the results of these.
+
 1999-04-06  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-gtk.c: a few small fixes to make libglade compile

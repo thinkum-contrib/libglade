@@ -59,27 +59,31 @@ struct _GladeSignalData {
   gboolean signal_after;
 };
 
-GtkType glade_xml_get_type(void);
-GladeXML *glade_xml_new(const char *filename, const char *root);
-void glade_xml_construct(GladeXML *xml, const char *filename,
-			 const char *root);
+GtkType glade_xml_get_type    (void);
+GladeXML *glade_xml_new       (const char *filename, const char *root);
+void glade_xml_construct      (GladeXML *xml, const char *filename,
+			       const char *root);
 
-void glade_xml_signal_connect(GladeXML *xml, const char *signalname,
-			      GtkSignalFunc func);
-/* use gmodule to connect signals automatically.  Basically a symbol with
+void glade_xml_signal_connect (GladeXML *xml, const char *signalname,
+			       GtkSignalFunc func);
+/*
+ * use gmodule to connect signals automatically.  Basically a symbol with
  * the name of the signal handler is searched for, and that is connected to
  * the associated symbols.  So setting gtk_main_quit as a signal handler
- * for the destroy signal of a window will do what you expect. */
-void glade_xml_signal_autoconnect(GladeXML *xml);
+ * for the destroy signal of a window will do what you expect.
+ */
+void       glade_xml_signal_autoconnect      (GladeXML *xml);
 
-GtkWidget *glade_xml_get_widget(GladeXML *xml, const char *name);
-GtkWidget *glade_xml_get_widget_by_long_name(GladeXML *xml,
-					     const char *longname);
+GtkWidget *glade_xml_get_widget              (GladeXML *xml,
+					      const char *name);
+GtkWidget *glade_xml_get_widget_by_long_name (GladeXML *xml,
+					      const char *longname);
 
 /* don't free the results of these two ... */
-char *glade_get_widget_name(GtkWidget *widget);
-char *glade_get_widget_long_name(GtkWidget *widget);
-GladeXML *glade_get_widget_tree(GtkWidget *widget);
+const char *glade_get_widget_name      (GtkWidget *widget);
+const char *glade_get_widget_long_name (GtkWidget *widget);
+
+GladeXML   *glade_get_widget_tree      (GtkWidget *widget);
 
 
 #endif
