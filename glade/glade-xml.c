@@ -1087,7 +1087,27 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 		GladeAttribute *attr = tmp->data;
 
 		if (!strcmp(attr->name, "events")) {
-			long events = strtol(attr->value, NULL, 0);
+			char *tmpptr, *endptr;
+			long events = strtol(attr->value, &endptr, 0);
+
+			/* format conversion error */
+			if (attr->value == endptr) {
+				events = 0;
+				tmpptr = attr->value;
+				while ((endptr = strchr(tmpptr, ' '))) {
+					char *str = g_strndup(tmpptr,
+							      endptr-tmpptr);
+					events |= glade_enum_from_string(
+						GTK_TYPE_GDK_EVENT_MASK, str);
+					g_free(str);
+					tmpptr = endptr;
+					while (tmpptr[0] == ' ' ||
+					       tmpptr[0] == '|')
+						tmpptr++;
+				}
+				events |= glade_enum_from_string(
+					GTK_TYPE_GDK_EVENT_MASK, tmpptr);
+			}
 			gtk_widget_set_events(widget, events);
 		} else if (!strcmp(attr->name, "extension_events")) {
 			GdkExtensionMode ex =

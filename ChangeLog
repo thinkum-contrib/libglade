@@ -1,3 +1,9 @@
+2000-03-09  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c (glade_xml_set_common_params): handle the case
+	where the events parameter is returned as a string rather than a
+	simple integer, as it is in current versions of glade.
+
 2000-03-08  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-gtk.c (progressbar_new): added support for progress
