@@ -1042,6 +1042,8 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 		GTK_WIDGET_SET_FLAGS(widget, GTK_CAN_DEFAULT);
 	if (info->can_focus)
 		GTK_WIDGET_SET_FLAGS(widget, GTK_CAN_FOCUS);
+	else
+		GTK_WIDGET_UNSET_FLAGS(widget, GTK_CAN_FOCUS);
 	if (info->has_default)
 		self->priv->default_widget = widget;
 	if (info->has_focus)

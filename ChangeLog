@@ -1,5 +1,9 @@
 1999-11-13  James Henstridge  <james@daa.com.au>
 
+	* glade/glade-xml.c (glade_xml_set_common_params): added patch to
+	correctly unset the CAN_FOCUS flag on widgets.  The patch came from
+	Andreas Degert <ad@papyrus-gmbh.de>
+
 	* glade/glade-gnome.c (toolbar_new): use the toolbar style as set in
 	the control center, rather than that in the XML file.
 	(dockitem_new): fixed bug with setting name of dock items.  Patch
