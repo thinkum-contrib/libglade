@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <glade/glade-build.h>
+#include <gmodule.h>
 #include <gtk/gtk.h>
 #include <tree.h>
 
