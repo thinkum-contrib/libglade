@@ -91,24 +91,15 @@ the actual widgets from the XML node data structures.
 @widget_class: 
 
 
-<!-- ##### STRUCT GladeWidgetBuildData ##### -->
+<!-- ##### FUNCTION glade_register_widget ##### -->
 <para>
 
 </para>
 
-@name: 
+@type: 
 @new: 
 @build_children: 
-@get_type_func: 
-@typecode: 
 @find_internal_child: 
-
-<!-- ##### FUNCTION glade_register_widgets ##### -->
-<para>
-
-</para>
-
-@widgets: 
 
 
 <!-- ##### FUNCTION glade_xml_set_value_from_string ##### -->

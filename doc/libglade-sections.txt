@@ -70,8 +70,7 @@ GladeFindInternalChildFunc
 glade_xml_build_widget
 glade_xml_handle_internal_child
 glade_xml_set_common_params
-GladeWidgetBuildData
-glade_register_widgets
+glade_register_widget
 <SUBSECTION Helper Routines>
 glade_xml_set_value_from_string
 glade_standard_build_widget

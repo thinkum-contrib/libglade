@@ -1196,34 +1196,81 @@ glade_xml_build_interface(GladeXML *self, GladeInterface *iface,
 
 /* below are functions from glade-build.h */
 
-static GHashTable *widget_table = NULL;
+static GQuark glade_build_data_id = 0;
+static const gchar *glade_build_data_key = "libglade::build-data";
+typedef struct _GladeWidgetBuildData GladeWidgetBuildData;
+struct _GladeWidgetBuildData {
+    GladeNewFunc new;
+    GladeBuildChildrenFunc build_children;
+    GladeFindInternalChildFunc find_internal_child;
+};
 
 /**
- * glade_register_widgets:
- * @widgets: a NULL terminated array of GladeWidgetBuildData structures.
+ * glade_register_widget:
+ * @type: the GType of the widget.
+ * @new: the function used to construct instances of the widget.
+ * @build_children: function used to construct children (or NULL).
+ * @find_internal_child: function to find internal children (or NULL).
  *
- * This function is used to register new sets of widget building functions.
- * each member of @widgets contains the widget name, a function to build
- * a widget of that type, and optionally a function to build the children
- * of this widget.  The child building routine would call
- * glade_xml_build_widget on each child node to create the child before
- * packing it.
+ * This function is used to register new construction functions for a
+ * widget type.  The child building routine would call
+ * glade_xml_build_widget on each child node to create the child
+ * before packing it.
  *
  * This function is mainly useful for addon widget modules for libglade
  * (it would get called from the glade_init_module function).
  */
 void
-glade_register_widgets(const GladeWidgetBuildData *widgets)
+glade_register_widget(GType type,
+		      GladeNewFunc new,
+		      GladeBuildChildrenFunc build_children,
+		      GladeFindInternalChildFunc find_internal_child)
 {
-    int i = 0;
+    GladeWidgetBuildData *data;
 
-    if (!widget_table)
-	widget_table = g_hash_table_new(g_str_hash, g_str_equal);
-    while (widgets[i].name != NULL) {
-	g_hash_table_insert(widget_table, widgets[i].name,
-			    (gpointer)&widgets[i]);
-	i++;
-    }
+    g_return_if_fail(g_type_is_a(type, GTK_TYPE_WIDGET));
+
+    if (glade_build_data_id == 0)
+	glade_build_data_id = g_quark_from_static_string(glade_build_data_key);
+
+    if (!new) new = glade_standard_build_widget;
+
+    data = g_new(GladeWidgetBuildData, 1);
+
+    data->new = new;
+    data->build_children = build_children;
+    data->find_internal_child = find_internal_child;
+
+    g_type_set_qdata(type, glade_build_data_id, data);
+}
+
+/* helper function for getting the build data for a type */
+static const GladeWidgetBuildData *
+get_build_data(GType type)
+{
+    static const GladeWidgetBuildData widget_build_data = {
+	glade_standard_build_widget,
+	NULL,
+	NULL
+    };
+    static const GladeWidgetBuildData container_build_data = {
+	glade_standard_build_widget,
+	glade_standard_build_children,
+	NULL
+    };
+    const GladeWidgetBuildData *build_data;
+
+    if (glade_build_data_id == 0)
+	glade_build_data_id = g_quark_from_static_string(glade_build_data_key);
+
+    build_data = g_type_get_qdata(type, glade_build_data_id);
+    
+    if (build_data)
+	return build_data;
+    if (g_type_is_a(type, GTK_TYPE_CONTAINER))
+	return &container_build_data;
+    else
+	return &widget_build_data;
 }
 
 /**
@@ -1592,7 +1639,7 @@ glade_standard_build_children(GladeXML *self, GtkWidget *parent,
 GtkWidget *
 glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info)
 {
-    GladeWidgetBuildData *data;
+    GType type;
     GtkWidget *ret;
 
     debug(g_message("Widget class: %s", info->class));
@@ -1604,19 +1651,15 @@ glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info)
 	gtk_widget_show(ret);
 	return ret;
     }
-    data = g_hash_table_lookup(widget_table, info->class);
-    if (data == NULL) {
+    type = g_type_from_name(info->class);
+    if (type == G_TYPE_INVALID) {
 	char buf[50];
 	g_warning("unknown widget class '%s'", info->class);
 	g_snprintf(buf, 49, "[a %s]", info->class);
 	ret = gtk_label_new(buf);
 	gtk_widget_show(ret);
     } else {
-	if (!data->typecode && data->get_type_func)
-	    data->typecode = data->get_type_func();
-	g_assert(data->new);
-	g_assert(data->typecode);
-	ret = data->new(self, data->typecode, info);
+	ret = get_build_data(type)->new(self, type, info);
     }
     glade_xml_set_common_params(self, ret, info);
     return ret;
@@ -1638,17 +1681,15 @@ void
 glade_xml_handle_internal_child(GladeXML *self, GtkWidget *parent,
 				GladeChildInfo *child_info)
 {
-    GladeWidgetBuildData *parent_build_data = NULL;
+    const GladeWidgetBuildData *parent_build_data = NULL;
     GtkWidget *child;
 
     /* walk up the widget heirachy until we find a parent with a
      * find_internal_child handler */
     while (parent_build_data == NULL && parent != NULL) {
-	parent_build_data = g_hash_table_lookup(widget_table,
-						G_OBJECT_TYPE_NAME(parent));
+	parent_build_data = get_build_data(G_OBJECT_TYPE(parent));
 
-	if (parent_build_data != NULL &&
-	    parent_build_data->find_internal_child != NULL)
+	if (parent_build_data->find_internal_child != NULL)
 	    break;
 
 	parent_build_data = NULL; /* set to NULL if no find_internal_child */
@@ -1707,12 +1748,10 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 			    GladeWidgetInfo *info)
 {
     GList *tmp;
-    GladeWidgetBuildData *data;
+    const GladeWidgetBuildData *data;
 
     /* get the build data */
-    if (!widget_table)
-	widget_table = g_hash_table_new(g_str_hash, g_str_equal);
-    data = g_hash_table_lookup(widget_table, info->class);
+    data = get_build_data(G_OBJECT_TYPE(widget));
     glade_xml_add_signals(self, widget, info);
     glade_xml_add_accels(self, widget, info);
 

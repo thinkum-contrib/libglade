@@ -78,6 +78,18 @@ Libglade SAX Parser
 @rc_name: 
 @local: 
 
+<!-- ##### STRUCT GladeWidgetBuildData ##### -->
+<para>
+
+</para>
+
+@name: 
+@new: 
+@build_children: 
+@get_type_func: 
+@typecode: 
+@find_internal_child: 
+
 <!-- ##### STRUCT GladeWidgetTree ##### -->
 <para>
 
@@ -118,6 +130,13 @@ Libglade SAX Parser
 </para>
 
 @module: 
+
+<!-- ##### FUNCTION glade_register_widgets ##### -->
+<para>
+
+</para>
+
+@widgets: 
 
 <!-- ##### FUNCTION glade_widget_tree_free ##### -->
 <para>

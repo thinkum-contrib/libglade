@@ -47,20 +47,11 @@ typedef GtkWidget *(* GladeFindInternalChildFunc) (GladeXML *xml,
 						   GtkWidget *parent,
 						   const char *childname);
 
-typedef struct _GladeWidgetBuildData GladeWidgetBuildData;
-struct _GladeWidgetBuildData {
-    char *name;
-    GladeNewFunc new;
-    GladeBuildChildrenFunc build_children;
-    GType (* get_type_func)(void);
-    GType typecode;  /* this member takes precedence over get_type_func */
-    GladeFindInternalChildFunc find_internal_child;
-};
-
-/* widgets is a static, NULL terminated array of GladeWidgetBuildData's.
- * They will be added to a hash table, with the name as the key, to be
- * used by glade_xml_build_widget */
-void glade_register_widgets(const GladeWidgetBuildData *widgets);
+/* register handlers for a widget */
+void glade_register_widget(GType type,
+			   GladeNewFunc new,
+			   GladeBuildChildrenFunc build_children,
+			   GladeFindInternalChildFunc find_internal_child);
 
 /* set the current toplevel widget while building (use NULL to unset) */
 void glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window);

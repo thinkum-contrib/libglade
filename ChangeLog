@@ -1,3 +1,25 @@
+2001-10-24  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gtk.c (_glade_init_gtk_widgets): same here.
+
+	* glade/glade-gnome.c (glade_module_register_widgets): same here.
+
+	* glade/glade-bonobo.c (glade_module_register_widgets): use
+	glade_register_widget.
+
+	* glade/glade-xml.c (glade_register_widget): change from
+	glade_register_widgets to a function for handling a single type.
+	Instead of storing build data in a hash table keyed on the name,
+	store as data on the GType (g_type_from_name can be used to do the
+	name lookup).
+	(get_build_data): function for getting the build data for a type.
+	If no build data has been registered, return a standard handler.
+	This will allow libglade to handle arbitrary types.
+	(glade_xml_build_widget): use get_build_data to lookup the new()
+	function.
+	(glade_xml_handle_internal_child): use get_build_data().
+	(glade_xml_set_common_params): use get_build_data().
+
 2001-10-24  jacob berkman  <jacob@ximian.com>
 
 	* glade/glade-init.c (glade_require): use g_module_build_path()

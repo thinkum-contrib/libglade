@@ -470,163 +470,155 @@ combo_find_internal_child(GladeXML *xml, GtkWidget *parent,
     return NULL;
 }
 
-static GladeWidgetBuildData widget_data[] = {
-    { "GtkAccelLabel", glade_standard_build_widget, NULL,
-      gtk_accel_label_get_type },
-    { "GtkAlignment", glade_standard_build_widget, glade_standard_build_children,
-      gtk_alignment_get_type },
-    { "GtkArrow", glade_standard_build_widget, NULL,
-      gtk_arrow_get_type },
-    { "GtkAspectFrame", glade_standard_build_widget, glade_standard_build_children,
-      gtk_aspect_frame_get_type },
-    { "GtkButton", build_button, glade_standard_build_children,
-      gtk_button_get_type },
-    { "GtkCalendar", glade_standard_build_widget, NULL,
-      gtk_calendar_get_type },
-    { "GtkCheckButton", glade_standard_build_widget, glade_standard_build_children,
-      gtk_check_button_get_type },
-    { "GtkCheckMenuItem", glade_standard_build_widget, menuitem_build_children,
-      gtk_check_menu_item_get_type },
-    { "GtkCList", clist_new, clist_build_children,
-      gtk_clist_get_type },
-    { "GtkColorSelection", glade_standard_build_widget, NULL,
-      gtk_color_selection_get_type },
-    { "GtkColorSelectionDialog", window_new, glade_standard_build_children,
-      gtk_color_selection_dialog_get_type, 0, colorseldlg_find_internal_child },
-    { "GtkCombo", glade_standard_build_widget, glade_standard_build_children,
-      gtk_combo_get_type, 0, combo_find_internal_child },
-    { "GtkCTree", clist_new, clist_build_children,
-      gtk_ctree_get_type },
-    { "GtkCurve", glade_standard_build_widget, NULL,
-      gtk_curve_get_type },
-    { "GtkDialog", glade_standard_build_widget, gtk_dialog_build_children,
-      gtk_dialog_get_type, 0, dialog_find_internal_child },
-    { "GtkDrawingArea", glade_standard_build_widget, NULL,
-      gtk_drawing_area_get_type },
-    { "GtkEntry", glade_standard_build_widget, NULL,
-      gtk_entry_get_type },
-    { "GtkEventBox", glade_standard_build_widget, glade_standard_build_children,
-      gtk_event_box_get_type },
-    { "GtkFileSelection", window_new, glade_standard_build_children,
-      gtk_file_selection_get_type, 0, filesel_find_internal_child },
-    { "GtkFixed", glade_standard_build_widget, glade_standard_build_children,
-      gtk_fixed_get_type },
-    { "GtkFontSelection", glade_standard_build_widget, NULL,
-      gtk_font_selection_get_type },
-    { "GtkFontSelectionDialog", window_new, glade_standard_build_children,
-      gtk_font_selection_dialog_get_type, 0, fontseldlg_find_internal_child },
-    { "GtkFrame", glade_standard_build_widget, glade_standard_build_children,
-      gtk_frame_get_type },
-    { "GtkGammaCurve", glade_standard_build_widget, NULL,
-      gtk_gamma_curve_get_type },
-    { "GtkHandleBox", glade_standard_build_widget, glade_standard_build_children,
-      gtk_handle_box_get_type },
-    { "GtkHButtonBox", glade_standard_build_widget, glade_standard_build_children,
-      gtk_hbutton_box_get_type },
-    { "GtkHBox", glade_standard_build_widget, glade_standard_build_children,
-      gtk_hbox_get_type },
-    { "GtkHPaned", glade_standard_build_widget, glade_standard_build_children,
-      gtk_hpaned_get_type },
-    { "GtkHRuler", glade_standard_build_widget, NULL,
-      gtk_hruler_get_type },
-    { "GtkHScale", glade_standard_build_widget, NULL,
-      gtk_hscale_get_type },
-    { "GtkHScrollbar", glade_standard_build_widget, NULL,
-      gtk_hscrollbar_get_type },
-    { "GtkHSeparator", glade_standard_build_widget, NULL,
-      gtk_hseparator_get_type },
-    { "GtkImage", glade_standard_build_widget, NULL,
-      gtk_image_get_type },
-    { "GtkImageMenuItem", glade_standard_build_widget, menuitem_build_children,
-      gtk_image_menu_item_get_type, 0, image_menu_find_internal_child },
-    { "GtkInputDialog", window_new, glade_standard_build_children,
-      gtk_input_dialog_get_type },
-    { "GtkLabel", glade_standard_build_widget, NULL,
-      gtk_label_get_type },
-    { "GtkLayout", glade_standard_build_widget, glade_standard_build_children,
-      gtk_layout_get_type },
-    { "GtkList", glade_standard_build_widget, glade_standard_build_children,
-      gtk_list_get_type },
-    { "GtkListItem", glade_standard_build_widget, glade_standard_build_children,
-      gtk_list_item_get_type },
-    { "GtkMenu", glade_standard_build_widget, glade_standard_build_children,
-      gtk_menu_get_type },
-    { "GtkMenuBar", glade_standard_build_widget, glade_standard_build_children,
-      gtk_menu_bar_get_type },
-    { "GtkMenuItem", glade_standard_build_widget, menuitem_build_children,
-      gtk_menu_item_get_type },
-    { "GtkMessageDialog", window_new, glade_standard_build_children,
-      gtk_message_dialog_get_type },
-    { "GtkNotebook", glade_standard_build_widget, notebook_build_children,
-      gtk_notebook_get_type },
-    { "GtkOptionMenu", glade_standard_build_widget, glade_standard_build_children,
-      gtk_option_menu_get_type, 0, option_menu_find_internal_child },
-/*    { "GtkPacker", glade_standard_build_widget, glade_standard_build_children,
-      gtk_packer_get_type }, */
-    { "GtkPixmap", glade_standard_build_widget, NULL,
-      gtk_pixmap_get_type },
-    { "GtkPlug", window_new, glade_standard_build_children,
-      gtk_plug_get_type },
-    { "GtkProgress", glade_standard_build_widget, NULL,
-      gtk_progress_get_type },
-    { "GtkProgressBar", glade_standard_build_widget, NULL,
-      gtk_progress_bar_get_type },
-    { "GtkRadioButton", glade_standard_build_widget, glade_standard_build_children,
-      gtk_radio_button_get_type },
-    { "GtkRadioMenuItem", glade_standard_build_widget, menuitem_build_children,
-      gtk_radio_menu_item_get_type },
-    { "GtkScrolledWindow", glade_standard_build_widget, glade_standard_build_children,
-      gtk_scrolled_window_get_type, 0, scrolled_window_find_internal_child },
-    { "GtkSeparatorMenuItem", glade_standard_build_widget, NULL,
-      gtk_separator_menu_item_get_type },
-    { "GtkSocket", glade_standard_build_widget, NULL,
-      gtk_socket_get_type },
-    { "GtkSpinButton", glade_standard_build_widget, NULL,
-      gtk_spin_button_get_type },
-    { "GtkStatusbar", glade_standard_build_widget, NULL,
-      gtk_statusbar_get_type },
-    { "GtkTable", glade_standard_build_widget, glade_standard_build_children,
-      gtk_table_get_type },
-    { "GtkTearoffMenuItem", glade_standard_build_widget, NULL,
-      gtk_tearoff_menu_item_get_type },
-    { "GtkText", glade_standard_build_widget, NULL,
-      gtk_text_get_type },
-    { "GtkTextView", glade_standard_build_widget, NULL,
-      gtk_text_view_get_type },
-    { "GtkTipsQuery", glade_standard_build_widget, NULL,
-      gtk_tips_query_get_type },
-    { "GtkToggleButton", glade_standard_build_widget, glade_standard_build_children,
-      gtk_toggle_button_get_type },
-    { "GtkToolbar", glade_standard_build_widget, glade_standard_build_children,
-      gtk_toolbar_get_type },
-    { "GtkTree", glade_standard_build_widget, NULL,
-      gtk_tree_get_type },
-    { "GtkTreeView", glade_standard_build_widget, NULL,
-      gtk_tree_view_get_type },
-    { "GtkVButtonBox", glade_standard_build_widget, glade_standard_build_children,
-      gtk_vbutton_box_get_type },
-    { "GtkVBox", glade_standard_build_widget, glade_standard_build_children,
-      gtk_vbox_get_type },
-    { "GtkVPaned", glade_standard_build_widget, glade_standard_build_children,
-      gtk_vpaned_get_type },
-    { "GtkVRuler", glade_standard_build_widget, NULL,
-      gtk_vruler_get_type },
-    { "GtkVScale", glade_standard_build_widget, NULL,
-      gtk_vscale_get_type },
-    { "GtkVScrollbar", glade_standard_build_widget, NULL,
-      gtk_vscrollbar_get_type },
-    { "GtkVSeparator", glade_standard_build_widget, NULL,
-      gtk_vseparator_get_type },
-    { "GtkViewport", glade_standard_build_widget, glade_standard_build_children,
-      gtk_viewport_get_type },
-    { "GtkWindow", window_new, glade_standard_build_children,
-      gtk_window_get_type },
-    { NULL, NULL, NULL, 0, 0 }
-};
-
 void
 _glade_init_gtk_widgets(void)
 {
+    glade_register_widget (GTK_TYPE_ACCEL_LABEL, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_ALIGNMENT, glade_standard_build_widget,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_ARROW, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_ASPECT_FRAME, glade_standard_build_widget,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_BUTTON, glade_standard_build_widget,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_CALENDAR, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_CHECK_BUTTON, glade_standard_build_widget,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_CHECK_MENU_ITEM, glade_standard_build_widget,
+			   menuitem_build_children, NULL);
+    glade_register_widget (GTK_TYPE_CLIST, clist_new,
+			   clist_build_children, NULL);
+    glade_register_widget (GTK_TYPE_COLOR_SELECTION, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_COLOR_SELECTION_DIALOG, window_new,
+			   glade_standard_build_children, colorseldlg_find_internal_child);
+    glade_register_widget (GTK_TYPE_COMBO, glade_standard_build_widget,
+			   glade_standard_build_children, combo_find_internal_child);
+    glade_register_widget (GTK_TYPE_CTREE, clist_new,
+			   clist_build_children, NULL);
+    glade_register_widget (GTK_TYPE_CURVE, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_DIALOG, glade_standard_build_widget,
+			   gtk_dialog_build_children, dialog_find_internal_child);
+    glade_register_widget (GTK_TYPE_DRAWING_AREA, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_ENTRY, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_EVENT_BOX, glade_standard_build_widget,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_FILE_SELECTION, window_new,
+			   glade_standard_build_children, filesel_find_internal_child);
+    glade_register_widget (GTK_TYPE_FIXED, glade_standard_build_widget,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_FONT_SELECTION, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_FONT_SELECTION_DIALOG, window_new,
+			   glade_standard_build_children, fontseldlg_find_internal_child);
+    glade_register_widget (GTK_TYPE_FRAME, glade_standard_build_widget,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_GAMMA_CURVE, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_HANDLE_BOX, glade_standard_build_widget,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_HBUTTON_BOX, glade_standard_build_widget,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_HBOX, glade_standard_build_widget,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_HPANED, glade_standard_build_widget,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_HRULER, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_HSCALE, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_HSCROLLBAR, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_HSEPARATOR, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_IMAGE, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_IMAGE_MENU_ITEM, glade_standard_build_widget,
+			   menuitem_build_children, image_menu_find_internal_child);
+    glade_register_widget (GTK_TYPE_INPUT_DIALOG, window_new,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_LABEL, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_LAYOUT, glade_standard_build_widget,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_LIST, glade_standard_build_widget,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_LIST_ITEM, glade_standard_build_widget,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_MENU, glade_standard_build_widget,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_MENU_BAR, glade_standard_build_widget,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_MENU_ITEM, glade_standard_build_widget,
+			   menuitem_build_children, NULL);
+    glade_register_widget (GTK_TYPE_MESSAGE_DIALOG, window_new,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_NOTEBOOK, glade_standard_build_widget,
+			   notebook_build_children, NULL);
+    glade_register_widget (GTK_TYPE_OPTION_MENU, glade_standard_build_widget,
+			   glade_standard_build_children, option_menu_find_internal_child);
+    glade_register_widget (GTK_TYPE_PIXMAP, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_PLUG, window_new,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_PROGRESS, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_PROGRESS_BAR, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_RADIO_BUTTON, glade_standard_build_widget,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_RADIO_MENU_ITEM, glade_standard_build_widget,
+			   menuitem_build_children, NULL);
+    glade_register_widget (GTK_TYPE_SCROLLED_WINDOW, glade_standard_build_widget,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_SOCKET, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_SPIN_BUTTON, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_STATUSBAR, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_TABLE, glade_standard_build_widget,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_TEAROFF_MENU_ITEM, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_TEXT, glade_standard_build_children,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_TEXT_VIEW, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_TIPS_QUERY, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_TOGGLE_BUTTON, glade_standard_build_widget,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_TOOLBAR, glade_standard_build_widget,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_TREE, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_TREE_VIEW, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_VBUTTON_BOX, glade_standard_build_widget,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_VBOX, glade_standard_build_widget,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_VPANED, glade_standard_build_widget,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_VRULER, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_VSCALE, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_VSCROLLBAR, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_VSEPARATOR, glade_standard_build_widget,
+			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_VIEWPORT, glade_standard_build_widget,
+			   glade_standard_build_children, NULL);
+    glade_register_widget (GTK_TYPE_WINDOW, window_new,
+			   glade_standard_build_children, NULL);
+
     glade_provide("gtk");
-    glade_register_widgets(widget_data);
 }
