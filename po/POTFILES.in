@@ -1,0 +1,3 @@
+glade/glade-gnome.c
+glade/glade-gtk.c
+test-libglade.c
