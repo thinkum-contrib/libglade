@@ -1,26 +1,4 @@
-if GNOME_SUPPORT
-THE_FLAGS = $(GNOME_INCLUDEDIR)
-THE_LIBS  = glade/libglade-gnome.la glade/libglade.la $(GNOME_LIBDIR) $(GNOMEUI_LIBS)
-libglade_gnome_pc = libglade-gnome.pc
-else
-THE_FLAGS = $(GTK_CFLAGS)
-THE_LIBS  = glade/libglade.la $(GTK_LIBS)
-libglade_gnome_pc =
-endif
-
-if BONOBO_SUPPORT
-libglade_bonobo_pc = libglade-bonobo.pc
-else
-libglade_bonobo_pc =
-endif
-
-if GNOMEDB_SUPPORT
-libglade_gnomedb_pc = libglade-gnomedb.pc
-else
-libglade_gnomedb_pc =
-endif
-
-INCLUDES = $(THE_FLAGS) $(XML_CFLAGS)
+INCLUDES = $(GTK_CFLAGS) $(XML_CFLAGS)
 
 EXTRA_DIST =			\
 	libgladeConf.sh		\
@@ -42,17 +20,13 @@ EXTRA_DIST =			\
 
 bin_SCRIPTS = libglade-config libglade-xgettext
 noinst_PROGRAMS = test-libglade
-test_libglade_LDADD = $(THE_LIBS) $(XML_LIBS)
+test_libglade_LDADD = glade/libglade-2.0.la $(GTK_LIBS) $(XML_LIBS)
 SUBDIRS = intl po macros glade doc
 
 m4datadir = $(datadir)/aclocal
-m4data_DATA = libglade.m4
-
-confexecdir = $(libdir)
-confexec_DATA = libgladeConf.sh
+m4data_DATA = libglade-2.0.m4
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = libglade.pc $(libglade_gnome_pc) $(libglade_bonobo_pc) \
-  $(libglade_gnomedb_pc)
+pkgconfig_DATA = libglade-2.0.pc
 
 test_libglade_SOURCES = test-libglade.c

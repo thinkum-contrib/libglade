@@ -1,3 +1,8 @@
+2001-05-03  James Henstridge  <james@daa.com.au>
+
+	* *: start to change build stuff for gtk+ 2.0 and libxml2.  Stable
+	branch is libglade-1-0.
+
 2001-04-04  John Gotts  <jgotts@linuxsavvy.com>
 
 	* libglade.spec.in: Fixed the Group:'s.  Also cleaned up the build

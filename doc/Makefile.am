@@ -12,13 +12,8 @@ HTML_DIR=$(datadir)/gnome/html
 
 TARGET_DIR=$(HTML_DIR)/$(DOC_MODULE)
 
-if GNOME_SUPPORT
-CFLAGS = $(GNOME_INCLUDEDIR) $(XML_CFLAGS) -I$(srcdir)/..
-LDFLAGS = ../glade/libglade.la $(GNOME_LIBDIR) $(GNOMEUI_LIBS) $(XML_LIBS)
-else
 CFLAGS = $(GTK_CFLAGS) $(XML_CFLAGS) -I$(srcdir)/..
-LDFLAGS = ../glade/libglade.la $(GTK_LIBS) $(XML_LIBS)
-endif
+LDFLAGS = ../glade/libglade-2.0.la $(GTK_LIBS) $(XML_LIBS)
 
 SCANOBJ_FILES = $(DOC_MODULE).signals $(DOC_MODULE).hierachy $(DOC_MODULE).args
 
