@@ -1,3 +1,8 @@
+2003-04-28  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c: various updates for the allowing GObjects in
+	the backend interface.  Compiles, but doesn't necessarily work :)
+
 2003-04-18  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-parser.c: update to accept <widget> and <object>

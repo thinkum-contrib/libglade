@@ -80,13 +80,13 @@ void glade_xml_set_packing_property (GladeXML   *self,
 				     const char *name,   const char *value);
 
 /* this function is called to build the interface by GladeXML */
-GtkWidget *glade_xml_build_widget(GladeXML *self, GladeObjectInfo *info);
+GObject *glade_xml_build_object(GladeXML *self, GladeObjectInfo *info);
 
 /* this function is used to get a pointer to the internal child of a
  * container widget.  It would generally be called by the
  * build_children callback for any children with the internal_child
  * name set. */
-void glade_xml_handle_internal_child(GladeXML *self, GtkWidget *parent,
+void glade_xml_handle_internal_child(GladeXML *self, GObject *parent,
 				     GladeChildInfo *child_info);
 
 /* This function performs half of what glade_xml_build_widget does.  It is

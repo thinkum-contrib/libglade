@@ -54,6 +54,7 @@ static void glade_xml_class_init(GladeXMLClass *class);
 
 static GObjectClass *parent_class;
 static void glade_xml_finalize(GObject *object);
+static void glade_xml_object_dispose(gpointer data, GObject *object);
 
 static void glade_xml_build_interface(GladeXML *xml, GladeInterface *iface,
 				      const char *root);
@@ -652,39 +653,39 @@ glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window)
 }
 
 /**
- * glade_xml_handle_widget_prop
+ * glade_xml_handle_object_prop
  * @self: the GladeXML object
- * @widget: the property the widget to set the property on.
+ * @object: the property the object to set the property on.
  * @prop_name: the name of the property.
- * @value_name: the name of the widget used as the value for the property.
+ * @value_name: the name of the object used as the value for the property.
  *
- * Some widgets have properties of type GtkWidget.  These are
- * represented as the widget name in the glade file.  When
- * constructing the interface, the widget specified as the value for a
- * property may not exist yet.
+ * Some objects have properties of type GObject.  These are
+ * represented as the object name in the glade file.  When
+ * constructing the user interface, the object specified as the value
+ * for a property may not exist yet.
  *
  * Rather than setting the property directly, this function should be
- * used.  It will perform the name to GtkWidget conversion, and if the
- * widget is yet to be constructed, defer setting the property until
- * the widget is constructed.
+ * used.  It will perform the name to GObject conversion, and if the
+ * object is yet to be constructed, defer setting the property until
+ * the object is constructed.
  */
 void
-glade_xml_handle_widget_prop(GladeXML *self, GtkWidget *widget,
+glade_xml_handle_object_prop(GladeXML *self, GObject *object,
 			     const gchar *prop_name, const gchar *value_name)
 {
-    GtkWidget *value_widget;
+    GObject *value_object;
 
     g_return_if_fail(GLADE_IS_XML(self));
 
-    value_widget = g_hash_table_lookup(self->priv->name_hash, value_name);
-    if (value_widget) {
-	g_object_set(G_OBJECT(widget), prop_name, value_widget, NULL);
+    value_object = g_hash_table_lookup(self->priv->name_hash, value_name);
+    if (value_object) {
+	g_object_set(object, prop_name, value_object, NULL);
     } else {
 	GladeDeferredProperty *dprop = g_new(GladeDeferredProperty, 1);
 
 	dprop->target_name = value_name;
 	dprop->type = DEFERRED_PROP;
-	dprop->d.prop.object = G_OBJECT(widget);
+	dprop->d.prop.object = object;
 	dprop->d.prop.prop_name = prop_name;
 
 	self->priv->deferred_props = g_list_prepend(self->priv->deferred_props,
@@ -715,7 +716,7 @@ glade_xml_ensure_accel(GladeXML *xml)
 
 /* this is a private function */
 static void
-glade_xml_add_signals(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
+glade_xml_add_signals(GladeXML *xml, GObject *object, GladeObjectInfo *info)
 {
     gint i;
 
@@ -724,7 +725,7 @@ glade_xml_add_signals(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
 	GladeSignalData *data = g_new0(GladeSignalData, 1);
 	GList *list;
 
-	data->signal_object = G_OBJECT(w);
+	data->signal_object = object;
 	data->signal_name = sig->name;
 	data->connect_object = sig->object;
 	data->signal_after = sig->after;
@@ -737,38 +738,40 @@ glade_xml_add_signals(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
 
 /* this is a private function */
 static void
-glade_xml_add_atk_actions(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
+glade_xml_add_atk_actions(GladeXML *xml, GObject *object, GladeObjectInfo *info)
 {
     gint i, n_actions;
-    AtkObject *accessible;
+    AtkObject *accessible = NULL;
     AtkAction *action;
 
     if (info->n_atk_actions == 0)
 	return;
 
-    accessible = gtk_widget_get_accessible (w);
+    /* XXXX - figure out how non-widgets can provide their atk peer */
+    if (GTK_IS_WIDGET(object))
+	accessible = gtk_widget_get_accessible(GTK_WIDGET(object));
 
-    if (!ATK_IS_ACTION (accessible)) {
-	g_warning("widgets of type %s don't have actions, but one is specified",
-	  	  G_OBJECT_TYPE_NAME (w));
+    if (!ATK_IS_ACTION(accessible)) {
+	g_warning("objects of type %s don't have actions, but one is specified",
+	  	  G_OBJECT_TYPE_NAME(object));
 	return;
     }
 
-    action = ATK_ACTION (accessible);
-    n_actions = atk_action_get_n_actions (action);    
+    action = ATK_ACTION(accessible);
+    n_actions = atk_action_get_n_actions(action);    
     
     for (i = 0; i < info->n_atk_actions; i++) {
 	GladeAtkActionInfo *action_info = &info->atk_actions[i];
 	int j;
 
 	for (j = 0; j < n_actions; j++) {
-	    if (strcmp (atk_action_get_name (action, j),
-			action_info->action_name) == 0) {
+	    if (strcmp(atk_action_get_name(action, j),
+		       action_info->action_name) == 0) {
 		break;
 	    }
 	}
 	if (j < n_actions) {
-	    atk_action_set_description (action, j, action_info->description);
+	    atk_action_set_description(action, j, action_info->description);
 	} else {
 	    /* don't show a warning -- the action names might not
 	     * be registered if libgail hasn't been loaded */
@@ -806,16 +809,25 @@ add_relation(AtkRelationSet *relations, AtkRelationType relation_type,
 
 /* this is a private function */
 static void
-glade_xml_add_atk_relations(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
+glade_xml_add_atk_relations(GladeXML *xml, GObject *object, GladeObjectInfo *info)
 {
     gint i;
-    AtkObject *accessible;
+    AtkObject *accessible = NULL;
     AtkRelationSet *relations;
 
     if (info->n_relations == 0)
 	return;
 
-    accessible = gtk_widget_get_accessible (w);
+    /* XXXX - figure out how non-widgets can provide their atk peer */
+    if (GTK_IS_WIDGET(object))
+	accessible = gtk_widget_get_accessible(GTK_WIDGET(object));
+
+    if (!ATK_IS_ACTION(accessible)) {
+	g_warning("objects of type %s don't have actions, but one is specified",
+	  	  G_OBJECT_TYPE_NAME(object));
+	return;
+    }
+
     relations = atk_object_ref_relation_set (accessible);
     
     for (i = 0; i < info->n_relations; i++) {
@@ -846,7 +858,7 @@ glade_xml_add_atk_relations(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
 }
 
 static void
-glade_xml_add_accels(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
+glade_xml_add_accels(GladeXML *xml, GtkWidget *w, GladeObjectInfo *info)
 {
     gint i;
     for (i = 0; i < info->n_accels; i++) {
@@ -863,11 +875,18 @@ glade_xml_add_accels(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
 }
 
 static void
-glade_xml_add_accessibility_info(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
+glade_xml_add_accessibility_info(GladeXML *xml, GObject *object, GladeObjectInfo *info)
 {
     gint i;
-    AtkObject *accessible = gtk_widget_get_accessible (w);
-    
+    AtkObject *accessible = NULL;
+
+    if (GTK_IS_WIDGET(object))
+	accessible = gtk_widget_get_accessible(GTK_WIDGET(object));
+
+    if (info->n_atk_props != 0 && accessible == NULL) {
+	g_warning("could not get accessible for object of class `%s'",
+		  G_OBJECT_TYPE_NAME(object));
+    }
     for (i = 0; i < info->n_atk_props; i++) {
 	GParamSpec *pspec;
 	GValue value = { 0 };
@@ -892,8 +911,8 @@ glade_xml_add_accessibility_info(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *i
     }
 
     /* Hang on, we're not done yet ;-) */
-    glade_xml_add_atk_actions(xml, w, info);
-    glade_xml_add_atk_relations(xml, w, info);
+    glade_xml_add_atk_actions(xml, object, info);
+    glade_xml_add_atk_relations(xml, object, info);
     /*
        hmm, might have to defer some relations,
        if the widgets they refer to haven't
@@ -917,10 +936,13 @@ glade_xml_destroy_signals(char *key, GList *signal_datas)
 static void
 remove_data_func(gpointer key, gpointer value, gpointer user_data)
 {
-    GObject *object = value;
+    GladeXML *self = (GladeXML *)user_data;
+    GObject *object = (GObject *)value;
 
     g_object_set_qdata(object, glade_xml_tree_id, NULL);
     g_object_set_qdata(object, glade_xml_name_id, NULL);
+
+    g_object_weak_unref(object, glade_xml_object_dispose, self);
 }
 
 static void
@@ -1025,7 +1047,7 @@ glade_create_custom(GladeXML *xml, gchar *func_name, gchar *name,
 }
 
 static GtkWidget *
-custom_new (GladeXML *xml, GladeWidgetInfo *info)
+custom_new (GladeXML *xml, GladeObjectInfo *info)
 {
     GtkWidget *wid = NULL;
     gchar *func_name = NULL, *string1 = NULL, *string2 = NULL;
@@ -1160,21 +1182,21 @@ glade_xml_build_interface(GladeXML *self, GladeInterface *iface,
 			  const char *root)
 {
     gint i;
-    GladeWidgetInfo *wid;
-    GtkWidget *w;
+    GladeObjectInfo *object_info;
+    GObject *object;
 
     /* make sure required modules are loaded */
     for (i = 0; i < iface->n_requires; i++)
 	glade_require(iface->requires[i]);
 
     if (root) {
-	wid = g_hash_table_lookup(iface->names, root);
-	g_return_if_fail(wid != NULL);
-	w = glade_xml_build_widget(self, wid);
+	object_info = g_hash_table_lookup(iface->names, root);
+	g_return_if_fail(object_info != NULL);
+	object = glade_xml_build_object(self, object_info);
     } else {
 	/* build all toplevel nodes */
 	for (i = 0; i < iface->n_toplevels; i++) {
-	    w = glade_xml_build_widget(self, iface->toplevels[i]);
+	    object = glade_xml_build_object(self, iface->toplevels[i]);
 	}
     }
 }
@@ -1183,8 +1205,8 @@ glade_xml_build_interface(GladeXML *self, GladeInterface *iface,
 
 static GQuark glade_build_data_id = 0;
 static const gchar *glade_build_data_key = "libglade::build-data";
-typedef struct _GladeWidgetBuildData GladeWidgetBuildData;
-struct _GladeWidgetBuildData {
+typedef struct _GladeObjectBuildData GladeObjectBuildData;
+struct _GladeObjectBuildData {
     GladeNewFunc new;
     GladeBuildChildrenFunc build_children;
     GladeFindInternalChildFunc find_internal_child;
@@ -1199,7 +1221,7 @@ struct _GladeWidgetBuildData {
  *
  * This function is used to register new construction functions for a
  * widget type.  The child building routine would call
- * glade_xml_build_widget on each child node to create the child
+ * glade_xml_build_object on each child node to create the child
  * before packing it.
  *
  * This function is mainly useful for addon widget modules for libglade
@@ -1211,7 +1233,7 @@ glade_register_widget(GType type,
 		      GladeBuildChildrenFunc build_children,
 		      GladeFindInternalChildFunc find_internal_child)
 {
-    GladeWidgetBuildData *data;
+    GladeObjectBuildData *data;
     gpointer old_data;
 
     g_return_if_fail(g_type_is_a(type, GTK_TYPE_WIDGET));
@@ -1219,9 +1241,9 @@ glade_register_widget(GType type,
     if (glade_build_data_id == 0)
 	glade_build_data_id = g_quark_from_static_string(glade_build_data_key);
 
-    if (!new) new = glade_standard_build_widget;
+    if (!new) new = glade_standard_build_object;
 
-    data = g_new(GladeWidgetBuildData, 1);
+    data = g_new(GladeObjectBuildData, 1);
 
     data->new = new;
     data->build_children = build_children;
@@ -1235,20 +1257,20 @@ glade_register_widget(GType type,
 }
 
 /* helper function for getting the build data for a type */
-static const GladeWidgetBuildData *
+static const GladeObjectBuildData *
 get_build_data(GType type)
 {
-    static const GladeWidgetBuildData widget_build_data = {
-	glade_standard_build_widget,
+    static const GladeObjectBuildData widget_build_data = {
+	glade_standard_build_object,
 	NULL,
 	NULL
     };
-    static const GladeWidgetBuildData container_build_data = {
-	glade_standard_build_widget,
+    static const GladeObjectBuildData container_build_data = {
+	glade_standard_build_object,
 	glade_standard_build_children,
 	NULL
     };
-    const GladeWidgetBuildData *build_data;
+    const GladeObjectBuildData *build_data;
 
     if (glade_build_data_id == 0)
 	glade_build_data_id = g_quark_from_static_string(glade_build_data_key);
@@ -1556,27 +1578,27 @@ struct _CustomPropData {
 };
 
 /**
- * glade_standard_build_widget
+ * glade_standard_build_object
  * @xml: the GladeXML object.
- * @widget_type: the GType of the widget.
- * @info: the GladeWidgetInfo structure.
+ * @object_type: the GType of the widget.
+ * @info: the GladeObjectInfo structure.
  *
- * This is the standard widget building function.  It processes all
+ * This is the standard object building function.  It processes all
  * the widget properties using the standard object properties
- * interfaces.  This function will be sufficient for most widget
+ * interfaces.  This function will be sufficient for most object
  * types, thus reducing the ammount of work needed to wrap a library.
  *
- * Returns: the constructed widget.
+ * Returns: the constructed object.
  */
-GtkWidget *
-glade_standard_build_widget(GladeXML *xml, GType widget_type,
-			    GladeWidgetInfo *info)
+GObject *
+glade_standard_build_object(GladeXML *xml, GType object_type,
+			    GladeObjectInfo *info)
 {
     static GArray *props_array = NULL;
     static GArray *custom_props_array = NULL;
     GObjectClass *oclass;
     CustomPropInfo *custom_props;
-    GtkWidget *widget;
+    GObject *object;
     GList *deferred_props = NULL, *tmp;
     guint i;
 
@@ -1586,9 +1608,9 @@ glade_standard_build_widget(GladeXML *xml, GType widget_type,
     }
 
     /* we ref the class here as a slight optimisation */
-    oclass = g_type_class_ref(widget_type);
+    oclass = g_type_class_ref(object_type);
 
-    custom_props = get_custom_prop_info(widget_type);
+    custom_props = get_custom_prop_info(object_type);
 
     /* collect properties */
     for (i = 0; i < info->n_properties; i++) {
@@ -1617,19 +1639,11 @@ glade_standard_build_widget(GladeXML *xml, GType widget_type,
 	pspec = g_object_class_find_property(oclass, info->properties[i].name);
 	if (!pspec) {
 	    g_warning("unknown property `%s' for class `%s'",
-		      info->properties[i].name, g_type_name(widget_type));
+		      info->properties[i].name, g_type_name(object_type));
 	    continue;
 	}
 
-	/* this should catch all properties wanting a GtkWidget
-         * subclass.  We also look for types that could hold a
-         * GtkWidget in order to catch things like the
-         * GtkAccelLabel::accel_object property.  Since we don't do
-         * any handling of GObject or GtkObject directly in
-         * glade_xml_set_value_from_string, this shouldn't be a
-         * problem. */
-	if (g_type_is_a(GTK_TYPE_WIDGET, G_PARAM_SPEC_VALUE_TYPE(pspec)) ||
-	    g_type_is_a(G_PARAM_SPEC_VALUE_TYPE(pspec), GTK_TYPE_WIDGET)) {
+	if (g_type_is_a(G_PARAM_SPEC_VALUE_TYPE(pspec), G_TYPE_OBJECT)) {
 	    deferred_props = g_list_prepend(deferred_props,
 					    &info->properties[i]);
 	    continue;
@@ -1642,7 +1656,7 @@ glade_standard_build_widget(GladeXML *xml, GType widget_type,
 	    g_array_append_val(props_array, param);
 	}
     }
-    widget = g_object_newv(widget_type, props_array->len,
+    object = g_object_newv(object_type, props_array->len,
 			   (GParameter *)props_array->data);
 
     /* clean up props_array */
@@ -1657,7 +1671,7 @@ glade_standard_build_widget(GladeXML *xml, GType widget_type,
 
 	data = &g_array_index(custom_props_array, CustomPropData, i);
 	if (data->apply_prop)
-	    (* data->apply_prop) (xml, widget, data->prop->name,
+	    (* data->apply_prop) (xml, object, data->prop->name,
 				  data->prop->value);
     }
 
@@ -1665,7 +1679,7 @@ glade_standard_build_widget(GladeXML *xml, GType widget_type,
     for (tmp = deferred_props; tmp; tmp = tmp->next) {
 	GladeProperty *prop = tmp->data;
 
-	glade_xml_handle_widget_prop(xml, widget, prop->name, prop->value);
+	glade_xml_handle_object_prop(xml, object, prop->name, prop->value);
     }
     g_list_free(tmp);
 
@@ -1673,7 +1687,7 @@ glade_standard_build_widget(GladeXML *xml, GType widget_type,
     g_array_set_size(custom_props_array, 0);
     g_type_class_unref(oclass);
 
-    return widget;
+    return object;
 }
 
 /**
@@ -1711,7 +1725,7 @@ glade_xml_set_packing_property (GladeXML   *self,
  * glade_standard_build_children
  * @self: the GladeXML object.
  * @parent: the container widget.
- * @info: the GladeWidgetInfo structure.
+ * @info: the GladeObjectInfo structure.
  *
  * This is the standard child building function.  It simply calls
  * gtk_container_add on each child to add them to the parent, and
@@ -1723,14 +1737,16 @@ glade_xml_set_packing_property (GladeXML   *self,
  * properties interfaces.
  */
 void
-glade_standard_build_children(GladeXML *self, GtkWidget *parent,
-			      GladeWidgetInfo *info)
+glade_standard_build_children(GladeXML *self, GObject *parent,
+			      GladeObjectInfo *info)
 {
     gint i, j;
 
-    g_object_ref(G_OBJECT(parent));
+    g_return_if_fail(GTK_IS_CONTAINER (parent));
+
+    g_object_ref(parent);
     for (i = 0; i < info->n_children; i++) {
-	GladeWidgetInfo *childinfo = info->children[i].child;
+	GladeObjectInfo *childinfo = info->children[i].child;
 	GtkWidget *child;
 
 	/* handle any internal children */
@@ -1739,7 +1755,7 @@ glade_standard_build_children(GladeXML *self, GtkWidget *parent,
 	    continue;
 	}
 
-	child = glade_xml_build_widget(self, childinfo);
+	child = GTK_WIDGET (glade_xml_build_object(self, childinfo));
 
 	g_object_ref(G_OBJECT(child));
 	gtk_widget_freeze_child_notify(child);
@@ -1748,7 +1764,7 @@ glade_standard_build_children(GladeXML *self, GtkWidget *parent,
 
 	for (j = 0; j < info->children[i].n_properties; j++)
 	    glade_xml_set_packing_property (
-		self, parent, child,
+		self, GTK_WIDGET (parent), child,
 		info->children[i].properties[j].name,
 		info->children[i].properties[j].value);
 	
@@ -1767,12 +1783,12 @@ glade_standard_build_children(GladeXML *self, GtkWidget *parent,
  * GladeNewFunc
  * @xml: The GladeXML object.
  * @widget_type: the GType code of the widget.
- * @info: the GladeWidgetInfo structure for this widget.
+ * @info: the GladeObjectInfo structure for this widget.
  *
  * This function signature should be used by functions that build particular
  * widget types.  The function should create the new widget and set any non
  * standard widget parameters (ie. don't set visibility, size, etc), as
- * this is handled by glade_xml_build_widget, which calls these functions.
+ * this is handled by glade_xml_build_object, which calls these functions.
  *
  * Returns: the new widget.
  */
@@ -1780,11 +1796,11 @@ glade_standard_build_children(GladeXML *self, GtkWidget *parent,
  * GladeBuildChildrenFunc
  * @xml: the GladeXML object.
  * @parent: the parent.
- * @info: the GladeWidgetInfo structure for the parent.
+ * @info: the GladeObjectInfo structure for the parent.
  *
  * This function signature should be used by functions that are responsible
  * for adding children to a container widget.  To create each child widget,
- * glade_xml_build_widget should be called.
+ * glade_xml_build_object should be called.
  */
 /**
  * GladeFindInternalChildFunc
@@ -1808,9 +1824,9 @@ glade_standard_build_children(GladeXML *self, GtkWidget *parent,
  * Returns: the named internal child.
  */
 /**
- * glade_xml_build_widget:
+ * glade_xml_build_object:
  * @self: the GladeXML object.
- * @info: the GladeWidgetInfo structure for the widget.
+ * @info: the GladeObjectInfo structure for the object.
  *
  * This function is not intended for people who just use libglade.  Instead
  * it is for people extending it (it is designed to be called in the child
@@ -1826,25 +1842,25 @@ glade_standard_build_children(GladeXML *self, GtkWidget *parent,
  * 
  * Returns: the newly created widget.
  */
-GtkWidget *
-glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info)
+GObject *
+glade_xml_build_object(GladeXML *self, GladeObjectInfo *info)
 {
     GType type = G_TYPE_INVALID;
-    GtkWidget *ret;
+    GObject *ret;
     
-    GLADE_NOTE(BUILD, g_message("Widget class: %s\tname: %s",
+    GLADE_NOTE(BUILD, g_message("Object class: %s\tname: %s",
 				info->classname, info->name));
     if (!strcmp (info->classname, "Custom")) {
-	ret = custom_new (self, info);
+	ret = G_OBJECT (custom_new (self, info));
     } else {
-		/* Call GladeXml's lookup_type() virtual function to get the gtype: */
-		type = (* GLADE_XML_GET_CLASS(self)->lookup_type) (self, info->classname);
+	/* Call GladeXml's lookup_type() virtual function to get the gtype: */
+	type = (* GLADE_XML_GET_CLASS(self)->lookup_type) (self, info->classname);
 
 	if (type == G_TYPE_INVALID) {
 	    char buf[50];
-	    g_warning("unknown widget class '%s'", info->classname);
+	    g_warning("unknown object class '%s'", info->classname);
 	    g_snprintf(buf, 49, "[a %s]", info->classname);
-	    ret = gtk_label_new(buf);
+	    ret = G_OBJECT (gtk_label_new(buf));
 	} else {
 	    ret = get_build_data(type)->new(self, type, info);
 	}
@@ -1864,7 +1880,7 @@ glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info)
 /**
  * glade_xml_handle_internal_child
  * @self: the GladeXML object.
- * @parent: the parent widget.
+ * @parent: the parent object.
  * @child_info: the GladeChildInfo structure for the child.
  *
  * This function is intended to be called by the build_children
@@ -1874,12 +1890,12 @@ glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info)
  * next child.
  */
 void
-glade_xml_handle_internal_child(GladeXML *self, GtkWidget *parent,
+glade_xml_handle_internal_child(GladeXML *self, GObject *parent,
 				GladeChildInfo *child_info)
 {
-    const GladeWidgetBuildData *parent_build_data = NULL;
-    GtkWidget *child;
-    GladeWidgetInfo *info;
+    const GladeObjectBuildData *parent_build_data = NULL;
+    GObject *child;
+    GladeObjectInfo *info;
     GObjectClass *oclass;
     CustomPropInfo *custom_props;
     guint i;
@@ -1893,7 +1909,10 @@ glade_xml_handle_internal_child(GladeXML *self, GtkWidget *parent,
 	    break;
 
 	parent_build_data = NULL; /* set to NULL if no find_internal_child */
-	parent = parent->parent;
+	if (GTK_IS_WIDGET (parent))
+	    parent = G_OBJECT (GTK_WIDGET (parent)->parent);
+	else
+	    parent = NULL;
     }
 
     if (!parent_build_data || !parent_build_data->find_internal_child) {
@@ -1941,16 +1960,8 @@ glade_xml_handle_internal_child(GladeXML *self, GtkWidget *parent,
                       info->properties[i].name, G_OBJECT_TYPE_NAME(child));
             continue;
 	}	    
-        /* this should catch all properties wanting a GtkWidget
-         * subclass.  We also look for types that could hold a *
-         * GtkWidget in order to catch things like the *
-         * GtkAccelLabel::accel_object property.  Since we don't do
-         * any * handling of GObject or GtkObject directly in *
-         * glade_xml_set_value_from_string, this shouldn't be a *
-         * problem. */
-       if (g_type_is_a(GTK_TYPE_WIDGET, G_PARAM_SPEC_VALUE_TYPE(pspec)) ||
-           g_type_is_a(G_PARAM_SPEC_VALUE_TYPE(pspec), GTK_TYPE_WIDGET)) {
-	   glade_xml_handle_widget_prop(self, child,
+       if (g_type_is_a(G_PARAM_SPEC_VALUE_TYPE(pspec), G_TYPE_OBJECT)) {
+	   glade_xml_handle_object_prop(self, child,
 					pspec->name,
 					info->properties[i].value);
 	   continue;
@@ -1959,7 +1970,7 @@ glade_xml_handle_internal_child(GladeXML *self, GtkWidget *parent,
        if (glade_xml_set_value_from_string(self, pspec,
 					   info->properties[i].value,
 					   &value)) {
-	   g_object_set_property(G_OBJECT(child), pspec->name, &value);
+	   g_object_set_property(child, pspec->name, &value);
 	   g_value_unset(&value);
        }
     }
@@ -1969,62 +1980,65 @@ glade_xml_handle_internal_child(GladeXML *self, GtkWidget *parent,
 
 
 static void
-glade_xml_widget_destroy(GtkObject *object, GladeXML *xml)
+glade_xml_object_dispose(gpointer data, GObject *object)
 {
+    GladeXML *xml;
     gchar *name;
 
-    g_return_if_fail(GTK_IS_OBJECT(object));
-    g_return_if_fail(GLADE_IS_XML(xml));
+    g_return_if_fail(GLADE_IS_XML(data));
 
-    name = g_object_get_qdata(G_OBJECT(object), glade_xml_name_id);
+    xml = GLADE_XML(data);
+
+    name = g_object_get_qdata(object, glade_xml_name_id);
 
     if (!name) return;
     g_hash_table_remove(xml->priv->name_hash, name);
-    g_object_set_qdata(G_OBJECT(object), glade_xml_tree_id, NULL);
-    g_object_set_qdata(G_OBJECT(object), glade_xml_name_id, NULL);
+    g_object_set_qdata(object, glade_xml_tree_id, NULL);
+    g_object_set_qdata(object, glade_xml_name_id, NULL);
 }
 
 /**
  * glade_xml_set_common_params
  * @self: the GladeXML widget.
- * @widget: the widget to set parameters on.
- * @info: the GladeWidgetInfo structure for the widget.
+ * @object: the object to set parameters on.
+ * @info: the GladeObjectInfo structure for the widget.
  *
- * This function sets the common parameters on a widget, and is responsible
- * for inserting it into the GladeXML object's internal structures.  It will
- * also add the children to this widget.  Usually this function is only called
- * by glade_xml_build_widget, but is exposed for difficult cases, such as
- * setting up toolbar buttons and the like.
+ * This function sets the common parameters on a object, and is
+ * responsible for inserting it into the GladeXML object's internal
+ * structures.  It will also add the children to this object.  Usually
+ * this function is only called by glade_xml_build_object, but is
+ * exposed for difficult cases, such as setting up toolbar buttons and
+ * the like.
  */
 void
-glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
-			    GladeWidgetInfo *info)
+glade_xml_set_common_params(GladeXML *self, GObject *object,
+			    GladeObjectInfo *info)
 {
     GList *tmp;
-    const GladeWidgetBuildData *data;
+    const GladeObjectBuildData *data;
     static GQuark visible_id = 0;
 
     /* get the build data */
-    data = get_build_data(G_OBJECT_TYPE(widget));
-    glade_xml_add_signals(self, widget, info);
-    glade_xml_add_accels(self, widget, info);
+    data = get_build_data(G_OBJECT_TYPE(object));
+    glade_xml_add_signals(self, object, info);
 
-    gtk_widget_set_name(widget, info->name);
-    glade_xml_add_accessibility_info(self, widget, info);
+    if (GTK_IS_WIDGET(object)) {
+	glade_xml_add_accels(self, GTK_WIDGET(object), info);
+	gtk_widget_set_name(GTK_WIDGET(object), info->name);
+    }
+    glade_xml_add_accessibility_info(self, object, info);
 
     /* store this information as data of the widget. */
-    g_object_set_qdata(G_OBJECT(widget), glade_xml_tree_id, self);
-    g_object_set_qdata(G_OBJECT(widget), glade_xml_name_id, info->name);
+    g_object_set_qdata(object, glade_xml_tree_id, self);
+    g_object_set_qdata(object, glade_xml_name_id, info->name);
     /* store widgets in hash table, for easy lookup */
-    g_hash_table_insert(self->priv->name_hash, info->name, widget);
+    g_hash_table_insert(self->priv->name_hash, info->name, object);
 
     /* set up function to remove widget from GladeXML object's
      * name_hash on destruction. Use connect_object so the handler is
      * automatically removed on finalization of the GladeXML
      * object. */
-    g_signal_connect_object(G_OBJECT(widget), "destroy",
-			    G_CALLBACK(glade_xml_widget_destroy),
-			    G_OBJECT(self), 0);
+    g_object_weak_ref(object, glade_xml_object_dispose, self);
 
     /* handle any deferred properties using this widget */
     tmp = self->priv->deferred_props;
@@ -2039,18 +2053,25 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 	    switch (dprop->type) {
 	    case DEFERRED_PROP:
 		g_object_set(G_OBJECT(dprop->d.prop.object),
-			     dprop->d.prop.prop_name, G_OBJECT(widget),
+			     dprop->d.prop.prop_name, object,
 			     NULL);
 		break;
-	    case DEFERRED_REL:
-		{
-		    AtkObject *target = gtk_widget_get_accessible(widget);
+	    case DEFERRED_REL: {
+		    AtkObject *target;
 
-		    add_relation(dprop->d.rel.relation_set,
-				 dprop->d.rel.relation_type, target);
+		    if (GTK_IS_WIDGET(object))
+			target = gtk_widget_get_accessible(GTK_WIDGET(object));
+
+		    if (target) {
+			add_relation(dprop->d.rel.relation_set,
+				     dprop->d.rel.relation_type, target);
+		    } else {
+			g_warning("could not get accessible for object of type %s",
+				  G_OBJECT_TYPE_NAME(object));
+		    }
 		    g_object_unref(dprop->d.rel.relation_set);
-		}
 		break;
+	    }
 	    default:
 		g_warning("unknown deferred property type");
 	    }
@@ -2061,18 +2082,14 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
     }
 
     if (data && data->build_children && info->children) {
-	if (GTK_IS_CONTAINER (widget))
-	    data->build_children(self, widget, info);
-	else
-	    g_warning ("widget %s (%s) has children, but is not a GtkContainer.",
-		       info->name, g_type_name (G_TYPE_FROM_INSTANCE (widget)));
+	data->build_children(self, object, info);
     }
 
     if (visible_id == 0)
 	visible_id = g_quark_from_static_string("Libglade::visible");
 
-    if (g_object_get_qdata(G_OBJECT(widget), visible_id))
-	gtk_widget_show(widget);
+    if (GTK_IS_WIDGET(object) && g_object_get_qdata(object, visible_id))
+	gtk_widget_show(GTK_WIDGET(object));
 }
 
 /**
