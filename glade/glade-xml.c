@@ -790,9 +790,9 @@ add_relation(AtkRelationSet *relations, AtkRelationType relation_type,
 	g_ptr_array_add (target_array, target_accessible);
     } else {
 	/* the relation hasn't been created yet ... */
-	atk_relation_set_add (relations,
-			      atk_relation_new (&target_accessible, 1,
-						relation_type));
+	relation = atk_relation_new(&target_accessible, 1, relation_type);
+	atk_relation_set_add (relations, relation);
+	g_object_unref(relation);
     }
 }
 
