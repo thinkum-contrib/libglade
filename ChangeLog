@@ -1,6 +1,8 @@
 2000-06-25  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-gnome.c (pixmapmenuitem_new): revert visible accels.
+	(pixmapmenuitem_new): fix problem correctly by adding an accel
+	label to the GtkPixmapMenuItem and attaching it to the menu item.
 
 	* glade/glade-gtk.c (menuitem_new): 
 	(checkmenuitem_new): 
