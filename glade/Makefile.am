@@ -7,7 +7,7 @@
 #   change to C+1:0:0
 # - If the interface is the same as the previous version, change to C:R+1:A
 
-LTVERSION = 3:0:3
+LTVERSION = 3:1:3
 
 INCLUDES = -I$(srcdir)/.. $(XML_CFLAGS) $(GTK_CFLAGS) $(GNOME_INCLUDEDIR) $(BONOBO_CFLAGS)
 
@@ -25,19 +25,26 @@ the_headers =		\
 	glade-build.h	\
 	glade-widget-tree.h
 
-lib_LTLIBRARIES      = libglade.la $(build_glade_gnome)
-
 if GNOME_SUPPORT
 build_glade_gnome = libglade-gnome.la
 endif
+if BONOBO_SUPPORT
+build_glade_bonobo = libglade-bonobo.la
+endif
 
-libglade_gnome_la_SOURCES  = glade-gnome.c glade-build.h glade-xml.h
-libglade_gnome_la_LIBADD   = $(GNOME_LIBDIR) $(GNOMEUI_LIBS) $(XML_LIBS) $(BONOBO_LIBS)
-libglade_gnome_la_LDFLAGS  = -version-info $(LTVERSION)
+lib_LTLIBRARIES      = libglade.la $(build_glade_gnome) $(build_glade_bonobo)
 
 libglade_la_SOURCES  = $(the_sources)
 libglade_la_LIBADD   = $(GTK_LIBS) $(XML_LIBS)
 libglade_la_LDFLAGS  = -version-info $(LTVERSION)
+
+libglade_gnome_la_SOURCES  = glade-gnome.c glade-build.h glade-xml.h
+libglade_gnome_la_LIBADD   = $(GNOME_LIBDIR) $(GNOMEUI_LIBS) $(XML_LIBS)
+libglade_gnome_la_LDFLAGS  = -version-info $(LTVERSION)
+
+libglade_bonobo_la_SOURCES  = glade-bonobo.c glade-build.h glade-xml.h
+libglade_bonobo_la_LIBADD   = $(BONOBO_LIBS) $(XML_LIBS)
+libglade_bonobo_la_LDFLAGS  = -version-info $(LTVERSION)
 
 gladeincludedir      = $(includedir)/glade
 gladeinclude_HEADERS = $(the_headers)

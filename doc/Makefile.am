@@ -52,7 +52,7 @@ libglade.hierarchy libglade-decl.txt:
 scan:
 	env CC="$(LIBTOOL) --mode=link $(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 		gtkdoc-scanobj --module=$(DOC_MODULE) \
-		--types=$(srcdir)/$(DOC_MODULE).types
+		--types=$(srcdir)/$(DOC_MODULE).types --nogtkinit
 	-mv -f $(SCANOBJ_FILES) $(srcdir)
 	cd $(srcdir) \
 	&& gtkdoc-scan --module=$(DOC_MODULE) \
@@ -92,6 +92,11 @@ install-data-local:
 	  echo '-- Fixing Crossreferences' ; \
 	  gtkdoc-fixxref --module=$(DOC_MODULE) --html-dir=$(HTML_DIR) || true; \
 	fi)
+
+uninstall-local:
+	rm -f $(DESTDIR)$(TARGET_DIR)/*
+distclean-local:
+	rm -f .libs/*
 
 dist-hook:
 	$(mkinstalldirs) $(DESTDIR)$(distdir)/html

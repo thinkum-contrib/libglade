@@ -1,3 +1,27 @@
+2000-05-20  James Henstridge  <james@daa.com.au>
+
+	* doc/Makefile.am (scan): change so you don't need an X connection
+	during build of documentation.
+	(uninstall-local): add uninstall hook to uninstall libglade docs, to
+	make distcheck work.
+	(distclean-local): yet another rule to make distcheck work.
+
+	* configure.in: incremented package version number.
+
+	* glade/Makefile.am (LTVERSION): updated libtool version number.
+
+	The reason for the following change is that it makes the
+	functionality of the libglade-gnome library different depending on
+	where it was built.  A better solution to this is a form of
+	dynamic loading, which I am going to look at.
+
+	* glade/glade-bonobo.c: resurect this file.
+
+	* glade/glade-gnome.c: remove bonobo code.
+
+	* glade/Makefile.am (libglade_bonobo_la_LIBADD): split bonobo back
+	out into a separate library.
+
 2000-05-06   Ramiro Estrugo  <ramiro@eazel.com>
 
 	* configure.in: AM_CONDITIONAL needs to be called on the bonobo
