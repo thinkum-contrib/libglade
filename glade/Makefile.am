@@ -7,7 +7,7 @@
 #   change to C+1:0:0
 # - If the interface is the same as the previous version, change to C:R+1:A
 
-LTVERSION = 2:5:2
+LTVERSION = 3:0:3
 
 INCLUDES = -I$(srcdir)/.. $(XML_CFLAGS) $(GTK_CFLAGS) $(GNOME_INCLUDEDIR) $(BONOBO_CFLAGS)
 

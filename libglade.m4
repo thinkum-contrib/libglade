@@ -18,6 +18,9 @@ for module in . $3; do
     gnome)
       module_args="$module_args gnome"
       ;;
+    bonobo)
+      module_args="$module_args bonobo"
+      ;;
   esac
 done
 

@@ -461,6 +461,66 @@ glade_xml_signal_autoconnect_full (GladeXML *self, GladeXMLConnectFunc func,
 }
 
 /**
+ * glade_xml_signal_connect_data:
+ * @self: the GladeXML object
+ * @handlername: the signal handler name
+ * @func: the signal handler function
+ * @user_data: the signal handler data
+ *
+ * In the glade interface descriptions, signal handlers are specified for
+ * widgets by name.  This function allows you to connect a C function to
+ * all signals in the GladeXML file with the given signal handler name.
+ *
+ * It differs from glade_xml_signal_connect since it allows you to
+ * specify the data parameter for the signal handler.  It is also a small
+ * demonstration of how to use glade_xml_signal_connect_full.
+ */
+typedef struct {
+	GtkSignalFunc func;
+	gpointer user_data;
+} connect_data_data;
+
+static void
+connect_data_connect_func(const gchar *handler_name, GtkObject *object,
+			  const gchar *signal_name, const gchar *signal_data,
+			  GtkObject *connect_object, gboolean after,
+			  gpointer user_data)
+{
+	connect_data_data *data = (connect_data_data *)user_data;
+
+	if (connect_object) {
+		if (after)
+			gtk_signal_connect_object_after(object, signal_name,
+							data->func,
+							connect_object);
+		else
+			gtk_signal_connect_object(object, signal_name,
+						  data->func,
+						  connect_object);
+	} else {
+		if (after)
+			gtk_signal_connect_after(object, signal_name,
+						 data->func, data->user_data);
+		else
+			gtk_signal_connect(object, signal_name,
+					   data->func, data->user_data);
+	}
+}
+
+void
+glade_xml_signal_connect_data (GladeXML *self, const char *handlername,
+			       GtkSignalFunc func, gpointer user_data)
+{
+	connect_data_data data;
+
+	data.func = func;
+	data.user_data = user_data;
+
+	glade_xml_signal_connect_full(self, handlername,
+				      connect_data_connect_func, &data);
+}
+
+/**
  * glade_xml_get_widget:
  * @self: the GladeXML object.
  * @name: the name of the widget.
@@ -478,6 +538,47 @@ glade_xml_get_widget (GladeXML *self, const char *name)
 	g_return_val_if_fail(name != NULL, NULL);
 
 	return g_hash_table_lookup(self->priv->name_hash, name);
+}
+
+
+/**
+ * glade_xml_get_widget_prefix:
+ * @self: the GladeXML object.
+ * @name: the name of the widget.
+ *
+ * This function is used to get a list of pointers to the GtkWidget(s)
+ * with names that start with the string @name in the interface description.
+ * You would use this if you have to do something  to all of these widgets
+ * after loading.
+ *
+ * Returns: A list of the widget that match @name as the start of their
+ * name, or %NULL if none exists.
+ */
+typedef struct {
+	const gchar *name;
+	GList *list;
+} widget_prefix_data;
+
+static void
+widget_prefix_add_to_list (gchar *name, gpointer value,
+			   widget_prefix_data *data)
+{
+	if (!strncmp (data->name, name, strlen (data->name)))
+		data->list = g_list_prepend (data->list, value);
+}
+
+GList *
+glade_xml_get_widget_prefix (GladeXML *self, const gchar *prefix)
+{
+	widget_prefix_data data;
+
+	data.name = prefix;
+	data.list = NULL;
+
+	g_hash_table_foreach (self->priv->name_hash,
+			      (GHFunc) widget_prefix_add_to_list, &data);
+
+	return data.list;
 }
 
 /**

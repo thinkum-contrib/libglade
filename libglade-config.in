@@ -21,6 +21,7 @@ Known values for OPTION are:
 Possible widget libraries:
   gtk (included by default)
   gnome
+  bonobo
 EOF
 
     exit $1
@@ -34,6 +35,8 @@ cflags=false
 libs=false
 
 lib_gtk=yes
+lib_gnome=no
+lib_bonobo=no
 
 while test $# -gt 0; do
     case "$1" in
@@ -76,6 +79,10 @@ while test $# -gt 0; do
     gnome)
 	lib_gnome=yes
 	;;
+    bonobo)
+	lib_gnome=yes   # bonobo implies gnome
+	lib_bonobo=yes
+	;;
 
     *)
 	usage 1 1>&2
@@ -87,16 +94,24 @@ done
 
 # This is uncommented when we have no GNOME support ...
 @GNOME_SUPPORT_FALSE@if test "$lib_gnome" = "yes"; then
-@GNOME_SUPPORT_FALSE@  echo "*** GNOME SUPPORT was not compiled into libglade" 1>&2
+@GNOME_SUPPORT_FALSE@  echo "*** GNOME support was not compiled into libglade" 1>&2
 @GNOME_SUPPORT_FALSE@  exit 1
 @GNOME_SUPPORT_FALSE@fi
+
+# This is uncommented when we have no BONOBO support ...
+@BONOBO_SUPPORT_FALSE@if test "$lib_bonobo" = "yes"; then
+@BONOBO_SUPPORT_FALSE@  echo "*** Bonobo support was not compiled into libglade" 1>&2
+@BONOBO_SUPPORT_FALSE@  exit 1
+@BONOBO_SUPPORT_FALSE@fi
 
 if test "$echo_cflags" = "yes"; then
     cflags="@XML_CFLAGS@"
     if test "@includedir@" != /usr/include; then
 	cflags="$cflags -I@includedir@"
     fi
-    if test "$lib_gnome" = "yes"; then
+    if test "$lib_bonobo" = "yes"; then
+	cflags="$cflags @BONOBO_CFLAGS@"
+    elif test "$lib_gnome" = "yes"; then
 	cflags="$cflags @GNOME_INCLUDEDIR@"
     else
 	cflags="$cflags @GTK_CFLAGS@"
@@ -114,6 +129,10 @@ if test "$echo_libs" = "yes"; then
     if test "$lib_gnome" = "yes"; then
 	libs="-lglade-gnome $libs"
 	libsa="@GNOME_LIBDIR@ @GNOMEUI_LIBS@"
+    fi
+    if test "$lib_bonobo" = "yes"; then
+	libs="-lglade-bonobo $libs"
+	libsa="@GNOME_LIBDIR@ @BONOBO_LIBS@"
     fi
     echo -L@libdir@ $libs @XML_LIBS@ $libsa
 fi

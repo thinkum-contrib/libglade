@@ -1,3 +1,15 @@
+libglade-0.12: 13-March-2000
+	- fixes for GtkHPaned/GtkVPaned.
+	- handle progress bar attributes.
+	- dock layout should save correctly now for GnomeApp widgets.
+	- handle non stock menu icons in GNOME mode.
+	- added glade_xml_get_widget_prefix() function to get all widgets
+	  whose names start with a certain prefix.
+	- added glade_xml_signal_connect_data() function that connects a
+	  named signal and allows you to specify the data argument.  This
+	  is a simple wrapper around glade_xml_signal_connect_full.
+	- bonobo support from Michael Meeks.
+
 libglade-0.11: 5-December-1999
 	- fixed some more problems that would cause segfaults on some errors.
 	- added support for GtkCalendar and GtkInputDialog.
