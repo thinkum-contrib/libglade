@@ -80,6 +80,7 @@ gtk_dialog_build_children(GladeXML *self, GtkWidget *w,
 	response_id = GPOINTER_TO_INT (g_object_steal_data (G_OBJECT (list->data), "response_id"));
 	gtk_dialog_add_action_widget (dialog, GTK_WIDGET (list->data), response_id);
     }
+    g_list_foreach (children, (GFunc)gtk_widget_unref, NULL);
     g_list_free (children);
 }
 
@@ -121,6 +122,30 @@ notebook_build_children(GladeXML *self, GtkWidget *parent,
 	}
     }
     g_object_unref(G_OBJECT(parent));
+}
+
+void
+option_menu_build_children(GladeXML *self, GtkWidget *parent,
+			  GladeWidgetInfo *info)
+{
+    GtkWidget *child;
+
+    if (info->n_children == 0)
+	return;
+    if (info->n_children != 1) {
+	g_warning ("Multiple children added to a GtkOptionMenu\n");
+	return;
+    }
+
+    child = glade_xml_build_widget(self, info->children[0].child);
+    if (child == NULL || !GTK_IS_MENU (child)) {
+	g_warning ("Tried to add a widget of type '%s' to an GtkOptionMenu.  Only GtkMenu widgets are valid children.\n",
+		   g_type_name (G_OBJECT_TYPE (child)));
+	if (child)
+	    gtk_object_sink (GTK_OBJECT (child));
+	return;
+    }
+    gtk_option_menu_set_menu (GTK_OPTION_MENU (parent), GTK_MENU (child));
 }
 
 static GtkWidget *
@@ -316,7 +341,7 @@ static GladeWidgetBuildData widget_data[] = {
       gtk_message_dialog_get_type },
     { "GtkNotebook", glade_standard_build_widget, notebook_build_children,
       gtk_notebook_get_type },
-    { "GtkOptionMenu", glade_standard_build_widget, glade_standard_build_children,
+    { "GtkOptionMenu", glade_standard_build_widget, option_menu_build_children,
       gtk_option_menu_get_type },
 /*    { "GtkPacker", glade_standard_build_widget, glade_standard_build_children,
       gtk_packer_get_type }, */

@@ -1,3 +1,8 @@
+Thu Oct 18 01:21:27 2001  Jonathan Blandford  <jrb@redhat.com>>
+
+	* glade/glade-gtk.c (option_menu_build_children): Handle
+	GtkOptionMenu.
+
 Wed Oct 17 02:15:10 2001  Jonathan Blandford  <jrb@redhat.com>
 
 	* glade/glade-gtk.c (gtk_dialog_build_children): Handle dialog
