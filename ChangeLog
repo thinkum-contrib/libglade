@@ -1,3 +1,13 @@
+2001-09-07  James Henstridge  <james@daa.com.au>
+
+	* configure.in: update configure script for autoconf 2.52
+
+	* NEWS: add news items.
+
+	* glade/glade-xml.c: fix up doc comments for
+	glade_xml_{get,pop}_uline_accel so that they actually get
+	extracted correctly.
+
 2001-09-05  James Henstridge  <james@daa.com.au>
 
 	* configure.in: increment version number.

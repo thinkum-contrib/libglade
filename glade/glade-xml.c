@@ -805,7 +805,8 @@ glade_xml_push_uline_accel(GladeXML *xml, GtkAccelGroup *uline) {
 						  uline);
 }
 
-/* glade_xml_pop_uline_accel:
+/**
+ * glade_xml_pop_uline_accel:
  * @xml: the GladeXML object.
  *
  * Pops the uline accel group.  This will usually be called after a GtkMenu
@@ -818,7 +819,7 @@ glade_xml_pop_uline_accel(GladeXML *xml) {
 					xml->priv->uline_accels->data);
 }
 
-/*
+/**
  * glade_xml_get_uline_accel:
  * @xml: the GladeXML object.
  *

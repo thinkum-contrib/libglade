@@ -43,7 +43,7 @@ EXTRA_DIST =			\
 bin_SCRIPTS = libglade-config libglade-xgettext
 noinst_PROGRAMS = test-libglade
 test_libglade_LDADD = $(THE_LIBS) $(XML_LIBS)
-SUBDIRS = intl po macros glade doc
+SUBDIRS = intl macros glade doc
 
 m4datadir = $(datadir)/aclocal
 m4data_DATA = libglade.m4
