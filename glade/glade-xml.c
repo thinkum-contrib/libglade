@@ -880,6 +880,16 @@ free_radio_groups(gpointer key, gpointer value, gpointer user_data)
 }
 
 static void
+remove_data_func(gpointer key, gpointer value, gpointer user_data)
+{
+    GObject *object = value;
+    GladeXML *xml = user_data;
+
+    g_object_set_data(object, glade_xml_tag, NULL);
+    g_object_set_data(object, glade_xml_name_tag, NULL);
+}
+
+static void
 glade_xml_finalize(GObject *object)
 {
     GladeXML *self = GLADE_XML(object);
@@ -893,9 +903,10 @@ glade_xml_finalize(GObject *object)
     self->txtdomain = NULL;
 
     if (priv) {
-	if (priv->tree)
-	    glade_interface_destroy(priv->tree);
-	/* strings are owned in the cached GladeWidgetTree structure */
+	/* remove data items from all the widgets that are still
+         * live. */
+	g_hash_table_foreach(priv->name_hash, remove_data_func, self);
+	/* strings are owned in the GladeInterface structure */
 	g_hash_table_destroy(priv->name_hash);
 
 	g_hash_table_foreach(priv->signals,
@@ -913,6 +924,9 @@ glade_xml_finalize(GObject *object)
 	/* there should only be at most one accel group on stack */
 	if (priv->accel_groups)
 	    glade_xml_pop_accel(self);
+
+	if (priv->tree)
+	    glade_interface_destroy(priv->tree);
 
 	g_free (self->priv);
     }
@@ -1520,6 +1534,21 @@ glade_xml_handle_internal_child(GladeXML *self, GtkWidget *parent,
 }
 
 
+static void
+glade_xml_widget_destroy(GtkObject *object, GladeXML *xml)
+{
+    gchar *name;
+
+    g_return_if_fail(GTK_IS_OBJECT(object));
+    g_return_if_fail(GLADE_IS_XML(xml));
+
+    name = g_object_get_data(G_OBJECT(object), glade_xml_name_tag);
+
+    g_hash_table_remove(xml->priv->name_hash, name);
+    g_object_set_data(G_OBJECT(object), glade_xml_tag, NULL);
+    g_object_set_data(G_OBJECT(object), glade_xml_name_tag, NULL);
+}
+
 /**
  * glade_xml_set_common_params
  * @self: the GladeXML widget.
@@ -1625,6 +1654,14 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
     gtk_object_set_data(GTK_OBJECT(widget), glade_xml_name_tag, info->name);
     /* store widgets in hash table, for easy lookup */
     g_hash_table_insert(self->priv->name_hash, info->name, widget);
+
+    /* set up function to remove widget from GladeXML object's
+     * name_hash on destruction. Use connect_object so the handler is
+     * automatically removed on finalization of the GladeXML
+     * object. */
+    g_signal_connect_object(G_OBJECT(widget), "destroy",
+			    G_CALLBACK(glade_xml_widget_destroy),
+			    G_OBJECT(self), 0);
 
     if (data && data->build_children && info->children)
 	data->build_children(self, widget, info);

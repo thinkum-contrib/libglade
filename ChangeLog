@@ -1,4 +1,18 @@
+2001-08-23  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c (glade_xml_widget_destroy): set up a destroy
+	handler on widgets that removes them from the GladeXML object's
+	name hash.  Also nullifies libglade's object data on the object.
+	(glade_xml_set_common_params): connect the destruction function to
+	the destroy signal using g_signal_connect_object so that the
+	handler will be removed if the GladeXML object is finalized.
+	(glade_xml_finalize): on finalization, remove the object data on
+	the widgets that remain in the name hash.
+
 2001-08-22  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c (glade_xml_finalize): remove object data and
+	disconnect signal on finalisation of GladeXML structure.
 
 	* examples/bonobo.glade: test case for bonobo control embedding.
 	It creates a BonoboWidget representing an
