@@ -1,3 +1,11 @@
+Fri Jul 19 03:11:57 2002  Kristian Rietveld  <kris@gtk.org>
+
+	* glade/glade-gtk.c (toolbar_build_children): free icon when we don't
+	need it anymore.
+
+	* glade/glade-xml.c (glade_register_widget): free old qdata before
+	setting the new qdata if applicable.
+
 2002-06-06  James Henstridge  <james@daa.com.au>
 
 	* configure.in: increment version number.

@@ -744,6 +744,7 @@ toolbar_build_children (GladeXML *xml, GtkWidget *parent,
 		    g_warning ("Could not create stock item: %s", stock);
 	    } else if (icon) {
 		iconw = gtk_image_new_from_file (icon);
+		g_free (icon);
 	    }
 
 	    if (iconw)

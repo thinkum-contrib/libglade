@@ -1212,6 +1212,7 @@ glade_register_widget(GType type,
 		      GladeFindInternalChildFunc find_internal_child)
 {
     GladeWidgetBuildData *data;
+    gpointer old_data;
 
     g_return_if_fail(g_type_is_a(type, GTK_TYPE_WIDGET));
 
@@ -1225,6 +1226,10 @@ glade_register_widget(GType type,
     data->new = new;
     data->build_children = build_children;
     data->find_internal_child = find_internal_child;
+
+    old_data = g_type_get_qdata (type, glade_build_data_id);
+    if (old_data)
+	    g_free (old_data);
 
     g_type_set_qdata(type, glade_build_data_id, data);
 }
