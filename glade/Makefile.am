@@ -7,7 +7,7 @@ THE_FLAGS = $(GTK_CFLAGS)
 THE_LIBS  = $(GTK_LIBS)
 endif
 
-INCLUDES = $(THE_FLAGS) $(XML_CFLAGS) -I$(srcdir)/..
+INCLUDES = -I$(srcdir)/.. $(THE_FLAGS) $(XML_CFLAGS) -I$(srcdir)/..
 
 the_sources =		\
 	glade-init.c 	\
