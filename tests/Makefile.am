@@ -3,9 +3,8 @@ python_tests = test-convert
 endif
 
 check_PROGRAMS = test-libglade-gtk test-value-parse
-check_DATA = $(python_checks_data)
 
-TESTS = test-convert test-value-parse
+TESTS = $(python_tests) test-value-parse
 TESTS_ENVIRONMENT = PYTHON=$(PYTHON)
 
 INCLUDES = -I$(top_srcdir) $(LIBGLADE_CFLAGS)
