@@ -1,3 +1,9 @@
+1999-07-09  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c (glade_xml_gettext): return "" for a NULL msgid.
+	This fixes segfaults in some situations (eg. a label with no text in
+	it).  This bug was found by Jon Travis <jtravis@cse.unl.edu>.
+
 1999-06-20  James Henstridge  <james@daa.com.au>
 
 	* dialogs.glade: example of using the standard dialogs with libglade.

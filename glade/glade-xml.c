@@ -518,8 +518,9 @@ glade_get_widget_tree(GtkWidget *widget)
 char *
 glade_xml_gettext(GladeXML *xml, const char *msgid)
 {
+	if (!msgid)
+		return "";
 #ifdef ENABLE_NLS
-	if (!msgid) return NULL;
 	if (xml->textdomain)
 		return dgettext(xml->textdomain, msgid);
 	else
