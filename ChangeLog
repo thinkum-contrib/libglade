@@ -1,5 +1,8 @@
 2001-12-10  jacob berkman  <jacob@ximian.com>
 
+	* libglade-convert.in (fixup_as_type): always add a menu to
+	GtkOptionMenu, even if there are no items to add.
+
 	* glade/glade-gtk.c: use some macros for getting the value from a
 	string.  allow more values for boolean true
 

@@ -720,16 +720,17 @@ def fixup_as_type(widget, type):
             del childdef.widget['child_name']
 
     if type == 'GtkOptionMenu':
+        menu = WidgetDef()
+        menu['class'] = 'GtkMenu'
+        menu['name'] = make_name ()
+        widget.add_child (menu, 'menu')
+
         if widget.has_prop('items'):
             # FIXME: this needs continuing, we need a GtkMenu
             # item, and a hacked up special case to do the
             # set_menu on the optionmenu with it, then we need
             # to pack these ( working ) MenuItems into it
             if not widget['items'] == '':
-                menu = WidgetDef()
-                menu['class'] = 'GtkMenu'
-                menu['name'] = make_name ()
-                widget.add_child (menu, 'menu')
                 items = widget['items'].split ('\n')
                 for item in items:
                     if not item == '':
