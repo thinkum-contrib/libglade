@@ -41,7 +41,9 @@
 /* define this if you want placeholders removed from the GladeWidgetTree. */
 #define REMOVE_PLACEHOLDERS
 
-static GladeWidgetTree *glade_widget_tree_new(void) {
+static GladeWidgetTree *
+glade_widget_tree_new(void)
+{
     GladeWidgetTree *self = g_new0(GladeWidgetTree, 1);
 
     self->ref = 1;
@@ -50,7 +52,9 @@ static GladeWidgetTree *glade_widget_tree_new(void) {
     return self;
 }
 
-static GladeWidgetInfo *glade_widget_info_new(void) {
+static GladeWidgetInfo *
+glade_widget_info_new(void)
+{
     GladeWidgetInfo *info = g_new0(GladeWidgetInfo, 1);
 
     info->width = -2;
@@ -66,7 +70,9 @@ static GladeWidgetInfo *glade_widget_info_new(void) {
     return info;
 }
 
-static void glade_widget_info_free(GladeWidgetInfo *info) {
+static void
+glade_widget_info_free(GladeWidgetInfo *info)
+{
     GList *tmp;
 
     g_free(info->class);
@@ -121,7 +127,9 @@ static void glade_widget_info_free(GladeWidgetInfo *info) {
  * Increment the reference count of a GladeWidgetTree structure.
  * Returns: the tree argument.
  */
-GladeWidgetTree *glade_widget_tree_ref(GladeWidgetTree *tree) {
+GladeWidgetTree *
+glade_widget_tree_ref(GladeWidgetTree *tree)
+{
     g_return_val_if_fail(tree != NULL, NULL);
 
     tree->ref++;
@@ -134,7 +142,9 @@ GladeWidgetTree *glade_widget_tree_ref(GladeWidgetTree *tree) {
  *
  * Decrement the reference count of a GladeWidgetTree structure.
  */
-void glade_widget_tree_unref(GladeWidgetTree *tree) {
+void
+glade_widget_tree_unref(GladeWidgetTree *tree)
+{
     GList *tmp;
 
     g_return_if_fail(tree != NULL);
@@ -157,7 +167,9 @@ void glade_widget_tree_unref(GladeWidgetTree *tree) {
     g_free(tree);
 }
 
-static gchar *glade_style_make_name(void) {
+static gchar *
+glade_style_make_name(void)
+{
     static guint num = 0;
     return g_strdup_printf("_local_style_%u", num++);
 }
@@ -217,7 +229,9 @@ struct _GladeParseState {
     GString *style_data;
 };
 
-static void gladeStartDocument(GladeParseState *state) {
+static void
+gladeStartDocument(GladeParseState *state)
+{
     state->state = PARSER_START;
     state->unknown_depth = 0;
     state->prev_state = PARSER_UNKNOWN;
@@ -236,7 +250,9 @@ static void gladeStartDocument(GladeParseState *state) {
     state->style_data = NULL;
 }
 
-static void gladeEndDocument(GladeParseState *state) {
+static void
+gladeEndDocument(GladeParseState *state)
+{
     if (state->cur_attr)
 	g_free(state->cur_attr);
     state->cur_attr = NULL;
@@ -248,8 +264,10 @@ static void gladeEndDocument(GladeParseState *state) {
 	g_warning("widget_depth != 0 (%d)", state->widget_depth);
 }
 
-static void gladeStartElement(GladeParseState *state, const CHAR *name,
-			      const CHAR **attrs) {
+static void
+gladeStartElement(GladeParseState *state, const xmlChar *name,
+		  const xmlChar **attrs)
+{
     switch (state->state) {
     case PARSER_START:
 	if (strcmp(name, "GTK-Interface"))
@@ -360,7 +378,10 @@ static void gladeStartElement(GladeParseState *state, const CHAR *name,
     }
     /*g_message("Start element %s (state %s)", name, states[state->state]);*/
 }
-static void gladeEndElement(GladeParseState *state, const CHAR *name) {
+
+static void
+gladeEndElement(GladeParseState *state, const xmlChar *name)
+{
     switch (state->state) {
     case PARSER_UNKNOWN:
 	state->unknown_depth--;
@@ -613,8 +634,10 @@ static void gladeEndElement(GladeParseState *state, const CHAR *name) {
     }
     /*g_message("End element %s (state %s)", name, states[state->state]);*/
 }
-static void gladeCharacters(GladeParseState *state, const CHAR *chars,
-			    int len) {
+
+static void
+gladeCharacters(GladeParseState *state, const xmlChar *chars, int len)
+{
     int i;
 
     if (state->state == PARSER_WIDGET_ATTRIBUTE ||
@@ -626,11 +649,15 @@ static void gladeCharacters(GladeParseState *state, const CHAR *chars,
 	    g_string_append_c(state->content, chars[i]);
 }
 
-static xmlEntityPtr gladeGetEntity(GladeParseState *state, const CHAR *name) {
+static xmlEntityPtr
+gladeGetEntity(GladeParseState *state, const xmlChar *name)
+{
     return xmlGetPredefinedEntity(name);
 }
 
-static void gladeWarning(GladeParseState *state, const char *msg, ...) {
+static void
+gladeWarning(GladeParseState *state, const char *msg, ...)
+{
     va_list args;
 
     va_start(args, msg);
@@ -638,7 +665,9 @@ static void gladeWarning(GladeParseState *state, const char *msg, ...) {
     va_end(args);
 }
 
-static void gladeError(GladeParseState *state, const char *msg, ...) {
+static void
+gladeError(GladeParseState *state, const char *msg, ...)
+{
     va_list args;
 
     va_start(args, msg);
@@ -646,7 +675,9 @@ static void gladeError(GladeParseState *state, const char *msg, ...) {
     va_end(args);
 }
 
-static void gladeFatalError(GladeParseState *state, const char *msg, ...) {
+static void
+gladeFatalError(GladeParseState *state, const char *msg, ...)
+{
     va_list args;
 
     va_start(args, msg);
@@ -690,7 +721,9 @@ static xmlSAXHandler gladeSAXParser = {
  *
  * Returns: the GladeWidgetTree structure, or NULL on error.
  */
-GladeWidgetTree *glade_widget_tree_parse_file(const char *file) {
+GladeWidgetTree *
+glade_widget_tree_parse_file(const char *file)
+{
     GladeParseState state;
     struct stat statbuf;
 
@@ -718,7 +751,9 @@ GladeWidgetTree *glade_widget_tree_parse_file(const char *file) {
  *
  * Returns: the GladeWidgetTree structure, or NULL on error.
  */
-GladeWidgetTree *glade_widget_tree_parse_memory(char *buffer, int size) {
+GladeWidgetTree *
+glade_widget_tree_parse_memory(char *buffer, int size)
+{
     GladeParseState state;
 
     state.tree = NULL;
@@ -731,7 +766,9 @@ GladeWidgetTree *glade_widget_tree_parse_memory(char *buffer, int size) {
     return state.tree;
 }
 
-static void glade_print_widget_info(GladeWidgetInfo *info, gchar *indent) {
+static void
+glade_print_widget_info(GladeWidgetInfo *info, gchar *indent)
+{
     GList *tmp;
 
     g_print("\n");
@@ -777,10 +814,11 @@ static void glade_print_widget_info(GladeWidgetInfo *info, gchar *indent) {
  * This is mainly for debugging to make sure that the parser is producing
  * correct output.
  */
-void glade_widget_tree_print(GladeWidgetTree *tree) {
+void
+glade_widget_tree_print(GladeWidgetTree *tree)
+{
     GList *tmp;
 
     for (tmp = tree->widgets; tmp; tmp = tmp->next)
 	glade_print_widget_info(tmp->data, "");
 }
-

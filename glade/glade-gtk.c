@@ -289,7 +289,7 @@ clist_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info,
 			}
 			if (label) {
 				gtk_clist_set_column_title (GTK_CLIST(w), col,
-							    label);
+							    _(label));
 				/* get the GtkLabel, which is a child
 				 * of the alignment widget used as
 				 * title. */

@@ -1,3 +1,10 @@
+2002-01-07  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-sax.c: s/CHAR/xmlChar/
+
+	* glade/glade-gtk.c (clist_build_children): translate the label
+	(doh).
+
 2001-09-07  James Henstridge  <james@daa.com.au>
 
 	* configure.in: update configure script for autoconf 2.52
