@@ -9,7 +9,6 @@ endif
 INCLUDES = $(THE_FLAGS) $(XML_CFLAGS)
 
 EXTRA_DIST =			\
-	libglade.spec		\
 	libgladeConf.sh		\
 	libglade.spec.in	\
 	libglade.spec		\
@@ -22,7 +21,6 @@ EXTRA_DIST =			\
 	libglade.m4		\
 	libglade-xgettext
 
-if LIBGLADE_FULLDIST
 bin_SCRIPTS = libglade-config libglade-xgettext
 noinst_PROGRAMS = test-libglade
 test_libglade_LDADD = $(THE_LIBS) $(XML_LIBS)
@@ -30,11 +28,9 @@ SUBDIRS = intl po macros glade doc
 
 m4datadir = $(datadir)/aclocal
 m4data_DATA = libglade.m4
+
 confexecdir = $(libdir)
 confexec_DATA = libgladeConf.sh
-else
-SUBDIRS = glade
-endif
 
 test_libglade_SOURCES = test-libglade.c
 

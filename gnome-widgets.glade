@@ -31,21 +31,24 @@
     <last_modification_time>Thu, 17 Jun 1999 15:06:07 GMT</last_modification_time>
   </signal>
   <title>Libglade-GNOME Test</title>
-  <enable_layout_config>True</enable_layout_config>
+  <type>GTK_WINDOW_TOPLEVEL</type>
+  <position>GTK_WIN_POS_NONE</position>
+  <modal>False</modal>
   <allow_shrink>False</allow_shrink>
   <allow_grow>True</allow_grow>
   <auto_shrink>False</auto_shrink>
+  <enable_layout_config>True</enable_layout_config>
 
   <widget>
     <class>GnomeDock</class>
     <child_name>GnomeApp:dock</child_name>
     <name>dock1</name>
+    <allow_floating>True</allow_floating>
     <child>
       <padding>0</padding>
       <expand>True</expand>
       <fill>True</fill>
     </child>
-    <allow_floating>True</allow_floating>
 
     <widget>
       <class>GnomeDockItem</class>
@@ -65,6 +68,7 @@
       <widget>
 	<class>GtkMenuBar</class>
 	<name>menubar1</name>
+	<shadow_type>GTK_SHADOW_NONE</shadow_type>
 
 	<widget>
 	  <class>GtkMenuItem</class>
@@ -262,6 +266,7 @@
 	<type>GTK_TOOLBAR_BOTH</type>
 	<space_size>16</space_size>
 	<space_style>GTK_TOOLBAR_SPACE_LINE</space_style>
+	<relief>GTK_RELIEF_NONE</relief>
 	<tooltips>True</tooltips>
 
 	<widget>
@@ -292,9 +297,6 @@
 	  <class>GtkButton</class>
 	  <child_name>Toolbar:button</child_name>
 	  <name>button4</name>
-	  <child>
-	    <new_group>True</new_group>
-	  </child>
 	  <signal>
 	    <name>clicked</name>
 	    <handler>gtk_editable_cut_clipboard</handler>
@@ -303,6 +305,9 @@
 	  </signal>
 	  <label>Cut</label>
 	  <stock_pixmap>GNOME_STOCK_PIXMAP_CUT</stock_pixmap>
+	  <child>
+	    <new_group>True</new_group>
+	  </child>
 	</widget>
 
 	<widget>
@@ -363,13 +368,13 @@
     <class>GnomeAppBar</class>
     <child_name>GnomeApp:appbar</child_name>
     <name>appbar1</name>
+    <has_progress>False</has_progress>
+    <has_status>True</has_status>
     <child>
       <padding>0</padding>
       <expand>True</expand>
       <fill>True</fill>
     </child>
-    <has_progress>False</has_progress>
-    <has_status>True</has_status>
   </widget>
 </widget>
 
@@ -382,6 +387,7 @@
     <handler>gtk_widget_hide</handler>
     <last_modification_time>Thu, 17 Jun 1999 07:37:41 GMT</last_modification_time>
   </signal>
+  <modal>True</modal>
   <copyright>Copyright (C) 1999</copyright>
   <authors>James Henstridge &lt;james@daa.com.au&gt;
 </authors>
@@ -397,35 +403,43 @@ no C code specific to this interface has been written.</comments>
   <message_box_type>GNOME_MESSAGE_BOX_QUESTION</message_box_type>
   <message>Are you sure you want to quit
 the application?</message>
+  <type>GTK_WINDOW_TOPLEVEL</type>
+  <position>GTK_WIN_POS_NONE</position>
+  <modal>False</modal>
+  <allow_shrink>False</allow_shrink>
+  <allow_grow>False</allow_grow>
+  <auto_shrink>False</auto_shrink>
+  <auto_close>True</auto_close>
+  <hide_on_close>False</hide_on_close>
 
   <widget>
     <class>GtkVBox</class>
     <child_name>GnomeDialog:vbox</child_name>
     <name>dialog-vbox1</name>
+    <homogeneous>False</homogeneous>
+    <spacing>8</spacing>
     <child>
       <padding>4</padding>
       <expand>True</expand>
       <fill>True</fill>
     </child>
-    <homogeneous>False</homogeneous>
-    <spacing>8</spacing>
 
     <widget>
       <class>GtkHButtonBox</class>
       <child_name>GnomeDialog:action_area</child_name>
       <name>dialog-action_area1</name>
-      <child>
-	<padding>0</padding>
-	<expand>False</expand>
-	<fill>True</fill>
-	<pack>GTK_PACK_END</pack>
-      </child>
       <layout_style>GTK_BUTTONBOX_END</layout_style>
       <spacing>8</spacing>
       <child_min_width>85</child_min_width>
       <child_min_height>27</child_min_height>
       <child_ipad_x>7</child_ipad_x>
       <child_ipad_y>0</child_ipad_y>
+      <child>
+	<padding>0</padding>
+	<expand>False</expand>
+	<fill>True</fill>
+	<pack>GTK_PACK_END</pack>
+      </child>
 
       <widget>
 	<class>GtkButton</class>
@@ -474,6 +488,7 @@ the application?</message>
   <title>Widget Tests</title>
   <type>GTK_WINDOW_TOPLEVEL</type>
   <position>GTK_WIN_POS_NONE</position>
+  <modal>False</modal>
   <allow_shrink>False</allow_shrink>
   <allow_grow>True</allow_grow>
   <auto_shrink>False</auto_shrink>
@@ -489,7 +504,6 @@ the application?</message>
     <tab_hborder>2</tab_hborder>
     <tab_vborder>2</tab_vborder>
     <popup_enable>False</popup_enable>
-    <num_pages>13</num_pages>
 
     <widget>
       <class>GnomeColorPicker</class>
@@ -507,6 +521,7 @@ the application?</message>
       <name>label1</name>
       <label>Colour Picker</label>
       <justify>GTK_JUSTIFY_CENTER</justify>
+      <wrap>False</wrap>
       <xalign>0.5</xalign>
       <yalign>0.5</yalign>
       <xpad>0</xpad>
@@ -532,6 +547,7 @@ the application?</message>
       <name>label2</name>
       <label>Font Picker</label>
       <justify>GTK_JUSTIFY_CENTER</justify>
+      <wrap>False</wrap>
       <xalign>0.5</xalign>
       <yalign>0.5</yalign>
       <xpad>0</xpad>
@@ -541,6 +557,9 @@ the application?</message>
     <widget>
       <class>GnomeIconEntry</class>
       <name>iconentry1</name>
+      <title>Hello</title>
+      <history_id>iconent_hist</history_id>
+      <max_saved>10</max_saved>
     </widget>
 
     <widget>
@@ -549,6 +568,7 @@ the application?</message>
       <name>label3</name>
       <label>Icon Sel</label>
       <justify>GTK_JUSTIFY_CENTER</justify>
+      <wrap>False</wrap>
       <xalign>0.5</xalign>
       <yalign>0.5</yalign>
       <xpad>0</xpad>
@@ -570,6 +590,7 @@ the application?</message>
       <name>label4</name>
       <label>HRef</label>
       <justify>GTK_JUSTIFY_CENTER</justify>
+      <wrap>False</wrap>
       <xalign>0.5</xalign>
       <yalign>0.5</yalign>
       <xpad>0</xpad>
@@ -581,6 +602,17 @@ the application?</message>
       <name>entry1</name>
       <history_id>EntTest</history_id>
       <max_saved>10</max_saved>
+
+      <widget>
+	<class>GtkEntry</class>
+	<child_name>GnomeEntry:entry</child_name>
+	<name>entry2</name>
+	<can_focus>True</can_focus>
+	<editable>True</editable>
+	<text_visible>True</text_visible>
+	<text_max_length>0</text_max_length>
+	<text></text>
+      </widget>
     </widget>
 
     <widget>
@@ -589,6 +621,7 @@ the application?</message>
       <name>label5</name>
       <label>Entry</label>
       <justify>GTK_JUSTIFY_CENTER</justify>
+      <wrap>False</wrap>
       <xalign>0.5</xalign>
       <yalign>0.5</yalign>
       <xpad>0</xpad>
@@ -600,8 +633,20 @@ the application?</message>
       <name>fileentry1</name>
       <border_width>50</border_width>
       <history_id>FileEntTest</history_id>
+      <max_saved>10</max_saved>
       <directory>False</directory>
       <modal>False</modal>
+
+      <widget>
+	<class>GtkEntry</class>
+	<child_name>GnomeEntry:entry</child_name>
+	<name>entry3</name>
+	<can_focus>True</can_focus>
+	<editable>True</editable>
+	<text_visible>True</text_visible>
+	<text_max_length>0</text_max_length>
+	<text></text>
+      </widget>
     </widget>
 
     <widget>
@@ -610,6 +655,7 @@ the application?</message>
       <name>label6</name>
       <label>File Entry</label>
       <justify>GTK_JUSTIFY_CENTER</justify>
+      <wrap>False</wrap>
       <xalign>0.5</xalign>
       <yalign>0.5</yalign>
       <xpad>0</xpad>
@@ -635,6 +681,7 @@ the application?</message>
       <name>label7</name>
       <label>Dial</label>
       <justify>GTK_JUSTIFY_CENTER</justify>
+      <wrap>False</wrap>
       <xalign>0.5</xalign>
       <yalign>0.5</yalign>
       <xpad>0</xpad>
@@ -656,6 +703,7 @@ the application?</message>
       <name>label8</name>
       <label>Clock</label>
       <justify>GTK_JUSTIFY_CENTER</justify>
+      <wrap>False</wrap>
       <xalign>0.5</xalign>
       <yalign>0.5</yalign>
       <xpad>0</xpad>
@@ -673,6 +721,7 @@ the application?</message>
       <name>label9</name>
       <label>Animator</label>
       <justify>GTK_JUSTIFY_CENTER</justify>
+      <wrap>False</wrap>
       <xalign>0.5</xalign>
       <yalign>0.5</yalign>
       <xpad>0</xpad>
@@ -690,6 +739,7 @@ the application?</message>
       <name>label10</name>
       <label>Calculator</label>
       <justify>GTK_JUSTIFY_CENTER</justify>
+      <wrap>False</wrap>
       <xalign>0.5</xalign>
       <yalign>0.5</yalign>
       <xpad>0</xpad>
@@ -708,6 +758,7 @@ the application?</message>
       <name>label11</name>
       <label>Less</label>
       <justify>GTK_JUSTIFY_CENTER</justify>
+      <wrap>False</wrap>
       <xalign>0.5</xalign>
       <yalign>0.5</yalign>
       <xpad>0</xpad>
@@ -726,6 +777,7 @@ the application?</message>
       <name>label12</name>
       <label>PaperSel</label>
       <justify>GTK_JUSTIFY_CENTER</justify>
+      <wrap>False</wrap>
       <xalign>0.5</xalign>
       <yalign>0.5</yalign>
       <xpad>0</xpad>
@@ -743,6 +795,7 @@ the application?</message>
       <name>label13</name>
       <label>GnomeSpell</label>
       <justify>GTK_JUSTIFY_CENTER</justify>
+      <wrap>False</wrap>
       <xalign>0.5</xalign>
       <yalign>0.5</yalign>
       <xpad>0</xpad>
@@ -769,10 +822,11 @@ the application?</message>
   <title>Select File</title>
   <type>GTK_WINDOW_TOPLEVEL</type>
   <position>GTK_WIN_POS_NONE</position>
-  <show_file_op_buttons>True</show_file_op_buttons>
+  <modal>False</modal>
   <allow_shrink>False</allow_shrink>
   <allow_grow>True</allow_grow>
   <auto_shrink>False</auto_shrink>
+  <show_file_op_buttons>True</show_file_op_buttons>
 
   <widget>
     <class>GtkButton</class>
@@ -815,58 +869,62 @@ the application?</message>
   <class>GnomeDialog</class>
   <name>msgdialog</name>
   <visible>False</visible>
-  <auto_close>True</auto_close>
-  <hide_on_close>True</hide_on_close>
+  <type>GTK_WINDOW_TOPLEVEL</type>
+  <position>GTK_WIN_POS_NONE</position>
+  <modal>False</modal>
   <allow_shrink>False</allow_shrink>
   <allow_grow>False</allow_grow>
   <auto_shrink>False</auto_shrink>
+  <auto_close>True</auto_close>
+  <hide_on_close>True</hide_on_close>
 
   <widget>
     <class>GtkVBox</class>
     <child_name>GnomeDialog:vbox</child_name>
     <name>dialog-vbox2</name>
+    <homogeneous>False</homogeneous>
+    <spacing>8</spacing>
     <child>
       <padding>4</padding>
       <expand>True</expand>
       <fill>True</fill>
     </child>
-    <homogeneous>False</homogeneous>
-    <spacing>8</spacing>
 
     <widget>
       <class>GtkLabel</class>
       <name>label14</name>
+      <label>If this was a real application, clicking on the
+OK button would probably have done something
+useful, rather than just displaying this dialog.</label>
+      <justify>GTK_JUSTIFY_CENTER</justify>
+      <wrap>False</wrap>
+      <xalign>0.5</xalign>
+      <yalign>0.5</yalign>
+      <xpad>0</xpad>
+      <ypad>0</ypad>
       <child>
 	<padding>0</padding>
 	<expand>False</expand>
 	<fill>False</fill>
       </child>
-      <label>If this was a real application, clicking on the
-OK button would probably have done something
-useful, rather than just displaying this dialog.</label>
-      <justify>GTK_JUSTIFY_CENTER</justify>
-      <xalign>0.5</xalign>
-      <yalign>0.5</yalign>
-      <xpad>0</xpad>
-      <ypad>0</ypad>
     </widget>
 
     <widget>
       <class>GtkHButtonBox</class>
       <child_name>GnomeDialog:action_area</child_name>
       <name>dialog-action_area2</name>
-      <child>
-	<padding>0</padding>
-	<expand>False</expand>
-	<fill>True</fill>
-	<pack>GTK_PACK_END</pack>
-      </child>
       <layout_style>GTK_BUTTONBOX_END</layout_style>
       <spacing>8</spacing>
       <child_min_width>85</child_min_width>
       <child_min_height>27</child_min_height>
       <child_ipad_x>7</child_ipad_x>
       <child_ipad_y>0</child_ipad_y>
+      <child>
+	<padding>0</padding>
+	<expand>False</expand>
+	<fill>True</fill>
+	<pack>GTK_PACK_END</pack>
+      </child>
 
       <widget>
 	<class>GtkButton</class>

@@ -124,7 +124,7 @@ glade_xml_new(const char *fname, const char *root)
 	GladeXML *self = gtk_type_new(glade_xml_get_type());
 
 	if (!glade_xml_construct(self, fname, root, NULL)) {
-		gtk_object_destroy(GTK_OBJECT(self));
+		gtk_object_unref(GTK_OBJECT(self));
 		return NULL;
 	}
 	return self;

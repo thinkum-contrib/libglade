@@ -54,9 +54,7 @@ GNOME_INIT_HOOK([
 	AC_DEFINE(ENABLE_GNOME)
 ])
 AM_CONDITIONAL(GNOME_SUPPORT, $have_gnome)
-dnl gnumeric doesn't use this configure script, so LIBGLADE_FULLDIST is
-dnl false when building libglade as part of gnumeric.
-AM_CONDITIONAL(LIBGLADE_FULLDIST, true)
+
 GNOME_COMPILE_WARNINGS
 
 AC_CHECK_PROG(GTKDOC, gtkdoc-mkdb, true, false)

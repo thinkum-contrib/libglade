@@ -1,3 +1,20 @@
+1999-08-07  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c (glade_xml_new): fixed a small memory leak when
+	the interface could not be constructed correctly.  This bug was found
+	by Morten.
+
+	* glade/glade-gnome.c: added support for GtkEntry child widgets on the
+	Gnome*Entry widgets.  Added support for GnomeCanvas, GnomeIconEntry,
+	GnomeNumberEntry.
+
+	* glade/glade-gtk.c (combo_build_children): setup signals on the
+	GtkEntry.
+
+	* configure.in, Makefile.am, glade/Makefile.am: removed the
+	LIBGLADE_FULLDIST conditional, since it is no longer being used.
+	This also cleans up the makefiles a bit.
+
 1999-08-05  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-gnome.c (stock_button_new): uline accelerator support

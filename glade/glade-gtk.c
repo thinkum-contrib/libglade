@@ -530,6 +530,46 @@ fontselectiondialog_build_children (GladeXML *xml, GtkWidget *w,
 }
 
 static void
+combo_build_children (GladeXML *xml, GtkWidget *w,
+		      GladeWidgetInfo *info, const char *longname)
+{
+	GList *tmp;
+	GladeWidgetInfo *cinfo = NULL;
+	GtkEntry *entry;
+
+	for (tmp = info->children; tmp; tmp = tmp->next) {
+		GList *tmp2;
+		gchar *child_name = NULL;
+		cinfo = tmp->data;
+		for (tmp2 = cinfo->attributes; tmp2; tmp2 = tmp2->next) {
+			GladeAttribute *attr = tmp2->data;
+			if (!strcmp(attr->name, "child_name")) {
+				child_name = attr->value;
+				break;
+			}
+		}
+		if (child_name && !strcmp(child_name, "GtkCombo:entry"))
+			break;
+	}
+	if (!tmp)
+		return;
+	entry = GTK_ENTRY(GTK_COMBO(w)->entry);
+	for (tmp = cinfo->attributes; tmp; tmp = tmp->next) {
+		GladeAttribute *attr = tmp->data;
+		if (!strcmp(attr->name, "editable"))
+			gtk_entry_set_editable(entry, attr->value[0] == 'T');
+		else if (!strcmp(attr->name, "text_visible"))
+			gtk_entry_set_visibility(entry, attr->value[0] == 'T');
+		else if (!strcmp(attr->name, "text_max_length"))
+			gtk_entry_set_max_length(entry, strtol(attr->value,
+							       NULL, 0));
+		else if (!strcmp(attr->name, "text"))
+			gtk_entry_set_text(entry, attr->value);
+	}
+	glade_xml_set_common_params(xml, GTK_WIDGET(entry), cinfo, longname);
+}
+
+static void
 misc_set (GtkMisc *misc, GladeWidgetInfo *info)
 {
 	GList *tmp;
@@ -2476,7 +2516,7 @@ static const GladeWidgetBuildData widget_data[] = {
 	{"GtkCheckButton",   checkbutton_new,   glade_standard_build_children},
 	{"GtkRadioButton",   radiobutton_new,   glade_standard_build_children},
 	{"GtkOptionMenu",    optionmenu_new,    NULL},
-	{"GtkCombo",         combo_new,         NULL},
+	{"GtkCombo",         combo_new,         combo_build_children},
 	{"GtkList",          list_new,          NULL}, /* XXXX list appends ? */
 	{"GtkCList",         clist_new,         clist_build_children},
 	{"GtkCTree",         ctree_new,         clist_build_children},
