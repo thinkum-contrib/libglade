@@ -1,3 +1,16 @@
+libglade-1.99.12: 12-May-2002
+	- more changes to help with Murray's C++ bindings.
+	- check whether GTK has a GtkPlug implementation to help with
+	  building with gtk targets other than X11.
+	- Only build the docs if --enable-gtk-doc is passed to configure.
+	- pass CFLAGS and LDFLAGS to gtkdoc when building docs, in
+	  case they are needed to build against the library (fixes
+	  64-bit solaris issues, #81347).
+	- fix up a missing g_object_ref() call in AtkRelationSet
+	  handling code.
+	- More helpful error message if glade file could not be found
+	  (#80411).
+
 libglade-1.99.11: 28-April-2002
 	- don't ref the AtkRelationSet unless we are going to actually
 	  set up relations.

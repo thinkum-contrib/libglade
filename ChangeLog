@@ -1,3 +1,8 @@
+2002-05-12  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-parser.c (glade_parser_parse_file): put in a check
+	to see if the file exists, and give a better error if so.
+
 2002-05-12  Jacob Berkman  <jacob@ximian.com>
 
 	* doc/Makefile.am (EXTRA_DIST): remove libglade-decl.txt.

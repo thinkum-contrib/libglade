@@ -84,7 +84,7 @@ endif
 
 clean-local:
 	rm -f *~ *.bak *.hierarchy *.signals *-unused.txt
-	rm -f libglade-scan.lo libglade-scan.o
+	rm -f libglade-scan.lo libglade-scan.o libglade-scan
 	rm -f *.stamp
 
 maintainer-clean-local: clean
