@@ -20,94 +20,127 @@
 #include "config.h"
 #endif
 
-/* this file contains functions that handle conversion of styles in the XML
+#include <stdlib.h>
+/*
+ * this file contains functions that handle conversion of styles in the XML
  * tree to their equivalent RC styles, which are then parsed by
- * gtk_rc_parse_string() */
+ * gtk_rc_parse_string()
+ */
 
-#include "glade-private.h"
+#include <glade/glade-private.h>
 #include <string.h>
 #include <gtk/gtkrc.h>
 
-static void fill_style(xmlNodePtr style_node, char *style_name) {
-  GString *str;
-  char buf[512];
-  int r, g, b;
-  xmlNodePtr node;
+static void
+fill_style(xmlNodePtr style_node, char *style_name)
+{
+	GString *str;
+	int r, g, b;
+	xmlNodePtr node;
 
-  str = g_string_new("style \"GLADE_");
-  g_string_append(str, style_name);
-  g_string_append(str, "_style\"\n{\n");
-  for (node = style_node->childs; node != NULL; node = node->next) {
-    char *content = xmlNodeGetContent(node);
-    if (!strcmp(node->name, "style_font")) {
-      g_string_append(str, "  font = \"");
-      g_string_append(str, content);
-      g_string_append(str, "\"\n");
-    } else if (!strncmp(node->name, "fg-", 3)) {
-      g_string_append(str, "  fg[");
-      g_string_append(str, node->name + 3);
-      sscanf(content, "%d,%d,%d",&r, &g, &b);
-      g_snprintf(buf, 511, "] = { %.3f, %3f, %3f }\n",
-		 CLAMP(r, 0, 255)/255.0,
-		 CLAMP(g, 0, 255)/255.0,
-		 CLAMP(b, 0, 255)/255.0);
-      g_string_append(str, buf);
-    } else if (!strncmp(node->name, "bg-", 3)) {
-      g_string_append(str, "  bg[");
-      g_string_append(str, node->name + 3);
-      sscanf(content, "%d,%d,%d",&r, &g, &b);
-      g_snprintf(buf, 511, "] = { %.3f, %3f, %3f }\n",
-		 CLAMP(r, 0, 255)/255.0,
-		 CLAMP(g, 0, 255)/255.0,
-		 CLAMP(b, 0, 255)/255.0);
-      g_string_append(str, buf);
-    } else if (!strncmp(node->name, "text-", 5)) {
-      g_string_append(str, "  text[");
-      g_string_append(str, node->name + 5);
-      sscanf(content, "%d,%d,%d",&r, &g, &b);
-      g_snprintf(buf, 511, "] = { %.3f, %3f, %3f }\n",
-		 CLAMP(r, 0, 255)/255.0,
-		 CLAMP(g, 0, 255)/255.0,
-		 CLAMP(b, 0, 255)/255.0);
-      g_string_append(str, buf);
-    } else if (!strncmp(node->name, "base-", 5)) {
-      g_string_append(str, "  base[");
-      g_string_append(str, node->name + 5);
-      sscanf(content, "%d,%d,%d",&r, &g, &b);
-      g_snprintf(buf, 511, "] = { %.3f, %3f, %3f }\n",
-		 CLAMP(r, 0, 255)/255.0,
-		 CLAMP(g, 0, 255)/255.0,
-		 CLAMP(b, 0, 255)/255.0);
-      g_string_append(str, buf);
-    } else if (!strncmp(node->name, "bg_pixmap-", 10)) {
-      g_string_append(str, "  bg_pixmap[");
-      g_string_append(str, node->name + 10);
-      g_string_append(str, "] = \"");
-      g_string_append(str, content);
-      g_string_append(str, "\"\n");
-    }
-    if (content) free(content);
-  }
-  g_string_append(str, "}\n");
-  gtk_rc_parse_string(str->str);
-  g_string_free(str, TRUE);
-  if (!strcmp(style_name, "Default"))
-    gtk_rc_parse_string("widget \"*\" style \"GLADE_Default_style\"\n");
+	str = g_string_new("style \"GLADE_");
+	g_string_append(str, style_name);
+	g_string_append(str, "_style\"\n{\n");
+	for (node = style_node->childs; node != NULL; node = node->next) {
+		char *content = xmlNodeGetContent(node);
+		if (!strcmp(node->name, "style_font")) {
+			g_string_append(str, "  font = \"");
+			g_string_append(str, content);
+			g_string_append(str, "\"\n");
+		} else if (!strncmp(node->name, "fg-", 3)) {
+			char *s;
+
+			g_string_append(str, "  fg[");
+			g_string_append(str, node->name + 3);
+			sscanf(content, "%d,%d,%d",&r, &g, &b);
+			s = g_strdup_printf (
+				"] = { %.3f, %3f, %3f }\n",
+				CLAMP(r, 0, 255)/255.0,
+				CLAMP(g, 0, 255)/255.0,
+				CLAMP(b, 0, 255)/255.0);
+			g_string_append(str, s);
+			g_free (s);
+		} else if (!strncmp(node->name, "bg-", 3)) {
+			char *s;
+			
+			g_string_append(str, "  bg[");
+			g_string_append(str, node->name + 3);
+			sscanf(content, "%d,%d,%d",&r, &g, &b);
+			s = g_strdup_printf (
+				"] = { %.3f, %3f, %3f }\n",
+				CLAMP(r, 0, 255)/255.0,
+				CLAMP(g, 0, 255)/255.0,
+				CLAMP(b, 0, 255)/255.0);
+			g_string_append(str, s);
+			g_free (s);
+		} else if (!strncmp(node->name, "text-", 5)) {
+			char *s;
+
+			g_string_append(str, "  text[");
+			g_string_append(str, node->name + 5);
+			sscanf(content, "%d,%d,%d",&r, &g, &b);
+
+			s = g_strdup_printf (
+				"] = { %.3f, %3f, %3f }\n",
+				CLAMP(r, 0, 255)/255.0,
+				CLAMP(g, 0, 255)/255.0,
+				CLAMP(b, 0, 255)/255.0);
+			g_string_append(str, s);
+			g_free (s);
+		} else if (!strncmp(node->name, "base-", 5)) {
+			char *s;
+			
+			g_string_append(str, "  base[");
+			g_string_append(str, node->name + 5);
+			sscanf(content, "%d,%d,%d",&r, &g, &b);
+
+			s = g_strdup_printf (
+				"] = { %.3f, %3f, %3f }\n",
+				CLAMP(r, 0, 255)/255.0,
+				CLAMP(g, 0, 255)/255.0,
+				CLAMP(b, 0, 255)/255.0);
+			g_string_append(str, s);
+			g_free (s);
+		} else if (!strncmp(node->name, "bg_pixmap-", 10)) {
+			g_string_append(str, "  bg_pixmap[");
+			g_string_append(str, node->name + 10);
+			g_string_append(str, "] = \"");
+			g_string_append(str, content);
+			g_string_append(str, "\"\n");
+		}
+
+		if (content)
+			free(content);
+	}
+	g_string_append(str, "}\n");
+	gtk_rc_parse_string(str->str);
+	g_string_free(str, TRUE);
+
+	if (!strcmp(style_name, "Default"))
+		gtk_rc_parse_string("widget \"*\" style \"GLADE_Default_style\"\n");
 }
 
-void glade_style_parse(xmlDocPtr tree) {
-  xmlNodePtr node;
-  char *style_name;
-  for (node = tree->root->childs; node != NULL; node = node->next) {
-    if (strcmp(node->name, "style")) continue;
-    style_name = xmlNodeGetContent(glade_tree_find_node(node, "style_name"));
-    fill_style(node, style_name);
-    free(style_name);
-  }
+void
+glade_style_parse (xmlDocPtr tree)
+{
+	xmlNodePtr node;
+	char *style_name;
+
+	for (node = tree->root->childs; node != NULL; node = node->next) {
+		if (strcmp(node->name, "style")) continue;
+		style_name = xmlNodeGetContent(glade_tree_find_node(node, "style_name"));
+		fill_style(node, style_name);
+		free(style_name);
+	}
 }
 
-void glade_style_attach(GtkWidget *widget, const char *style) {
-  char *name = glade_get_widget_long_name(widget), buf[512];
-  g_snprintf(buf, 511, "widget \"*%s\" style \"GLADE_%s_style\"\n",name,style);
-  gtk_rc_parse_string(buf);
+void
+glade_style_attach (GtkWidget *widget, const char *style)
+{
+	const char *name = glade_get_widget_long_name (widget);
+	char *full_name;
+				
+	full_name = g_strconcat ("widget \"", name, "\" style \"GLADE_", style, "_style\"\n", NULL);
+	gtk_rc_parse_string(full_name);
+	g_free (full_name);
 }

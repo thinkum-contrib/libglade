@@ -1,3 +1,16 @@
+1999-04-25  Miguel de Icaza  <miguel@nuclecu.unam.mx>
+
+	* glade/glade-styles.c (glade_style_attach): Use g_strconcat
+	instead of a static buffer;
+	(fill_style): Use g_strdup_printf instead of static buffer.
+
+	* glade/glade-gtk.c (label_new): Add missing call to free (content).
+
+
+	* glade/glade-gtk.c: Use <glade/glade-build.h> to fetch headers. 
+	* glade/glade-styles.c: ditto. 
+	* glade/glade-private.h: ditto.
+
 1999-04-25  Damon Chaplin  <damon@karuna.freeserve.co.uk>
 
 	* glade/glade-xml.c (glade_xml_build_widget): The 'Signal' and
