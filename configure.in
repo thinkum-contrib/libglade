@@ -55,5 +55,6 @@ libglade.spec
 macros/Makefile
 glade/Makefile
 doc/Makefile
-libglade-config])
+libglade-config
+libgladeConf.sh])
 

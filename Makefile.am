@@ -10,6 +10,7 @@ INCLUDES = $(THE_FLAGS) $(XML_CFLAGS)
 
 EXTRA_DIST =			\
 	libglade.spec.in	\
+	libgladeConf.sh		\
 	test.glade		\
 	simple.glade		\
 	example.glade		\
@@ -22,6 +23,8 @@ test_libglade_LDADD = glade/libglade.la $(THE_LIBS) $(XML_LIBS)
 extra_dirs = macros doc
 m4datadir = $(datadir)/aclocal
 m4data_DATA = libglade.m4
+confexecdir = $(libdir)
+confexec_DATA = libgladeConf.sh
 else
 extra_dirs =
 endif

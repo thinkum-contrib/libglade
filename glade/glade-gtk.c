@@ -356,8 +356,11 @@ dialog_build_children (GladeXML *xml, GtkWidget *w, GNode *node,
 				break;
 		
 		/* catch cases where child node doesn't exist */
-		if (!xmlnode)
-			gtk_box_pack_start_defaults (GTK_BOX(w), child);
+		if (!xmlnode) {
+			gtk_box_pack_start_defaults (
+					GTK_BOX(GTK_DIALOG(w)->vbox), child);
+			continue;
+		}
 		
 		for (xmlnode = xmlnode->childs; xmlnode; xmlnode = xmlnode->next) {
 			content = xmlNodeGetContent (xmlnode);

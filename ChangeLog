@@ -1,3 +1,15 @@
+1999-06-08  James Henstridge  <james@daa.com.au>
+
+	* Makefile.am (confexec_DATA): install the libgladeConf.sh script.
+
+	* libgladeConf.sh.in: A file for use with the gnome-config shell
+	script.
+
+	* glade/glade-gnome.c: added support for GnomeDialog and
+	GnomeMessageBox.  This still leaves support for GnomeApp to be done.
+	Before this can be finished though, I need to work out the stock
+	menu (GnomeUIInfo) stuff.  I don't know how difficult this will be.
+
 1999-06-06  Erik Walthinsen  <omega@cse.ogi.edu>
 
 	* converted libglade.spec to libglade.spec.in, made appropiate
