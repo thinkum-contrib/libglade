@@ -884,6 +884,12 @@ widget_info_free(GladeWidgetInfo *info)
     g_free(info);
 }
 
+/**
+ * glade_interface_destroy
+ * @interface: the GladeInterface structure.
+ *
+ * Frees a GladeInterface structure.
+ */
 void
 glade_interface_destroy(GladeInterface *interface)
 {
@@ -907,6 +913,18 @@ glade_interface_destroy(GladeInterface *interface)
     g_free(interface);
 }
 
+/**
+ * glade_parser_parse_file
+ * @file: the filename of the glade XML file.
+ *
+ * This function parses a Glade XML interface file to a GladeInterface
+ * object (which is libglade's internal representation of the
+ * interface data).
+ *
+ * Generally, user code won't need to call this function.  Instead, it
+ * should go through the GladeXML interfaces.
+ *
+ * Returns: the GladeInterface structure for the XML file.  */
 GladeInterface *
 glade_parser_parse_file(const gchar *file)
 {
@@ -924,6 +942,20 @@ glade_parser_parse_file(const gchar *file)
     return state.interface;
 }
 
+/**
+ * glade_parser_parse_buffer
+ * @buffer: a buffer in memory containing XML data.
+ * @size: the size of @buffer.
+ *
+ * This function is similar to glade_parser_parse_file, except that it
+ * parses XML data from a buffer in memory.  This could be used to
+ * embed an interface into the executable, for instance.
+ *
+ * Generally, user code won't need to call this function.  Instead, it
+ * should go through the GladeXML interfaces.
+ *
+ * Returns: the GladeInterface structure for the XML buffer.
+ */
 GladeInterface *
 glade_parser_parse_buffer(const gchar *buffer, gint size)
 {
@@ -1060,6 +1092,14 @@ dump_widget(xmlNode *parent, GladeWidgetInfo *info, gint indent)
 	xmlNodeAddContent(widget, "  ");
 }
 
+/**
+ * glade_interface_dump
+ * @interface: the GladeInterface
+ * @filename: the filename to write the interface data to.
+ *
+ * This function dumps the contents of a GladeInterface into a file as
+ * XML.  It is intended mainly as a debugging tool.
+ */
 void
 glade_interface_dump(GladeInterface *interface, const gchar *filename)
 {

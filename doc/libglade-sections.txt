@@ -1,13 +1,15 @@
-<INCLUDE>glade/glade.h</INCLUDE>
+<INCLUDE>glade/glade-init.h</INCLUDE>
 
 <SECTION>
 <FILE>glade</FILE>
 <TITLE>Libglade Initialisation</TITLE>
 glade_init
-glade_load_module
+glade_require
+glade_provide
 <SUBSECTION Private>
 </SECTION>
 
+<INCLUDE>glade/glade-xml.h</INCLUDE>
 <SECTION>
 <FILE>glade-xml</FILE>
 <TITLE>GladeXML</TITLE>
@@ -33,14 +35,17 @@ glade_xml_signal_autoconnect_full
 GladeXMLPrivate
 <SUBSECTION Standard>
 glade_xml_get_type
+GLADE_TYPE_XML
 GLADE_XML
 GLADE_XML_CLASS
 GLADE_IS_XML
+GLADE_IS_XML_CLASS
+GLADE_XML_GET_CLASS
 </SECTION>
 
 <INCLUDE>glade/glade-parser.h</INCLUDE>
 <SECTION>
-<FILE>glade-sax</FILE>
+<FILE>glade-parser</FILE>
 <TITLE>Libglade SAX Parser</TITLE>
 GladeInterface
 GladeWidgetInfo
@@ -61,7 +66,7 @@ glade_interface_dump
 <TITLE>Libglade Build</TITLE>
 GladeNewFunc
 GladeBuildChildrenFunc
-GladeFindInternalChildrenFunc
+GladeFindInternalChildFunc
 glade_xml_build_widget
 glade_xml_handle_internal_child
 glade_xml_set_common_params

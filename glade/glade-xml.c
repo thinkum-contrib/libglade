@@ -1351,7 +1351,7 @@ glade_standard_build_children(GladeXML *self, GtkWidget *w,
  * glade_xml_build_widget should be called.
  */
 /**
- * GladeFindInternalChildrenFunc
+ * GladeFindInternalChildFunc
  * @xml: the GladeXML object.
  * @parent: the parent widget.
  * @childname: the name of the internal child
@@ -1370,7 +1370,7 @@ glade_standard_build_children(GladeXML *self, GtkWidget *w,
  * name passed in as the third argument.
  *
  * Returns: the named internal child.
-
+ */
 /**
  * glade_xml_build_widget:
  * @self: the GladeXML object.
@@ -1388,7 +1388,8 @@ glade_standard_build_children(GladeXML *self, GtkWidget *w,
  * build routine, which will create the children with this function and add
  * them to the widget in the appropriate way.  Finally it returns the widget.
  * 
- * Returns: the newly created widget.  */
+ * Returns: the newly created widget.
+ */
 GtkWidget *
 glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info)
 {

@@ -1,3 +1,30 @@
+<!-- ##### SECTION ./tmpl/glade-sax.sgml:Long_Description ##### -->
+<para>
+The structures described here are the output of libglade's XML parser.
+These structures are really only useful for people who are extending
+libglade to handle other widget sets, but it could also be useful for
+other applications that need to read glade XML files.
+</para>
+
+<para>If you only wish to use libglade, you don't need to worry about
+these functions and structures.
+</para>
+
+
+<!-- ##### SECTION ./tmpl/glade-sax.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/glade-sax.sgml:Short_Description ##### -->
+Declarations and routines for accessing the SAX based parser.
+
+
+<!-- ##### SECTION ./tmpl/glade-sax.sgml:Title ##### -->
+Libglade SAX Parser
+
+
 <!-- ##### MACRO GLADE_IS_XML ##### -->
 <para>
 
@@ -84,6 +111,13 @@
 
 </para>
 
+
+<!-- ##### FUNCTION glade_load_module ##### -->
+<para>
+
+</para>
+
+@module: 
 
 <!-- ##### FUNCTION glade_widget_tree_free ##### -->
 <para>

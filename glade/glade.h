@@ -24,32 +24,7 @@
 
 #include <glib.h>
 
-G_BEGIN_DECLS
-	
-/* must be called before use of libglade */
-void glade_init(void);
-
-/* this is defined in libglade-gnome -- it should be used instead of
- * glade_init() if you want to use the GNOME widget set with libglade */
-void glade_gnome_init(void);
-
-/* this is defined in libglade-bonobo -- it should be used instead of
- * glade_init() if you want to use the GNOME widget set with included
- * Bonobo controls with libglade */
-void glade_bonobo_init(void);
-
-/* this is defined in libglade-gnomedb -- it should be used instead of
- * glade_init() if you want to use the GNOME widget set along with
- * GNOME-DB widgets */
-void glade_gnome_db_init(void);
-
-/* Load the named dynamic module.  Basically it is loaded, and the
- * glade_init_module function is called.  This function should
- * do any library initialisation and call glade_register_widgets */
-void glade_load_module(const char *module);
-
-G_END_DECLS
-	
+#include <glade/glade-init.h>	
 #include <glade/glade-xml.h>
 /* don't include glade-build.h -- it is only for widget set definitions */
 

@@ -25,11 +25,19 @@ extra modules.
 
 
 
-<!-- ##### FUNCTION glade_load_module ##### -->
+<!-- ##### FUNCTION glade_require ##### -->
 <para>
 
 </para>
 
-@module: 
+@library: 
+
+
+<!-- ##### FUNCTION glade_provide ##### -->
+<para>
+
+</para>
+
+@library: 
 
 

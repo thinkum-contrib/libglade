@@ -42,6 +42,17 @@ the actual widgets from the XML node data structures.
 @node: 
 
 
+<!-- ##### USER_FUNCTION GladeFindInternalChildFunc ##### -->
+<para>
+
+</para>
+
+@xml: 
+@parent: 
+@childname: 
+@Returns: 
+
+
 <!-- ##### FUNCTION glade_xml_build_widget ##### -->
 <para>
 
