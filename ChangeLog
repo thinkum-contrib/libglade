@@ -1,3 +1,13 @@
+2001-09-04  James Henstridge  <james@daa.com.au>
+
+	* glade/Makefile.am: build the gnome.la libglade module with
+	support for libgnomeui.
+
+	* glade/glade-gnome.c: update to new libglade APIs.  Mostly a
+	skeleton at the moment -- not much testing done.
+
+	* configure.in (build_gnome): add rules to detect libgnomeui-2.0.
+
 2001-09-01  James Henstridge  <james@daa.com.au>
 
 	* libglade-2.0.pc.in (Cflags): make change to match.

@@ -9,16 +9,19 @@
 
 LTVERSION = 0:0:0
 
-INCLUDES = -DG_LOG_DOMAIN=\"libglade\" -I$(top_srcdir) $(XML_CFLAGS) $(GTK_CFLAGS) -DGLADE_MODULE_DIR=\""$(glademoduledir)"\" $(LIBGLADE_BONOBO_CFLAGS)
+INCLUDES = -DG_LOG_DOMAIN=\"libglade\" -I$(top_srcdir) $(XML_CFLAGS) $(GTK_CFLAGS) -DGLADE_MODULE_DIR=\""$(glademoduledir)"\" $(LIBGLADE_BONOBO_CFLAGS) $(LIBGLADE_GNOME_CFLAGS)
 
 glademoduledir = $(pkglibdir)/2.0
 
 if BUILD_BONOBO
 bonobo_la = bonobo.la
 endif
+if BUILD_GNOME
+gnome_la = gnome.la
+endif
 
 lib_LTLIBRARIES = libglade-2.0.la
-glademodule_LTLIBRARIES = $(bonobo_la)
+glademodule_LTLIBRARIES = $(bonobo_la) $(gnome_la)
 
 gladeincludedir      = $(includedir)/libglade-2.0/glade
 gladeinclude_HEADERS = \
@@ -42,6 +45,10 @@ libglade_2_0_la_LDFLAGS  = -version-info $(LTVERSION)
 bonobo_la_SOURCES = glade-bonobo.c
 bonobo_la_LIBADD = libglade-2.0.la $(LIBGLADE_BONOBO_LIBS)
 bonobo_la_LDFLAGS = -export-dynamic -module -avoid-version
+
+gnome_la_SOURCES = glade-gnome.c
+gnome_la_LIBADD = libglade-2.0.la $(LIBGLADE_GNOME_LIBS)
+gnome_la_LDFLAGS = -export-dynamic -module -avoid-version
 
 EXTRA_DIST = $(gladeinclude_HEADERS) \
 	makefile.mingw	\
