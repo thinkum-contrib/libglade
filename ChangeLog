@@ -1,3 +1,7 @@
+2002-02-07  James Henstridge  <james@daa.com.au>
+
+	* configure.in: increment version number.
+
 2002-02-06  James Henstridge  <james@daa.com.au>
 
 	* doc/libglade-docs.sgml: some documentation updates (not quite

@@ -1,7 +1,7 @@
 <INCLUDE>glade/glade-init.h</INCLUDE>
 
 <SECTION>
-<FILE>glade-init.h</FILE>
+<FILE>glade-init</FILE>
 <TITLE>Libglade Initialisation</TITLE>
 glade_init
 glade_require

@@ -1,3 +1,23 @@
+<!-- ##### SECTION ./tmpl/glade-init.h.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/glade-init.h.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/glade-init.h.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/glade-init.h.sgml:Title ##### -->
+Libglade Initialisation
+
+
 <!-- ##### SECTION ./tmpl/glade-sax.sgml:Long_Description ##### -->
 <para>
 The structures described here are the output of libglade's XML parser.

@@ -9,8 +9,8 @@ BuildRoot: /var/tmp/%{name}-root
 Packager: James Henstridge <james@daa.com.au>
 URL: http://www.gnome.org
 
-Requires: gtk+ >= 1.3.8
-Requires: libxml2 >= 2.4.1
+Requires: gtk+ >= 1.3.13
+Requires: libxml2 >= 2.4.10
 
 %description
 This library allows you to load user interfaces in your program, which are
@@ -48,16 +48,12 @@ Libraries, include files, etc you can use to develop libglade applications.
 
 CFLAGS="$RPM_OPT_FLAGS" ./configure $MYARCH_FLAGS --prefix=%{_prefix}
 
-if [ "$SMP" != "" ]; then
-	make -k -j$SMP check "MAKE=make -k -j$SMP check"
-else
-	make -k check
-fi
+make
 
 %install
 [ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
 
-make -k prefix=$RPM_BUILD_ROOT%{_prefix} install
+make prefix=$RPM_BUILD_ROOT%{_prefix} install
 
 
 %clean
@@ -86,5 +82,5 @@ make -k prefix=$RPM_BUILD_ROOT%{_prefix} install
 %{_prefix}/lib/pkgconfig/libglade-2.0.pc
 
 %doc test-libglade.c
-%doc *.glade
+%doc examples/*.glade
 %doc %{_prefix}/share/gtk-doc/html/libglade/*
