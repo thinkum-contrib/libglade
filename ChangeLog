@@ -1,3 +1,8 @@
+2002-03-21  jacob berkman  <jacob@ximian.com>
+
+	* glade/glade-gtk.c (list_item_set_label): new custom property
+	function (for GtkCombo) (bug #75471)
+
 2002-03-11  James Henstridge  <james@daa.com.au>
 
 	* acinclude.m4: add some extra messages to the config.log file.

@@ -128,6 +128,25 @@ progress_set_format (GladeXML *xml, GtkWidget *w,
 }
 
 static void
+list_item_set_label (GladeXML *xml, GtkWidget *w,
+		     const char *name, const char *value)
+{
+    GtkWidget *child;
+
+    child = gtk_bin_get_child (GTK_BIN (w));
+    if (child)
+	gtk_container_remove (GTK_CONTAINER (w), child);
+    
+    /* copied from gtk_list_item_new_with_label() */
+    child = gtk_label_new (value);
+    gtk_misc_set_alignment (GTK_MISC (child), 0.0, 0.5);
+    gtk_misc_set_padding (GTK_MISC (child), 0, 1);
+
+    gtk_container_add (GTK_CONTAINER (w), child);
+    gtk_widget_show (child);
+}
+
+static void
 text_view_set_text (GladeXML *xml, GtkWidget *w,
 		    const char *name, const char *value)
 {
@@ -982,6 +1001,7 @@ _glade_init_gtk_widgets(void)
     glade_register_custom_prop (GTK_TYPE_MENU_ITEM, "use_stock", menu_item_set_use_stock);
     glade_register_custom_prop (GTK_TYPE_WINDOW, "wmclass_name", window_set_wmclass_name);
     glade_register_custom_prop (GTK_TYPE_WINDOW, "wmclass_class", window_set_wmclass_class);
+    glade_register_custom_prop (GTK_TYPE_LIST_ITEM, "label", list_item_set_label);
 
     glade_register_widget (GTK_TYPE_ACCEL_LABEL, glade_standard_build_widget,
 			   NULL, NULL);
