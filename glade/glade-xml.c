@@ -990,7 +990,6 @@ static void
 remove_data_func(gpointer key, gpointer value, gpointer user_data)
 {
     GtkObject *object = value;
-    GladeXML *xml = user_data;
 
     gtk_object_set_data_by_id(object, glade_xml_tree_id, NULL);
     gtk_object_set_data_by_id(object, glade_xml_name_id, NULL);
@@ -1013,7 +1012,7 @@ glade_xml_destroy(GtkObject *object)
 	if (priv) {
 		/* remove data from all widgets in long name hash */
 		g_hash_table_foreach(priv->longname_hash,
-				     remove_data_func, self);
+				     remove_data_func, NULL);
 
 		/* strings are owned in the cached GladeWidgetTree structure */
 		g_hash_table_destroy(priv->name_hash);

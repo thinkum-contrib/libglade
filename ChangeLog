@@ -1,3 +1,20 @@
+2001-09-05  James Henstridge  <james@daa.com.au>
+
+	* doc/Makefile.am: copy build stuff from head branch, as it works
+	better.  Also, get rid of the "if GNOME_SUPPORT" stuff.  The
+	object scanning code doesn't need gnome support.
+
+	* doc/libglade-docs.sgml: update the copyright years to reflect
+	that it has had updates since 1999.  Also change documentation
+	licence to GFDL.
+
+	* glade/glade-xml.c (remove_data_func): we don't need the GladeXML
+	object here.
+
+	* glade/glade-gtk.c (clist_build_children): special case GtkLabel
+	column titles, using gtk_clist_set_column_title so that the title
+	gets aligned appropriately.
+
 2001-09-01  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-xml.c (remove_data_func): don't remove the signal
