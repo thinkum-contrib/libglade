@@ -1,3 +1,11 @@
+2002-01-31  James Henstridge  <james@daa.com.au>
+
+	* libglade-convert.in (stock_menu_translate): new function for
+	translating stock menu item names to new names.
+	(fixup_as_type): translate menu items correctly.
+	(WidgetDef.dump): don't mark labels as translatable if use_stock
+	is set.
+
 2002-01-30  James Henstridge  <james@daa.com.au>
 
 	* libglade-convert.in (fixup_as_type): make menu items use the

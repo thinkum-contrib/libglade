@@ -143,7 +143,11 @@ class WidgetDef:
         print '%s<widget class="%s" id="%s">' %(indent, self.wclass, self.name)
         want_newline = 0
         for name in self.property_names:
-            if name in translatable_properties:
+            translatable = name in translatable_properties
+            if name == 'label' and \
+               self.has_prop('use_stock') and self['use_stock'] == 'yes':
+                translatable = 0
+            if translatable:
                 print '%s  <property name="%s" translatable="yes">%s</property>' % \
                       (indent, name, self.properties[name])
             else:
@@ -531,6 +535,55 @@ def stock_pixmap_translate(old_name):
             name = re.sub('_', '-', name)
             return 'gtk-' + name.lower ()
 
+stock_menu_items = {
+    'GNOMEUIINFO_MENU_NEW_ITEM': (1, 'gtk-new'),
+    'GNOMEUIINFO_MENU_NEW_SUBTREE': (1, 'gtk-new'),
+    'GNOMEUIINFO_MENU_OPEN_ITEM': (1, 'gtk-open'),
+    'GNOMEUIINFO_MENU_SAVE_ITEM': (1, 'gtk-save'),
+    'GNOMEUIINFO_MENU_SAVE_AS_ITEM': (1, 'gtk-save-as'),
+    'GNOMEUIINFO_MENU_REVERT_ITEM': (1, 'gtk-revert-to-saved'),
+    'GNOMEUIINFO_MENU_PRINT_ITEM': (1, 'gtk-print'),
+    'GNOMEUIINFO_MENU_PRINT_SETUP_ITEM': (0, 'Print S_etup...'),
+    'GNOMEUIINFO_MENU_CLOSE_ITEM': (1, 'gtk-close'),
+    'GNOMEUIINFO_MENU_EXIT_ITEM': (1, 'gtk-quit'),
+    'GNOMEUIINFO_MENU_CUT_ITEM': (1, 'gtk-cut'),
+    'GNOMEUIINFO_MENU_COPY_ITEM': (1, 'gtk-copy'),
+    'GNOMEUIINFO_MENU_PASTE_ITEM': (1, 'gtk-paste'),
+    'GNOMEUIINFO_MENU_SELECT_ALL_ITEM': (0, '_Select All'),
+    'GNOMEUIINFO_MENU_CLEAR_ITEM': (1, 'gtk-clear'),
+    'GNOMEUIINFO_MENU_UNDO_ITEM': (1, 'gtk-undo'),
+    'GNOMEUIINFO_MENU_REDO_ITEM': (1, 'gtk-redo'),
+    'GNOMEUIINFO_MENU_FIND_ITEM': (1, 'gtk-find'),
+    'GNOMEUIINFO_MENU_FIND_AGAIN_ITEM': (0, 'Find _Again'),
+    'GNOMEUIINFO_MENU_REPLACE_ITEM': (1, 'gtk-find-and-replace'),
+    'GNOMEUIINFO_MENU_PROPERTIES_ITEM': (1, 'gtk-properties'),
+    'GNOMEUIINFO_MENU_PREFERENCES_ITEM': (1, 'gtk-preferences'),
+    'GNOMEUIINFO_MENU_NEW_WINDOW_ITEM': (0, 'Create New _Window'),
+    'GNOMEUIINFO_MENU_CLOSE_WINDOW_ITEM': (0, '_Close This Window'),
+    'GNOMEUIINFO_MENU_ABOUT_ITEM': (1, 'gnome-stock-about'),
+    'GNOMEUIINFO_MENU_NEW_GAME_ITEM': (0, '_New game'),
+    'GNOMEUIINFO_MENU_PAUSE_GAME_ITEM': (0, '_Pause game'),
+    'GNOMEUIINFO_MENU_RESTART_GAME_ITEM': (0, '_Restart game'),
+    'GNOMEUIINFO_MENU_UNDO_MOVE_ITEM': (0, '_Undo move'),
+    'GNOMEUIINFO_MENU_REDO_MOVE_ITEM': (0, '_Redo move'),
+    'GNOMEUIINFO_MENU_HINT_ITEM': (0, '_Hint'),
+    'GNOMEUIINFO_MENU_SCORES_ITEM': (0, '_Scores...'),
+    'GNOMEUIINFO_MENU_END_GAME_ITEM': (0, '_End game'),
+    'GNOMEUIINFO_MENU_FILE_TREE': (0, '_File'),
+    'GNOMEUIINFO_MENU_EDIT_TREE': (0, '_Edit'),
+    'GNOMEUIINFO_MENU_VIEW_TREE': (0, '_View'),
+    'GNOMEUIINFO_MENU_SETTINGS_TREE': (0, '_Settings'),
+    'GNOMEUIINFO_MENU_FILES_TREE': (0, 'Fi_les'),
+    'GNOMEUIINFO_MENU_WINDOWS_TREE': (0, '_Windows'),
+    'GNOMEUIINFO_MENU_HELP_TREE': (0, '_Help'),
+    'GNOMEUIINFO_MENU_GAME_TREE': (0, '_Game'),
+}
+def stock_menu_translate(old_name):
+    if stock_menu_items.has_key(old_name):
+        return stock_menu_items[old_name]
+    else:
+        return (0, old_name)
+
 def translate_color (color):
     c = string.split (color, ',')
     return '#%.2x%.2x%.2x' % (int (c[0]), int (c[1]), int (c[2]))
@@ -671,8 +724,9 @@ def fixup_as_type(widget, type):
     # add label children to menu items.
     if type == 'GtkMenuItem':
         if widget.has_prop('stock_item'):
-            widget['label'] = stock_button_translate (widget['stock_item'])
-            widget['use_stock'] = 'yes'
+            use_stock, stock = stock_menu_translate(widget['stock_item'])
+            widget['label'] = stock
+            widget['use_stock'] = use_stock and 'yes' or 'no'
             widget['use_underline'] = 'yes'
             del widget['stock_item']
 
