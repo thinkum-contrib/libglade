@@ -1,3 +1,7 @@
+2001-03-26  Darin Adler  <darin@eazel.com>
+
+	* doc/.cvsignore: Ignore some more generated files.
+
 2001-02-13  James Henstridge  <james@daa.com.au>
 
 	* glade/glade.h: add prototype for glade_gnome_db_init.
