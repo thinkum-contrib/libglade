@@ -8,7 +8,7 @@
 <!ATTLIST requires
   lib CDATA #REQUIRED >
 
-<!ELEMENT widget (property*, signal*, child*) >
+<!ELEMENT widget (property*, accessibility?, signal*, accelerator*, child*) >
 <!ATTLIST widget
   class CDATA #REQUIRED
   id ID #REQUIRED >
@@ -16,9 +16,15 @@
 <!ELEMENT property (#PCDATA) >
 <!-- type is an optional tag, and should be the string name of the
      GType for the property -->
+<!-- Would it make sense to have a translatable attribute for the property?
+     It would be set on properties that should be translated before use.
+     Useful for string extraction progs such as xml-i18n-tools and also
+     for code generators that work on properties alone -->
 <!ATTLIST property
   name CDATA #REQUIRED
   type CDATA #IMPLIED >
+
+<!ELEMENT accessibility (property*) >
 
 <!ELEMENT signal EMPTY >
 <!ATTLIST signal
@@ -26,6 +32,12 @@
   handler CDATA #REQUIRED
   after (yes|no) 'no'
   object IDREF #IMPLIED >
+
+<!ELEMENT accelerator EMPTY >
+<!ATTLIST accelerator
+  key CDATA #REQUIRED
+  modifiers CDATA #REQUIRED
+  signal CDATA #REQUIRED >
 
 <!ELEMENT child (property*, widget) >
 <!-- composite children should not have any properties set on them.
