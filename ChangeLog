@@ -1,3 +1,7 @@
+2000-11-28  Jody Goldberg <jgoldberg@home.com>
+
+	* configure.in : Use AM_PROG_LIBTOOL rather than AC_PROG_LIBTOOL
+
 2000-11-22  James Henstridge  <james@daa.com.au>
 
 	* NEWS: new news items.
