@@ -7,7 +7,6 @@ glade_init
 glade_gnome_init
 glade_load_module
 <SUBSECTION Private>
-glade_init_gnome_widgets
 </SECTION>
 
 <SECTION>
@@ -17,6 +16,7 @@ GladeXML
 GladeXMLClass
 glade_xml_new
 glade_xml_new_with_domain
+glade_xml_new_from_memory
 glade_xml_construct
 <SUBSECTION Signal Routines>
 glade_xml_signal_connect
@@ -53,7 +53,9 @@ GladeSignalInfo
 GladeAcceleratorInfo
 <SUBSECTION functions>
 glade_widget_tree_parse_file
-glade_widget_tree_free
+glade_widget_tree_parse_memory
+glade_widget_tree_ref
+glade_widget_tree_unref
 glade_widget_tree_print
 </SECTION>
 

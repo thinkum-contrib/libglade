@@ -18,6 +18,13 @@
 
 @obj: 
 
+<!-- ##### FUNCTION glade_xml_get_type ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
 <!-- ##### MACRO GLADE_XML ##### -->
 <para>
 
@@ -25,10 +32,10 @@
 
 @obj: 
 
-<!-- ##### FUNCTION glade_xml_get_type ##### -->
+<!-- ##### FUNCTION glade_widget_tree_free ##### -->
 <para>
 
 </para>
 
-@Returns: 
+@tree: 
 

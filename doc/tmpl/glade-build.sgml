@@ -136,3 +136,47 @@ the actual widgets from the XML node data structures.
 @Returns: 
 
 
+<!-- ##### FUNCTION glade_xml_set_toplevel ##### -->
+<para>
+
+</para>
+
+@xml: 
+@window: 
+
+
+<!-- ##### FUNCTION glade_xml_ensure_accel ##### -->
+<para>
+
+</para>
+
+@xml: 
+@Returns: 
+
+
+<!-- ##### FUNCTION glade_xml_push_uline_accel ##### -->
+<para>
+
+</para>
+
+@xml: 
+@uline: 
+
+
+<!-- ##### FUNCTION glade_xml_pop_uline_accel ##### -->
+<para>
+
+</para>
+
+@xml: 
+
+
+<!-- ##### FUNCTION glade_xml_get_uline_accel ##### -->
+<para>
+
+</para>
+
+@xml: 
+@Returns: 
+
+

@@ -31,7 +31,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <glade/glade-widget-tree.h>
+#include "glade/glade-private.h"
 
 static GHashTable *tree_hash = NULL;
 

@@ -222,6 +222,30 @@ fixed_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info,
 }
 
 static void
+layout_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info,
+		       const char *longname)
+{
+	GList *tmp;
+
+	for (tmp = info->children; tmp; tmp = tmp->next) {
+		GladeWidgetInfo *cinfo = tmp->data;
+		GtkWidget *child = glade_xml_build_widget(xml, cinfo,longname);
+		GList *tmp2;
+		gint xpos = 0, ypos = 0;
+
+		for (tmp2 = cinfo->attributes; tmp2; tmp2 = tmp2->next) {
+			GladeAttribute *attr = tmp2->data;
+			
+			if (attr->name[0] == 'x' && attr->name[1] == '\0')
+				xpos = strtol(attr->value, NULL, 0);
+			else if (attr->name[0] == 'y' && attr->name[1] == '\0')
+				ypos = strtol(attr->value, NULL, 0);
+		}
+		gtk_layout_put(GTK_LAYOUT(w), child, xpos, ypos);
+	}
+}
+
+static void
 clist_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info,
 		      const char *longname)
 {
@@ -1754,6 +1778,31 @@ fixed_new(GladeXML *xml, GladeWidgetInfo *info)
 }
 
 static GtkWidget *
+layout_new(GladeXML *xml, GladeWidgetInfo *info)
+{
+	GtkWidget *wid = gtk_layout_new(NULL, NULL);
+	GList *tmp;
+	guint width = 400, height = 400;
+
+	for (tmp = info->attributes; tmp; tmp = tmp->next) {
+		GladeAttribute *attr = tmp->data;
+
+		if (!strcmp(attr->name, "area_width"))
+			width = strtoul(attr->value, NULL, 0);
+		else if (!strcmp(attr->name, "area_height"))
+			width = strtoul(attr->value, NULL, 0);
+		else if (!strcmp(attr->name, "hstep"))
+			GTK_ADJUSTMENT(GTK_LAYOUT(wid)->hadjustment)->
+				step_increment = g_strtod(attr->value, NULL);
+		else if (!strcmp(attr->name, "vstep"))
+			GTK_ADJUSTMENT(GTK_LAYOUT(wid)->vadjustment)->
+				step_increment = g_strtod(attr->value, NULL);
+	}
+	gtk_layout_set_size(GTK_LAYOUT(wid), width, height);
+	return wid;
+}
+
+static GtkWidget *
 hbuttonbox_new(GladeXML *xml, GladeWidgetInfo *info)
 {
 	GtkWidget *bbox = gtk_hbutton_box_new();
@@ -2641,6 +2690,7 @@ static const GladeWidgetBuildData widget_data[] = {
 	{"GtkVBox",          vbox_new,          box_build_children},
 	{"GtkTable",         table_new,         table_build_children},
 	{"GtkFixed",         fixed_new,         fixed_build_children},
+	{"GtkLayout",        layout_new,        layout_build_children},
 	{"GtkHButtonBox",    hbuttonbox_new,    glade_standard_build_children},
 	{"GtkVButtonBox",    vbuttonbox_new,    glade_standard_build_children},
 	{"GtkFrame",         frame_new,         glade_standard_build_children},

@@ -1,3 +1,28 @@
+1999-09-05  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c (glade_xml_new_from_memory): added new function
+	to create a GladeXML object from a in memory buffer.
+
+	* po/POTFILES.in: removed all the entries someone added here to
+	discourage people from translating this module.  None of the installed
+	components need translation.
+	
+	* glade/glade-sax.c (my_xmlSAXParseMemory):
+	* glade/glade-sax.c (glade_widget_tree_parse_memory): added an function
+	to create a GladeWidgetTree from a string.
+
+	* glade/glade-gtk.c (layout_new): added support for GtkLayout.
+
+	* glade/glade-gnome.c (iconlist_new): added support for GnomeIconList.
+	(iconsel_new): support for GnomeIconSelection.
+	(druid*): added support for GnomeDruid, GnomeDruidPageStart,
+	GnomeDruidPageFinish, GnomeDruidPageStandard.
+	(pixmap_new): added support for GnomePixmap.
+	(propbox_new): added support for GnomePropertyBox.
+
+	* glade/glade-build.h: changed declaration of GladeWidgetBuildData
+	structure so it does not cause problems for newer gtk-doc's.
+
 1999-09-04  James Henstridge  <james@daa.com.au>
 
 	* doc/Makefile.am (scan): fixed up target so that libtool works
@@ -20,8 +45,6 @@
 
 	* glade/glade-widget-tree.h: added an mtime field to GladeWidgetTree
 	and added reference counting.
-
-1999-09-03  James Henstridge  <james@daa.com.au>
 
 	* configure.in (ALL_LINGUAS): removed languages from the ALL_LINGUAS
 	variable.  Obviously no one read the message above it stating that

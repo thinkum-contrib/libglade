@@ -41,11 +41,13 @@ typedef void (* GladeBuildChildrenFunc) (GladeXML *xml,
 					 GtkWidget *w,
 					 GladeWidgetInfo *info,
 					 const char *longname);
-typedef struct {
+
+typedef struct _GladeWidgetBuildData GladeWidgetBuildData;
+struct _GladeWidgetBuildData {
   char *name;
   GladeNewFunc new;
   GladeBuildChildrenFunc build_children;
-} GladeWidgetBuildData;
+};
 
 /* widgets is a static, NULL terminated array of GladeWidgetBuildData's.
  * They will be added to a hash table, with the name as the key, to be

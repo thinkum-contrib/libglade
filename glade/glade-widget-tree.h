@@ -93,6 +93,8 @@ struct _GladeWidgetTree {
 
 /* parse a file and create a GladeWidgetTree structure */
 GladeWidgetTree *glade_widget_tree_parse_file(const char *file);
+/* parse a buffer and create a GladeWidgetTree structure */
+GladeWidgetTree *glade_widget_tree_parse_memory(char *buffer, int size);
 /* ref/unref a GladeWidgetTree structure*/
 GladeWidgetTree *glade_widget_tree_ref(GladeWidgetTree *tree);
 void glade_widget_tree_unref(GladeWidgetTree *tree);

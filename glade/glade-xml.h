@@ -66,6 +66,8 @@ GtkType glade_xml_get_type    (void);
 GladeXML *glade_xml_new       (const char *fname, const char *root);
 GladeXML *glade_xml_new_with_domain (const char *fname, const char *root,
 				     const char *domain);
+GladeXML *glade_xml_new_from_memory (char *buffer, int size, const char *root,
+				     const char *domain);
 gboolean glade_xml_construct  (GladeXML *self, const char *fname,
 			       const char *root, const char *domain);
 

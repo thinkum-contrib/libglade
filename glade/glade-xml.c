@@ -196,6 +196,42 @@ glade_xml_construct (GladeXML *self, const char *fname, const char *root,
 }
 
 /**
+ * glade_xml_new_from_memory:
+ * @buffer: the memory buffer containing the XML document.
+ * @size: the size of the buffer.
+ * @root: the widget node in @buffer to start building from (or %NULL)
+ * @domain: the translation domain to use for this interface (or %NULL)
+ *
+ * Creates a new GladeXML object (and the corresponding widgets) from the
+ * buffer @buffer.  Optionally it will only build the interface from the
+ * widget node @root (if it is not %NULL).  This feature is useful if you
+ * only want to build say a toolbar or menu from the XML document, but not the
+ * window it is embedded in.
+ *
+ * Returns: the newly created GladeXML object, or NULL on failure.
+ */
+GladeXML *glade_xml_new_from_memory(char *buffer, int size, const char *root,
+				    const char *domain)
+{
+	GladeXML *self;
+	GladeWidgetTree *tree = glade_widget_tree_parse_memory(buffer, size);
+
+	if (!tree)
+		return NULL;
+	self = gtk_type_new(glade_xml_get_type());
+
+	self->priv->tree = tree;
+	self->textdomain = g_strdup(domain);
+	self->filename = NULL;
+	glade_xml_build_interface(self, tree, root);
+
+	if (self->priv->tooltips)
+		gtk_tooltips_enable(self->priv->tooltips);
+
+	return self;
+}
+
+/**
  * glade_xml_signal_connect:
  * @self: the GladeXML object
  * @handlername: the signal handler name

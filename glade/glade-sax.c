@@ -41,11 +41,34 @@
  * negative value on error.
  */
 static int my_xmlSAXParseFile(xmlSAXHandlerPtr sax, void *user_data,
-		      const char *filename) {
+			      const char *filename) {
     int ret = 0;
     xmlParserCtxtPtr ctxt;
     
     ctxt = xmlCreateFileParserCtxt(filename);
+    if (ctxt == NULL) return -1;
+    ctxt->sax = sax;
+    ctxt->userData = user_data;
+    
+    xmlParseDocument(ctxt);
+    
+    if (ctxt->wellFormed)
+	ret = 0;
+    else
+	ret = -1;
+    if (sax != NULL)
+	ctxt->sax = NULL;
+    xmlFreeParserCtxt(ctxt);
+    
+    return ret;
+}
+
+static int my_xmlSAXParseMemory(xmlSAXHandlerPtr sax, void *user_data,
+				char *buffer, int size) {
+    int ret = 0;
+    xmlParserCtxtPtr ctxt;
+    
+    ctxt = xmlCreateMemoryParserCtxt(buffer, size);
     if (ctxt == NULL) return -1;
     ctxt->sax = sax;
     ctxt->userData = user_data;
@@ -701,6 +724,30 @@ GladeWidgetTree *glade_widget_tree_parse_file(const char *file) {
     /* set the modification time of the file ... */
     if (stat(file, &statbuf) >= 0)
 	state.tree->mtime = statbuf.st_mtime;
+    return state.tree;
+}
+
+/**
+ * glade_widget_tree_parse_memory
+ * @buffer: the in memory buffer holding the XML document
+ * @size: the size of the buffer
+ *
+ * This routine will parse an in memory buffer containing Glade XML, and
+ * produce a GladeWidgetTree structure containing the information in this
+ * buffer.
+ *
+ * Returns: the GladeWidgetTree structure, or NULL on error.
+ */
+GladeWidgetTree *glade_widget_tree_parse_memory(char *buffer, int size) {
+    GladeParseState state;
+
+    state.tree = NULL;
+    if (my_xmlSAXParseMemory(&gladeSAXParser, &state, buffer, size) < 0) {
+	g_warning("document not well formed!");
+	if (state.tree)
+	    glade_widget_tree_unref(state.tree);
+	return NULL;
+    }
     return state.tree;
 }
 
