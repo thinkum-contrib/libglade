@@ -1,3 +1,9 @@
+2000-08-01  James Henstridge  <james@daa.com.au>
+
+	* configure.in: revert Martin's patch.  The GNOME_INIT_HOOK macro
+	already handles a --with-gnome switch, and it was preventing the
+	configure script from auto detecting gnome.
+
 2000-07-30  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-sax.c: fixed small memory leak in glade_widget_tree_unref
