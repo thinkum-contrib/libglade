@@ -2,6 +2,7 @@
 *-undocumented.txt
 *.bak
 *.lo
+*.stamp
 .libs
 Makefile
 Makefile.in
