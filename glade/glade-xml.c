@@ -724,7 +724,8 @@ glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window)
  * Returns: The current GtkAccelGroup after push.
  */
 GtkAccelGroup *
-glade_xml_push_accel(GladeXML *xml) {
+glade_xml_push_accel(GladeXML *xml)
+{
 	GtkAccelGroup *accel = gtk_accel_group_new();
        
 	xml->priv->accel_groups
@@ -740,12 +741,18 @@ glade_xml_push_accel(GladeXML *xml) {
  * Returns: The current GtkAccelGroup after pop.
  */
 GtkAccelGroup *
-glade_xml_pop_accel(GladeXML *xml) {
+glade_xml_pop_accel(GladeXML *xml)
+{
+	GtkAccelGroup *accel;
+
 	g_return_val_if_fail(xml->priv->accel_groups != NULL, NULL);
 
+	/* the accel group at the top of the stack */
+	accel = xml->priv->accel_groups->data;
 	xml->priv->accel_groups
-		= g_slist_remove(xml->priv->accel_groups,
-				 xml->priv->accel_groups->data);
+		= g_slist_remove(xml->priv->accel_groups, accel);
+	/* unref the accel group that was at the top of the stack */
+	gtk_accel_group_unref(accel);
 	return xml->priv->accel_groups ? xml->priv->accel_groups->data : NULL;
 }
 

@@ -1,3 +1,9 @@
+2000-09-18  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c (glade_xml_pop_accel): unref the accel group
+	when popping it off the stack.  These things don't have a floating
+	reference.
+
 2000-09-03  Federico Mena Quintero  <federico@helixcode.com>
 
 	* glade/glade-xml.c (glade_xml_init): Initialize priv->tree to
