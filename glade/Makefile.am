@@ -20,7 +20,7 @@ endif
 lib_LTLIBRARIES = libglade-2.0.la
 glademodule_LTLIBRARIES = $(bonobo_la)
 
-gladeincludedir      = $(includedir)/glade-2.0/glade
+gladeincludedir      = $(includedir)/libglade-2.0/glade
 gladeinclude_HEADERS = \
   glade.h 	\
   glade-init.h	\

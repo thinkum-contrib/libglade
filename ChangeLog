@@ -1,3 +1,11 @@
+2001-09-01  James Henstridge  <james@daa.com.au>
+
+	* libglade-2.0.pc.in (Cflags): make change to match.
+
+	* glade/Makefile.am (gladeincludedir): change the header directory
+	from glade-2.0/glade to libglade-2.0/glade to match the stable
+	branch.
+
 2001-08-28  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-xml.c (glade_xml_init): initialise deferred_props to
