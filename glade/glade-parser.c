@@ -924,7 +924,8 @@ glade_interface_destroy(GladeInterface *interface)
  * Generally, user code won't need to call this function.  Instead, it
  * should go through the GladeXML interfaces.
  *
- * Returns: the GladeInterface structure for the XML file.  */
+ * Returns: the GladeInterface structure for the XML file.
+ */
 GladeInterface *
 glade_parser_parse_file(const gchar *file)
 {
@@ -945,7 +946,7 @@ glade_parser_parse_file(const gchar *file)
 /**
  * glade_parser_parse_buffer
  * @buffer: a buffer in memory containing XML data.
- * @size: the size of @buffer.
+ * @len: the length of @buffer.
  *
  * This function is similar to glade_parser_parse_file, except that it
  * parses XML data from a buffer in memory.  This could be used to
@@ -957,12 +958,12 @@ glade_parser_parse_file(const gchar *file)
  * Returns: the GladeInterface structure for the XML buffer.
  */
 GladeInterface *
-glade_parser_parse_buffer(const gchar *buffer, gint size)
+glade_parser_parse_buffer(const gchar *buffer, gint len)
 {
     GladeParseState state = { 0 };
 
     state.interface = NULL;
-    if (xmlSAXUserParseMemory(&glade_parser, &state, buffer, size) < 0) {
+    if (xmlSAXUserParseMemory(&glade_parser, &state, buffer, len) < 0) {
 	g_warning("document not well formed!");
 	glade_interface_destroy(state.interface);
 	return NULL;

@@ -1,6 +1,6 @@
 <!doctype book PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
 <!entity libglade-glade-build SYSTEM "sgml/glade-build.sgml">
-<!entity libglade-glade-sax SYSTEM "sgml/glade-sax.sgml">
+<!entity libglade-glade-parser SYSTEM "sgml/glade-parser.sgml">
 <!entity libglade-glade-xml SYSTEM "sgml/glade-xml.sgml">
 <!entity libglade-glade SYSTEM "sgml/glade.sgml">
 ]>
@@ -295,7 +295,7 @@ menubar = glade_xml_get_widget(xml, "menubar");
 
     &libglade-glade;
     &libglade-glade-xml;
-    &libglade-glade-sax;
+    &libglade-glade-parser;
     &libglade-glade-build;
   </chapter>
 </book>

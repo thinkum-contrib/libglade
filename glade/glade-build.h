@@ -137,7 +137,7 @@ G_MODULE_EXPORT const gchar *g_module_check_init(GModule *gmodule); \
 const gchar * \
 g_module_check_init(GModule *gmodule) \
 { \
-  return glade_plugin_check_version(DIA_PLUGIN_API_VERSION); \
+  return glade_module_check_version(GLADE_MODULE_API_VERSION); \
 }
 
 /* prototype for plugin init function (should be implemented by plugin) */

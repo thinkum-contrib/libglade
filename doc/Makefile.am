@@ -20,10 +20,11 @@ SCANOBJ_FILES = $(DOC_MODULE).signals $(DOC_MODULE).hierachy $(DOC_MODULE).args
 tmpl_sources =				\
 	tmpl/glade.sgml			\
 	tmpl/glade-xml.sgml		\
+	tmpl/glade-parser.sgml		\
 	tmpl/glade-build.sgml		\
 	tmpl/libglade-unused.sgml
 
-noinst_DATA = html-build.stamp
+noinst_DATA = html.stamp
 
 EXTRA_DIST = 				\
 	libglade-decl.txt		\
@@ -61,25 +62,17 @@ scan-build.stamp: $(top_srcdir)/glade/*.h
 $(DOC_MODULE)-decl.txt $(SCANOBJ_FILES): scan-build.stamp
 	@true
 
-tmpl-build.stamp: $(DOC_MODULE)-decl.txt $(SCANOBJ_FILES) $(DOC_MODULE)-sections.txt
+tmpl.stamp: $(DOC_MODULE)-decl.txt $(SCANOBJ_FILES) $(DOC_MODULE)-sections.txt
 	@echo '*** Rebuilding template files ***'
 	cd $(srcdir) && gtkdoc-mktmpl --module=$(DOC_MODULE)
-	touch tmpl-build.stamp
 
-tmpl.stamp: tmpl-build.stamp
-	@true
-
-sgml-build.stamp: tmpl.stamp $(top_srcdir)/glade/*.c $(srcdir)/tmpl/*.sgml
+sgml.stamp: tmpl.stamp $(top_srcdir)/glade/*.c $(srcdir)/tmpl/*.sgml
 	@echo '*** Building SGML ***'
 	@test -d $(srcdir)/sgml || mkdir $(srcdir)/sgml
 	cd $(srcdir) \
 	&& gtkdoc-mkdb --module=$(DOC_MODULE) --source-dir=$(DOC_SOURCE_DIR)
-	touch sgml-build.stamp
 
-sgml.stamp: sgml-build.stamp
-	@true
-
-html-build.stamp: sgml.stamp $(DOC_MAIN_SGML_FILE) $(content_files)
+html.stamp: sgml.stamp $(DOC_MAIN_SGML_FILE) $(content_files)
 	@echo '*** Building HTML ***'
 	@test -d $(srcdir)/html || mkdir $(srcdir)/html
 	-cd $(srcdir)/html && gtkdoc-mkhtml $(DOC_MODULE) ../$(DOC_MAIN_SGML_FILE)

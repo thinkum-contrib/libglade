@@ -1,3 +1,15 @@
+2001-08-20  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-bonobo.c (glade_bonobo_widget_new): update to match
+	new APIs.  Also, rather than passing all unknown widgets to the
+	bonobo module, handle only BonoboWidget type widgets (look for the
+	moniker property to decide what type of control to instantiate).
+
+	* glade/Makefile.am (bonobo_la): add rules to build the bonobo
+	module.
+
+	* configure.in (build_bonobo): add rules to detect bonobo support.
+
 2001-08-19  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-xml.c (glade_get_adjustment): remove function.
