@@ -704,7 +704,14 @@ button_new(GladeXML *xml, GladeWidgetInfo *info)
 			string = attr->value;
 	}
 	if (string != NULL) {
-		button = gtk_button_new_with_label(_(string));
+		guint key;
+		button = gtk_button_new_with_label("");
+		key = gtk_label_parse_uline(GTK_LABEL(GTK_BIN(button)->child),
+					    _(string));
+		if (key)
+			gtk_widget_add_accelerator(button, "clicked",
+						   glade_xml_ensure_accel(xml),
+						   key, GDK_MOD1_MASK, 0);
 	} else
 		button = gtk_button_new();
 	return button;
@@ -726,9 +733,16 @@ togglebutton_new(GladeXML *xml, GladeWidgetInfo *info)
 		else if (!strcmp(attr->name, "active"))
 			active = attr->value[0] == 'T';
 	}
-	if (string != NULL)
-		button = gtk_toggle_button_new_with_label(_(string));
-	else
+	if (string != NULL) {
+		guint key;
+		button = gtk_toggle_button_new_with_label("");
+		key = gtk_label_parse_uline(GTK_LABEL(GTK_BIN(button)->child),
+					    _(string));
+		if (key)
+			gtk_widget_add_accelerator(button, "clicked",
+						   glade_xml_ensure_accel(xml),
+						   key, GDK_MOD1_MASK, 0);
+	} else
 		button = gtk_toggle_button_new();
 	gtk_toggle_button_set_state(GTK_TOGGLE_BUTTON(button), active);
 	return button;
@@ -752,9 +766,16 @@ checkbutton_new (GladeXML *xml, GladeWidgetInfo *info)
 		else if (!strcmp(attr->name, "draw_indicator"))
 			draw_indicator = attr->value[0] == 'T';
 	}
-	if (string != NULL)
-		button = gtk_check_button_new_with_label(_(string));
-	else
+	if (string != NULL) {
+		guint key;
+		button = gtk_check_button_new_with_label("");
+		key = gtk_label_parse_uline(GTK_LABEL(GTK_BIN(button)->child),
+					    _(string));
+		if (key)
+			gtk_widget_add_accelerator(button, "clicked",
+						   glade_xml_ensure_accel(xml),
+						   key, GDK_MOD1_MASK, 0);
+	} else
 		button = gtk_check_button_new();
 
 	gtk_toggle_button_set_state(GTK_TOGGLE_BUTTON(button), active);
@@ -788,9 +809,16 @@ radiobutton_new(GladeXML *xml, GladeWidgetInfo *info)
 				group_name = attr->value;
 		}
 	}
-	if (string != NULL)
-		button = gtk_radio_button_new_with_label(group, _(string));
-	else
+	if (string != NULL) {
+		guint key;
+		button = gtk_radio_button_new_with_label(group, "");
+		key = gtk_label_parse_uline(GTK_LABEL(GTK_BIN(button)->child),
+					    _(string));
+		if (key)
+			gtk_widget_add_accelerator(button, "clicked",
+						   glade_xml_ensure_accel(xml),
+						   key, GDK_MOD1_MASK, 0);
+	} else
 		button = gtk_radio_button_new (group);
 
 	/*

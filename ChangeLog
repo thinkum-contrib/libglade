@@ -1,3 +1,11 @@
+1999-08-05  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gnome.c (stock_button_new): uline accelerator support
+	here as well.
+
+	* glade/glade-gtk.c: added uline accelerator support for buttons,
+	check buttons, toggle buttons and radio buttons.
+
 1999-08-04  James Henstridge  <james@daa.com.au>
 
 	* doc/libglade-sections.txt: added new functions to documentation
