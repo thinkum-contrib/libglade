@@ -28,4 +28,5 @@ libglade-config
 .libs
 .deps
 libglade.spec
+libgladeConf.sh
 NO-AUTO-GEN
