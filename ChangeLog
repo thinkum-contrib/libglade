@@ -26,6 +26,30 @@
 	(glade_xml_signal_connect_data): new function to connect a named
 	signal and allow the user to set the signal data.
 
+2000-03-10  Tor Lillqvist  <tml@iki.fi>
+
+	* configure.in: Check for unistd.h.
+
+	* acconfig.h: Add HAVE_UNISTD_H.
+
+	* glade/glade-sax.c: Guard inclusion of unistd.h.
+
+	* glade/glade-xml.h
+	* glade/glade-xml.c: Rename the textdomain field to txtdomain as
+	textdomain() is a libintl function, and can in certain cases be
+	#defined as textdomain__ by libintl.h. This causes trouble if
+	libintl.h is included after glade-xml.h.
+
+	* config.h.win32
+	* makefile.mingw
+	* glade/makefile.mingw
+	* glade/glade.def: New files for Win32 port. As in the GLib, GTk+, 
+	and GIMP ports, we use hand-written makefiles and config.h files,
+	at least for now.
+
+	* Makefile.am
+	* glade/Makefile.am: Add above new files to EXTRA_DIST.
+
 2000-03-10  Michael Meeks  <michael@helixcode.com>
 
 	* glade/glade-bonobo.c: Add.

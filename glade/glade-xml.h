@@ -45,7 +45,7 @@ struct _GladeXML {
   GtkData parent;
 
   char *filename;
-  char *textdomain;
+  char *txtdomain;
 
   /* <private> */
   GladeXMLPrivate *priv;

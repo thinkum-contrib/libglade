@@ -19,7 +19,9 @@ EXTRA_DIST =			\
 	gnome-widgets.glade	\
 	dialogs.glade		\
 	libglade.m4		\
-	libglade-xgettext
+	libglade-xgettext	\
+	config.h.win32		\
+	makefile.mingw
 
 bin_SCRIPTS = libglade-config libglade-xgettext
 noinst_PROGRAMS = test-libglade

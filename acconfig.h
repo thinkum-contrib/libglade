@@ -21,6 +21,8 @@
 #undef HAVE_CATGETS
 #undef HAVE_GETTEXT
 
+#undef HAVE_UNISTD_H
+
 @BOTTOM@
 
 #ifdef DEBUG

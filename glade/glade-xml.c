@@ -97,7 +97,7 @@ glade_xml_init (GladeXML *self)
 	self->priv = priv = g_new (GladeXMLPrivate, 1);
 
 	self->filename = NULL;
-	self->textdomain = NULL;
+	self->txtdomain = NULL;
 	priv->tooltips = NULL;
 	priv->name_hash = g_hash_table_new(g_str_hash, g_str_equal);
 	priv->longname_hash = g_hash_table_new(g_str_hash, g_str_equal);
@@ -195,8 +195,8 @@ glade_xml_construct (GladeXML *self, const char *fname, const char *root,
 		return FALSE;
 
 	self->priv->tree = tree;
-	if (self->textdomain) g_free(self->textdomain);
-	self->textdomain = g_strdup(domain);
+	if (self->txtdomain) g_free(self->txtdomain);
+	self->txtdomain = g_strdup(domain);
 	if (self->filename)
 		g_free(self->filename);
 	self->filename = g_strdup(fname);
@@ -234,7 +234,7 @@ GladeXML *glade_xml_new_from_memory(char *buffer, int size, const char *root,
 	self = gtk_type_new(glade_xml_get_type());
 
 	self->priv->tree = tree;
-	self->textdomain = g_strdup(domain);
+	self->txtdomain = g_strdup(domain);
 	self->filename = NULL;
 	glade_xml_build_interface(self, tree, root);
 
@@ -850,8 +850,8 @@ glade_xml_gettext(GladeXML *xml, const char *msgid)
 	if (!msgid || msgid[0] == '\0')
 		return "";
 #ifdef ENABLE_NLS
-	if (xml->textdomain)
-		return dgettext(xml->textdomain, msgid);
+	if (xml->txtdomain)
+		return dgettext(xml->txtdomain, msgid);
 	else
 		return gettext(msgid);
 #else
@@ -930,8 +930,8 @@ glade_xml_destroy(GtkObject *object)
 	
 	if (self->filename)
 		g_free(self->filename);
-	if (self->textdomain)
-		g_free(self->textdomain);
+	if (self->txtdomain)
+		g_free(self->txtdomain);
 
 	if (priv->tree)
 		glade_widget_tree_unref(priv->tree);

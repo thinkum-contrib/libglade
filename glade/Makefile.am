@@ -50,5 +50,6 @@ libglade_la_LDFLAGS  = -version-info $(LTVERSION)
 gladeincludedir      = $(includedir)/glade
 gladeinclude_HEADERS = $(the_headers)
 
-EXTRA_DIST = $(the_headers)
-
+EXTRA_DIST = $(the_headers) \
+	makefile.mingw	\
+	glade.def
