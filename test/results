@@ -1,0 +1,38 @@
+Each parser loads the document 100 times (without freeing it).  This is
+so that the effect of any startup mallocs in the results is minimised.
+
+file           parser   time (user,sys)  mallocs         frees
+=======================================================================
+gnome-widgets  dom      1.11, 0.22       568989 (36.4M)  251900 (27.5M)
+gnome-widgets  sax      1.03, 0.10       275645 (28.7M)  157400 (26.6M)
+
+example.glade  dom      0.57, 0.05       281778 (20.9M)  123500 (16.6M)
+example.glade  sax      0.56, 0.01       148308 (17.4M)   77401 (16.3M)
+
+simple.glade   dom      0.06, 0.01        29710 (7.18M)    9900 (6.88M)
+simple.glade   sax      0.08, 0.00        10819 (6.95M)    6900 (6.87M)
+
+small.glade    dom      0.03, 0.01         2804 (6.30M)    2000 (6.27M)
+small.glade    sax      0.00, 0.03         2405 (6.31M)    1900 (6.29M)
+
+
+
+Summary of results:
+
+file             file size  parser  (m-f)/instance  memory/instance
+===================================================================
+small.glade             55  dom               8.04             0.3K
+                            sax               5.05             0.2K
+simple.glade           728  dom             198.10             3.0K
+                            sax              39.19             0.8K
+example.glade        11832  dom            1582.78            43  K
+                            sax             709.07            11  K
+gnome-widgets.glade  23809  dom            3170.89            89  K
+                            sax            1182.45            21  K
+
+Notes:
+- (m-f)/instance is the difference between mallocs and frees, divided by
+     the number of times the file was loaded.
+- small.glade is the smallest glade file possible (no widgets or project
+     section).
+- The other examples are included in the main libglade distribution.
