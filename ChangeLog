@@ -1,5 +1,9 @@
 1999-04-24  James Henstridge  <james@daa.com.au>
 
+	* glade/Makefile.am (INCLUDES): fixed up yet anothe mistake in the
+	makefiles.  This should allow libglade to build correctly whether
+	it is included as part of a larger package or not.
+
 	* Makefile.am: removed reference to the macros	directory, as they
 	break the gnumeric build.  The problem with this is that a
 	distributed libglade package would not contain all the files
