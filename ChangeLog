@@ -1,3 +1,9 @@
+2005-02-11  James Henstridge  <james@jamesh.id.au>
+
+	* glade/glade-gtk.c (toolbar_build_children): revert the handling
+	of old toolbars to the pre-2.4.1 behaviour, with the exception of
+	the "active" handling for radio buttons.
+
 2004-11-29  James Henstridge  <james@jamesh.id.au>
 
 	* NEWS: add news items.
