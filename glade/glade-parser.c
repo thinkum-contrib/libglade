@@ -560,18 +560,15 @@ glade_parser_start_element(GladeParseState *state,
 	    if (state->prop_type != PROP_NONE &&
 		state->prop_type != PROP_WIDGET)
 		g_warning("non widget properties defined here (oh no!)");
-	    state->prop_type = PROP_WIDGET;
 	    state->translate_prop = FALSE;
 	    for (i = 0; attrs && attrs[i] != NULL; i += 2) {
 		if (!strcmp(attrs[i], "name"))
 		    state->prop_name = alloc_string(state->interface,
 						    attrs[i+1]);
-		else if (!strcmp(attrs[i], "translatable") &&
-			 !strcmp(attrs[i+1], "yes"))
-		    state->translate_prop = TRUE;
-		else if (!strcmp(attrs[i], "agent") &&
-			 strcmp(attrs[i], "libglade") == 0)
-		    bad_agent = TRUE;
+		else if (!strcmp(attrs[i], "translatable"))
+		    state->translate_prop = !strcmp(attrs[i+1], "yes");
+		else if (!strcmp(attrs[i], "agent"))
+		    bad_agent = strcmp(attrs[i], "libglade") != 0;
 		else
 		    g_warning("unknown attribute `%s' for <property>.",
 			      attrs[i]);
@@ -582,6 +579,7 @@ glade_parser_start_element(GladeParseState *state,
 		state->state = PARSER_UNKNOWN;
 		state->unknown_depth++;
 	    } else {
+		state->prop_type = PROP_WIDGET;
 		state->state = PARSER_WIDGET_PROPERTY;
 	    }
 	} else if (!strcmp(name, "accessibility")) {
@@ -623,9 +621,8 @@ glade_parser_start_element(GladeParseState *state,
 		if (!strcmp(attrs[i], "name"))
 		    state->prop_name = alloc_string(state->interface,
 						    attrs[i+1]);
-		else if (!strcmp(attrs[i], "translatable") &&
-			 !strcmp(attrs[i+1], "yes"))
-		    state->translate_prop = TRUE;
+		else if (!strcmp(attrs[i], "translatable"))
+		    state->translate_prop = !strcmp(attrs[i+1], "yes");
 		else
 		    g_warning("unknown attribute `%s' for <atkproperty>.",
 			      attrs[i]);
@@ -768,18 +765,15 @@ glade_parser_start_element(GladeParseState *state,
 	    if (state->prop_type != PROP_NONE &&
 		state->prop_type != PROP_CHILD)
 		g_warning("non child properties defined here (oh no!)");
-	    state->prop_type = PROP_CHILD;
 	    state->translate_prop = FALSE;
 	    for (i = 0; attrs && attrs[i] != NULL; i += 2) {
 		if (!strcmp(attrs[i], "name"))
 		    state->prop_name = alloc_string(state->interface,
 						    attrs[i+1]);
-		else if (!strcmp(attrs[i], "translatable") &&
-			 !strcmp(attrs[i+1], "yes"))
-		    state->translate_prop = TRUE;
-		else if (!strcmp(attrs[i], "agent") &&
-			 strcmp(attrs[i], "libglade") == 0)
-		    bad_agent = TRUE;
+		else if (!strcmp(attrs[i], "translatable"))
+		    state->translate_prop = !strcmp(attrs[i+1], "yes");
+		else if (!strcmp(attrs[i], "agent"))
+		    bad_agent = strcmp(attrs[i], "libglade") != 0;
 		else
 		    g_warning("unknown attribute `%s' for <property>.",
 			      attrs[i]);
@@ -790,6 +784,7 @@ glade_parser_start_element(GladeParseState *state,
 		state->state = PARSER_UNKNOWN;
 		state->unknown_depth++;
 	    } else {
+		state->prop_type = PROP_CHILD;
 		state->state = PARSER_WIDGET_CHILD_PACKING_PROPERTY;
 	    }
 	} else {
