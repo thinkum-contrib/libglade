@@ -30,5 +30,6 @@ libglade-config
 libglade.spec
 libgladeConf.sh
 NO-AUTO-GEN
+ABOUT-NLS
 intl
 
