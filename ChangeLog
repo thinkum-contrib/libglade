@@ -1,3 +1,10 @@
+2001-09-05  James Henstridge  <james@daa.com.au>
+
+	* libglade-convert (fixup_widget): convert combo boxes correctly.
+
+	* glade/glade-gtk.c (combo_find_internal_child): handle internal
+	children of a GtkCombo widget.
+
 2001-09-04  James Henstridge  <james@daa.com.au>
 
 	* glade/Makefile.am: build the gnome.la libglade module with

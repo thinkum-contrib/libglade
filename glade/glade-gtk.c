@@ -119,6 +119,23 @@ fontseldlg_find_internal_child(GladeXML *xml, GtkWidget *parent,
     return NULL;
 }
 
+static GtkWidget *
+combo_find_internal_child(GladeXML *xml, GtkWidget *parent,
+			  const gchar *childname)
+{
+    if (!strcmp(childname, "entry"))
+	return GTK_COMBO(parent)->entry;
+    if (!strcmp(childname, "button"))
+	return GTK_COMBO(parent)->button;
+    if (!strcmp(childname, "popup"))
+	return GTK_COMBO(parent)->popup;
+    if (!strcmp(childname, "pupwin"))
+	return GTK_COMBO(parent)->popwin;
+    if (!strcmp(childname, "list"))
+	return GTK_COMBO(parent)->list;
+    return NULL;
+}
+
 static GladeWidgetBuildData widget_data[] = {
     { "GtkAccelLabel", glade_standard_build_widget, NULL,
       gtk_accel_label_get_type },
@@ -143,7 +160,7 @@ static GladeWidgetBuildData widget_data[] = {
     { "GtkColorSelectionDialog", window_new, glade_standard_build_children,
       gtk_color_selection_dialog_get_type, 0, colorseldlg_find_internal_child },
     { "GtkCombo", glade_standard_build_widget, glade_standard_build_children,
-      gtk_combo_get_type },
+      gtk_combo_get_type, 0, combo_find_internal_child },
     { "GtkCTree", glade_standard_build_widget, glade_standard_build_children,
       gtk_ctree_get_type },
     { "GtkCurve", glade_standard_build_widget, NULL,

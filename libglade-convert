@@ -414,6 +414,30 @@ def fixup_widget(widget):
         childdef.internal_child = 'action_area'
         del childdef.widget['child_name']
 
+    if widget['class'] == 'GtkCombo':
+        childdef = widget.children[0]
+        childdef.internal_child = 'entry'
+        del childdef.widget['child_name']
+
+        if widget.has_prop('items'):
+            items = widget['items'].split('\n')
+            del widget['items']
+            list = WidgetDef()
+            list['class'] = 'GtkList'
+            list['name'] = make_name()
+            widget.add_child(list, 'list')
+            for item in items:
+                listitem = WidgetDef()
+                listitem['class'] = 'GtkListItem'
+                listitem['name'] = make_name()
+                list.add_child(listitem)
+                label = WidgetDef()
+                label['class'] = 'GtkLabel'
+                label['name'] = make_name()
+                label['xalign'] = '0.0'
+                label['label'] = widget['label']
+                listitem.add_child(label)
+
     # add the visible property if missing:
     if not widget.has_prop('visible'):
         widget['visible'] = 'yes'
