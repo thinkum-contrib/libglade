@@ -16,7 +16,7 @@ have_libtool=false
 if libtool --version < /dev/null > /dev/null 2>&1 ; then
 	libtool_version=`libtoolize --version | sed 's/^[^0-9]*\([0-9.][0-9.]*\).*/\1/'`
 	case $libtool_version in
-	    1.4*)
+	    1.[456789]*)
 		have_libtool=true
 		;;
 	esac
@@ -46,14 +46,16 @@ if $have_autoconf ; then : ; else
 	DIE=1
 fi
 
-have_automake=false
-if automake-1.6 --version < /dev/null > /dev/null 2>&1 ; then
-	have_automake=true
-fi
-if $have_automake ; then : ; else
+if automake-1.7 --version < /dev/null > /dev/null 2>&1; then
+  AUTOMAKE=automake-1.7
+  ACLOCAL=aclocal-1.7
+elif automake-1.6 --version < /dev/null > /dev/null 2>&1; then
+  AUTOMAKE=automake-1.6
+  ACLOCAL=aclocal-1.6
+else
 	echo
-	echo "You must have automake 1.6.x installed to compile $PROJECT."
-	echo "Get ftp://ftp.gnu.org/pub/gnu/automake/automake-1.6.3.tar.gz"
+	echo "You must have automake >= 1.6 installed to compile $PROJECT."
+	echo "Get http://ftp.gnu.org/gnu/automake/automake-1.7.3.tar.gz"
 	echo "(or a newer version if it is available)"
 	DIE=1
 fi
@@ -74,13 +76,9 @@ if test -z "$AUTOGEN_SUBDIR_MODE"; then
         fi
 fi
 
-case $CC in
-*xlc | *xlc\ * | *lcc | *lcc\ *) am_opt=--include-deps;;
-esac
-
 if test -z "$ACLOCAL_FLAGS"; then
 
-	acdir=`aclocal-1.6 --print-ac-dir`
+	acdir=`$ACLOCAL --print-ac-dir`
         m4list="glib-2.0.m4 glib-gettext.m4 gtk-2.0.m4"
 
 	for file in $m4list
@@ -97,15 +95,17 @@ if test -z "$ACLOCAL_FLAGS"; then
 	done
 fi
 
-aclocal-1.6 $ACLOCAL_FLAGS
+$ACLOCAL $ACLOCAL_FLAGS
 
 libtoolize --force
+
+autoconf
 
 # optionally feature autoheader
 autoheader
 
-automake-1.6 -a $am_opt
-autoconf
+$AUTOMAKE -a
+
 cd $ORIGDIR
 
 if test -z "$AUTOGEN_SUBDIR_MODE"; then
