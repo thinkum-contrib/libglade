@@ -57,6 +57,7 @@ automatically connect as many handlers up as it can that way.
 @self: 
 @fname: 
 @root: 
+@Returns: 
 <!-- # Unused Parameters # -->
 @filename: 
 @xml: 
@@ -68,9 +69,10 @@ automatically connect as many handlers up as it can that way.
 </para>
 
 @self: 
-@signalname: 
+@handlername: 
 @func: 
 <!-- # Unused Parameters # -->
+@signalname: 
 @xml: 
 
 

@@ -703,7 +703,7 @@ glade_xml_build_widget(GladeXML *self, GNode *node,
  * glade_xml_set_common_params
  * @self: the GladeXML widget.
  * @widget: the widget to set parameters on.
- * @xml: the XML node for this widget.
+ * @node: the XML node for this widget.
  * @parent_long: the long name of the parent widget.
  * @widget_class: the class of this widget, or NULL to guess the class.
  *
@@ -851,8 +851,8 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 }
 
 /**
- * glade_default_build_children
- * @xml: the GladeXML object.
+ * glade_standard_build_children
+ * @self: the GladeXML object.
  * @w: the container widget.
  * @node: the node for this widget.
  * @longname: the long name for this widget.
@@ -863,13 +863,13 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
  * sets.
  */
 void
-glade_standard_build_children(GladeXML *xml, GtkWidget *w, GNode *node,
+glade_standard_build_children(GladeXML *self, GtkWidget *w, GNode *node,
 			     const char *longname)
 {
 	GNode *childnode;
 	for (childnode = node->children; childnode;
 	     childnode = childnode->next) {
-		GtkWidget *child = glade_xml_build_widget(xml, childnode,
+		GtkWidget *child = glade_xml_build_widget(self, childnode,
 							  longname);
 		gtk_container_add(GTK_CONTAINER(w), child);
 	}
@@ -880,6 +880,8 @@ glade_standard_build_children(GladeXML *xml, GtkWidget *w, GNode *node,
  * @gnode: the XML node for the widget.
  *
  * This utility routine is used to create an adjustment object for a widget.
+ *
+ * Returns: the newly created GtkAdjustment.
  */
 GtkAdjustment *
 glade_get_adjustment(GNode *gnode)
