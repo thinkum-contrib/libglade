@@ -33,5 +33,12 @@ XML_CFLAGS=`xml-config --cflags`
 AC_SUBST(XML_LIBS)
 AC_SUBST(XML_CFLAGS)
 
-AC_OUTPUT(Makefile glade/Makefile)
+LIBGLADE_LIBDIR='-L${libdir}'
+LIBGLADE_INCLUDEDIR='-I${includedir}'
+LIBGLADE_LIBS="-lglade $XML_LIBS"
+AC_SUBST(LIBGLADE_LIBDIR)
+AC_SUBST(LIBGLADE_INCLUDEDIR)
+AC_SUBST(LIBGLADE_LIBS)
+
+AC_OUTPUT(Makefile glade/Makefile libglade-config)
 

@@ -82,6 +82,7 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 %files devel
 %defattr(-, root, root)
 
+%{prefix}/bin/*
 %{prefix}/lib/lib*.so
 %{prefix}/lib/*a
 %{prefix}/include/glade/*

@@ -7,6 +7,8 @@ INCLUDES = $(GTK_CFLAGS) $(XML_CFLAGS)
 
 EXTRA_DIST = libglade.spec test.glade simple.glade example.glade
 
+bin_SCRIPTS = libglade-config
+
 noinst_PROGRAMS = test-libglade
 
 test_libglade_SOURCES = test-libglade.c
