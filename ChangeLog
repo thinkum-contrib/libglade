@@ -1,3 +1,17 @@
+2001-11-21  James Henstridge  <james@daa.com.au>
+
+	* Makefile.am (EXTRA_DIST): dist libglade-convert.in rather than
+	libglade-convert.
+
+	* tests/Makefile.am (test-libglade-gtk.glade2): use $(PYTHON)
+	rather than a hard coded executable name.
+
+	* libglade-convert.in: rename from libglade-convert, and use
+	@PYTHON@ substitution.
+
+	* configure.in: add check to find a python executable that
+	satisfies "version >= 2.0" and "xml.parsers.expat is importable"
+
 2001-11-18  Miles Lane  <miles@megapathdsl.net>
 
 	* tests/test-libglade-gtk-noupgrade.c:

@@ -21,7 +21,7 @@ EXTRA_DIST = \
   libglade.spec.in \
   libglade.spec \
   libglade-2.0.pc.in \
-  libglade-convert \
+  libglade-convert.in \
   examples/simple.glade \
   examples/first.glade \
   examples/example.glade \
