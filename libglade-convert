@@ -303,8 +303,8 @@ renamed_props = {
                    ('ok_if_empty', 'allow_empty') ],
     'GnomeFileEntry' : [ ( 'directory', 'directory_entry' ) ],
     'GtkLabel' : [ ('default_focus_target', 'mnemonic_widget') ],
-    'GtkCList' : [ ('columns', 'n_columns' ) ],
-#    'GtkProgressBar' : [ ('format', 'format_string' ) ],
+    'GtkCList' : [ ('columns', 'n_columns') ],
+    'GtkCTree' : [ ('columns', 'n_columns') ]
 }
 
 # child properties to change on specific widgets
@@ -617,8 +617,11 @@ def fixup_as_type(widget, type):
         childdef.internal_child = 'vbox'
         del childdef.widget['child_name']
 
-        childdef = filter(lambda x: x.widget.has_prop('child_name'),
-                          childdef.widget.children)[0]
+        try:
+            childdef = filter(lambda x: x.widget.has_prop('child_name'),
+                              childdef.widget.children)[0]
+        except IndexError:
+            return 0
         childdef.widget['class'] = 'GtkHButtonBox'
         childdef.internal_child = 'action_area'
         del childdef.widget['child_name']
@@ -681,7 +684,7 @@ def fixup_as_type(widget, type):
                 list.add_child(listitem)
                 listitem.add_child (new_label ('GtkLabel', item, ''))
 
-    if type == 'GtkCList':
+    if type in ('GtkCList', 'GtkCTree'):
         for childdef in widget.children:
             childdef.internal_child = 'title'
             del childdef.widget['child_name']
@@ -746,7 +749,7 @@ def upgrade_widget(widget):
         if parent['class'] == 'GtkScrolledWindow':
             parent['shadow_type'] = 'GTK_SHADOW_IN'
 
-    elif widget['class'] == 'GtkCList':
+    elif widget['class'] in ('GtkCList', 'GtkCTree'):
         widget['class'] = 'GtkTreeView'
         parent = widget['parent']
         if parent['class'] == 'GtkScrolledWindow':
@@ -764,6 +767,7 @@ def upgrade_widget(widget):
 # warn about removed widgets, and build a list of libraries used
 bad_widgets = {
     'GtkText': 'broken',
+    'GtkList': 'broken',
     'GtkTree': 'broken',
     'GtkTreeItem': 'broken',
     'GtkCList': 'deprecated',
@@ -837,8 +841,10 @@ def handle_file(filename):
 usage = 'usage: libglade-convert [--no-upgrade] oldfile.glade'
 
 def main():
+    global upgrade
     opts, args = getopt.getopt(sys.argv[1:], '',
                                ['no-upgrade', 'help'])
+    
     for opt, arg in opts:
         if opt == '--no-upgrade':
             upgrade = 0

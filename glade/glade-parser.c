@@ -1095,7 +1095,6 @@ glade_parser_parse_file(const gchar *file, const gchar *domain)
 
     if (xmlSAXUserParseFile(&glade_parser, &state, file) < 0) {
 	g_warning("document not well formed!");
-	glade_interface_destroy(state.interface);
 	return NULL;
     }
     if (state.state != PARSER_FINISH) {
@@ -1132,7 +1131,6 @@ glade_parser_parse_buffer(const gchar *buffer, gint len, const gchar *domain)
 
     if (xmlSAXUserParseMemory(&glade_parser, &state, buffer, len) < 0) {
 	g_warning("document not well formed!");
-	glade_interface_destroy(state.interface);
 	return NULL;
     }
     if (state.state != PARSER_FINISH) {

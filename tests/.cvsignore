@@ -1,0 +1,8 @@
+Makefile
+Makefile.in
+test-libglade-gtk
+test-libglade-gtk-noupgrade
+test-libglade-gtk.glade2
+test-libglade-gtk-noupgrade.glade2
+.libs
+.deps

@@ -1,3 +1,26 @@
+2001-11-12  jacob berkman  <jacob@ximian.com>
+
+	* glade/glade-xml.c (glade_xml_build_widget): also print out the
+	name of the widget when debugging is on
+
+	* glade/glade-parser.c (glade_parser_parse_file): 
+	(glade_parser_parse_buffer): do not destroy the interface if the
+	parsing didn't work, as it would have been NULL
+
+	* tests/test-libglade-gtk-noupgrade.c: 
+	* tests/test-libglade-gtk.c: simple regression tests for
+	libglade-convert and libglade in general
+
+	* acconfig.h: undef DEBUG since it doesn't work without this (even
+	though i read that it should)
+
+	* configure.in: don't add a comment do the non-DEBUG case of debug
+
+	* Makefile.am (SUBDIRS): add tests
+
+	* libglade-convert: fix --no-upgrade; handle GtkCTree in the same
+	manner as GtkCList; handle GtkList in the same manner as GtkTree
+
 2001-11-07  jacob berkman  <jacob@ximian.com>
 
 	* libglade-convert: convert GtkCTree, GtkCList to GtkTreeView and

@@ -1,4 +1,4 @@
-SUBDIRS = glade doc
+SUBDIRS = glade doc tests
 
 INCLUDES = $(LIBGLADE_CFLAGS)
 

@@ -15,7 +15,7 @@ AC_ARG_ENABLE(debug,
   AC_HELP_STRING([--enable-debug], [enable debugging output]),,
   [enable_debug=no])
 
-if test "x$enable_debug" != xno; then
+if test "$enable_debug" != "no"; then
   AC_DEFINE(DEBUG, [Turn on a bit of debugging spew])
 fi
 
@@ -54,7 +54,7 @@ AH_BOTTOM(
 [#ifdef DEBUG
 #  define debug(stmnt) stmnt
 #else
-#  define debug(stmnt) /* nothing */
+#  define debug(stmnt)
 #endif
 
 #endif])
@@ -64,7 +64,9 @@ Makefile
 libglade.spec
 glade/Makefile
 doc/Makefile
-libglade-2.0.pc])
+tests/Makefile
+libglade-2.0.pc
+])
 
 rm -f po/po2tbl.sed
 

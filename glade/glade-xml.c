@@ -1645,7 +1645,7 @@ glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info)
     GType type;
     GtkWidget *ret;
 
-    debug(g_message("Widget class: %s", info->class));
+    debug(g_message("Widget class: %s\tname: %s", info->class, info->name));
     if (!strcmp(info->class, "Placeholder")) {
 	static int warned = 0;
 	if (!warned++)
