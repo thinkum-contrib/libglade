@@ -1,5 +1,9 @@
 2004-11-08  James Henstridge  <james@jamesh.id.au>
 
+	* libglade-convert.in (fixup_as_type): add code to convert x/y
+	properties of GtkFixed children to child properties.  Fixes bug
+	#155708 and #82986.
+
 	* glade/glade-gtk.c (toolbar_build_children): update to use newer
 	toolbar APIs even for older glade files.
 	(set_tooltip): use gtk_tool_item_set_tooltip() to set the tooltip

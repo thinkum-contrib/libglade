@@ -670,6 +670,16 @@ def fixup_as_type(widget, type):
             else: # Gtk+ has some wierd defaults here clobber them
                 childdef['y_options'] = ''
 
+    # fixup GtkFixed child packing options
+    if type == 'GtkFixed':
+        for childdef in widget.children:
+            if childdef.widget.has_prop ('x'):
+                childdef['x'] = childdef.widget['x']
+                del childdef.widget['x']
+            if childdef.widget.has_prop ('y'):
+                childdef['y'] = childdef.widget['y']
+                del childdef.widget['y']
+
     # fixup GtkNotebook child tab widgets.
     if type == 'GtkNotebook':
         for childdef in widget.children:
