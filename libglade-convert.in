@@ -1,4 +1,5 @@
 #!@PYTHON@
+# -*- mode: python -*-
 
 # yes, this requires python 2.x and an XML parser module (eg. PyExpat)
 
@@ -654,6 +655,14 @@ def fixup_as_type(widget, type):
     if type in ('GtkViewport', 'GtkLayout', 'GtkScrolledWindow'):
         collect_adjustment(widget, 'h', 'hadjustment')
         collect_adjustment(widget, 'v', 'vadjustment')
+        if widget.has_prop('width'):
+            width = widget['width']
+            del widget['width']
+            widget['width'] = width
+        if widget.has_prop('height'):
+            height = widget['height']
+            del widget['height']
+            widget['height'] = height
     if type in ('GtkProgressBar', ):
         collect_adjustment(widget, '', 'adjustment')
 

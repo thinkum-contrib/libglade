@@ -95,6 +95,7 @@ else
   PYTHON="/usr/bin/env python"
   AC_MSG_RESULT([not found.  Defaulting to /usr/bin/env python])
 fi
+AM_CONDITIONAL(HAVE_PYTHON, test -n "$jh_cv_path_python")
 AC_SUBST(PYTHON)
 
 AC_OUTPUT([

@@ -1,10 +1,14 @@
-check_PROGRAMS = \
-	test-libglade-gtk	\
-	test-libglade-gtk-noupgrade
+if HAVE_PYTHON
+python_checks = \
+  test-libglade-gtk \
+  test-libglade-gtk-noupgrade
+python_checks_data = \
+  test-libglade-gtk.glade2 \
+  test-libglade-gtk-noupgrade.glade2
+endif
 
-check_DATA = \
-	test-libglade-gtk.glade2	\
-	test-libglade-gtk-noupgrade.glade2
+check_PROGRAMS = $(python_checks)
+check_DATA = $(python_checks_data)
 
 TESTS = $(check_PROGRAMS)
 

@@ -2,7 +2,9 @@ SUBDIRS = glade doc tests
 
 INCLUDES = $(LIBGLADE_CFLAGS)
 
+if HAVE_PYTHON
 bin_SCRIPTS = libglade-convert
+endif
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libglade-2.0.pc

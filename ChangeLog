@@ -1,3 +1,14 @@
+2001-12-12  James Henstridge  <james@daa.com.au>
+
+	* libglade-convert.in (fixup_as_type): small fix for GtkLayout --
+	it crashes if you set the width/height before the adjustments :(
+
+	* tests/Makefile.am: only run the checks if we have python support.
+
+	* Makefile.am (bin_SCRIPTS): surround by HAVE_PYTHON conditional.
+
+	* configure.in (try): add a HAVE_PYTHON conditional.
+
 2001-12-10  jacob berkman  <jacob@ximian.com>
 
 	* libglade-convert.in (fixup_as_type): always add a menu to
