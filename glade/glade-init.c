@@ -98,9 +98,11 @@ get_module_path (void)
     gchar *default_dir;
     
     if (exe_prefix)
-	default_dir = g_build_filename (exe_prefix, "lib", "libglade", "2.0", NULL);
+	default_dir = g_build_filename (exe_prefix, "lib", "libglade",
+					LIBGLADE_MODULE_DIR, NULL);
     else
-	default_dir = g_build_filename (GLADE_LIBDIR, "libglade", "2.0", NULL);
+	default_dir = g_build_filename (GLADE_LIBDIR, "libglade",
+					LIBGLADE_MODULE_DIR, NULL);
     
     module_path = g_strconcat (module_path_env ? module_path_env : "",
 			       module_path_env ? G_SEARCHPATH_SEPARATOR_S : "",

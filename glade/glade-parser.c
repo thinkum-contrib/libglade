@@ -43,24 +43,24 @@ typedef enum {
     PARSER_START,
     PARSER_GLADE_INTERFACE,
     PARSER_REQUIRES,
-    PARSER_WIDGET,
-    PARSER_WIDGET_PROPERTY,
-    PARSER_WIDGET_ATK,
-    PARSER_WIDGET_ATK_PROPERTY,
-    PARSER_WIDGET_ATK_ACTION,
-    PARSER_WIDGET_ATK_RELATION,
-    PARSER_WIDGET_AFTER_ATK,
-    PARSER_WIDGET_SIGNAL,
-    PARSER_WIDGET_AFTER_SIGNAL,
-    PARSER_WIDGET_ACCEL,
-    PARSER_WIDGET_AFTER_ACCEL,
-    PARSER_WIDGET_CHILD,
-    PARSER_WIDGET_CHILD_AFTER_WIDGET,
-    PARSER_WIDGET_CHILD_PACKING,
-    PARSER_WIDGET_CHILD_PACKING_PROPERTY,
-    PARSER_WIDGET_CHILD_AFTER_PACKING,
-    PARSER_WIDGET_CHILD_PLACEHOLDER,
-    PARSER_WIDGET_CHILD_AFTER_PLACEHOLDER,
+    PARSER_OBJECT,
+    PARSER_OBJECT_PROPERTY,
+    PARSER_OBJECT_ATK,
+    PARSER_OBJECT_ATK_PROPERTY,
+    PARSER_OBJECT_ATK_ACTION,
+    PARSER_OBJECT_ATK_RELATION,
+    PARSER_OBJECT_AFTER_ATK,
+    PARSER_OBJECT_SIGNAL,
+    PARSER_OBJECT_AFTER_SIGNAL,
+    PARSER_OBJECT_ACCEL,
+    PARSER_OBJECT_AFTER_ACCEL,
+    PARSER_OBJECT_CHILD,
+    PARSER_OBJECT_CHILD_AFTER_OBJECT,
+    PARSER_OBJECT_CHILD_PACKING,
+    PARSER_OBJECT_CHILD_PACKING_PROPERTY,
+    PARSER_OBJECT_CHILD_AFTER_PACKING,
+    PARSER_OBJECT_CHILD_PLACEHOLDER,
+    PARSER_OBJECT_CHILD_AFTER_PLACEHOLDER,
     PARSER_FINISH,
     PARSER_UNKNOWN
 } ParserState;
@@ -71,23 +71,23 @@ static const gchar *state_names[] = {
     "GLADE_INTERFACE",
     "REQUIRES",
     "WIDGET",
-    "WIDGET_PROPERTY",
-    "WIDGET_ATK",
-    "WIDGET_ATK_PROPERTY",
-    "WIDGET_ATK_ACTION",
-    "WIDGET_ATK_RELATION",
-    "WIDGET_AFTER_ATK",
-    "WIDGET_SIGNAL",
-    "WIDGET_AFTER_SIGNAL",
-    "WIDGET_ACCEL",
-    "WIDGET_AFTER_ACCEL",
-    "WIDGET_CHILD",
-    "WIDGET_CHILD_AFTER_WIDGET",
-    "WIDGET_CHILD_PACKING",
-    "WIDGET_CHILD_PACKING_PROPERTY",
-    "WIDGET_CHILD_AFTER_PACKING",
-    "WIDGET_CHILD_PLACEHOLDER",
-    "WIDGET_CHILD_AFTER_PLACEHOLDER",
+    "OBJECT_PROPERTY",
+    "OBJECT_ATK",
+    "OBJECT_ATK_PROPERTY",
+    "OBJECT_ATK_ACTION",
+    "OBJECT_ATK_RELATION",
+    "OBJECT_AFTER_ATK",
+    "OBJECT_SIGNAL",
+    "OBJECT_AFTER_SIGNAL",
+    "OBJECT_ACCEL",
+    "OBJECT_AFTER_ACCEL",
+    "OBJECT_CHILD",
+    "OBJECT_CHILD_AFTER_OBJECT",
+    "OBJECT_CHILD_PACKING",
+    "OBJECT_CHILD_PACKING_PROPERTY",
+    "OBJECT_CHILD_AFTER_PACKING",
+    "OBJECT_CHILD_PLACEHOLDER",
+    "OBJECT_CHILD_AFTER_PLACEHOLDER",
     "FINISH",
     "UNKNOWN",
 };
@@ -102,11 +102,11 @@ struct _GladeParseState {
     guint unknown_depth;    /* handle recursive unrecognised tags */
     ParserState prev_state; /* the last `known' state we were in */
 
-    guint widget_depth;
+    guint object_depth;
     GString *content;
 
     GladeInterface *interface;
-    GladeWidgetInfo *widget;
+    GladeObjectInfo *object;
 
     enum {PROP_NONE, PROP_WIDGET, PROP_ATK, PROP_CHILD } prop_type;
     gchar *prop_name;
@@ -151,10 +151,10 @@ alloc_propname(GladeInterface *interface, const gchar *string)
     return alloc_string(interface, norm_str->str);
 }
 
-static GladeWidgetInfo *
+static GladeObjectInfo *
 create_widget_info(GladeInterface *interface, const xmlChar **attrs)
 {
-    GladeWidgetInfo *info = g_new0(GladeWidgetInfo, 1);
+    GladeObjectInfo *info = g_new0(GladeObjectInfo, 1);
     int i;
 
     for (i = 0; attrs && attrs[i] != NULL; i += 2) {
@@ -180,26 +180,26 @@ flush_properties(GladeParseState *state)
     case PROP_NONE:
 	break;
     case PROP_WIDGET:
-	if (state->widget->properties)
+	if (state->object->properties)
 	    g_warning("we already read all the props for this key.  Leaking");
-	state->widget->properties = (GladeProperty *)state->props->data;
-	state->widget->n_properties = state->props->len;
+	state->object->properties = (GladeProperty *)state->props->data;
+	state->object->n_properties = state->props->len;
 	g_array_free(state->props, FALSE);
 	break;
     case PROP_ATK:
-	if (state->widget->atk_props)
+	if (state->object->atk_props)
 	    g_warning("we already read all the ATK props for this key.  Leaking");
-	state->widget->atk_props = (GladeProperty *)state->props->data;
-	state->widget->n_atk_props = state->props->len;
+	state->object->atk_props = (GladeProperty *)state->props->data;
+	state->object->n_atk_props = state->props->len;
 	g_array_free(state->props, FALSE);
 	break;
     case PROP_CHILD:
-	if (state->widget->n_children == 0) {
+	if (state->object->n_children == 0) {
 	    g_warning("no children, but have child properties!");
 	    g_array_free(state->props, TRUE);
 	} else {
-	    GladeChildInfo *info = &state->widget->children[
-						state->widget->n_children-1];
+	    GladeChildInfo *info = &state->object->children[
+						state->object->n_children-1];
 	    if (info->properties)
 		g_warning("we already read all the child props for this key.  Leaking");
 	    info->properties = (GladeProperty *)state->props->data;
@@ -217,8 +217,8 @@ static inline void
 flush_signals(GladeParseState *state)
 {
     if (state->signals) {
-	state->widget->signals = (GladeSignalInfo *)state->signals->data;
-	state->widget->n_signals = state->signals->len;
+	state->object->signals = (GladeSignalInfo *)state->signals->data;
+	state->object->n_signals = state->signals->len;
 	g_array_free(state->signals, FALSE);
     }
     state->signals = NULL;
@@ -228,8 +228,8 @@ static inline void
 flush_actions(GladeParseState *state)
 {
     if (state->atk_actions) {
-	state->widget->atk_actions = (GladeAtkActionInfo *)state->atk_actions->data;
-	state->widget->n_atk_actions = state->atk_actions->len;
+	state->object->atk_actions = (GladeAtkActionInfo *)state->atk_actions->data;
+	state->object->n_atk_actions = state->atk_actions->len;
 	g_array_free(state->atk_actions, FALSE);
     }
     state->atk_actions = NULL;
@@ -239,8 +239,8 @@ static inline void
 flush_relations(GladeParseState *state)
 {
     if (state->relations) {
-	state->widget->relations = (GladeAtkRelationInfo *)state->relations->data;
-	state->widget->n_relations = state->relations->len;
+	state->object->relations = (GladeAtkRelationInfo *)state->relations->data;
+	state->object->n_relations = state->relations->len;
 	g_array_free(state->relations, FALSE);
     }
     state->relations = NULL;
@@ -250,8 +250,8 @@ static inline void
 flush_accels(GladeParseState *state)
 {
     if (state->accels) {
-	state->widget->accels = (GladeAccelInfo *)state->accels->data;
-	state->widget->n_accels = state->accels->len;
+	state->object->accels = (GladeAccelInfo *)state->accels->data;
+	state->object->n_accels = state->accels->len;
 	g_array_free(state->accels, FALSE);
     }
     state->accels = NULL;
@@ -437,10 +437,10 @@ handle_child(GladeParseState *state, const xmlChar **attrs)
     flush_relations(state);
     flush_accels(state);
 
-    state->widget->n_children++;
-    state->widget->children = g_renew(GladeChildInfo, state->widget->children,
-				      state->widget->n_children);
-    info = &state->widget->children[state->widget->n_children-1];
+    state->object->n_children++;
+    state->object->children = g_renew(GladeChildInfo, state->object->children,
+				      state->object->n_children);
+    info = &state->object->children[state->object->n_children-1];
     info->internal_child = NULL;
     info->properties = NULL;
     info->n_properties = 0;
@@ -462,7 +462,7 @@ glade_parser_start_document(GladeParseState *state)
     state->unknown_depth = 0;
     state->prev_state = PARSER_UNKNOWN;
 
-    state->widget_depth = 0;
+    state->object_depth = 0;
     state->content = g_string_sized_new(128);
 
     state->interface = g_new0(GladeInterface, 1);
@@ -471,7 +471,7 @@ glade_parser_start_document(GladeParseState *state)
 						      g_str_equal,
 						      (GDestroyNotify)g_free,
 						      NULL);
-    state->widget = NULL;
+    state->object = NULL;
 
     state->prop_type = PROP_NONE;
     state->prop_name = NULL;
@@ -489,8 +489,8 @@ glade_parser_end_document(GladeParseState *state)
 
     if (state->unknown_depth != 0)
 	g_warning("unknown_depth != 0 (%d)", state->unknown_depth);
-    if (state->widget_depth != 0)
-	g_warning("widget_depth != 0 (%d)", state->widget_depth);
+    if (state->object_depth != 0)
+	g_warning("object_depth != 0 (%d)", state->object_depth);
 }
 
 static void
@@ -541,23 +541,23 @@ glade_parser_start_element(GladeParseState *state,
 			      attrs[i]);
 	    }
 	    state->state = PARSER_REQUIRES;
-	} else if (!strcmp(name, "widget")) {
+	} else if (!strcmp(name, "object") || !strcmp(name, "widget")) {
 	    GladeInterface *iface = state->interface;
 
 	    iface->n_toplevels++;
-	    iface->toplevels = g_renew(GladeWidgetInfo *, iface->toplevels,
+	    iface->toplevels = g_renew(GladeObjectInfo *, iface->toplevels,
 				       iface->n_toplevels);
-	    state->widget = create_widget_info(iface, attrs);
-	    iface->toplevels[iface->n_toplevels-1] = state->widget;
+	    state->object = create_widget_info(iface, attrs);
+	    iface->toplevels[iface->n_toplevels-1] = state->object;
 
-	    state->widget_depth++;
+	    state->object_depth++;
 	    state->prop_type = PROP_NONE;
 	    state->prop_name = NULL;
 	    state->props = NULL;
 	    state->signals = NULL;
 	    state->accels = NULL;
 
-	    state->state = PARSER_WIDGET;
+	    state->state = PARSER_OBJECT;
 	} else {
 	    g_warning("Unexpected element <%s> inside <glade-interface>.",
 		      name);
@@ -572,7 +572,7 @@ glade_parser_start_element(GladeParseState *state,
 	state->state = PARSER_UNKNOWN;
 	state->unknown_depth++;
 	break;
-    case PARSER_WIDGET:
+    case PARSER_OBJECT:
 	if (!strcmp(name, "property")) {
 	    gboolean bad_agent = FALSE;
 
@@ -599,23 +599,23 @@ glade_parser_start_element(GladeParseState *state,
 		state->unknown_depth++;
 	    } else {
 		state->prop_type = PROP_WIDGET;
-		state->state = PARSER_WIDGET_PROPERTY;
+		state->state = PARSER_OBJECT_PROPERTY;
 	    }
 	} else if (!strcmp(name, "accessibility")) {
 	    flush_properties(state);
 
 	    if (attrs != NULL && attrs[0] != NULL)
 		g_warning("<accessibility> element should have no attributes");
-	    state->state = PARSER_WIDGET_ATK;
+	    state->state = PARSER_OBJECT_ATK;
 	} else if (!strcmp(name, "signal")) {
 	    handle_signal(state, attrs);
-	    state->state = PARSER_WIDGET_SIGNAL;
+	    state->state = PARSER_OBJECT_SIGNAL;
 	} else if (!strcmp(name, "accelerator")) {
 	    handle_accel(state, attrs);
-	    state->state = PARSER_WIDGET_ACCEL;
+	    state->state = PARSER_OBJECT_ACCEL;
 	} else if (!strcmp(name, "child")) {
 	    handle_child(state, attrs);
-	    state->state = PARSER_WIDGET_CHILD;
+	    state->state = PARSER_OBJECT_CHILD;
 	} else {
 	    g_warning("Unexpected element <%s> inside <widget>.", name);
 	    state->prev_state = state->state;
@@ -623,13 +623,13 @@ glade_parser_start_element(GladeParseState *state,
 	    state->unknown_depth++;
 	}
 	break;
-    case PARSER_WIDGET_PROPERTY:
+    case PARSER_OBJECT_PROPERTY:
 	g_warning("<property> element should be empty.  Found <%s>.", name);
 	state->prev_state = state->state;
 	state->state = PARSER_UNKNOWN;
 	state->unknown_depth++;
 	break;
-    case PARSER_WIDGET_ATK:
+    case PARSER_OBJECT_ATK:
 	if (!strcmp(name, "atkproperty")) {
 	    if (state->prop_type != PROP_NONE &&
 		state->prop_type != PROP_ATK)
@@ -646,13 +646,13 @@ glade_parser_start_element(GladeParseState *state,
 		    g_warning("unknown attribute `%s' for <atkproperty>.",
 			      attrs[i]);
 	    }
-	    state->state = PARSER_WIDGET_ATK_PROPERTY;
+	    state->state = PARSER_OBJECT_ATK_PROPERTY;
 	} else if (!strcmp(name, "atkaction")) {
 	    handle_atk_action(state, attrs);
-	    state->state = PARSER_WIDGET_ATK_ACTION;
+	    state->state = PARSER_OBJECT_ATK_ACTION;
 	} else if (!strcmp(name, "atkrelation")) {
 	    handle_atk_relation(state, attrs);
-	    state->state = PARSER_WIDGET_ATK_RELATION;
+	    state->state = PARSER_OBJECT_ATK_RELATION;
 	} else {
 	    g_warning("Unexpected element <%s> inside <accessibility>.", name);
 	    state->prev_state = state->state;
@@ -660,9 +660,9 @@ glade_parser_start_element(GladeParseState *state,
 	    state->unknown_depth++;
 	}
 	break;
-    case PARSER_WIDGET_ATK_PROPERTY:
+    case PARSER_OBJECT_ATK_PROPERTY:
 	if (!strcmp(name, "accessibility")) {
-	    state->state = PARSER_WIDGET_ATK;
+	    state->state = PARSER_OBJECT_ATK;
 	} else {
 	    g_warning("Unexpected element <%s> inside <atkproperty>.", name);
 	    state->prev_state = state->state;
@@ -670,28 +670,28 @@ glade_parser_start_element(GladeParseState *state,
 	    state->unknown_depth++;
 	}
 	break;
-    case PARSER_WIDGET_ATK_ACTION:
+    case PARSER_OBJECT_ATK_ACTION:
 	g_warning("<atkaction> element should be empty.  Found <%s>.", name);
 	state->prev_state = state->state;
 	state->state = PARSER_UNKNOWN;
 	state->unknown_depth++;
 	break;
-    case PARSER_WIDGET_ATK_RELATION:
+    case PARSER_OBJECT_ATK_RELATION:
 	g_warning("<atkrelation> element should be empty.  Found <%s>.", name);
 	state->prev_state = state->state;
 	state->state = PARSER_UNKNOWN;
 	state->unknown_depth++;
 	break;
-    case PARSER_WIDGET_AFTER_ATK:
+    case PARSER_OBJECT_AFTER_ATK:
 	if (!strcmp(name, "signal")) {
 	    handle_signal(state, attrs);
-	    state->state = PARSER_WIDGET_SIGNAL;
+	    state->state = PARSER_OBJECT_SIGNAL;
 	} else if (!strcmp(name, "accelerator")) {
 	    handle_accel(state, attrs);
-	    state->state = PARSER_WIDGET_ACCEL;
+	    state->state = PARSER_OBJECT_ACCEL;
 	} else if (!strcmp(name, "child")) {
 	    handle_child(state, attrs);
-	    state->state = PARSER_WIDGET_CHILD;
+	    state->state = PARSER_OBJECT_CHILD;
 	} else {
 	    g_warning("Unexpected element <%s> inside <widget>.", name);
 	    state->prev_state = state->state;
@@ -699,19 +699,19 @@ glade_parser_start_element(GladeParseState *state,
 	    state->unknown_depth++;
 	}
 	break;
-    case PARSER_WIDGET_SIGNAL:
+    case PARSER_OBJECT_SIGNAL:
 	g_warning("<signal> element should be empty.  Found <%s>.", name);
 	state->prev_state = state->state;
 	state->state = PARSER_UNKNOWN;
 	state->unknown_depth++;
 	break;
-    case PARSER_WIDGET_AFTER_SIGNAL:
+    case PARSER_OBJECT_AFTER_SIGNAL:
 	if (!strcmp(name, "accelerator")) {
 	    handle_accel(state, attrs);
-	    state->state = PARSER_WIDGET_ACCEL;
+	    state->state = PARSER_OBJECT_ACCEL;
 	} else if (!strcmp(name, "child")) {
 	    handle_child(state, attrs);
-	    state->state = PARSER_WIDGET_CHILD;
+	    state->state = PARSER_OBJECT_CHILD;
 	} else {
 	    g_warning("Unexpected element <%s> inside <widget>.", name);
 	    state->prev_state = state->state;
@@ -719,16 +719,16 @@ glade_parser_start_element(GladeParseState *state,
 	    state->unknown_depth++;
 	}
 	break;
-    case PARSER_WIDGET_ACCEL:
+    case PARSER_OBJECT_ACCEL:
 	g_warning("<accelerator> element should be empty.  Found <%s>.", name);
 	state->prev_state = state->state;
 	state->state = PARSER_UNKNOWN;
 	state->unknown_depth++;
 	break;
-    case PARSER_WIDGET_AFTER_ACCEL:
+    case PARSER_OBJECT_AFTER_ACCEL:
 	if (!strcmp(name, "child")) {
 	    handle_child(state, attrs);
-	    state->state = PARSER_WIDGET_CHILD;
+	    state->state = PARSER_OBJECT_CHILD;
 	} else {
 	    g_warning("Unexpected element <%s> inside <widget>.", name);
 	    state->prev_state = state->state;
@@ -736,30 +736,30 @@ glade_parser_start_element(GladeParseState *state,
 	    state->unknown_depth++;
 	}
 	break;
-    case PARSER_WIDGET_CHILD:
-	if (!strcmp(name, "widget")) {
-	    GladeWidgetInfo *parent = state->widget;
+    case PARSER_OBJECT_CHILD:
+	if (!strcmp(name, "object") || !strcmp(name, "widget")) {
+	    GladeObjectInfo *parent = state->object;
 	    GladeChildInfo *info = &parent->children[parent->n_children-1];
 
 	    if (info->child)
 		g_warning("widget pointer already set!! not good");
 
-	    state->widget = create_widget_info(state->interface, attrs);
-	    info->child = state->widget;
+	    state->object = create_widget_info(state->interface, attrs);
+	    info->child = state->object;
 	    info->child->parent = parent;
 
-	    state->widget_depth++;
+	    state->object_depth++;
 	    state->prop_type = PROP_NONE;
 	    state->prop_name = NULL;
 	    state->props = NULL;
 	    state->signals = NULL;
 	    state->accels = NULL;
 
-	    state->state = PARSER_WIDGET;
+	    state->state = PARSER_OBJECT;
 	} else if (!strcmp(name, "placeholder")) {
 	    /* this isn't a real child, so knock off  the last ChildInfo */
-	    state->widget->n_children--;
-	    state->state = PARSER_WIDGET_CHILD_PLACEHOLDER;
+	    state->object->n_children--;
+	    state->state = PARSER_OBJECT_CHILD_PLACEHOLDER;
 	} else {
 	    g_warning("Unexpected element <%s> inside <child>.", name);
 	    state->prev_state = state->state;
@@ -767,9 +767,9 @@ glade_parser_start_element(GladeParseState *state,
 	    state->unknown_depth++;
 	}
 	break;
-    case PARSER_WIDGET_CHILD_AFTER_WIDGET:
+    case PARSER_OBJECT_CHILD_AFTER_OBJECT:
 	if (!strcmp(name, "packing")) {
-	    state->state = PARSER_WIDGET_CHILD_PACKING;
+	    state->state = PARSER_OBJECT_CHILD_PACKING;
 	} else {
 	    g_warning("Unexpected element <%s> inside <child>.", name);
 	    state->prev_state = state->state;
@@ -777,7 +777,7 @@ glade_parser_start_element(GladeParseState *state,
 	    state->unknown_depth++;
 	}
 	break;
-    case PARSER_WIDGET_CHILD_PACKING:
+    case PARSER_OBJECT_CHILD_PACKING:
 	if (!strcmp(name, "property")) {
 	    gboolean bad_agent = FALSE;
 
@@ -804,7 +804,7 @@ glade_parser_start_element(GladeParseState *state,
 		state->unknown_depth++;
 	    } else {
 		state->prop_type = PROP_CHILD;
-		state->state = PARSER_WIDGET_CHILD_PACKING_PROPERTY;
+		state->state = PARSER_OBJECT_CHILD_PACKING_PROPERTY;
 	    }
 	} else {
 	    g_warning("Unexpected element <%s> inside <child>.", name);
@@ -813,25 +813,25 @@ glade_parser_start_element(GladeParseState *state,
 	    state->unknown_depth++;
 	}
 	break;
-    case PARSER_WIDGET_CHILD_PACKING_PROPERTY:
+    case PARSER_OBJECT_CHILD_PACKING_PROPERTY:
 	g_warning("<property> element should be empty.  Found <%s>.", name);
 	state->prev_state = state->state;
 	state->state = PARSER_UNKNOWN;
 	state->unknown_depth++;
 	break;
-    case PARSER_WIDGET_CHILD_AFTER_PACKING:
+    case PARSER_OBJECT_CHILD_AFTER_PACKING:
 	g_warning("<child> should have no elements after <packing>.  Found <%s>.", name);
 	state->prev_state = state->state;
 	state->state = PARSER_UNKNOWN;
 	state->unknown_depth++;
 	break;
-    case PARSER_WIDGET_CHILD_PLACEHOLDER:
+    case PARSER_OBJECT_CHILD_PLACEHOLDER:
 	g_warning("<placeholder> should be empty.  Found <%s>.", name);
 	state->prev_state = state->state;
 	state->state = PARSER_UNKNOWN;
 	state->unknown_depth++;
 	break;
-    case PARSER_WIDGET_CHILD_AFTER_PLACEHOLDER:
+    case PARSER_OBJECT_CHILD_AFTER_PLACEHOLDER:
 	/* this is a placeholder <child> element -- ignore extra elements */
 	state->prev_state = state->state;
 	state->state = PARSER_UNKNOWN;
@@ -874,26 +874,26 @@ glade_parser_end_element(GladeParseState *state, const xmlChar *name)
 	    g_warning("should find </requires> here.  Found </%s>", name);
 	state->state = PARSER_GLADE_INTERFACE;
 	break;
-    case PARSER_WIDGET:
-    case PARSER_WIDGET_AFTER_ATK:
-    case PARSER_WIDGET_AFTER_SIGNAL:
-    case PARSER_WIDGET_AFTER_ACCEL:
-	if (strcmp(name, "widget") != 0)
-	    g_warning("should find </widget> here.  Found </%s>", name);
+    case PARSER_OBJECT:
+    case PARSER_OBJECT_AFTER_ATK:
+    case PARSER_OBJECT_AFTER_SIGNAL:
+    case PARSER_OBJECT_AFTER_ACCEL:
+	if (strcmp(name, "object") != 0 && strcmp(name, "widget") != 0)
+	    g_warning("should find </object> or </widget> here.  Found </%s>", name);
 	flush_properties(state);
 	flush_signals(state);
 	flush_actions(state);
 	flush_relations(state);
 	flush_accels(state);
-	state->widget = state->widget->parent;
-	state->widget_depth--;
+	state->object = state->object->parent;
+	state->object_depth--;
 
-	if (state->widget_depth == 0)
+	if (state->object_depth == 0)
 	    state->state = PARSER_GLADE_INTERFACE;
 	else
-	    state->state = PARSER_WIDGET_CHILD_AFTER_WIDGET;
+	    state->state = PARSER_OBJECT_CHILD_AFTER_OBJECT;
 	break;
-    case PARSER_WIDGET_PROPERTY:
+    case PARSER_OBJECT_PROPERTY:
 	if (strcmp(name, "property") != 0)
 	    g_warning("should find </property> here.  Found </%s>", name);
 	if (!state->props)
@@ -907,15 +907,15 @@ glade_parser_end_element(GladeParseState *state, const xmlChar *name)
 	}
 	g_array_append_val(state->props, prop);
 	state->prop_name = NULL;
-	state->state = PARSER_WIDGET;
+	state->state = PARSER_OBJECT;
 	break;
-    case PARSER_WIDGET_ATK:
+    case PARSER_OBJECT_ATK:
 	if (strcmp(name, "accessibility") != 0)
 	    g_warning("should find </accessibility> here.  Found </%s>", name);
 	flush_properties(state); /* flush the ATK properties */
-	state->state = PARSER_WIDGET_AFTER_ATK;
+	state->state = PARSER_OBJECT_AFTER_ATK;
 	break;
-    case PARSER_WIDGET_ATK_PROPERTY:
+    case PARSER_OBJECT_ATK_PROPERTY:
 	if (strcmp(name, "atkproperty") != 0)
 	    g_warning("should find </atkproperty> here.  Found </%s>", name);
 	if (!state->props)
@@ -929,55 +929,55 @@ glade_parser_end_element(GladeParseState *state, const xmlChar *name)
 	}
 	g_array_append_val(state->props, prop);
 	state->prop_name = NULL;
-	state->state = PARSER_WIDGET_ATK;
+	state->state = PARSER_OBJECT_ATK;
 	break;
-    case PARSER_WIDGET_ATK_ACTION:
+    case PARSER_OBJECT_ATK_ACTION:
 	if (strcmp(name, "atkaction") != 0)
 	    g_warning("should find </atkaction> here.  Found </%s>", name);
         state->prop_name = NULL;
-        state->state = PARSER_WIDGET_ATK;
+        state->state = PARSER_OBJECT_ATK;
         break;
-    case PARSER_WIDGET_ATK_RELATION:
+    case PARSER_OBJECT_ATK_RELATION:
 	if (strcmp(name, "atkrelation") != 0)
 	    g_warning("should find </atkrelation> here.  Found </%s>", name);
         state->prop_name = NULL;
-        state->state = PARSER_WIDGET_ATK;
+        state->state = PARSER_OBJECT_ATK;
         break;
-    case PARSER_WIDGET_SIGNAL:
+    case PARSER_OBJECT_SIGNAL:
 	if (strcmp(name, "signal") != 0)
 	    g_warning("should find </signal> here.  Found </%s>", name);
-	state->state = PARSER_WIDGET_AFTER_ATK;
+	state->state = PARSER_OBJECT_AFTER_ATK;
 	break;
-    case PARSER_WIDGET_ACCEL:
+    case PARSER_OBJECT_ACCEL:
 	if (strcmp(name, "accelerator") != 0)
 	    g_warning("should find </accelerator> here.  Found </%s>", name);
-	state->state = PARSER_WIDGET_AFTER_SIGNAL;
+	state->state = PARSER_OBJECT_AFTER_SIGNAL;
 	break;
-    case PARSER_WIDGET_CHILD:
+    case PARSER_OBJECT_CHILD:
 	if (strcmp(name, "child") != 0)
 	    g_warning("should find </child> here.  Found </%s>", name);
 	/* if we are ending the element in this state, then there
 	 * hasn't been a <widget> element inside this <child>
 	 * element. (If there was, then we would be in
-	 * PARSER_WIDGET_CHILD_AFTER_WIDGET state. */
+	 * PARSER_OBJECT_CHILD_AFTER_OBJECT state. */
 	g_warning("no <widget> element found inside <child>.  Discarding");
-	g_free(state->widget->children[
-			state->widget->n_children-1].properties);
-	state->widget->n_children--;
-	state->state = PARSER_WIDGET_AFTER_ACCEL;
+	g_free(state->object->children[
+			state->object->n_children-1].properties);
+	state->object->n_children--;
+	state->state = PARSER_OBJECT_AFTER_ACCEL;
 	break;
-    case PARSER_WIDGET_CHILD_AFTER_WIDGET:
+    case PARSER_OBJECT_CHILD_AFTER_OBJECT:
 	if (strcmp(name, "child") != 0)
 	    g_warning("should find </child> here.  Found </%s>", name);
-	state->state = PARSER_WIDGET_AFTER_ACCEL;
+	state->state = PARSER_OBJECT_AFTER_ACCEL;
 	break;
-    case PARSER_WIDGET_CHILD_PACKING:
+    case PARSER_OBJECT_CHILD_PACKING:
 	if (strcmp(name, "packing") != 0)
 	    g_warning("should find </packing> here.  Found </%s>", name);
-	state->state = PARSER_WIDGET_CHILD_AFTER_PACKING;
+	state->state = PARSER_OBJECT_CHILD_AFTER_PACKING;
 	flush_properties(state); /* flush the properties. */
 	break;
-    case PARSER_WIDGET_CHILD_PACKING_PROPERTY:
+    case PARSER_OBJECT_CHILD_PACKING_PROPERTY:
 	if (strcmp(name, "property") != 0)
 	    g_warning("should find </property> here.  Found </%s>", name);
 	if (!state->props)
@@ -991,22 +991,22 @@ glade_parser_end_element(GladeParseState *state, const xmlChar *name)
 	}
 	g_array_append_val(state->props, prop);
 	state->prop_name = NULL;
-	state->state = PARSER_WIDGET_CHILD_PACKING;
+	state->state = PARSER_OBJECT_CHILD_PACKING;
 	break;
-    case PARSER_WIDGET_CHILD_AFTER_PACKING:
+    case PARSER_OBJECT_CHILD_AFTER_PACKING:
 	if (strcmp(name, "child") != 0)
 	    g_warning("should find </child> here.  Found </%s>", name);
-	state->state = PARSER_WIDGET_AFTER_ACCEL;
+	state->state = PARSER_OBJECT_AFTER_ACCEL;
 	break;
-    case PARSER_WIDGET_CHILD_PLACEHOLDER:
+    case PARSER_OBJECT_CHILD_PLACEHOLDER:
 	if (strcmp(name, "placeholder") != 0)
 	    g_warning("should find </placeholder> here.  Found </%s>", name);
-	state->state = PARSER_WIDGET_CHILD_AFTER_PLACEHOLDER;
+	state->state = PARSER_OBJECT_CHILD_AFTER_PLACEHOLDER;
 	break;
-    case PARSER_WIDGET_CHILD_AFTER_PLACEHOLDER:
+    case PARSER_OBJECT_CHILD_AFTER_PLACEHOLDER:
 	if (strcmp(name, "child") != 0)
 	    g_warning("should find </child> here.  Found </%s>", name);
-	state->state = PARSER_WIDGET_AFTER_ACCEL;
+	state->state = PARSER_OBJECT_AFTER_ACCEL;
 	break;
     case PARSER_FINISH:
 	g_warning("should not be closing any elements in this state");
@@ -1023,9 +1023,9 @@ static void
 glade_parser_characters(GladeParseState *state, const xmlChar *chars, int len)
 {
     switch (state->state) {
-    case PARSER_WIDGET_PROPERTY:
-    case PARSER_WIDGET_ATK_PROPERTY:
-    case PARSER_WIDGET_CHILD_PACKING_PROPERTY:
+    case PARSER_OBJECT_PROPERTY:
+    case PARSER_OBJECT_ATK_PROPERTY:
+    case PARSER_OBJECT_CHILD_PACKING_PROPERTY:
 	g_string_append_len(state->content, chars, len);
 	break;
     default:
@@ -1098,7 +1098,7 @@ static xmlSAXHandler glade_parser = {
 };
 
 static void
-widget_info_free(GladeWidgetInfo *info)
+widget_info_free(GladeObjectInfo *info)
 {
     gint i;
 
@@ -1233,7 +1233,7 @@ glade_parser_parse_buffer(const gchar *buffer, gint len, const gchar *domain)
 }
 
 static void
-dump_widget(xmlNode *parent, GladeWidgetInfo *info, gint indent)
+dump_object(xmlNode *parent, GladeObjectInfo *info, gint indent)
 {
     xmlNode *widget = xmlNewNode(NULL, "widget");
     gint i, j;
@@ -1340,7 +1340,7 @@ dump_widget(xmlNode *parent, GladeWidgetInfo *info, gint indent)
 
 	for (j = 0; j < indent + 2; j++)
 	    xmlNodeAddContent(child, "  ");
-	dump_widget(child, childinfo->child, indent + 2);
+	dump_object(child, childinfo->child, indent + 2);
 	xmlNodeAddContent(child, "\n");
 
 	for (j = 0; j < indent + 1; j++)
@@ -1387,7 +1387,7 @@ glade_interface_dump(GladeInterface *interface, const gchar *filename)
 
     for (i = 0; i < interface->n_toplevels; i++) {
 	xmlNodeAddContent(root, "  ");
-	dump_widget(root, interface->toplevels[i], 1);
+	dump_object(root, interface->toplevels[i], 1);
 	xmlNodeAddContent(root, "\n");
     }
 

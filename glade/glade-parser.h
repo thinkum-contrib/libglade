@@ -61,11 +61,13 @@ struct _GladeAccelInfo {
     gchar *signal;
 };
 
-typedef struct _GladeWidgetInfo GladeWidgetInfo;
+typedef struct _GladeObjectInfo GladeObjectInfo;
 typedef struct _GladeChildInfo GladeChildInfo;
 
-struct _GladeWidgetInfo {
-    GladeWidgetInfo *parent;
+typedef GladeObjectInfo GladeWidgetInfo; /* backward compatibility */
+
+struct _GladeObjectInfo {
+    GladeObjectInfo *parent;
 
     gchar *classname;
     gchar *name;
@@ -96,7 +98,7 @@ struct _GladeChildInfo {
     GladeProperty *properties;
     guint n_properties;
 
-    GladeWidgetInfo *child;
+    GladeObjectInfo *child;
     gchar *internal_child;
 };
 
@@ -105,7 +107,7 @@ struct _GladeInterface {
     gchar **requires;
     guint n_requires;
 
-    GladeWidgetInfo **toplevels;
+    GladeObjectInfo **toplevels;
     guint n_toplevels;
 
     GHashTable *names;

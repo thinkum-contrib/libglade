@@ -1,12 +1,22 @@
 -*- mode: autoconf -*-
+m4_define([libglade_version], [2.3.0])
+m4_define([libglade_module_dir], [2.4])
+
+m4_define([required_libxml_version], [2.4.10])
+m4_define([required_atk_version], [1.0.0])
+m4_define([required_gtk_version], [2.0.0])
+
 AC_PREREQ(2.52)
-AC_INIT(libglade, 2.0.1,
+AC_INIT(libglade, libglade_version,
         [http://bugzilla.gnome.org/enter_bug.cgi?product=libglade])
 
 AC_CONFIG_SRCDIR([test-libglade.c])
 AM_CONFIG_HEADER(config.h)
 
-AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
+AM_INIT_AUTOMAKE
+
+AC_DEFINE([LIBGLADE_MODULE_DIR], ["libglade_module_dir"],
+  [the subdirectory where libglade extension modules are held])
 
 AC_ARG_ENABLE(debug,
   AC_HELP_STRING([--enable-debug], [check LIBGLADE_DEBUG env var]),,
@@ -27,7 +37,7 @@ AC_HEADER_STDC
 AC_LIBTOOL_WIN32_DLL
 AM_PROG_LIBTOOL
 
-AM_PATH_GTK_2_0(2.0.0)
+AM_PATH_GTK_2_0([required_gtk_version])
 
 save_LIBS=$LIBS
 LIBS="$GTK_LIBS $LIBS"
@@ -37,7 +47,10 @@ LIBS=$save_LIBS
 
 AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
 
-PKG_CHECK_MODULES(LIBGLADE, libxml-2.0 >= 2.4.10 atk >= 1.0.0 gtk+-2.0 >= 2.0.0)
+PKG_CHECK_MODULES(LIBGLADE,
+  [libxml-2.0 >= required_libxml_version dnl
+   atk >= required_atk_version dnl
+   gtk+-2.0 >= required_gtk_version])
 AC_SUBST(LIBGLADE_LIBS)
 AC_SUBST(LIBGLADE_CFLAGS)
 

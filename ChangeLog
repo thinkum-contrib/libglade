@@ -1,3 +1,14 @@
+2003-04-18  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-parser.c: update to accept <widget> and <object>
+	tags as equivalent.
+
+	* glade/glade-init.c (get_module_path): change directory where
+	modules are searched for.
+
+	* glade/glade-build.h: update backend API to use GObject arguments
+	instead of GtkWidget arguments.  Bump module API version.
+
 2003-01-06  Tor Lillqvist  <tml@iki.fi>
 
 	Use same style auto* build for Win32 as GLib etc:
