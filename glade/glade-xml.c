@@ -165,7 +165,7 @@ void
 glade_xml_signal_connect (GladeXML *self, const char *handlername,
 			  GtkSignalFunc func)
 {
-	GList *signals = g_hash_table_lookup(self->priv->signals, signalname);
+	GList *signals = g_hash_table_lookup(self->priv->signals, handlername);
 	
 	for (; signals != NULL; signals = signals->next) {
 		GladeSignalData *data = signals->data;
