@@ -132,6 +132,25 @@ alloc_string(GladeInterface *interface, const gchar *string)
     return s;
 }
 
+static gchar *
+alloc_propname(GladeInterface *interface, const gchar *string)
+{
+    static GString *norm_str;
+    gint i;
+
+    if (!norm_str)
+	norm_str = g_string_new_len(NULL, 64);
+
+    /* assign the string to norm_str */
+    g_string_assign(norm_str, string);
+    /* convert all dashes to underscores */
+    for (i = 0; i < norm_str->len; i++)
+	if (norm_str->str[i] == '-')
+	    norm_str->str[i] = '_';
+
+    return alloc_string(interface, norm_str->str);
+}
+
 static GladeWidgetInfo *
 create_widget_info(GladeInterface *interface, const xmlChar **attrs)
 {
@@ -563,8 +582,8 @@ glade_parser_start_element(GladeParseState *state,
 	    state->translate_prop = FALSE;
 	    for (i = 0; attrs && attrs[i] != NULL; i += 2) {
 		if (!strcmp(attrs[i], "name"))
-		    state->prop_name = alloc_string(state->interface,
-						    attrs[i+1]);
+		    state->prop_name = alloc_propname(state->interface,
+						      attrs[i+1]);
 		else if (!strcmp(attrs[i], "translatable"))
 		    state->translate_prop = !strcmp(attrs[i+1], "yes");
 		else if (!strcmp(attrs[i], "agent"))
@@ -619,8 +638,8 @@ glade_parser_start_element(GladeParseState *state,
 	    state->translate_prop = FALSE;
 	    for (i = 0; attrs && attrs[i] != NULL; i += 2) {
 		if (!strcmp(attrs[i], "name"))
-		    state->prop_name = alloc_string(state->interface,
-						    attrs[i+1]);
+		    state->prop_name = alloc_propname(state->interface,
+						      attrs[i+1]);
 		else if (!strcmp(attrs[i], "translatable"))
 		    state->translate_prop = !strcmp(attrs[i+1], "yes");
 		else
@@ -768,8 +787,8 @@ glade_parser_start_element(GladeParseState *state,
 	    state->translate_prop = FALSE;
 	    for (i = 0; attrs && attrs[i] != NULL; i += 2) {
 		if (!strcmp(attrs[i], "name"))
-		    state->prop_name = alloc_string(state->interface,
-						    attrs[i+1]);
+		    state->prop_name = alloc_propname(state->interface,
+						      attrs[i+1]);
 		else if (!strcmp(attrs[i], "translatable"))
 		    state->translate_prop = !strcmp(attrs[i+1], "yes");
 		else if (!strcmp(attrs[i], "agent"))
