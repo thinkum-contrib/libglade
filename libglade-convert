@@ -345,8 +345,9 @@ parent_table = {
     'GnomeEntry'        : 'GtkCombo',
     'GtkCheckMenuItem'  : 'GtkMenuItem',
     'GtkRadioMenuItem'  : 'GtkMenuItem',
+    'GtkImageMenuItem'  : 'GtkMenuItem',
     'GtkFontSelectionDialog' : 'GtkDialog',
-    'GnomeColorPicker'  : 'GtkButton'
+    'GnomeColorPicker'  : 'GtkButton',
 }
 
 def find_parent(type):
@@ -479,6 +480,13 @@ def fixup_as_type(widget, type):
                           widget['name']))
             del widget['label']
 
+#    if type == 'GtkImageMenuItem':
+#        if widget.has_prop('stock_icon'):
+#            icon = WidgetDef()
+#            icon['class'] = 'GtkImage'
+#            icon['name'] = make_name ()
+#            widget.add_child (icon, 'image')
+
     if type == 'GtkDialog':
         childdef = widget.children[0]
         childdef.internal_child = 'vbox'
@@ -503,12 +511,31 @@ def fixup_as_type(widget, type):
                 widget.add_child (menu, 'menu')
                 items = widget['items'].split ('\n')
                 for item in items:
-                    menu.add_child (new_label ('GtkMenuItem', \
-                                               item, widget['name']))
+                    if not item == '':
+                        menu.add_child ( \
+                            new_label ('GtkMenuItem', \
+                                       item, widget['name']))
             del widget['items']
         if widget.has_prop('initial_choice'):
             widget['history'] = widget['initial_choice']
             del widget['initial_choice']
+
+    if type == 'GtkScrolledWindow':
+        if widget.has_prop ('hupdate_policy'):
+            scroll = WidgetDef ()
+            scroll['class'] = 'GtkHScrollbar'
+            scroll['name'] = make_name ()
+            scroll['update_policy'] = widget['hupdate_policy']
+            widget.add_child(scroll, 'hscrollbar')
+            del widget['hupdate_policy']
+        if widget.has_prop ('vupdate_policy'):
+            scroll = WidgetDef ()
+            scroll['class'] = 'GtkVScrollbar'
+            scroll['name'] = make_name ()
+            scroll['update_policy'] = widget['vupdate_policy']
+            widget.add_child(scroll, 'vscrollbar')
+            del widget['vupdate_policy']
+
 
     if type == 'GtkCombo':
         childdef = widget.children[0]
@@ -607,8 +634,8 @@ def handle_file(filename):
 
     for widgetdef in widgets:
         hide_toplevel(widgetdef)
-        fixup_widget(widgetdef)
         upgrade_widget(widgetdef)
+        fixup_widget(widgetdef)
         check_widget(widgetdef, requireslist)
 
     print '<?xml version="1.0" standalone="no"?> <!--*- mode: xml -*-->'

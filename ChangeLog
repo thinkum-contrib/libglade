@@ -1,5 +1,19 @@
 2001-10-18  Michael Meeks  <michael@ximian.com>
 
+	* libglade-convert (fixup_as_type): deal with a scrolled
+	window's policies. (handle_file): upgrade widgets, then
+	fix them up.
+	(fixup_as_type): start to make the image menu item work,
+	called away home.
+
+	* glade/glade-gtk.c (scrolled_window_find_internal_child):
+	pass out the scrollbars.
+
+	* libglade-convert (fixup_as_type): don't allow empty
+	labels.
+
+2001-10-18  Michael Meeks  <michael@ximian.com>
+
 	* glade/glade-gtk.c (option_menu_build_children): kill.
 	(option_menu_find_internal_child): impl.
 	(build_button): fix strtol bug, add strol prototype in

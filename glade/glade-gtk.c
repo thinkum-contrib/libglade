@@ -183,6 +183,17 @@ option_menu_find_internal_child(GladeXML *xml, GtkWidget *parent,
 }
 
 static GtkWidget *
+scrolled_window_find_internal_child(GladeXML *xml, GtkWidget *parent,
+				    const gchar *childname)
+{
+    if (!strcmp(childname, "vscrollbar"))
+	return GTK_SCROLLED_WINDOW (parent)->vscrollbar;
+    if (!strcmp(childname, "hscrollbar"))
+	return GTK_SCROLLED_WINDOW (parent)->hscrollbar;
+    return NULL;
+}
+
+static GtkWidget *
 filesel_find_internal_child(GladeXML *xml, GtkWidget *parent,
 			    const gchar *childname)
 {
@@ -356,7 +367,7 @@ static GladeWidgetBuildData widget_data[] = {
     { "GtkRadioMenuItem", glade_standard_build_widget, menuitem_build_children,
       gtk_radio_menu_item_get_type },
     { "GtkScrolledWindow", glade_standard_build_widget, glade_standard_build_children,
-      gtk_scrolled_window_get_type },
+      gtk_scrolled_window_get_type, 0, scrolled_window_find_internal_child },
     { "GtkSeparatorMenuItem", glade_standard_build_widget, NULL,
       gtk_separator_menu_item_get_type },
     { "GtkSocket", glade_standard_build_widget, NULL,
