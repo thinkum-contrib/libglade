@@ -696,7 +696,7 @@ radiobutton_new(GladeXML *xml, GNode *node)
 	 * If this is the first radio item within this group
 	 * add it.
 	 */
-	if (group == NULL){
+	if (group == NULL && group_name){
 		GtkRadioButton *radio = GTK_RADIO_BUTTON (button);
 		
 		g_hash_table_insert (xml->priv->radio_groups,

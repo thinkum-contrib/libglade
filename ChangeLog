@@ -1,3 +1,80 @@
+1999-06-06  Miguel de Icaza  <miguel@gnu.org>
+
+	* glade/glade-gtk.c (radiobutton_new): Small bug fix to my
+	previous change: Glade might output radio buttons without groups. 
+
+	* glade/glade-xml.c (glade_xml_destroy): Memory leak fix: free all
+	the keys (they were strduped strings) when destroying hash tables.
+
+	* glade/glade-gtk.c (radiobutton_new): Add support for
+	radio-button-groups. 
+
+	* glade/glade-private.h: Add new hash-table for radio-button
+	groups. 
+
+	* glade/glade-xml.c (glade_xml_init): Allocate private structure.
+	(glade_xml_destroy): free private structure.
+	(glade_xml_build_widget): Use data from private structure.
+	(glade_xml_construct): ditto.
+	(autoconnect_foreach): ditto.
+	(glade_xml_signal_autoconnect): ditto.
+	(glade_xml_get_widget): ditto.
+	(glade_xml_get_widget_by_long_name): ditto.
+	(glade_xml_build_widget): ditto.
+	(glade_xml_signal_connect): ditto
+	(glade_xml_add_signal): ditto.
+	(glade_xml_build_widget): De-ambiguate else clause here.
+
+	* glade/glade-private.h: Moved private GladeXML members to the
+	GladeXMLPrivate structure.
+
+1999-06-04  Miguel de Icaza  <miguel@nuclecu.unam.mx>
+
+	* glade/glade-gtk.c (optionmenu_new): Only add items if there are
+	any actual items.
+	(combo_new): ditto.
+
+1999-06-03  James Henstridge  <james@daa.com.au>
+
+	* Makefile.am (m4data_DATA): install the libglade.m4 macro.
+
+	* libglade.m4: added an autoconf macro to detect libglade.
+
+1999-06-06  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gtk.c: added support for the Custom widget (the widget
+	is created with a user defined function).  This should make it easier
+	to produce a complete UI from a program, using custom widgets for the
+	complicated parts of the UI.
+
+	* glade/glade-gnome.c: added build routines for a few of the
+	widgets that are in the current CVS version of GLADE.  I haven't
+	done wrappers for GnomeApp, GnomeDialog, GnomeMessageBox and GLADE's
+	GnomeUIInfo stuff.
+
+	* glade/glade-gtk.c: removed all the GNOME specific code from this
+	file.  Now all GNOME specific stuff is inside glade-gnome.c (except
+	for the initialiser in glade-init.c).
+
+	* glade/Makefile.am: add glade-gnome.c to the library if GNOME
+	support is enabled.
+
+	* glade/glade-init.c (glade_init): initialise the gnome widgets if
+	gnome support has been built in.
+
+	* glade/glade-gnome.c: new file that holds all the GNOME specific
+	widget routines.
+
+	* glade/glade-gtk.c: removed container_build_children function, and
+	changed all references to it to glade_standard_build_children.
+
+	* glade/glade-build.h: added prototype for the function.
+
+	* glade/glade-xml.c (glade_standard_build_children): added the
+	standard child building routine here, as it will be useful to
+	both gtk and gnome code.
+	(glade_get_adjustment): similar to above.
+
 1999-06-06  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-gtk.c: added support for the Custom widget (the widget
