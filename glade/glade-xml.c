@@ -277,7 +277,7 @@ autoconnect_foreach(const char *signal_handler, GList *signals,
 {
     GCallback func;
 
-    if (!g_module_symbol(allsymbols, signal_handler, (gpointer *)&func))
+    if (!g_module_symbol(allsymbols, signal_handler, (gpointer)&func))
 	g_warning("could not find signal handler '%s'.", signal_handler);
     else
 	for (; signals != NULL; signals = signals->next) {
@@ -368,8 +368,8 @@ autoconnect_full_foreach(const char *signal_handler, GList *signals,
  * @object: the object to connect the signal to.
  * @signal_name: the name of the signal.
  * @signal_data: the string value of the signal data given in the XML file.
- * @connect_object: non NULL if gtk_signal_connect_object should be used.
- * @after: TRUE if the connection should be made with gtk_signal_connect_after.
+ * @connect_object: non NULL if g_signal_connect_object should be used.
+ * @after: TRUE if the connection should be made with g_signal_connect_after.
  * @user_data: the user data argument.
  *
  * This is the signature of a function used to connect signals.  It is used
@@ -1524,6 +1524,9 @@ glade_xml_set_value_from_string (GladeXML *xml,
 		g_warning ("could not parse colour name `%s'", string);
 		ret = FALSE;
 	    }
+	} else if (G_VALUE_HOLDS(value, G_TYPE_STRV)) {
+	    char **vector = g_strsplit (string, "\n", 0);
+	    g_value_take_boxed (value, vector);
 	} else
 	    ret = FALSE;
 	break;

@@ -1,3 +1,14 @@
+2004-11-09  James Henstridge  <james@jamesh.id.au>
+
+	* glade/glade-parser.c: change some occurrences of "0" to "NULL".
+	Based on patch from Kjartan (bug #150039).
+
+	* test-libglade.c (main): remove deprecated gtk_signal_connect()
+	call.
+
+	* glade/glade-xml.c (glade_xml_set_value_from_string): handle
+	G_TYPE_STRV boxed types, using newline separators.
+
 2004-11-08  James Henstridge  <james@jamesh.id.au>
 
 	* glade/glade-gtk.c (_glade_init_gtk_widgets): add

@@ -262,7 +262,7 @@ static inline void
 handle_atk_action(GladeParseState *state, const xmlChar **attrs)
 {
     gint i;
-    GladeAtkActionInfo info = { 0 };
+    GladeAtkActionInfo info = { NULL };
 
     flush_properties(state);
 
@@ -288,7 +288,7 @@ static inline void
 handle_atk_relation(GladeParseState *state, const xmlChar **attrs)
 {
     gint i;
-    GladeAtkRelationInfo info = { 0 };
+    GladeAtkRelationInfo info = { NULL };
 
     flush_properties(state);
 
@@ -313,7 +313,7 @@ handle_atk_relation(GladeParseState *state, const xmlChar **attrs)
 static inline void
 handle_signal(GladeParseState *state, const xmlChar **attrs)
 {
-    GladeSignalInfo info = { 0 };
+    GladeSignalInfo info = { NULL };
     gint i;
 
     flush_properties(state);
@@ -1093,30 +1093,30 @@ glade_parser_fatal_error(GladeParseState *state, const char *msg, ...)
 }
 
 static xmlSAXHandler glade_parser = {
-    0, /* internalSubset */
-    0, /* isStandalone */
-    0, /* hasInternalSubset */
-    0, /* hasExternalSubset */
-    0, /* resolveEntity */
-    (getEntitySAXFunc)glade_parser_get_entity, /* getEntity */
-    0, /* entityDecl */
-    0, /* notationDecl */
-    0, /* attributeDecl */
-    0, /* elementDecl */
-    0, /* unparsedEntityDecl */
-    0, /* setDocumentLocator */
+    (internalSubsetSAXFunc)NULL,                       /* internalSubset */
+    (isStandaloneSAXFunc)NULL,                         /* isStandalone */
+    (hasInternalSubsetSAXFunc)NULL,                    /* hasInternalSubset */
+    (hasExternalSubsetSAXFunc)NULL,                    /* hasExternalSubset */
+    (resolveEntitySAXFunc)NULL,                        /* resolveEntity */
+    (getEntitySAXFunc)glade_parser_get_entity,         /* getEntity */
+    (entityDeclSAXFunc)NULL,                           /* entityDecl */
+    (notationDeclSAXFunc)NULL,                         /* notationDecl */
+    (attributeDeclSAXFunc)NULL,                        /* attributeDecl */
+    (elementDeclSAXFunc)NULL,                          /* elementDecl */
+    (unparsedEntityDeclSAXFunc)NULL,                   /* unparsedEntityDecl */
+    (setDocumentLocatorSAXFunc)NULL,                   /* setDocumentLocator */
     (startDocumentSAXFunc)glade_parser_start_document, /* startDocument */
-    (endDocumentSAXFunc)glade_parser_end_document, /* endDocument */
-    (startElementSAXFunc)glade_parser_start_element, /* startElement */
-    (endElementSAXFunc)glade_parser_end_element, /* endElement */
-    0, /* reference */
-    (charactersSAXFunc)glade_parser_characters, /* characters */
-    0, /* ignorableWhitespace */
-    0, /* processingInstruction */
-    (commentSAXFunc)0, /* comment */
-    (warningSAXFunc)glade_parser_warning, /* warning */
-    (errorSAXFunc)glade_parser_error, /* error */
-    (fatalErrorSAXFunc)glade_parser_fatal_error, /* fatalError */
+    (endDocumentSAXFunc)glade_parser_end_document,     /* endDocument */
+    (startElementSAXFunc)glade_parser_start_element,   /* startElement */
+    (endElementSAXFunc)glade_parser_end_element,       /* endElement */
+    (referenceSAXFunc)NULL,                            /* reference */
+    (charactersSAXFunc)glade_parser_characters,        /* characters */
+    (ignorableWhitespaceSAXFunc)NULL,               /* ignorableWhitespace */
+    (processingInstructionSAXFunc)NULL,             /* processingInstruction */
+    (commentSAXFunc)NULL,                              /* comment */
+    (warningSAXFunc)glade_parser_warning,              /* warning */
+    (errorSAXFunc)glade_parser_error,                  /* error */
+    (fatalErrorSAXFunc)glade_parser_fatal_error,       /* fatalError */
 };
 
 static void
