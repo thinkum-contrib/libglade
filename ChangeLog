@@ -1,3 +1,13 @@
+2000-01-22  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gtk.c (paned_build_children): recognise the resize
+	and shrink child packing attributes.
+
+1999-12-16  Eric Gillespie Jr.  <epg@pobox.com>
+
+	* glade/glade-gtk.c (hpaned_new): Now handles the 'position' attribute.
+	(vpaned_new): Same here.
+
 1999-12-05  James Henstridge  <james@daa.com.au>
 
 	* NEWS: added news items.

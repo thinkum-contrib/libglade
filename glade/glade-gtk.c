@@ -280,22 +280,43 @@ static void
 paned_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info,
 		      const char *longname)
 {
-	GList *tmp;
+	GList *tmp, *tmp2;
 	GtkWidget *child;
+	gboolean resize, shrink;
 
 	tmp = info->children;
 	if (!tmp)
 		return;
 	
 	child = glade_xml_build_widget (xml, tmp->data, longname);
-	gtk_paned_add1 (GTK_PANED(w), child);
+	resize = FALSE; shrink = TRUE;
+	for (tmp2 = ((GladeWidgetInfo *)tmp->data)->child_attributes;
+	     tmp2; tmp2 = tmp2->next) {
+		GladeAttribute *attr = tmp2->data;
+
+		if (!strcmp(attr->name, "resize"))
+			resize = attr->value[0] == 'T';
+		else if (!strcmp(attr->name, "shrink"))
+			shrink = attr->value[0] == 'T';
+	}
+	gtk_paned_pack1 (GTK_PANED(w), child, resize, shrink);
 
 	tmp = tmp->next;
 	if (!tmp)
 		return;
 	
 	child = glade_xml_build_widget (xml, tmp->data, longname);
-	gtk_paned_add2 (GTK_PANED(w), child);
+	resize = TRUE; shrink = TRUE;
+	for (tmp2 = ((GladeWidgetInfo *)tmp->data)->child_attributes;
+	     tmp2; tmp2 = tmp2->next) {
+		GladeAttribute *attr = tmp2->data;
+
+		if (!strcmp(attr->name, "resize"))
+			resize = attr->value[0] == 'T';
+		else if (!strcmp(attr->name, "shrink"))
+			shrink = attr->value[0] == 'T';
+	}
+	gtk_paned_pack2 (GTK_PANED(w), child, resize, shrink);
 }
 
 static void note_change_page(GtkWidget *child, GtkNotebook *notebook)
@@ -2124,10 +2145,13 @@ hpaned_new(GladeXML *xml, GladeWidgetInfo *info)
 
 		if (!strcmp(attr->name, "handle_size"))
 			gtk_paned_set_handle_size(GTK_PANED(paned),
-						  g_strtod(attr->value, NULL));
+						  strtoul(attr->value,NULL,0));
 		else if (!strcmp(attr->name, "gutter_size"))
 			gtk_paned_set_gutter_size(GTK_PANED(paned),
-						  g_strtod(attr->value, NULL));
+						  strtoul(attr->value,NULL,0));
+		else if (!strcmp(attr, "position"))
+			gtk_paned_set_position(GTK_PANED(paned),
+					       strtol(attr->value, NULL, 0));
 	}
 	return paned;
 }
@@ -2143,10 +2167,13 @@ vpaned_new(GladeXML *xml, GladeWidgetInfo *info)
 
 		if (!strcmp(attr->name, "handle_size"))
 			gtk_paned_set_handle_size(GTK_PANED(paned),
-						  g_strtod(attr->value, NULL));
+						  strtoul(attr->value,NULL,0));
 		else if (!strcmp(attr->name, "gutter_size"))
 			gtk_paned_set_gutter_size(GTK_PANED(paned),
-						  g_strtod(attr->value, NULL));
+						  strtoul(attr->value,NULL,0));
+		else if (!strcmp(attr, "position"))
+			gtk_paned_set_position(GTK_PANED(paned),
+					       strtol(attr->value, NULL, 0));
 	}
 	return paned;
 }
