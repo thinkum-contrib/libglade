@@ -18,12 +18,17 @@ glademoduledir = $(pkglibdir)/2.0
 if BUILD_BONOBO
 bonobo_la = bonobo.la
 endif
+
 if BUILD_GNOME
 gnome_la = gnome.la
 endif
 
+if BUILD_CANVAS
+canvas_la = canvas.la
+endif
+
 lib_LTLIBRARIES = libglade-2.0.la
-glademodule_LTLIBRARIES = $(bonobo_la) $(gnome_la)
+glademodule_LTLIBRARIES = $(bonobo_la) $(gnome_la) $(canvas_la)
 
 gladeincludedir      = $(includedir)/libglade-2.0/glade
 gladeinclude_HEADERS = \
@@ -51,6 +56,10 @@ bonobo_la_LDFLAGS = -export-dynamic -module -avoid-version
 gnome_la_SOURCES = glade-gnome.c
 gnome_la_LIBADD = libglade-2.0.la $(LIBGLADE_GNOME_LIBS)
 gnome_la_LDFLAGS = -export-dynamic -module -avoid-version
+
+canvas_la_SOURCES = glade-canvas.c
+canvas_la_LIBADD = libglade-2.0.la $(LIBGLADE_CANVAS_LIBS)
+canvas_la_LDFLAGS = -export-dynamic -module -avoid-version
 
 EXTRA_DIST = $(gladeinclude_HEADERS) \
 	makefile.mingw	\

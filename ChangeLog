@@ -1,3 +1,27 @@
+2001-10-24  jacob berkman  <jacob@ximian.com>
+
+	* glade/Makefile.am: build canvas module
+
+	* glade/glade-gtk.c (clist_new): create a clist
+	(clist_build_children): build title widgets
+	(widget_data): add GtkText, and fix CList and CTree to use new
+	functions
+
+	* glade/glade-gnome.c (entry_find_internal_child): 
+	(file_entry_find_internal_chid): accessors for the GtkEntry child
+
+	* glade/glade-canvas.c: canvas support (probably will be moved to
+	libgnomecanvas shortly)
+
+	* libglade-convert: better stock pixmap migration migration;
+	canvas, clist, file entry, gtktext support
+
+	* doc/Makefile.am: fix for disting from clean checkout
+
+	* acconfig.h:
+	* configure.in: fix a typo in the gnome section, and detect the
+	canvas
+
 2001-10-23  Michael Meeks  <michael@ximian.com>
 
 	* libglade-convert (fixup_as_type): fixup radio button

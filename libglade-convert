@@ -293,6 +293,7 @@ renamed_props = {
                    ('ok_if_empty', 'allow_empty') ],
     'GnomeFileEntry' : [ ( 'directory', 'directory_entry' ) ],
     'GtkLabel' : [ ('default_focus_target', 'mnemonic_widget') ],
+    'GtkCList' : [ ('columns', 'n_columns' ) ],
 }
 
 # child properties to change on specific widgets
@@ -386,17 +387,90 @@ def new_label(class_type, text, accel_object):
 
     return label
 
+stock_pixmaps = {
+    'REVERT':      'gtk-revert-to-saved',
+    'SCORES':      'gnome-stock-scores',
+    'SEARCH':      'gtk-find',
+    'SEARCHRPL':   'gtk-find-and-replace',
+    'BACK':        'gtk-go-back',
+    'FORWARD':     'gtk-go-forward',
+    'FIRST':       'gtk-goto-first',
+    'LAST':        'gtk-goto-last',
+    'TIMER':       'gnome-stock-timer',
+    'TIMER_STOP':  'gnome-stock-timer-stop',
+    'MAIL':        'gnome-stock-mail',
+    'MAIL_RCV':    'gnome-stock-mail-rcv',
+    'MAIL_SND':    'gnome-stock-mail-send',
+    'MAIL_RPL':    'gnome-stock-mail-rply',
+    'MAIL_FWD':    'gnome-stock-mail-fwd',
+    'MAIL_NEW':    'gnome-stock-mail-new',
+    'TRASH':       'gnome-stock-trash',
+    'TRASH_FULL':  'gnome-stock-trash-full',
+    'SPELLCHECK':  'gtk-spell-check',
+    'MIC':         'gnome-stock-mic',
+    'LINE_IN':     'gnome-stock-line-in',
+    'VOLUME':      'gnome-stock-volume',
+    'MIDI':        'gnome-stock-midi',
+    'BOOK_RED':    'gnome-stock-book-red',
+    'BOOK_GREEN':  'gnome-stock-book-green',
+    'BOOK_BLUE':   'gnome-stock-book-blue',
+    'BOOK_YELLOW': 'gnome-stock-book-yellow',
+    'BOOK_OPEN':   'gnome-stock-book-open',
+    'ABOUT':       'gnome-stock-about',
+    'MULTIPLE':    'gnome-stock-multiple-file',
+    'NOT':         'gnome-stock-not',
+    'UP':          'gtk-go-up',
+    'DOWN':        'gtk-go-down',
+    'TOP':         'gtk-goto-top',
+    'BOTTOM':      'gtk-goto-bottom',
+    'ATTACH':      'gnome-stock-attach',
+    'FONT':        'gtk-select-font',
+    'EXEC':        'gtk-execute',
+
+    'ALIGN_LEFT':    'gtk-justify-left',
+    'ALIGN_RIGHT':   'gtk-justify-right',
+    'ALIGN_CENTER':  'gtk-justify-center',
+    'ALIGN_JUSTIFY': 'gtk-justify-fill',
+
+    'TEXT_BOLD':      'gtk-bold',
+    'TEXT_ITALIC':    'gtk-italic',
+    'TEXT_UNDERLINE': 'gtk-underline',
+    'TEXT_STRIKEOUT': 'gtk-strikethrough',
+
+    'TEXT_INDENT':    'gnome-stock-text-indent',
+    'TEXT_UNINDENT':  'gnome-stock-text-unindent',
+    'EXIT':           'gtk-quit',
+    'COLORSELECTOR':  'gtk-select-color',
+
+    'TABLE_BORDERS':  'gnome-stock-table-borders',
+    'TABLE_FILL':     'gnome-stock-table-fill',
+
+    'TEXT_BULLETED_LIST': 'gnome-stock-text-bulleted-list',
+    'TEXT_NUMBERED_LIST': 'gnome-stock-text-numbered-list',
+
+    'NEXT': 'gtk-go-forward',
+    'PREV': 'gtk-go-back'
+    }
+
 def stock_icon_translate(old_name):
     if re.match ('GNOME_STOCK_MENU_.*', old_name):
-        name = re.sub('GNOME_STOCK_MENU_', 'gtk-', old_name)
-        return name.lower ()
+        name = re.sub('GNOME_STOCK_MENU_', '', old_name, 1)
+        try:
+            return stock_pixmaps[name]
+        except KeyError:
+            name = re.sub('_', '-', name)
+            return 'gtk-' + name.lowere ()
     else:
         return old_name
 
 def stock_button_translate(old_name):
     if re.match ('GNOME_STOCK_BUTTON_.*', old_name):
-        name = re.sub('GNOME_STOCK_BUTTON_', 'gtk-', old_name)
-        return name.lower ()
+        name = re.sub('GNOME_STOCK_BUTTON_', '', old_name)
+        try:
+            return stock_pixmaps[name]
+        except KeyError:
+            name = re.sub('_', '-', name)
+            return 'gtk-' + name.lower ()
     else:
         return old_name
 
@@ -585,10 +659,20 @@ def fixup_as_type(widget, type):
                 list.add_child(listitem)
                 listitem.add_child (new_label ('GtkLabel', item, ''))
 
+    if type == 'GtkCList':
+        for childdef in widget.children:
+            childdef.internal_child = 'title'
+            del childdef.widget['child_name']
+
     if type == 'GtkLabel' or type == 'GtkButton':
         if widget.has_prop('label'):
             if re.match('.*_.*', widget['label']):
                 widget['use_underline'] = 'yes'
+
+    if type == 'GnomeFileEntry':
+        childdef = widget.children[0]
+        childdef.internal_child = 'entry'
+        del childdef.widget['child_name']
 
     if type == 'GnomePropertyBox':
         childdef = widget.children[0]
@@ -656,9 +740,13 @@ def check_widget(widget, requirelist=[]):
                 widget.mark_obsolete ()
     except KeyError:
         pass
-    if widget['class'][:5] == 'Gnome' and 'gnome' not in requirelist:
+
+    if widget['class'] == 'GnomeCanvas':
+        if 'canvas' not in requirelist:
+            requirelist.append('canvas')
+    elif widget['class'][:5] == 'Gnome' and 'gnome' not in requirelist:
         requirelist.append('gnome')
-    if widget['class'][:6] == 'Bonobo' and 'bonobo' not in requirelist:
+    elif widget['class'][:6] == 'Bonobo' and 'bonobo' not in requirelist:
         requirelist.append('bonobo')
 
     for childdef in widget.children:
