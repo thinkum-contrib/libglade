@@ -7,7 +7,7 @@
 #   change to C+1:0:0
 # - If the interface is the same as the previous version, change to C:R+1:A
 
-LTVERSION = 0:0:0
+LTVERSION = 0:1:0
 
 INCLUDES = \
   -DG_LOG_DOMAIN=\"libglade\" \

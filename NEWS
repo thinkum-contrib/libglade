@@ -1,4 +1,8 @@
-libglade-2.0.0:  6-January-2002
+libglade-2.0.1:  29-August-2002
+	- fix up search path for libglade modules.
+	- various memory leak fixes (Kristian Rietveld).
+
+libglade-2.0.0:  6-June-2002
 	- fix up docs build, and make docbook files mostly XML
 	  compatible in preparation for XMLised gtk-doc.
 	- bump version number up to 2.0.0.
