@@ -18,7 +18,8 @@ lib_LTLIBRARIES = libglade-2.0.la
 gladeincludedir      = $(includedir)/glade-2.0/glade
 gladeinclude_HEADERS = \
   glade.h 	\
-  glade-xml.h 	\
+  glade-init.h	\
+  glade-xml.h	\
   glade-build.h	\
   glade-parser.h
 

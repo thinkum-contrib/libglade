@@ -8,11 +8,11 @@ DOC_MAIN_SGML_FILE=libglade-docs.sgml
 # The directory containing the source code (if it contains documentation).
 DOC_SOURCE_DIR=../glade
 
-HTML_DIR=$(datadir)/gnome/html
+HTML_DIR=$(datadir)/gtk-doc/html
 
 TARGET_DIR=$(HTML_DIR)/$(DOC_MODULE)
 
-CFLAGS = $(GTK_CFLAGS) $(XML_CFLAGS) -I$(srcdir)/..
+CFLAGS = $(GTK_CFLAGS) $(XML_CFLAGS) -I$(top_srcdir)
 LDFLAGS = ../glade/libglade-2.0.la $(GTK_LIBS) $(XML_LIBS)
 
 SCANOBJ_FILES = $(DOC_MODULE).signals $(DOC_MODULE).hierachy $(DOC_MODULE).args
@@ -23,7 +23,7 @@ tmpl_sources =				\
 	tmpl/glade-build.sgml		\
 	tmpl/libglade-unused.sgml
 
-noinst_DATA = html/libglade.html
+noinst_DATA = html-build.stamp
 
 EXTRA_DIST = 				\
 	libglade-decl.txt		\
@@ -44,33 +44,50 @@ sgml/glade.sgml: $(tmpl_sources) libglade.hierarchy libglade-decl.txt
 libglade.hierarchy libglade-decl.txt:
 	$(MAKE) templates
 
-scan:
+scan-build.stamp: $(top_srcdir)/glade/*.h
+	@echo '*** Scanning header files ***'
 	env CC="$(LIBTOOL) --mode=compile $(CC)" \
 		LD="$(LIBTOOL) --mode=link $(CC)" \
 		CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
-		gtkdoc-scanobj --module=$(DOC_MODULE) \
-		--types=$(srcdir)/$(DOC_MODULE).types --nogtkinit
-	-mv -f $(SCANOBJ_FILES) $(srcdir)
+		gtkdoc-scangobj --module=$(DOC_MODULE) \
+			--types=$(srcdir)/$(DOC_MODULE).types \
+			--output-dir=$(srcdir)
 	cd $(srcdir) \
 	&& gtkdoc-scan --module=$(DOC_MODULE) \
 		       --source-dir=$(DOC_SOURCE_DIR) \
 		       --ignore-headers=glade-private.h
+	touch scan-build.stamp
 
-templates: scan
+$(DOC_MODULE)-decl.txt $(SCANOBJ_FILES): scan-build.stamp
+	@true
+
+tmpl-build.stamp: $(DOC_MODULE)-decl.txt $(SCANOBJ_FILES) $(DOC_MODULE)-sections.txt
+	@echo '*** Rebuilding template files ***'
 	cd $(srcdir) && gtkdoc-mktmpl --module=$(DOC_MODULE)
+	touch tmpl-build.stamp
 
-sgml:
-	test -d $(srcdir)/sgml || mkdir $(srcdir)/sgml
+tmpl.stamp: tmpl-build.stamp
+	@true
+
+sgml-build.stamp: tmpl.stamp $(top_srcdir)/glade/*.c $(srcdir)/tmpl/*.sgml
+	@echo '*** Building SGML ***'
+	@test -d $(srcdir)/sgml || mkdir $(srcdir)/sgml
 	cd $(srcdir) \
 	&& gtkdoc-mkdb --module=$(DOC_MODULE) --source-dir=$(DOC_SOURCE_DIR)
+	touch sgml-build.stamp
 
-html:
-	test -d $(srcdir)/html || mkdir $(srcdir)/html
+sgml.stamp: sgml-build.stamp
+	@true
+
+html-build.stamp: sgml.stamp $(DOC_MAIN_SGML_FILE) $(content_files)
+	@echo '*** Building HTML ***'
+	@test -d $(srcdir)/html || mkdir $(srcdir)/html
 	-cd $(srcdir)/html && gtkdoc-mkhtml $(DOC_MODULE) ../$(DOC_MAIN_SGML_FILE)
 
 clean-local:
 	rm -f *~ *.bak *.hierarchy *.signals *-unused.txt
 	rm -f libglade-scan.lo libglade-scan.o
+	rm -f *.stamp
 
 maintainer-clean-local: clean
 	cd $(srcdir) && rm -rf sgml html $(DOC_MODULE)-decl-list.txt $(DOC_MODULE)-decl.txt 

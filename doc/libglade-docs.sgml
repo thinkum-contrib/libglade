@@ -1,4 +1,4 @@
-<!doctype book PUBLIC "-//Davenport//DTD DocBook V3.0//EN" [
+<!doctype book PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
 <!entity libglade-glade-build SYSTEM "sgml/glade-build.sgml">
 <!entity libglade-glade-sax SYSTEM "sgml/glade-sax.sgml">
 <!entity libglade-glade-xml SYSTEM "sgml/glade-xml.sgml">

@@ -1,4 +1,4 @@
-SUBDIRS = intl po glade
+SUBDIRS = intl po glade doc
 
 INCLUDES = $(GTK_CFLAGS) $(XML_CFLAGS)
 
@@ -12,10 +12,14 @@ noinst_PROGRAMS = test-libglade
 test_libglade_LDADD = glade/libglade-2.0.la $(GTK_LIBS) $(XML_LIBS)
 test_libglade_SOURCES = test-libglade.c
 
+#small hack to get distcheck to work
+clean-local:
+	rm -f intl/po2tbl.sed
+
 EXTRA_DIST = \
   libglade.spec.in \
   libglade.spec \
-  libglade.pc.in \
+  libglade-2.0.pc.in \
   libglade-xgettext \
   libglade-convert \
   examples/simple.glade \

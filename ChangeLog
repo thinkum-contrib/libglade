@@ -1,5 +1,10 @@
 2001-08-16  James Henstridge  <james@daa.com.au>
 
+	* Makefile.am (SUBDIRS): renable building of documentation.
+
+	* doc/Makefile.am: fix up makefile to work correctly with the
+	GObjectized GladeXML.
+
 	* configure.in: update to use some autoconf-2.52 features, such as
 	getting rid of the need for acconfig.h.
 

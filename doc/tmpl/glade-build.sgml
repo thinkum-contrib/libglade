@@ -21,6 +21,7 @@ the actual widgets from the XML node data structures.
 </para>
 
 @xml: 
+@widget_type: 
 @info: 
 @Returns: 
 <!-- # Unused Parameters # -->
@@ -33,10 +34,11 @@ the actual widgets from the XML node data structures.
 </para>
 
 @xml: 
-@w: 
+@parent: 
 @info: 
 @longname: 
 <!-- # Unused Parameters # -->
+@w: 
 @node: 
 
 
@@ -76,6 +78,9 @@ the actual widgets from the XML node data structures.
 @name: 
 @new: 
 @build_children: 
+@get_type_func: 
+@typecode: 
+@find_internal_child: 
 
 <!-- ##### FUNCTION glade_register_widgets ##### -->
 <para>
@@ -158,32 +163,6 @@ the actual widgets from the XML node data structures.
 
 
 <!-- ##### FUNCTION glade_xml_ensure_accel ##### -->
-<para>
-
-</para>
-
-@xml: 
-@Returns: 
-
-
-<!-- ##### FUNCTION glade_xml_push_uline_accel ##### -->
-<para>
-
-</para>
-
-@xml: 
-@uline: 
-
-
-<!-- ##### FUNCTION glade_xml_pop_uline_accel ##### -->
-<para>
-
-</para>
-
-@xml: 
-
-
-<!-- ##### FUNCTION glade_xml_get_uline_accel ##### -->
 <para>
 
 </para>

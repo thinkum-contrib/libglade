@@ -47,32 +47,10 @@ automatically connect as many handlers up as it can that way.
 
 @fname: 
 @root: 
+@domain: 
 @Returns: 
 <!-- # Unused Parameters # -->
 @filename: 
-
-
-<!-- ##### FUNCTION glade_xml_new_with_domain ##### -->
-<para>
-
-</para>
-
-@fname: 
-@root: 
-@domain: 
-@Returns: 
-
-
-<!-- ##### FUNCTION glade_xml_new_from_memory ##### -->
-<para>
-
-</para>
-
-@buffer: 
-@size: 
-@root: 
-@domain: 
-@Returns: 
 
 
 <!-- ##### FUNCTION glade_xml_construct ##### -->
