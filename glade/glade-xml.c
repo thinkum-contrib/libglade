@@ -756,3 +756,76 @@ glade_xml_build_widget(GladeXML *self, GNode *node,
 		gtk_widget_show(ret);
 	return ret;
 }
+
+/**
+ * glade_default_build_children
+ * @xml: the GladeXML object.
+ * @w: the container widget.
+ * @node: the node for this widget.
+ * @longname: the long name for this widget.
+ *
+ * This is the standard child building function.  It simply calls
+ * gtk_container_add on each child to add them to the parent.  It is
+ * implemented here, as it should be useful to many GTK+ based widget
+ * sets.
+ */
+void
+glade_standard_build_children(GladeXML *xml, GtkWidget *w, GNode *node,
+			     const char *longname)
+{
+	GNode *childnode;
+	for (childnode = node->children; childnode;
+	     childnode = childnode->next) {
+		GtkWidget *child = glade_xml_build_widget(xml, childnode,
+							  longname);
+		gtk_container_add(GTK_CONTAINER(w), child);
+	}
+}
+
+/**
+ * glade_get_adjustment
+ * @gnode: the XML node for the widget.
+ *
+ * This utility routine is used to create an adjustment object for a widget.
+ */
+GtkAdjustment *
+glade_get_adjustment(GNode *gnode)
+{
+	xmlNodePtr node = gnode->data;
+	gdouble hvalue=1, hlower=0, hupper=100, hstep=1, hpage=100, hpage_size=10;
+
+	for (node = node->childs; node; node = node->next) {
+		char *content = xmlNodeGetContent (node);
+
+		if (node->name[0] == 'h')
+			switch (node->name[1]) {
+			case 'l':
+				if (!strcmp(node->name, "hlower"))
+					hlower = g_strtod(content, NULL);
+				break;
+			case 'p':
+				if (!strcmp(node->name, "hpage"))
+					hpage = g_strtod(content, NULL);
+				else if (!strcmp(node->name, "hpage_size"))
+					hpage_size = g_strtod(content, NULL);
+				break;
+			case 's':
+				if (!strcmp(node->name, "hstep"))
+					hstep = g_strtod(content, NULL);
+				break;
+			case 'u':
+				if (!strcmp(node->name, "hupper"))
+					hupper = g_strtod(content, NULL);
+				break;
+			case 'v':
+				if (!strcmp(node->name, "hvalue"))
+					hvalue = g_strtod(content, NULL);
+				break;
+			}
+		if (content)
+			free (content);
+	}
+	return GTK_ADJUSTMENT (gtk_adjustment_new(hvalue, hlower, hupper, hstep,
+						  hpage, hpage_size));
+}
+

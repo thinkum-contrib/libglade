@@ -20,30 +20,14 @@
 #include "config.h"
 #endif
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <glade/glade-build.h>
-#ifdef ENABLE_GNOME
-#   include <gnome.h>
-#else
-#   include <gtk/gtk.h>
-#endif
-#include <stdio.h>
-#include <stdio.h>
+#include <gtk/gtk.h>
 #include <tree.h>
 
 /* functions to actually build the widgets */
-
-static void
-container_build_children (GladeXML *xml, GtkWidget *w,
-			  GNode *node, const char *longname)
-{
-	/* already checked if there are any child nodes */
-	for (node = node->children; node; node = node->next){
-		GtkWidget *child = glade_xml_build_widget (xml, node, longname);
-		gtk_container_add (GTK_CONTAINER(w), child);
-	}
-}
 
 static void
 menushell_build_children (GladeXML *xml, GtkWidget *w, GNode *node,
@@ -434,46 +418,6 @@ misc_set (GtkMisc *misc, xmlNodePtr info)
 	}
 }
 
-static GtkAdjustment *
-get_adjustment(xmlNodePtr node)
-{
-	gdouble hvalue=1, hlower=0, hupper=100, hstep=1, hpage=100, hpage_size=10;
-
-	for (node = node->childs; node; node = node->next) {
-		char *content = xmlNodeGetContent (node);
-
-		if (node->name[0] == 'h')
-			switch (node->name[1]) {
-			case 'l':
-				if (!strcmp(node->name, "hlower"))
-					hlower = g_strtod(content, NULL);
-				break;
-			case 'p':
-				if (!strcmp(node->name, "hpage"))
-					hpage = g_strtod(content, NULL);
-				else if (!strcmp(node->name, "hpage_size"))
-					hpage_size = g_strtod(content, NULL);
-				break;
-			case 's':
-				if (!strcmp(node->name, "hstep"))
-					hstep = g_strtod(content, NULL);
-				break;
-			case 'u':
-				if (!strcmp(node->name, "hupper"))
-					hupper = g_strtod(content, NULL);
-				break;
-			case 'v':
-				if (!strcmp(node->name, "hvalue"))
-					hvalue = g_strtod(content, NULL);
-				break;
-			}
-		if (content)
-			free (content);
-	}
-	return GTK_ADJUSTMENT (gtk_adjustment_new(hvalue, hlower, hupper, hstep,
-						  hpage, hpage_size));
-}
-
 static GtkWidget *
 label_new (GladeXML *xml, GNode *node)
 {
@@ -615,71 +559,12 @@ text_new(GladeXML *xml, GNode *node)
 	return wid;
 }
 
-#ifdef ENABLE_GNOME
-
-#define ELEMENTS(x) ((sizeof (x)) / (sizeof (x [0])))
-typedef struct {
-	const char *extension;
-	const char *mapping;
-} gnome_map_t;
-
-/* Keep these sorted */
-static gnome_map_t gnome_stock_button_mapping [] = {
-	{ "APPLY",  GNOME_STOCK_BUTTON_APPLY  },
-	{ "CANCEL", GNOME_STOCK_BUTTON_CANCEL },
-	{ "CLOSE",  GNOME_STOCK_BUTTON_CLOSE  },
-	{ "DOWN",   GNOME_STOCK_BUTTON_DOWN   },
-	{ "FONT",   GNOME_STOCK_BUTTON_FONT   },
-	{ "HELP",   GNOME_STOCK_BUTTON_HELP   },
-	{ "NEXT",   GNOME_STOCK_BUTTON_NEXT   },
-	{ "NO",     GNOME_STOCK_BUTTON_NO     },
-	{ "OK",     GNOME_STOCK_BUTTON_OK     },
-	{ "PREV",   GNOME_STOCK_BUTTON_PREV   },
-	{ "UP",     GNOME_STOCK_BUTTON_UP     },
-	{ "YES",    GNOME_STOCK_BUTTON_YES    },
-};
-
-static int
-stock_compare (const void *a, const void *b)
-{
-	const gnome_map_t *ga = a;
-	const gnome_map_t *gb = b;
-
-	return strcmp (ga->extension, gb->extension);
-}
-
-static GtkWidget *button_stock_new (const char *stock_name)
-{
-	GtkWidget *w;
-	const int len = strlen ("GNOME_STOCK_BUTTON_");
-	gnome_map_t *v;
-	gnome_map_t base;
-		
-	/* If an error happens, return this */
-	if (strncmp (stock_name, "GNOME_STOCK_BUTTON_", len) != 0)
-		return gtk_button_new_with_label (stock_name);
-
-	base.extension = stock_name + len;
-	v = bsearch (
-		&base,
-		gnome_stock_button_mapping,
-		ELEMENTS(gnome_stock_button_mapping),
-		sizeof (gnome_stock_button_mapping [0]),
-		stock_compare);
-	if (v)
-		return gnome_stock_button (v->mapping);
-	else
-		return gtk_button_new_with_label (stock_name);
-}
-#endif
-
 static GtkWidget *
 button_new(GladeXML *xml, GNode *node)
 {
 	GtkWidget *button;
 	xmlNodePtr info = ((xmlNodePtr)node->data)->childs;
 	char *string = NULL;
-	char *stock = NULL;
   
 	/*
 	 * This should really be a container, but GLADE is wierd in this respect.
@@ -690,31 +575,16 @@ button_new(GladeXML *xml, GNode *node)
 		char *content = xmlNodeGetContent(info);
 		if (!strcmp(info->name, "label")) {
 			if (string) g_free(string);
-			if (stock) g_free (stock);
 			string = g_strdup(content);
-			stock = NULL;
-		} else if (!strcmp(info->name, "stock_button")) {
-			if (string) g_free(string);
-			if (stock) g_free(stock);
-			stock = g_strdup(content);
-			string = NULL;
 		}
 		if (content)
 			free(content);
 	}
 	if (string != NULL) {
 		button = gtk_button_new_with_label(string);
-	}
-#ifdef ENABLE_GNOME
-	else if (stock != NULL){
-		button = button_stock_new (stock);
-	}
-#endif
-	else
+	} else
 		button = gtk_button_new();
 
-	if (stock)
-		g_free (stock);
 	if (string)
 		g_free (string);
 	return button;
@@ -1080,7 +950,7 @@ static GtkWidget *
 spinbutton_new(GladeXML *xml, GNode *node)
 {
 	GtkWidget *spinbutton;
-	GtkAdjustment *adj = get_adjustment((xmlNodePtr)node->data);
+	GtkAdjustment *adj = glade_get_adjustment(node);
 	xmlNodePtr info = ((xmlNodePtr)node->data)->childs;
 	int climb_rate = 1, digits = 0;
 	gboolean numeric = FALSE, snap = FALSE, wrap = FALSE;
@@ -1131,7 +1001,7 @@ spinbutton_new(GladeXML *xml, GNode *node)
 static GtkWidget *
 hscale_new(GladeXML *xml, GNode *node)
 {
-	GtkAdjustment *adj = get_adjustment((xmlNodePtr)node->data);
+	GtkAdjustment *adj = glade_get_adjustment(node);
 	GtkWidget *scale = gtk_hscale_new(adj);
 	xmlNodePtr info = ((xmlNodePtr)node->data)->childs;
 
@@ -1167,7 +1037,7 @@ hscale_new(GladeXML *xml, GNode *node)
 static GtkWidget *
 vscale_new (GladeXML *xml, GNode *node)
 {
-	GtkAdjustment *adj = get_adjustment((xmlNodePtr)node->data);
+	GtkAdjustment *adj = glade_get_adjustment(node);
 	GtkWidget *scale = gtk_vscale_new(adj);
 	xmlNodePtr info = ((xmlNodePtr)node->data)->childs;
 
@@ -1282,7 +1152,7 @@ vruler_new(GladeXML *xml, GNode *node)
 static GtkWidget *
 hscrollbar_new(GladeXML *xml, GNode *node)
 {
-	GtkAdjustment *adj = get_adjustment((xmlNodePtr)node->data);
+	GtkAdjustment *adj = glade_get_adjustment(node);
 	GtkWidget *scroll = gtk_hscrollbar_new(adj);
 	xmlNodePtr info = ((xmlNodePtr)node->data)->childs;
 
@@ -1302,7 +1172,7 @@ hscrollbar_new(GladeXML *xml, GNode *node)
 static GtkWidget *
 vscrollbar_new(GladeXML *xml, GNode *node)
 {
-	GtkAdjustment *adj = get_adjustment((xmlNodePtr)node->data);
+	GtkAdjustment *adj = glade_get_adjustment(node);
 	GtkWidget *scroll = gtk_vscrollbar_new(adj);
 	xmlNodePtr info = ((xmlNodePtr)node->data)->childs;
 
@@ -2211,10 +2081,10 @@ static const GladeWidgetBuildData widget_data[] = {
 	{"GtkAccelLabel",    accellabel_new,    NULL},
 	{"GtkEntry",         entry_new,         NULL},
 	{"GtkText",          text_new,          NULL},
-	{"GtkButton",        button_new,        container_build_children},
-	{"GtkToggleButton",  togglebutton_new,  container_build_children},
-	{"GtkCheckButton",   checkbutton_new,   container_build_children},
-	{"GtkRadioButton",   radiobutton_new,   container_build_children},
+	{"GtkButton",        button_new,        glade_standard_build_children},
+	{"GtkToggleButton",  togglebutton_new,  glade_standard_build_children},
+	{"GtkCheckButton",   checkbutton_new,   glade_standard_build_children},
+	{"GtkRadioButton",   radiobutton_new,   glade_standard_build_children},
 	{"GtkOptionMenu",    optionmenu_new,    NULL},
 	{"GtkCombo",         combo_new,         NULL},
 	{"GtkList",          list_new,          NULL}, /* XXXX list appends ? */
@@ -2250,18 +2120,18 @@ static const GladeWidgetBuildData widget_data[] = {
 	{"GtkVBox",          vbox_new,          box_build_children},
 	{"GtkTable",         table_new,         table_build_children},
 	{"GtkFixed",         fixed_new,         fixed_build_children},
-	{"GtkHButtonBox",    hbuttonbox_new,    container_build_children},
-	{"GtkVButtonBox",    vbuttonbox_new,    container_build_children},
-	{"GtkFrame",         frame_new,         container_build_children},
-	{"GtkAspectFrame",   aspectframe_new,   container_build_children},
+	{"GtkHButtonBox",    hbuttonbox_new,    glade_standard_build_children},
+	{"GtkVButtonBox",    vbuttonbox_new,    glade_standard_build_children},
+	{"GtkFrame",         frame_new,         glade_standard_build_children},
+	{"GtkAspectFrame",   aspectframe_new,   glade_standard_build_children},
 	{"GtkHPaned",        hpaned_new,        paned_build_children},
 	{"GtkVPaned",        vpaned_new,        paned_build_children},
-	{"GtkHandleBox",     handlebox_new,     container_build_children},
+	{"GtkHandleBox",     handlebox_new,     glade_standard_build_children},
 	{"GtkNotebook",      notebook_new,      notebook_build_children},
-	{"GtkAlignment",     alignment_new,     container_build_children},
-	{"GtkEventBox",      eventbox_new,      container_build_children},
-	{"GtkScrolledWindow",scrolledwindow_new,container_build_children},
-	{"GtkViewport",      viewport_new,      container_build_children},
+	{"GtkAlignment",     alignment_new,     glade_standard_build_children},
+	{"GtkEventBox",      eventbox_new,      glade_standard_build_children},
+	{"GtkScrolledWindow",scrolledwindow_new,glade_standard_build_children},
+	{"GtkViewport",      viewport_new,      glade_standard_build_children},
 
   /* other widgets */
 	{"GtkCurve",         curve_new,         NULL},
@@ -2270,7 +2140,7 @@ static const GladeWidgetBuildData widget_data[] = {
 	{"GtkPreview",       preview_new,       NULL},
 
   /* toplevel widgets */
-	{"GtkWindow",        window_new,        container_build_children},
+	{"GtkWindow",        window_new,        glade_standard_build_children},
 	{"GtkDialog",        dialog_new,        dialog_build_children},
 	{"GtkColorSelectionDialog", colorselectiondialog_new, NULL},
 	{NULL, NULL, NULL}

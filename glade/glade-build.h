@@ -21,6 +21,8 @@
 
 #include <glade/glade-xml.h>
 #include <gtk/gtktypeutils.h>
+#include <gtk/gtkwidget.h>
+#include <gtk/gtkadjustment.h>
 
 /* create a new widget of some type.  Don't parse `standard' widget options */
 typedef GtkWidget *(* GladeNewFunc) (GladeXML *xml,
@@ -44,6 +46,13 @@ void glade_register_widgets(const GladeWidgetBuildData *widgets);
 /* this function is called to build the interface by GladeXML */
 GtkWidget *glade_xml_build_widget(GladeXML *self, GNode *node,
 				  const char *parent_long);
+
+/* A standard child building routine that can be used in widget builders */
+void glade_standard_build_children(GladeXML *self, GtkWidget *w,
+				   GNode *node, const char *longname);
+
+/* create an adjustment object for a widget */
+GtkAdjustment *glade_get_adjustment(GNode *gnode);
 
 /* this is a wrapper for gtk_type_enum_find_value, that just returns the
  * integer value for the enum */

@@ -25,13 +25,21 @@ the_headers =		\
 
 if LIBGLADE_FULLDIST
 lib_LTLIBRARIES      = libglade.la
+if GNOME_SUPPORT
+libglade_la_SOURCES  = $(the_sources) glade-gnome.c
+else
 libglade_la_SOURCES  = $(the_sources)
+endif
 libglade_la_LIBADD   = $(THE_LIBS) $(XML_LIBS)
 gladeincludedir      = $(includedir)/glade
 gladeinclude_HEADERS = $(the_headers)
 else
 lib_LIBRARIES        = libglade.a
+if GNOME_SUPPORT
+libglade_a_SOURCES   = $(the_sources) glade-gnome.c
+else
 libglade_a_SOURCES   = $(the_sources)
+endif
 extra_dist           = $(the_headers)
 endif
 

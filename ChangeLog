@@ -1,3 +1,33 @@
+1999-06-06  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gnome.c: added build routines for a few of the
+	widgets that are in the current CVS version of GLADE.  I haven't
+	done wrappers for GnomeApp, GnomeDialog, GnomeMessageBox and GLADE's
+	GnomeUIInfo stuff.
+
+	* glade/glade-gtk.c: removed all the GNOME specific code from this
+	file.  Now all GNOME specific stuff is inside glade-gnome.c (except
+	for the initialiser in glade-init.c).
+
+	* glade/Makefile.am: add glade-gnome.c to the library if GNOME
+	support is enabled.
+
+	* glade/glade-init.c (glade_init): initialise the gnome widgets if
+	gnome support has been built in.
+
+	* glade/glade-gnome.c: new file that holds all the GNOME specific
+	widget routines.
+
+	* glade/glade-gtk.c: removed container_build_children function, and
+	changed all references to it to glade_standard_build_children.
+
+	* glade/glade-build.h: added prototype for the function.
+
+	* glade/glade-xml.c (glade_standard_build_children): added the
+	standard child building routine here, as it will be useful to
+	both gtk and gnome code.
+	(glade_get_adjustment): similar to above.
+
 1999-06-04  Miguel de Icaza  <miguel@nuclecu.unam.mx>
 
 	* glade/glade-gtk.c (optionmenu_new): Only add items if there are
