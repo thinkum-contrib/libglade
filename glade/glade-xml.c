@@ -83,12 +83,14 @@ glade_xml_class_init (GladeXMLClass *klass)
 static void
 glade_xml_init (GladeXML *self)
 {
-	self->filename = NULL;
-	self->tooltips = NULL;
-	self->name_hash = g_hash_table_new(g_str_hash, g_str_equal);
-	self->longname_hash = g_hash_table_new(g_str_hash, g_str_equal);
+	self->priv = g_new (GladeXMLPrivate, 1);
 
-	self->signals = g_hash_table_new(g_str_hash, g_str_equal);
+	self->filename = NULL;
+	self->priv->tooltips = NULL;
+	self->priv->name_hash = g_hash_table_new(g_str_hash, g_str_equal);
+	self->priv->longname_hash = g_hash_table_new(g_str_hash, g_str_equal);
+
+	self->priv->signals = g_hash_table_new(g_str_hash, g_str_equal);
 }
 
 /**
@@ -135,8 +137,8 @@ glade_xml_construct (GladeXML *self, const char *fname, const char *root)
 	self->filename = g_strdup(fname);
 	glade_xml_build_interface(self, tree, root);
 
-	if (self->tooltips)
-		gtk_tooltips_enable(self->tooltips);
+	if (self->priv->tooltips)
+		gtk_tooltips_enable(self->priv->tooltips);
 }
 
 /**
@@ -153,12 +155,13 @@ void
 glade_xml_signal_connect (GladeXML *self, const char *signalname,
 			  GtkSignalFunc func)
 {
-	GList *signals = g_hash_table_lookup(self->signals, signalname);
+	GList *signals = g_hash_table_lookup(self->priv->signals, signalname);
+	
 	for (; signals != NULL; signals = signals->next) {
 		GladeSignalData *data = signals->data;
 
 		if (data->connect_object) {
-			GtkObject *other = g_hash_table_lookup(self->name_hash,
+			GtkObject *other = g_hash_table_lookup(self->priv->name_hash,
 							       data->connect_object);
 			if (data->signal_after)
 				gtk_signal_connect_object_after(data->signal_object, data->signal_name,
@@ -192,7 +195,7 @@ autoconnect_foreach(char *signal_handler, GList *signals,
 			if (data->connect_object) {
 				GladeXML *self = glade_get_widget_tree(
 					GTK_WIDGET(data->signal_object));
-				GtkObject *other = g_hash_table_lookup(self->name_hash,
+				GtkObject *other = g_hash_table_lookup(self->priv->name_hash,
 								       data->connect_object);
 				if (data->signal_after)
 					gtk_signal_connect_object_after(data->signal_object,
@@ -235,7 +238,7 @@ glade_xml_signal_autoconnect (GladeXML *self)
 
 	/* get a handle on the main executable -- use this to find symbols */
 	allsymbols = g_module_open(NULL, 0);
-	g_hash_table_foreach(self->signals, (GHFunc)autoconnect_foreach, allsymbols);
+	g_hash_table_foreach(self->priv->signals, (GHFunc)autoconnect_foreach, allsymbols);
 	g_module_close(allsymbols);
 }
 
@@ -253,7 +256,7 @@ glade_xml_signal_autoconnect (GladeXML *self)
 GtkWidget *
 glade_xml_get_widget (GladeXML *self, const char *name)
 {
-	return g_hash_table_lookup(self->name_hash, name);
+	return g_hash_table_lookup(self->priv->name_hash, name);
 }
 
 /**
@@ -273,7 +276,7 @@ GtkWidget *
 glade_xml_get_widget_by_long_name(GladeXML *self,
 				  const char *longname)
 {
-	return g_hash_table_lookup(self->longname_hash, longname);
+	return g_hash_table_lookup(self->priv->longname_hash, longname);
 }
 
 /**
@@ -360,9 +363,9 @@ glade_xml_add_signal(GladeXML *xml, GtkWidget *w, xmlNodePtr sig)
 	g_assert(signal_handler != NULL);
 	g_assert(data->signal_name != NULL);
 	debug(g_message("New signal: %s->%s", data->signal_name, signal_handler));
-	list = g_hash_table_lookup(xml->signals, signal_handler);
+	list = g_hash_table_lookup(xml->priv->signals, signal_handler);
 	list = g_list_prepend(list, data);
-	g_hash_table_insert(xml->signals, signal_handler, list);
+	g_hash_table_insert(xml->priv->signals, signal_handler, list);
 	/* if list is longer than one element, then a signal for this handler has
 	 * been inserted, so the string pointed to by signal_handler is not needed
 	 */
@@ -481,11 +484,12 @@ glade_xml_destroy(GtkObject *object)
 
 	if (self->filename)
 		g_free(self->filename);
-	g_hash_table_destroy(self->name_hash);
-	g_hash_table_destroy(self->longname_hash);
-	g_hash_table_foreach(self->signals, (GHFunc)glade_xml_destroy_signals, NULL);
-	g_hash_table_destroy(self->signals);
+	g_hash_table_destroy(self->priv->name_hash);
+	g_hash_table_destroy(self->priv->longname_hash);
+	g_hash_table_foreach(self->priv->signals, (GHFunc)glade_xml_destroy_signals, NULL);
+	g_hash_table_destroy(self->priv->signals);
 
+	g_free (self->priv);
 	if (parent_class->destroy)
 		(* parent_class->destroy)(object);
 }
@@ -668,10 +672,13 @@ glade_xml_build_widget(GladeXML *self, GNode *node,
 			}
 			break;
 		case 'c':
-			if (!strcmp(name, "can_default"))
-				if (*value == 'T') GTK_WIDGET_SET_FLAGS(ret, GTK_CAN_DEFAULT);
-				else if (!strcmp(name, "can_focus"))
-					if (*value == 'T') GTK_WIDGET_SET_FLAGS(ret, GTK_CAN_FOCUS);
+			if (!strcmp(name, "can_default")){
+				if (*value == 'T')
+					GTK_WIDGET_SET_FLAGS(ret, GTK_CAN_DEFAULT);
+			} else if (!strcmp(name, "can_focus")){
+				if (*value == 'T')
+					GTK_WIDGET_SET_FLAGS(ret, GTK_CAN_FOCUS);
+			}
 			break;
 		case 'e':
 			if (!strcmp(name, "events")) {
@@ -711,8 +718,9 @@ glade_xml_build_widget(GladeXML *self, GNode *node,
 			break;
 		case 't':
 			if (!strcmp(name, "tooltip")) {
-				if (self->tooltips == NULL) self->tooltips = gtk_tooltips_new();
-				gtk_tooltips_set_tip(self->tooltips, ret, value, NULL);
+				if (self->priv->tooltips == NULL)
+					self->priv->tooltips = gtk_tooltips_new();
+				gtk_tooltips_set_tip(self->priv->tooltips, ret, value, NULL);
 			}
 			break;
 		case 'v':
@@ -742,8 +750,8 @@ glade_xml_build_widget(GladeXML *self, GNode *node,
 	gtk_object_set_data_full(GTK_OBJECT(ret), glade_xml_longname_tag,
 				 w_longname, (GtkDestroyNotify)g_free);
 	/* store widgets in hash table, for easy lookup */
-	g_hash_table_insert(self->name_hash, w_name, ret);
-	g_hash_table_insert(self->longname_hash, w_longname, ret);
+	g_hash_table_insert(self->priv->name_hash, w_name, ret);
+	g_hash_table_insert(self->priv->longname_hash, w_longname, ret);
 
 	if (w_style) {
 		glade_style_attach(ret, w_style);

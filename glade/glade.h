@@ -21,6 +21,7 @@
 
 /* must be called before use of libglade */
 void glade_init(void);
+void glade_init_gnome_widgets(void);
 
 /* Load the named dynamic module.  Basically it is loaded, and the
  * glade_init_module function is called.  This function should

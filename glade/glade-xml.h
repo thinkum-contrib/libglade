@@ -31,22 +31,16 @@
 typedef struct _GladeXML GladeXML;
 typedef struct _GladeXMLClass GladeXMLClass;
 typedef struct _GladeSignalData GladeSignalData;
+typedef struct _GladeXMLPrivate GladeXMLPrivate;
 
 struct _GladeXML {
   /* <public> */
   GtkData parent;
 
   char *filename;
-  /* <private> */
-  GtkTooltips *tooltips; /* if not NULL, holds all tooltip info */
-  /* hash tables of widgets.  The keys are stored as widget data, and get
-   * freed with those widgets. */
-  GHashTable *name_hash;
-  GHashTable *longname_hash;
 
-  /* hash table of signals.  The Data is a GList of GladeSignalData
-   * structures which get freed when the GladeXML object is destroyed */
-  GHashTable *signals;
+  /* <private> */
+  GladeXMLPrivate *priv;
 };
 
 struct _GladeXMLClass {

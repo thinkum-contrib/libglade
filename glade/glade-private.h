@@ -24,6 +24,23 @@
 #include <gtk/gtkwidget.h>
 #include <glade/glade-xml.h>
 
+
+struct _GladeXMLPrivate {
+	GtkTooltips *tooltips; /* if not NULL, holds all tooltip info */
+
+	/*
+	 * hash tables of widgets.  The keys are stored as widget data, and get
+	 * freed with those widgets.
+	 */
+	GHashTable *name_hash;
+	GHashTable *longname_hash;
+	
+	/* hash table of signals.  The Data is a GList of GladeSignalData
+	 * structures which get freed when the GladeXML object is destroyed
+	 */
+	GHashTable *signals;
+};
+
 /* from glade-tree.c */
 typedef struct _GladeTreeData GladeTreeData;
 struct _GladeTreeData {
