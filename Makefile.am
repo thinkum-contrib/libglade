@@ -17,6 +17,7 @@ clean-local:
 	rm -f intl/po2tbl.sed
 
 EXTRA_DIST = \
+  glade-2.0.dtd \
   libglade.spec.in \
   libglade.spec \
   libglade-2.0.pc.in \
