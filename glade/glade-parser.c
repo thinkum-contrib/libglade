@@ -46,6 +46,8 @@ typedef enum {
     PARSER_WIDGET_PROPERTY,
     PARSER_WIDGET_ATK,
     PARSER_WIDGET_ATK_PROPERTY,
+    PARSER_WIDGET_ATK_ACTION,
+    PARSER_WIDGET_ATK_RELATION,
     PARSER_WIDGET_AFTER_ATK,
     PARSER_WIDGET_SIGNAL,
     PARSER_WIDGET_AFTER_SIGNAL,
@@ -69,6 +71,8 @@ static gchar *state_names[] = {
     "WIDGET_PROPERTY",
     "WIDGET_ATK",
     "WIDGET_ATK_PROPERTY",
+    "WIDGET_ATK_ACTION",
+    "WIDGET_ATK_RELATION",
     "WIDGET_AFTER_ATK",
     "WIDGET_SIGNAL",
     "WIDGET_AFTER_SIGNAL",
@@ -105,6 +109,8 @@ struct _GladeParseState {
     GArray *props;
 
     GArray *signals;
+    GArray *atk_actions;
+    GArray *relations;
     GArray *accels;
 };
 
@@ -195,6 +201,28 @@ flush_signals(GladeParseState *state)
 }
 
 static inline void
+flush_actions(GladeParseState *state)
+{
+    if (state->atk_actions) {
+	state->widget->atk_actions = (GladeAtkActionInfo *)state->atk_actions->data;
+	state->widget->n_atk_actions = state->atk_actions->len;
+	g_array_free(state->atk_actions, FALSE);
+    }
+    state->atk_actions = NULL;
+}
+
+static inline void
+flush_relations(GladeParseState *state)
+{
+    if (state->relations) {
+	state->widget->relations = (GladeAtkRelationInfo *)state->relations->data;
+	state->widget->n_relations = state->relations->len;
+	g_array_free(state->relations, FALSE);
+    }
+    state->relations = NULL;
+}
+
+static inline void
 flush_accels(GladeParseState *state)
 {
     if (state->accels) {
@@ -203,6 +231,58 @@ flush_accels(GladeParseState *state)
 	g_array_free(state->accels, FALSE);
     }
     state->accels = NULL;
+}
+
+static inline void
+handle_atk_action(GladeParseState *state, const xmlChar **attrs)
+{
+    gint i;
+    GladeAtkActionInfo info = { 0 };
+
+    flush_properties(state);
+
+    for (i = 0; attrs && attrs[i] != NULL; i += 2) {
+	if (!strcmp(attrs[i], "action_name"))
+	    info.action_name = alloc_string(state->interface, attrs[i+1]);
+	else if (!strcmp(attrs[i], "description"))
+	    info.description = alloc_string(state->interface, attrs[i+1]);
+	else
+	    g_warning("unknown attribute `%s' for <action>.", attrs[i]);
+    }
+    if (info.action_name == NULL) {
+	g_warning("required <atkaction> attribute 'action_name' missing!!!");
+	return;
+    }
+    if (!state->atk_actions)
+	state->atk_actions = g_array_new(FALSE, FALSE,
+				     sizeof(GladeAtkActionInfo));
+    g_array_append_val(state->atk_actions, info);
+}
+
+static inline void
+handle_atk_relation(GladeParseState *state, const xmlChar **attrs)
+{
+    gint i;
+    GladeAtkRelationInfo info = { 0 };
+
+    flush_properties(state);
+
+    for (i = 0; attrs && attrs[i] != NULL; i += 2) {
+	if (!strcmp(attrs[i], "target"))
+	    info.target = alloc_string(state->interface, attrs[i+1]);
+	else if (!strcmp(attrs[i], "type"))
+	    info.type = alloc_string(state->interface, attrs[i+1]);
+	else
+	    g_warning("unknown attribute `%s' for <signal>.", attrs[i]);
+    }
+    if (info.target == NULL || info.type == NULL) {
+	g_warning("required <atkrelation> attributes ('target' and/or 'type') missing!!!");
+	return;
+    }
+    if (!state->relations)
+	state->relations = g_array_new(FALSE, FALSE,
+				     sizeof(GladeAtkRelationInfo));
+    g_array_append_val(state->relations, info);
 }
 
 static inline void
@@ -244,6 +324,8 @@ handle_accel(GladeParseState *state, const xmlChar **attrs)
 
     flush_properties(state);
     flush_signals(state);
+    flush_actions(state);
+    flush_relations(state);
 
     for (i = 0; attrs && attrs[i] != NULL; i += 2) {
 	if (!strcmp(attrs[i], "key"))
@@ -325,6 +407,8 @@ handle_child(GladeParseState *state, const xmlChar **attrs)
     /* make sure all of these are flushed */
     flush_properties(state);
     flush_signals(state);
+    flush_actions(state);
+    flush_relations(state);
     flush_accels(state);
 
     state->widget->n_children++;
@@ -507,7 +591,7 @@ glade_parser_start_element(GladeParseState *state,
 	state->unknown_depth++;
 	break;
     case PARSER_WIDGET_ATK:
-	if (!strcmp(name, "property")) {
+	if (!strcmp(name, "atkproperty")) {
 	    if (state->prop_type != PROP_NONE &&
 		state->prop_type != PROP_ATK)
 		g_warning("non atk properties defined here (oh no!)");
@@ -521,10 +605,16 @@ glade_parser_start_element(GladeParseState *state,
 			 !strcmp(attrs[i+1], "yes"))
 		    state->translate_prop = TRUE;
 		else
-		    g_warning("unknown attribute `%s' for <property>.",
+		    g_warning("unknown attribute `%s' for <atkproperty>.",
 			      attrs[i]);
 	    }
 	    state->state = PARSER_WIDGET_ATK_PROPERTY;
+	} else if (!strcmp(name, "atkaction")) {
+	    handle_atk_action(state, attrs);
+	    state->state = PARSER_WIDGET_ATK_ACTION;
+	} else if (!strcmp(name, "atkrelation")) {
+	    handle_atk_relation(state, attrs);
+	    state->state = PARSER_WIDGET_ATK_RELATION;
 	} else {
 	    g_warning("Unexpected element <%s> inside <accessibility>.", name);
 	    state->prev_state = state->state;
@@ -533,7 +623,23 @@ glade_parser_start_element(GladeParseState *state,
 	}
 	break;
     case PARSER_WIDGET_ATK_PROPERTY:
-	g_warning("<property> element should be empty.  Found <%s>.", name);
+	if (!strcmp(name, "accessibility")) {
+	    state->state = PARSER_WIDGET_ATK;
+	} else {
+	    g_warning("Unexpected element <%s> inside <atkproperty>.", name);
+	    state->prev_state = state->state;
+	    state->state = PARSER_UNKNOWN;
+	    state->unknown_depth++;
+	}
+	break;
+    case PARSER_WIDGET_ATK_ACTION:
+	g_warning("<atkaction> element should be empty.  Found <%s>.", name);
+	state->prev_state = state->state;
+	state->state = PARSER_UNKNOWN;
+	state->unknown_depth++;
+	break;
+    case PARSER_WIDGET_ATK_RELATION:
+	g_warning("<atkrelation> element should be empty.  Found <%s>.", name);
 	state->prev_state = state->state;
 	state->state = PARSER_UNKNOWN;
 	state->unknown_depth++;
@@ -708,6 +814,8 @@ glade_parser_end_element(GladeParseState *state, const xmlChar *name)
 	    g_warning("should find </widget> here.  Found </%s>", name);
 	flush_properties(state);
 	flush_signals(state);
+	flush_actions(state);
+	flush_relations(state);
 	flush_accels(state);
 	state->widget = state->widget->parent;
 	state->widget_depth--;
@@ -740,8 +848,8 @@ glade_parser_end_element(GladeParseState *state, const xmlChar *name)
 	state->state = PARSER_WIDGET_AFTER_ATK;
 	break;
     case PARSER_WIDGET_ATK_PROPERTY:
-	if (strcmp(name, "property") != 0)
-	    g_warning("should find </property> here.  Found </%s>", name);
+	if (strcmp(name, "atkproperty") != 0)
+	    g_warning("should find </atkproperty> here.  Found </%s>", name);
 	if (!state->props)
 	    state->props = g_array_new(FALSE, FALSE, sizeof(GladeProperty));
 	prop.name = state->prop_name;
@@ -755,6 +863,18 @@ glade_parser_end_element(GladeParseState *state, const xmlChar *name)
 	state->prop_name = NULL;
 	state->state = PARSER_WIDGET_ATK;
 	break;
+    case PARSER_WIDGET_ATK_ACTION:
+	if (strcmp(name, "atkaction") != 0)
+	    g_warning("should find </atkaction> here.  Found </%s>", name);
+        state->prop_name = NULL;
+        state->state = PARSER_WIDGET_ATK;
+        break;
+    case PARSER_WIDGET_ATK_RELATION:
+	if (strcmp(name, "atkrelation") != 0)
+	    g_warning("should find </atkrelation> here.  Found </%s>", name);
+        state->prop_name = NULL;
+        state->state = PARSER_WIDGET_ATK;
+        break;
     case PARSER_WIDGET_SIGNAL:
 	if (strcmp(name, "signal") != 0)
 	    g_warning("should find </signal> here.  Found </%s>", name);

@@ -8,7 +8,10 @@
     <property name="visible">yes</property>
 
     <accessibility>
-      <property name="AtkObject::name">Top level</property>
+      <atkproperty name="AtkObject::accessible-name">Test Frame</atkproperty>
+      <atkproperty name="AtkObject::accessible-description">
+          This is the first of two test windows.
+      </atkproperty>
     </accessibility>
 
     <child>
@@ -20,6 +23,10 @@
           <widget class="GtkLabel" id="label1">
             <property name="label" translatable="yes">A label</property>
             <property name="visible">yes</property>
+            <accessibility>
+              <atkproperty name="AtkObject::accessible-name">A label</atkproperty>
+              <atkrelation target="button1" type="label_for"/>
+            </accessibility> 
           </widget>
 	  <packing>
             <property name="expand">no</property>
@@ -28,7 +35,19 @@
         <child>
           <widget class="GtkButton" id="button1">
             <property name="visible">yes</property>
- 
+
+            <accessibility>
+              <atkproperty name="AtkObject::accessible-name">Push Me Button</atkproperty>
+              <atkproperty name="AtkObject::accessible-description">
+                This button wants to be pushed.
+              </atkproperty>
+              <atkaction action_name="click" description="This button
+dares you to invoke this action."/>
+              <atkaction action_name="press" description="This action
+does nothing interesting."/>
+              <atkrelation target="label1" type="labelled_by"/>
+            </accessibility> 
+
 	    <signal name="clicked" handler="gtk_main_quit" />
 
             <child>
@@ -49,12 +68,22 @@
     <property name="border_width">10</property>
     <property name="visible">yes</property>
 
+    <accessibility>
+      <atkproperty name="AtkObject::accessible-name">Testing 2</atkproperty>
+      <atkproperty name="AtkObject::accessible-description">
+          This is the second of two test windows, a test dialog box.
+      </atkproperty>
+    </accessibility>
+
     <child internal-child="vbox">
       <widget class="GtkVBox" id="vbox2">
         <child>
           <widget class="GtkLabel" id="label3">
-            <property name="label" translatable="yes">A label</property>
+            <property name="label" translatable="yes">Click the button below</property>
             <property name="visible">yes</property>
+            <accessibility>
+              <atkrelation target="button2" type="label_for"/>
+            </accessibility>
           </widget>
 	  <packing>
             <property name="expand">yes</property>
@@ -66,6 +95,17 @@
               <widget class="GtkButton" id="button2">
                 <property name="visible">yes</property>
  
+                <accessibility>
+                  <atkproperty name="AtkObject::accessible-name">Cancel</atkproperty>
+                  <atkproperty name="AtkObject::accessible-description">
+                    Another button that does the same as the first one...
+                  </atkproperty>
+                  <atkaction action_name="click" description="Cancel (and exit) the test."/>
+                  <atkaction action_name="press" description="This action
+does nothing interesting."/>
+                  <atkrelation target="label3" type="labelled_by"/>
+                </accessibility> 
+
 	        <signal name="clicked" handler="gtk_main_quit" />
 
                 <child>

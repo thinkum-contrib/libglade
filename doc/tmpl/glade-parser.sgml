@@ -47,6 +47,10 @@ these functions and structures.
 @n_atk_props: 
 @signals: 
 @n_signals: 
+@atk_actions: 
+@n_atk_actions: 
+@relations: 
+@n_relations: 
 @accels: 
 @n_accels: 
 @children: 

@@ -42,6 +42,18 @@ struct _GladeSignalInfo {
     guint after : 1;
 };
 
+typedef struct _GladeAtkActionInfo GladeAtkActionInfo;
+struct _GladeAtkActionInfo {
+    gchar *action_name;
+    gchar *description;
+};
+
+typedef struct _GladeAtkRelationInfo GladeAtkRelationInfo;
+struct _GladeAtkRelationInfo {
+    gchar *target;
+    gchar *type;
+};
+
 typedef struct _GladeAccelInfo GladeAccelInfo;
 struct _GladeAccelInfo {
     guint key;
@@ -66,6 +78,12 @@ struct _GladeWidgetInfo {
 
     GladeSignalInfo *signals;
     guint n_signals;
+	
+    GladeAtkActionInfo *atk_actions;
+    guint n_atk_actions;
+
+    GladeAtkRelationInfo *relations;
+    guint n_relations;
 
     GladeAccelInfo *accels;
     guint n_accels;

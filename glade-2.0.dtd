@@ -35,7 +35,7 @@
 
 <!ELEMENT atkaction >
 <!ATTLIST atkaction
-  target CDATA #REQUIRED
+  action_name CDATA #REQUIRED
   description CDATA #IMPLIED >
 
 <!ELEMENT accessibility (atkrelation | atkaction | atkproperty)* >

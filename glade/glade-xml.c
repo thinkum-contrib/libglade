@@ -34,6 +34,7 @@
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkcontainer.h>
 #include <gtk/gtklabel.h>
+#include <atk/atk.h>
 
 #ifdef ENABLE_NLS
 #  include <libintl.h>
@@ -772,6 +773,84 @@ glade_xml_add_signals(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
     }
 }
 
+/* this is a private function */
+static void
+glade_xml_add_atk_actions(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
+{
+    gint i;
+    gint n;
+    AtkObject *atko = gtk_widget_get_accessible (w);
+    AtkAction *action;
+
+    if (info->n_atk_actions) {
+        if (!ATK_IS_ACTION (atko)) {
+            g_warning("widgets of type %s don't have actions, but one is specified",
+	  	  G_OBJECT_TYPE_NAME (w));
+	    return;
+        }
+
+        action = ATK_ACTION (atko);
+        n = atk_action_get_n_actions (action);    
+    
+        for (i = 0; i < info->n_atk_actions; i++) {
+    	    GladeAtkActionInfo *action_info = &info->atk_actions[i];
+	    int j;
+	    for (j=0; j<n; ++j) {
+	        if (strcmp (atk_action_get_name (action, j),
+			    action_info->action_name) == 0) {
+	            break;
+	        }
+	    }
+	    if (j < n) {
+	        atk_action_set_description (ATK_ACTION (atko),
+					    j,
+					    action_info->description);	
+	    } else {
+		    g_warning("could not find action named %s", action_info->action_name);
+	    }
+        }
+    }	
+}
+
+/* this is a private function */
+static void
+glade_xml_add_atk_relations(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
+{
+    gint i;
+    AtkObject *atko = gtk_widget_get_accessible (w);
+    AtkRelationSet *relations = atk_object_ref_relation_set (atko);
+    gint n_relations = 0;
+    
+    for (i = 0; i < info->n_relations; i++) {
+	GladeAtkRelationInfo *relation_info = &info->relations[i];
+	GtkWidget *target_widget = glade_xml_get_widget (xml, relation_info->target);
+	AtkObject *target_accessible;
+	if (target_widget) {
+	    AtkRelation *relation;
+	    AtkRelationType relation_type;
+	    relation_type = atk_relation_type_from_string (relation_info->type);
+	    relation = atk_relation_set_get_relation_by_type (relations,
+							      relation_type);
+	    target_accessible = gtk_widget_get_accessible (target_widget);
+	    if (relation) {
+		    GPtrArray* target_array = atk_relation_get_target (relation);
+		    g_ptr_array_remove (target_array, target_accessible);
+		    g_ptr_array_add (target_array, target_accessible);
+	    } else { /* this is a new relation... */
+		    AtkObject *persistent = (AtkObject *) g_new0 (AtkObject*, 1);
+		    persistent = target_accessible;
+		    atk_relation_set_add (relations,
+					  atk_relation_new (&persistent,
+							    1,
+							    relation_type));
+	    }
+	} else {
+		g_warning ("could not find target widget %s for relation %s, skipping it", relation_info->target, relation_info->type);
+	}
+    }
+    g_object_unref (relations);
+}
+
 static void
 glade_xml_add_accels(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
 {
@@ -787,6 +866,44 @@ glade_xml_add_accels(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
 				   accel->key, accel->modifiers,
 				   GTK_ACCEL_VISIBLE);
     }
+}
+
+static void
+glade_xml_add_accessibility_info(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
+{
+    gint i;
+    AtkObject *atko = gtk_widget_get_accessible (w);
+    
+    for (i = 0; i < info->n_atk_props; i++) {
+	GParameter param = { NULL };
+	GParamSpec *pspec;
+	GValue value = { 0 };
+
+	pspec = g_object_class_find_property(g_type_class_ref(ATK_TYPE_OBJECT),
+					     info->atk_props[i].name);
+	if (!pspec) {
+	    g_warning("unknown property `%s' for class `%s'",
+		      info->atk_props[i].name, g_type_name(ATK_TYPE_OBJECT));
+	    continue;
+	} else if (glade_xml_set_value_from_string (xml, pspec, info->atk_props[i].value, &value)) {
+	    g_object_set_property (G_OBJECT (atko), info->atk_props[i].name, &value);
+	    g_value_unset (&value);
+        }
+	
+	debug(g_message("Adding accessibility property %s:%s",
+			info->atk_props[i].name,
+			info->atk_props[i].value));
+    }
+
+    /* Hang on, we're not done yet ;-) */
+    glade_xml_add_atk_actions(xml, w, info);
+    glade_xml_add_atk_relations(xml, w, info);
+    /*
+       hmm, might have to defer some relations,
+       if the widgets they refer to haven't
+       been constructed yet (will look at the other prop-as-widget
+       stuff for ideas)
+    */
 }
 
 static void
@@ -1544,6 +1661,8 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
     glade_xml_add_accels(self, widget, info);
 
     gtk_widget_set_name(widget, info->name);
+    glade_xml_add_accessibility_info(self, widget, info);
+
 #if 0
     if (info->tooltip) {
 	gtk_tooltips_set_tip(self->priv->tooltips,
