@@ -30,10 +30,13 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-	
-#define GLADE_XML(obj) GTK_CHECK_CAST((obj), glade_xml_get_type(), GladeXML)
-#define GLADE_XML_CLASS(klass) GTK_CHECK_CLASS_CAST((klass), glade_xml_get_type(), GladeXMLClass)
-#define GLADE_IS_XML(obj) GTK_CHECK_TYPE((obj), glade_xml_get_type())
+
+#define GLADE_TYPE_XML            (glade_xml_get_type())
+#define GLADE_XML(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GLADE_TYPE_XML, GladeXML))
+#define GLADE_XML_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GLADE_TYPE_XML, GladeXMLClass))
+#define GLADE_IS_XML(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GLADE_TYPE_XML))
+#define GLADE_IS_XML_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((obj), GLADE_TYPE_XML))
+#define GLADE_XML_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), GLADE_TYPE_XML, GladeXMLClass))
 
 typedef struct _GladeXML GladeXML;
 typedef struct _GladeXMLClass GladeXMLClass;
@@ -41,7 +44,7 @@ typedef struct _GladeXMLPrivate GladeXMLPrivate;
 
 struct _GladeXML {
   /* <public> */
-  GtkData parent;
+  GObject parent;
 
   char *filename;
   char *txtdomain;
@@ -51,10 +54,10 @@ struct _GladeXML {
 };
 
 struct _GladeXMLClass {
-  GtkDataClass parent_class;
+  GObjectClass parent_class;
 };
 
-GtkType glade_xml_get_type    (void);
+GType     glade_xml_get_type    (void);
 GladeXML *glade_xml_new       (const char *fname, const char *root);
 GladeXML *glade_xml_new_with_domain (const char *fname, const char *root,
 				     const char *domain);

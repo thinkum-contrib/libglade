@@ -44,10 +44,10 @@ static const char *glade_xml_name_tag = "GladeXML::name";
 static const char *glade_xml_longname_tag = "GladeXML::longname";
 
 static void glade_xml_init(GladeXML *xml);
-static void glade_xml_class_init(GladeXMLClass *klass);
+static void glade_xml_class_init(GladeXMLClass *class);
 
-static GtkObjectClass *parent_class;
-static void glade_xml_destroy(GtkObject *object);
+static GObjectClass *parent_class;
+static void glade_xml_finalize(GObject *object);
 
 static void glade_xml_build_interface(GladeXML *xml, GladeWidgetTree *tree,
 				      const char *root);
@@ -61,32 +61,37 @@ GladeExtendedFunc *glade_xml_build_extended_widget = NULL;
  *
  * Returns: the typecode for the GladeXML object type.
  */
-GtkType
+GType
 glade_xml_get_type(void)
 {
-	static GtkType xml_type = 0;
+	static GType xml_type = 0;
 
 	if (!xml_type) {
-		GtkTypeInfo xml_info = {
-			"GladeXML",
-			sizeof(GladeXML),
+		static const GTypeInfo xml_info = {
 			sizeof(GladeXMLClass),
-			(GtkClassInitFunc) glade_xml_class_init,
-			(GtkObjectInitFunc) glade_xml_init,
+			(GBaseInitFunc) NULL,
+			(GBaseFinalizeFunc) NULL,
+			(GClassInitFunc) glade_xml_class_init,
+			(GClassFinalizeFunc) NULL,
 			NULL,
-			NULL
+
+			sizeof (GladeXML),
+			0, /* n_preallocs */
+			(GInstanceInitFunc) glade_xml_init,
 		};
-		xml_type = gtk_type_unique(gtk_data_get_type(), &xml_info);
+
+		xml_type = g_type_register_static(G_TYPE_OBJECT, "GladeXML",
+						  &xml_info, 0);
 	}
 	return xml_type;
 }
 
 static void
-glade_xml_class_init (GladeXMLClass *klass)
+glade_xml_class_init (GladeXMLClass *class)
 {
-	parent_class = gtk_type_class(gtk_data_get_type());
+	parent_class = g_type_class_ref (G_TYPE_OBJECT);
 
-	GTK_OBJECT_CLASS(klass)->destroy = glade_xml_destroy;
+	G_OBJECT_CLASS(class)->finalize = glade_xml_finalize;
 }
 
 static void
@@ -132,7 +137,7 @@ glade_xml_init (GladeXML *self)
 GladeXML *
 glade_xml_new(const char *fname, const char *root)
 {
-	GladeXML *self = gtk_type_new(glade_xml_get_type());
+	GladeXML *self = g_object_new(GLADE_TYPE_XML, NULL);
 
 	if (!glade_xml_construct(self, fname, root, NULL)) {
 		gtk_object_unref(GTK_OBJECT(self));
@@ -162,7 +167,7 @@ GladeXML *
 glade_xml_new_with_domain(const char *fname, const char *root,
 			  const char *domain)
 {
-	GladeXML *self = gtk_type_new(glade_xml_get_type());
+	GladeXML *self = g_object_new(GLADE_TYPE_XML, NULL);
 
 	if (!glade_xml_construct(self, fname, root, domain)) {
 		gtk_object_unref(GTK_OBJECT(self));
@@ -231,7 +236,7 @@ GladeXML *glade_xml_new_from_memory(char *buffer, int size, const char *root,
 
 	if (!tree)
 		return NULL;
-	self = gtk_type_new(glade_xml_get_type());
+	self = g_object_new(GLADE_TYPE_XML, NULL);
 
 	self->priv->tree = tree;
 	self->txtdomain = g_strdup(domain);
@@ -977,7 +982,7 @@ free_radio_groups(gpointer key, gpointer value, gpointer user_data)
 }
 
 static void
-glade_xml_destroy(GtkObject *object)
+glade_xml_finalize(GObject *object)
 {
 	GladeXML *self = GLADE_XML(object);
 	GladeXMLPrivate *priv = self->priv;
@@ -1016,8 +1021,8 @@ glade_xml_destroy(GtkObject *object)
 		g_free (self->priv);
 	}
 	self->priv = NULL;
-	if (parent_class->destroy)
-		(* parent_class->destroy)(object);
+	if (parent_class->finalize)
+		(* parent_class->finalize)(object);
 }
 
 /**
@@ -1345,7 +1350,7 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 					char *str = g_strndup(tmpptr,
 							      endptr-tmpptr);
 					events |= glade_enum_from_string(
-						GTK_TYPE_GDK_EVENT_MASK, str);
+						GDK_TYPE_EVENT_MASK, str);
 					g_free(str);
 					tmpptr = endptr;
 					while (tmpptr[0] == ' ' ||
@@ -1353,12 +1358,12 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 						tmpptr++;
 				}
 				events |= glade_enum_from_string(
-					GTK_TYPE_GDK_EVENT_MASK, tmpptr);
+					GDK_TYPE_EVENT_MASK, tmpptr);
 			}
 			gtk_widget_set_events(widget, events);
 		} else if (!strcmp(attr->name, "extension_events")) {
 			GdkExtensionMode ex =
-			    glade_enum_from_string(GTK_TYPE_GDK_EXTENSION_MODE,
+			    glade_enum_from_string(GDK_TYPE_EXTENSION_MODE,
 						   attr->value);
 			gtk_widget_set_extension_events(widget, ex);
 		}

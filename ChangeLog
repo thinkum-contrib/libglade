@@ -1,3 +1,9 @@
+2001-05-06  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c: change to a GObject.
+
+	* glade/glade-xml.h: change to a GObject.
+
 2001-05-05  James Henstridge  <james@daa.com.au>
 
 	* glade-2.0.dtd: update DTD
