@@ -1,5 +1,10 @@
 2000-03-09  James Henstridge  <james@daa.com.au>
 
+	* libglade-xgettext (TranslatableStringParser.add_string): don't
+	add the string "" to the catalog.
+
+	* glade/*.c: updated copyright to include 2000.
+	
 	* glade/glade-xml.c (glade_xml_set_common_params): handle the case
 	where the events parameter is returned as a string rather than a
 	simple integer, as it is in current versions of glade.

@@ -1,6 +1,6 @@
 /*
     test-libglade.c: a test program for the libglade library
-    Copyright (C) 1999  James Henstridge <james@daa.com.au>
+    Copyright (C) 1998, 1999, 2000  James Henstridge <james@daa.com.au>
       GNOME option parsing code by Miguel de Icaza.
 
     This program is free software; you can redistribute it and/or modify

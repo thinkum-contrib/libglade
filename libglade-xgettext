@@ -10,6 +10,8 @@ class TranslatableStringParser(xmllib.XMLParser):
 		self.strings = {}
 		self.data = ""
 	def add_string(self, string):
+		if string == "":
+			return
 		if self.strings.has_key(string):
 			self.strings[string].append((self.filename,
 						     self.lineno))

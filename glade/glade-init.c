@@ -1,6 +1,8 @@
 /* -*- Mode: C; c-basic-offset: 8 -*- */
 /* libglade - a library for building interfaces from XML files at runtime
- * Copyright (C) 1998, 1999  James Henstridge <james@daa.com.au>
+ * Copyright (C) 1998, 1999, 2000  James Henstridge <james@daa.com.au>
+ *
+ * glade-init.c: initialisation functions for libglade
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
