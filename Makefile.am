@@ -28,7 +28,7 @@ uninstall-local:
 
 #small hack to get distcheck to work
 clean-local:
-	rm -f intl/po2tbl.sed
+	rm -f intl/po2tbl.sed .memdump
 
 EXTRA_DIST = \
   glade-2.0.dtd \

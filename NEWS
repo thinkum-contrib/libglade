@@ -1,3 +1,86 @@
+libglade-1.99.8: 26-February-2002
+	- various libglade-convert updates.  These updates will make
+	  libglade-convert produce significantly better glade 2.0
+	  files.
+	- handle the "has_default" and "has_focus" properties better.
+	- fix up test suite so that it will gracefully handle the
+	  absense of an X server (the tests will return the error code
+	  indicating that the test can not be performed).
+	- Install the DTD file, and add an entry to the XML catalog
+	  (if possible).  This means we can use a proper URL in the
+	  DOCTYPE line of glade files, and still be able to validate
+	  without a network connection.
+	- handle the agent attribute on property elements.
+	- make --enable-debug the default.
+
+libglade-1.99.7: 7-February-2002
+	- make the --enable-debug configure option just add support
+	  for turning on debugging spew, rather than always spewing.
+	  You can select what is spewed with the LIBGLADE_DEBUG
+	  environment variable (similar to the glib and gtk debug spew
+	  env var).
+	- get rid of some unused functions from the module API.  This
+	  doesn't affect any applications.
+	- lots of documentation updates.  It is now relevant to the
+	  devel branch.
+
+libglade-1.99.6: 31-January-2002
+	- stop depending on gnome-common macros.
+	- some DTD updates from Damon (last_modification_time
+	  attribute for signals).
+	- handle widget "visibile" property better, so as to not trip
+	  up some weird redraw bugs.
+	- get rid of deprecated stuff in the API (this shouldn't break
+	  anything).
+	- add a <placeholder/> element to the file format for
+	  representing placeholders, and equivalent code to the parser
+	  to ignore them.
+	- custom props for GtkMenuItem that act similarly to the
+	  "label", "use_underline" and "use_stock" properties of
+	  GtkButton.  Corresponding changes to libglade-convert to
+	  handle them.
+	- if using GCC, set some flags to increase the number of
+	  warnings emitted.
+
+libglade-1.99.5: 12-December-2001
+	- lots of widget handling updates from Jacob using custom props.
+	- make the python check in configure actually work, and don't
+	  install libglade-convert if no acceptable python was found.
+	- many updates to libglade-convert.
+
+libglade-1.99.4: 26-November-2001
+	- start of test suite (from Jacob)
+	- add configure magic to try and pick out a usable version of
+	  python.
+	- add support for "custom properties".  This allows
+	  registering handlers that will get called by
+	  glade_standard_build_widget() to handle those properties.
+
+libglade-1.99.3: 31-October-2001
+	- get rid of the need to call glade_init() before using libglade.
+	- new function for registering handlers for types, and
+	  automatically support other widget types through the generic
+	  handlers.
+	- better support for many widgets.
+	- remove gnome, bonobo and canvas support moules, as they are
+	  being moved to their respective packages.
+	- initial ATK support from Bill Haneman.
+
+libglade-1.99.2: 26-September-2001
+	- add support for GtkWidget type properties (string
+	  representation is the property name).
+	- change where headers are installed to match stable branch
+	  and not tread on the toes of glade.
+	- added gnomeui support.
+	- don't install libglade-xgettext script.
+
+libglade-1.99.1: 24-August-2001
+	- start of unstable branch.
+	- new file format.
+	- added libglade-convert script to convert old glade files.
+	- use GObject properties for construction of most widgets
+	- make GladeXML a GObject
+
 libglade-0.16: 13-February-2001
 	- GNOME-DB support contributed by David Marin Carreno.
 	- various other bug fixes and a few memory leaks plugged.  See

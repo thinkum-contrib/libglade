@@ -1,3 +1,14 @@
+2002-02-26  James Henstridge  <james@daa.com.au>
+
+	* NEWS: retrospectively update the NEWS file for the devel branch.
+
+	* glade/glade-xml.c (glade_xml_set_value_from_string): change
+	error message to say "could not convert string" rather than
+	"unsupported type", to clear up some confusion.
+
+	* configure.in: update version number, and make --enable-debug the
+	default.  Also increment version numbers of required libs.
+
 2002-02-25  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-xml.c (glade_xml_handle_internal_child): add code to

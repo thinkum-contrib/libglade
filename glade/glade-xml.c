@@ -1508,7 +1508,7 @@ glade_xml_set_value_from_string (GladeXML *xml,
     }
 
     if (!ret) {
-	g_warning("unsupported type `%s' for property `%s'",
+	g_warning("could not convert string to type `%s' for property `%s'",
 		  g_type_name(prop_type), pspec->name);
 	g_value_unset(value);
     }

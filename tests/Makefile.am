@@ -18,4 +18,4 @@ test_value_parse_SOURCE = test-value-parse.c
 
 EXTRA_DIST = test-convert test-libglade-gtk.glade
 
-CLEANFILES = test-libglade-gtk.glade2 test-libglade-gtk-noupgrade.glade2
+CLEANFILES = test-libglade-gtk.glade2 test-libglade-gtk-noupgrade.glade2 .memdump
