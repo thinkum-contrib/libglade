@@ -92,8 +92,7 @@ glade_require(const gchar *library)
     if (already_loaded)
 	return;
 
-    filename = g_strconcat(GLADE_MODULE_DIR, G_DIR_SEPARATOR_S, library,
-			   ".la", NULL);
+    filename = g_module_build_path (GLADE_MODULE_DIR, library);
     module = g_module_open(filename, G_MODULE_BIND_LAZY);
     if (!module) {
 	g_warning("Could not load support for `%s': %s", library,

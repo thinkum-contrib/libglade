@@ -1,5 +1,13 @@
 2001-10-24  jacob berkman  <jacob@ximian.com>
 
+	* glade/glade-init.c (glade_require): use g_module_build_path()
+
+	* glade/Makefile.am: remove bonobo, gnome, canvas modules as they
+	are moving to their respective modules
+
+	* configure.in: remove bonobo, gnome, canvas checks, bump version
+	to 1.99.3
+
 	* glade/Makefile.am: build canvas module
 
 	* glade/glade-gtk.c (clist_new): create a clist
