@@ -30,6 +30,10 @@
 #define GTK_ENABLE_BROKEN
 #include <gtk/gtk.h>
 
+#define INT(s)   (strtol ((s), NULL, 0))
+#define BOOL(s)  (g_ascii_tolower (*(s)) == 't' || g_ascii_tolower (*(s)) == 'y' || INT (s))
+#define FLOAT(s) (g_strtod ((s), NULL))
+
 void _glade_init_gtk_widgets(void);
 
 static void
@@ -43,8 +47,7 @@ static void
 pixmap_set_build_insensitive (GladeXML *xml, GtkWidget *w,
 			      const char *name, const char *value)
 {
-    gtk_pixmap_set_build_insensitive (GTK_PIXMAP (w),
-				      *value == 'T' || *value == 'y');
+    gtk_pixmap_set_build_insensitive (GTK_PIXMAP (w), BOOL (value));
 }
 
 static void
@@ -83,8 +86,7 @@ static void
 option_menu_set_history (GladeXML *xml, GtkWidget *w,
 			 const char *name, const char *value)
 {
-    gtk_option_menu_set_history (GTK_OPTION_MENU (w),
-				 strtol (value, NULL, 10));
+    gtk_option_menu_set_history (GTK_OPTION_MENU (w), INT (value));
 }
 
 static void
@@ -146,7 +148,7 @@ static void
 clist_set_show_titles (GladeXML *xml, GtkWidget *w,
 		       const char *name, const char *value)
 {
-    if (*value == 'T' || *value == 'y')
+    if (BOOL (value))
 	gtk_clist_column_titles_show (GTK_CLIST (w));
     else
 	gtk_clist_column_titles_hide (GTK_CLIST (w));
@@ -174,7 +176,7 @@ static void
 tree_set_view_line (GladeXML *xml, GtkWidget *w,
 		    const char *name, const char *value)
 {
-    gtk_tree_set_view_lines (GTK_TREE (w), *value == 'T' || *value == 'y');
+    gtk_tree_set_view_lines (GTK_TREE (w), BOOL (value));
 }
 
 static void
@@ -190,8 +192,7 @@ static void
 check_menu_item_set_always_show_toggle (GladeXML *xml, GtkWidget *w,
 					const char *name, const char *value)
 {
-    gtk_check_menu_item_set_show_toggle (GTK_CHECK_MENU_ITEM (w),
-					 *value == 'T' || *value == 'y');
+    gtk_check_menu_item_set_show_toggle (GTK_CHECK_MENU_ITEM (w), BOOL (value));
 }
 
 static void
@@ -230,7 +231,7 @@ static void
 toolbar_set_tooltips (GladeXML *xml, GtkWidget *w,
 		      const char *name, const char *value)
 {
-    gtk_toolbar_set_tooltips (GTK_TOOLBAR (w), *value == 'T' || *value == 'y');
+    gtk_toolbar_set_tooltips (GTK_TOOLBAR (w), BOOL (value));
 }
 
 static GtkWidget *
@@ -352,7 +353,7 @@ build_preview (GladeXML *xml, GType widget_type,
 	const char *value = info->properties[i].value;
 
 	if (!strcmp (name, "expand"))
-	    expand = (*value == 'T' || *value == 'y');
+	    expand = BOOL (value);
 	else if (!strcmp (name, "type"))
 	    type = glade_enum_from_string (GTK_TYPE_PREVIEW_TYPE, value);
     }
@@ -446,11 +447,11 @@ toolbar_build_children (GladeXML *xml, GtkWidget *parent,
 		    icon = NULL;
 		    stock = value;
 		} else if (!strcmp (name, "active")) {
-		    active = (*value == 'T' || *value == 'y');
+		    active = BOOL (value);
 		} else  if (!strcmp (name, "group")) {
 		    group_name = value;
 		} else if (!strcmp (name, "new_group")) {
-		    new_group = (*value == 'T' || *value == 'y');
+		    new_group = BOOL (value);
 		} else if (!strcmp (name, "visible")) {
 		    /* ignore for now */
 		} else if (!strcmp (name, "tooltip")) {
@@ -527,9 +528,9 @@ paned_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
 	const char *value = cinfo->properties[i].value;
 
 	if (!strcmp (name, "resize"))
-	    resize = (*value == 'T' || *value == 'y');
+	    resize = BOOL (value);
 	else if (!strcmp (name, "shrink"))
-	    shrink = (*value == 'T' || *value == 'y');
+	    shrink = BOOL (value);
 	else
 	    g_warning ("Unknown GtkPaned child property: %s", name);
     }
@@ -548,9 +549,9 @@ paned_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
 	const char *value = cinfo->properties[i].value;
 
 	if (!strcmp (name, "resize"))
-	    resize = (*value == 'T' || *value == 'y');
+	    resize = BOOL (value);
 	else if (!strcmp (name, "shrink"))
-	    shrink = (*value == 'T' || *value == 'y');
+	    shrink = BOOL (value);
 	else
 	    g_warning ("Unknown GtkPaned child property: %s", name);
     }
@@ -567,7 +568,7 @@ build_button(GladeXML *xml, GType widget_type,
 
     for (i = 0; i < info->n_properties; i++) {
 	if (!strcmp (info->properties[i].name, "response_id")) {
-	    response_id = strtol (info->properties[i].value, NULL, 10);
+	    response_id = INT (info->properties[i].value);
 	    break;
 	}
     }

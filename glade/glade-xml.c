@@ -1479,7 +1479,10 @@ glade_xml_set_value_from_string (GladeXML *xml,
 	g_value_set_uchar(value, (guchar)string[0]);
 	break;
     case G_TYPE_BOOLEAN:
-	g_value_set_boolean(value, string[0] == 'T' || string[0] == 'y');
+	g_value_set_boolean(value, 
+			    g_ascii_tolower (string[0]) == 't'
+			    || g_ascii_tolower (string[0]) == 'y'
+			    || strtol (string, NULL, 0));
 	break;
     case G_TYPE_INT:
 	g_value_set_int(value, strtol(string, NULL, 0));
