@@ -1,16 +1,26 @@
+2001-10-09  Michael Meeks  <michael@ximian.com>
+
+	* glade/glade-xml.c (glade_standard_build_children):
+	ref counting fix.
+
 2001-09-29  Bill Haneman  <bill.haneman@sun.com>
+	
 	* glade-2.0.dtd: fixed a goof in attribute names,
 	atkaction -> target should have been action_name.
+	
 	* configure.in: added check for atk >= 0.6.
+	
 	* examples/simple.glade:
 	Added numerous bits to <accessibility> elements, to
 	demonstrate the use of basic accessibilty properties,
 	atkactions, and atkrelations.
+	
 	* glade/glade-parser.c:
 	Added two new states, PARSER_WIDGET_ATK_ACTION and
 	PARSER_WIDGET_ATK_RELATION.  Fixed parser to comform
 	to changes/additions to new DTD.  Also now parse
 	atkactions and atkrelations.
+	
 	* glade/glade-xml.c:
 	Added new code and functions to handle accessibility
 	needs: glade_xml_add_atk_relations(),
@@ -19,6 +29,7 @@
 	atkrelation - a new warning is printed when this occurs.
 	
 2001-09-26  Bill Haneman  <bill.haneman@sun.com>
+	
 	* glade-2.0.dtd: additions to <accessibility> element
 	definition, to support accessible properties that are themselves
 	accessibles, and to support AtkAction and AtkRelation on

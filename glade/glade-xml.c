@@ -1461,7 +1461,7 @@ glade_standard_build_children(GladeXML *self, GtkWidget *parent,
 	    }
 	}
 	gtk_widget_thaw_child_notify(child);
-	g_object_ref(G_OBJECT(child));
+	g_object_unref(G_OBJECT(child));
     }
     g_object_unref(G_OBJECT(parent));
 }
