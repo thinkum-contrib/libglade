@@ -1,6 +1,6 @@
 
 #include <glib/gmessages.h>
-#include <gobject/gobject.h>
+#include <glib-object.h>
 #include <gtk/gtkmain.h>
 #include <glade/glade-xml.h>
 
