@@ -1,3 +1,8 @@
+2003-06-13  Michael Meeks  <michael@ximian.com>
+
+	* doc/Makefile.am: define content_files and HTML_IMAGES
+	to please gtk-doc.make.
+
 2003-04-29  Masahiro Sakai  <sakai@tom.sfc.keio.ac.jp>
 
 	* glade/Makefile.am (libglade_2_0_la_LDFLAGS) use -no-undefined

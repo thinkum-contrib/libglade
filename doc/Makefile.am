@@ -3,6 +3,9 @@ AUTOMAKE_OPTIONS = 1.6
 # The name of the module.
 DOC_MODULE = libglade
 
+content_files=
+HTML_IMAGES=
+
 # The top-level SGML file.
 DOC_MAIN_SGML_FILE = libglade-docs.xml
 
