@@ -100,11 +100,5 @@ struct _GladeSignalData {
  */
 GladeWidgetTree *glade_tree_get   (const char *filename);
 
-/* from glade-xml.c */
-/* get the widget name */
-const char *glade_get_widget_name      (GtkWidget *widget);
-/* get the name of the widget (dot separated heirachy) */
-const char *glade_get_widget_long_name (GtkWidget *widget);
-
 #endif
 

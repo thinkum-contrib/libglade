@@ -1,3 +1,14 @@
+2000-03-10  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gnome.c (gnome_uiinfo_mapping): added an entry for
+	GNOMEUIINFO_MENU_NEW_SUBTREE.
+	(dock_build_children): use gnome_app_add_dock_item if this dock
+	is a child of a GnomeApp.  This doesn't seem to help with getting
+	it to use the saved dock layout though :(
+
+	* glade/glade-private.h: removed some prototypes that also apear in
+	glade-xml.h.
+
 2000-03-09  James Henstridge  <james@daa.com.au>
 
 	* libglade-xgettext (TranslatableStringParser.add_string): don't
