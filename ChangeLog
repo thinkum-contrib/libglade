@@ -1,3 +1,16 @@
+2001-06-16  James Henstridge  <james@daa.com.au>
+
+	* examples/simple.glade: update so that we have a window with a
+	button in it, and make the app quit when the button is pressed.
+
+	* glade/glade-xml.c (glade_xml_set_value_from_prop): fix buf in
+	the G_TYPE_UINT case.
+
+	* glade/glade-gtk.c (window_new): constructor for a GtkWindow.
+
+	* test-libglade.c (main): more fixups to account for GladeXML
+	being a GObject rather than GtkObject (fix unref call).
+
 2001-06-15  James Henstridge  <james@daa.com.au>
 
 	* Makefile.am (SUBDIRS): don't recurse into doc dir until docs

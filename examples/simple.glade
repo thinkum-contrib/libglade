@@ -5,16 +5,28 @@
   <requires lib="gnome"/>
   <widget class="GtkWindow" id="window1">
     <property name="title">Testing</property>
+    <property name="border_width">10</property>
+    <property name="visible">yes</property>
 
     <accessibility>
       <property name="AtkObject::name">Top level</property>
     </accessibility>
 
     <child>
-      <widget class="GtkHBox" id="hbox1">
-	<signal name="size_allocate"
-		handler="do_something" />
+      <widget class="GtkButton" id="button1">
+        <property name="visible">yes</property>
+ 
+	<signal name="clicked" handler="gtk_main_quit" />
+
+        <child>
+          <widget class="GtkLabel" id="label1">
+            <property name="label">_Push me</property>
+            <property name="use_underline">yes</property>
+            <property name="visible">yes</property>
+          </widget>
+        </child>
       </widget>
     </child>
   </widget>
 </glade-interface>
+

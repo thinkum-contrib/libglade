@@ -1199,7 +1199,7 @@ glade_xml_set_value_from_prop (GType widget_type,
 	g_value_set_int(value, strtol(prop->value, NULL, 0));
 	break;
     case G_TYPE_UINT:
-	g_value_set_int(value, strtoul(prop->value, NULL, 0));
+	g_value_set_uint(value, strtoul(prop->value, NULL, 0));
 	break;
     case G_TYPE_LONG:
 	g_value_set_long(value, strtol(prop->value, NULL, 0));

@@ -137,7 +137,7 @@ int main (int argc, char **argv)
   if (!no_connect)
     glade_xml_signal_autoconnect(xml);
 
-  gtk_object_unref(GTK_OBJECT(xml));
+  g_object_unref(G_OBJECT(xml));
 
   gtk_main();
 

@@ -28,9 +28,22 @@
 
 void _glade_init_gtk_widgets(void);
 
+static GtkWidget *
+window_new(GladeXML *xml, GType widget_type, GladeWidgetInfo *info)
+{
+    GtkWidget *window = glade_standard_build_widget(xml, widget_type, info);
+
+    glade_xml_set_toplevel(xml, GTK_WINDOW(window));
+    return window;
+}
+
 static GladeWidgetBuildData widget_data[] = {
-    { "GtkButton", glade_standard_build_widget, glade_standard_build_widget,
+    { "GtkWindow", window_new, glade_standard_build_children,
+      gtk_window_get_type },
+    { "GtkButton", glade_standard_build_widget, glade_standard_build_children,
       gtk_button_get_type },
+    { "GtkLabel", glade_standard_build_widget, NULL,
+      gtk_label_get_type },
     { NULL, NULL, NULL, 0, 0 }
 };
 
