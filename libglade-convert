@@ -435,7 +435,7 @@ def fixup_widget(widget):
                 label['class'] = 'GtkLabel'
                 label['name'] = make_name()
                 label['xalign'] = '0.0'
-                label['label'] = widget['label']
+                label['label'] = item
                 listitem.add_child(label)
 
     # add the visible property if missing:
