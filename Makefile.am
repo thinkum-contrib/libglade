@@ -37,3 +37,6 @@ SUBDIRS = glade
 endif
 
 test_libglade_SOURCES = test-libglade.c
+
+dist-hook:
+	cp libglade.spec $(distdir)
