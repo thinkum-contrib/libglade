@@ -555,6 +555,8 @@ glade_parser_start_element(GladeParseState *state,
 	break;
     case PARSER_WIDGET:
 	if (!strcmp(name, "property")) {
+	    gboolean bad_agent = FALSE;
+
 	    if (state->prop_type != PROP_NONE &&
 		state->prop_type != PROP_WIDGET)
 		g_warning("non widget properties defined here (oh no!)");
@@ -567,11 +569,21 @@ glade_parser_start_element(GladeParseState *state,
 		else if (!strcmp(attrs[i], "translatable") &&
 			 !strcmp(attrs[i+1], "yes"))
 		    state->translate_prop = TRUE;
+		else if (!strcmp(attrs[i], "agent") &&
+			 strcmp(attrs[i], "libglade") == 0)
+		    bad_agent = TRUE;
 		else
 		    g_warning("unknown attribute `%s' for <property>.",
 			      attrs[i]);
 	    }
-	    state->state = PARSER_WIDGET_PROPERTY;
+	    if (bad_agent) {
+		/* ignore the property ... */
+		state->prev_state = state->state;
+		state->state = PARSER_UNKNOWN;
+		state->unknown_depth++;
+	    } else {
+		state->state = PARSER_WIDGET_PROPERTY;
+	    }
 	} else if (!strcmp(name, "accessibility")) {
 	    flush_properties(state);
 
@@ -751,6 +763,8 @@ glade_parser_start_element(GladeParseState *state,
 	break;
     case PARSER_WIDGET_CHILD_PACKING:
 	if (!strcmp(name, "property")) {
+	    gboolean bad_agent = FALSE;
+
 	    if (state->prop_type != PROP_NONE &&
 		state->prop_type != PROP_CHILD)
 		g_warning("non child properties defined here (oh no!)");
@@ -763,11 +777,21 @@ glade_parser_start_element(GladeParseState *state,
 		else if (!strcmp(attrs[i], "translatable") &&
 			 !strcmp(attrs[i+1], "yes"))
 		    state->translate_prop = TRUE;
+		else if (!strcmp(attrs[i], "agent") &&
+			 strcmp(attrs[i], "libglade") == 0)
+		    bad_agent = TRUE;
 		else
 		    g_warning("unknown attribute `%s' for <property>.",
 			      attrs[i]);
 	    }
-	    state->state = PARSER_WIDGET_CHILD_PACKING_PROPERTY;
+	    if (bad_agent) {
+		/* ignore the property ... */
+		state->prev_state = state->state;
+		state->state = PARSER_UNKNOWN;
+		state->unknown_depth++;
+	    } else {
+		state->state = PARSER_WIDGET_CHILD_PACKING_PROPERTY;
+	    }
 	} else {
 	    g_warning("Unexpected element <%s> inside <child>.", name);
 	    state->prev_state = state->state;

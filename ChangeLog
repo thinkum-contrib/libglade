@@ -1,5 +1,14 @@
 2002-02-25  James Henstridge  <james@daa.com.au>
 
+	* libglade-convert.in (ChildDef.dump): add agent="cxx" for
+	properties beginning with cxx.
+	(WidgetDef.dump): same here.
+
+	* glade/glade-parser.c (glade_parser_start_element): ignore
+	<property> elements with the agent attribute set to something
+	other than "libglade".
+	(glade_parser_start_element): same for child packing properties.
+
 	* glade/glade-gtk.c (fontseldlg_find_internal_child): add
 	"font_selection" internal child.
 	(colorseldlg_find_internal_child): add "color_selection" internal

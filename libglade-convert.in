@@ -125,12 +125,13 @@ class WidgetDef:
             if self.properties:
                 print '%s  <packing>' % indent
                 for name in self.property_names:
+                    attrs = ''
                     if name in translatable_properties:
-                        print '%s    <property name="%s" translatable="yes">%s</property>' % \
-                              (indent, name, self.properties[name])
-                    else:
-                        print '%s    <property name="%s">%s</property>' % \
-                              (indent, name, self.properties[name])
+                        attrs += ' translatable="yes"'
+                    if name[:3] == 'cxx':
+                        attrs += ' agent="cxx"'
+                    print '%s    <property name="%s"%s>%s</property>' % \
+                          (indent, name, attrs, self.properties[name])
                 print '%s  </packing>' % indent
             print '%s</child>' % indent
 
@@ -143,16 +144,17 @@ class WidgetDef:
         print '%s<widget class="%s" id="%s">' %(indent, self.wclass, self.name)
         want_newline = 0
         for name in self.property_names:
+            attrs = ''
             translatable = name in translatable_properties
             if name == 'label' and \
                self.has_prop('use_stock') and self['use_stock'] == 'yes':
                 translatable = 0
             if translatable:
-                print '%s  <property name="%s" translatable="yes">%s</property>' % \
-                      (indent, name, self.properties[name])
-            else:
-                print '%s  <property name="%s">%s</property>' % \
-                      (indent, name, self.properties[name])
+                attrs += ' translatable="yes"'
+            if name[:3] == 'cxx':
+                attrs += ' agent="cxx"'
+            print '%s  <property name="%s"%s>%s</property>' % \
+                  (indent, name, attrs, self.properties[name])
             want_newline = 1
         if want_newline and (self.signals or self.accels or self.children):
             print
