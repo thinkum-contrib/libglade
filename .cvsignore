@@ -27,3 +27,4 @@ libglade-config
 *.o
 .libs
 .deps
+NO-AUTO-GEN

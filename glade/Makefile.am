@@ -7,7 +7,7 @@ THE_FLAGS = $(GTK_CFLAGS)
 THE_LIBS  = $(GTK_LIBS)
 endif
 
-INCLUDES = $(THE_FLAGS) $(XML_CFLAGS)
+INCLUDES = $(THE_FLAGS) $(XML_CFLAGS) $(top_builddir)
 
 the_sources =		\
 	glade-init.c 	\
@@ -31,7 +31,7 @@ gladeincludedir      = $(includedir)/glade
 gladeinclude_HEADERS = $(the_headers)
 else
 lib_LIBRARIES        = libglade.a
-libglade_a_SOURCES   = $(the_sources) $(the_headers)
+libglade_a_SOURCES   = $(the_sources)
 endif
 
 BUILT_SOURCES = glade-keys.c
