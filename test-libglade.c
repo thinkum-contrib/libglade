@@ -55,27 +55,6 @@
 #  include <libgnomeui/libgnomeui.h>
 #endif
 
-static void
-run_tests (void)
-{
-    g_print ("Testing enum to string\n");
-    g_assert (glade_enum_from_string (GTK_TYPE_ANCHOR_TYPE,
-				      "GTK_ANCHOR_NORTH_WEST") ==
-	      GTK_ANCHOR_NORTH_WEST);
-
-    g_print ("Testing flags to string\n");
-    g_assert (glade_flags_from_string (GTK_TYPE_ATTACH_OPTIONS,
-				       "expand|fill") ==
-	      (GTK_EXPAND | GTK_FILL));
-
-    g_assert (glade_flags_from_string (GTK_TYPE_ATTACH_OPTIONS,
-				       "fill|expand") ==
-	      (GTK_EXPAND | GTK_FILL));
-
-    g_print ("All tests passed\n");
-    exit (0);
-}
-
 int
 main (int argc, char **argv)
 {
@@ -97,15 +76,10 @@ main (int argc, char **argv)
 	g_error ("Cannot gnome_program_init ()");
 #endif
 
-    if (g_getenv ("LIBGLADE_REGRESSION"))
-	    run_tests ();
-
     /* argument parsing */
     for (i = 1; i < argc; i++) {
 	if (!strcmp(argv[i], "--no-connect"))
 	    no_connect = TRUE;
-	else if (!strcmp(argv[i], "--run-tests"))
-	    run_tests ();
 	else if (filename == NULL)
 	    filename = argv[i];
 	else if (rootnode == NULL)

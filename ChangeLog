@@ -1,3 +1,14 @@
+2002-02-21  James Henstridge  <james@daa.com.au>
+
+	* Makefile.am (xml_DATA): install the DTD in $(datadir)/xml/libglade.
+	(install-data-local,uninstall-local): add or remove the dtd from
+	the catalog.
+
+	* test-libglade.c (main): remove regression test stuff.
+
+	* tests/test-value-parse.c (main): move the regression testing
+	stuff from test-libglade.c to here.
+
 2002-02-17  James Henstridge  <james@daa.com.au>
 
 	* libglade-convert.in (usage): update usage message to fix bug

@@ -7,7 +7,7 @@ python_checks_data = \
   test-libglade-gtk-noupgrade.glade2
 endif
 
-check_PROGRAMS = $(python_checks)
+check_PROGRAMS = $(python_checks) test-value-parse
 check_DATA = $(python_checks_data)
 
 TESTS = $(check_PROGRAMS)
@@ -37,8 +37,9 @@ LDADD = $(top_builddir)/glade/libglade-2.0.la
 LDFLAGS = -export-dynamic
 
 test_libglade_gtk_SOURCE = test-libglade-gtk.c
-
 test_libglade_gtk_noupgrade_SOURCE = test-libglade-gtk-noupgrade.c
+
+test_value_parse_SOURCE = test-value-parse.c
 
 EXTRA_DIST = test-libglade-gtk.glade
 

@@ -14,6 +14,18 @@ noinst_PROGRAMS = test-libglade
 test_libglade_LDADD = glade/libglade-2.0.la $(LIBGLADE_LIBS)
 test_libglade_SOURCES = test-libglade.c
 
+# handling of the XML catalog
+
+XMLCATALOG = /etc/xml/catalog
+
+xmldir = $(datadir)/xml/libglade
+xml_DATA = glade-2.0.dtd
+
+install-data-local:
+	xmlcatalog --noout --add "system" "http://glade.gnome.org/glade-2.0.dtd" $(xmldir)/glade-2.0.dtd $(XMLCATALOG)
+uninstall-local:
+	xmlcatalog --noout --del $(xmldir)/glade-2.0.dtd $(XMLCATALOG)
+
 #small hack to get distcheck to work
 clean-local:
 	rm -f intl/po2tbl.sed
@@ -30,7 +42,3 @@ EXTRA_DIST = \
   examples/bonobo.glade \
   config.h.win32 \
   makefile.mingw
-
-TESTS_ENVIRONMENT = \
-	LIBGLADE_REGRESSION=1
-TESTS = test-libglade
