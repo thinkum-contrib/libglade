@@ -317,14 +317,14 @@ handle_child(GladeParseState *state, const xmlChar **attrs)
     state->widget->children = g_renew(GladeChildInfo, state->widget->children,
 				      state->widget->n_children);
     info = &state->widget->children[state->widget->n_children-1];
-    info->composite_child = FALSE;
+    info->internal_child = NULL;
     info->properties = NULL;
     info->n_properties = 0;
     info->child = NULL;
 
     for (i = 0; attrs && attrs[i] != NULL; i += 2) {
-	if (!strcmp(attrs[i], "composite-child"))
-	    info->composite_child = (attrs[i+1][0] == 'y');
+	if (!strcmp(attrs[i], "internal-child"))
+	    info->internal_child = alloc_string(state->interface, attrs[i+1]);
 	else
 	    g_warning("unknown attribute `%s' for <child>.", attrs[i]);
     }
@@ -998,8 +998,8 @@ dump_widget(xmlNode *parent, GladeWidgetInfo *info, gint indent)
 	    xmlNodeAddContent(widget, "  ");
 
 	child = xmlNewNode(NULL, "child");
-	if (childinfo->composite_child)
-	    xmlSetProp(child, "composite-child", "yes");
+	if (childinfo->internal_child)
+	    xmlSetProp(child, "internal-child", childinfo->internal_child);
 	xmlAddChild(widget, child);
 	xmlNodeAddContent(widget, "\n");
 	xmlNodeAddContent(child, "\n");

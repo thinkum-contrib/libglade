@@ -16,13 +16,12 @@
 <!ELEMENT property (#PCDATA) >
 <!-- type is an optional tag, and should be the string name of the
      GType for the property -->
-<!-- Would it make sense to have a translatable attribute for the property?
-     It would be set on properties that should be translated before use.
-     Useful for string extraction progs such as xml-i18n-tools and also
-     for code generators that work on properties alone -->
+<!-- translatable specifies whether the property should be translated
+     before use. -->
 <!ATTLIST property
   name CDATA #REQUIRED
-  type CDATA #IMPLIED >
+  type CDATA #IMPLIED
+  translatable (yes|no) 'no' >
 
 <!ELEMENT accessibility (property*) >
 
@@ -44,4 +43,4 @@
      (Composite children are things like the scrollbars in a
      GtkScrolledWindow, or the vbox in a GtkDialog). -->
 <!ATTLIST child
-  composite-child (yes|no) 'no' >
+  internal-child CDATA #IMPLIED >

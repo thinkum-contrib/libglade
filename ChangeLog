@@ -1,3 +1,16 @@
+2001-07-29  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-parser.c (handle_child): handle internal-child
+	attribute.
+
+	* glade-2.0.dtd: add translatable attribute to <property>
+	elements, and change composite-child=yes|no attribute of <child>
+	element to internal-child="...".
+
+	* glade/glade-gtk.c (menuitem_build_children): add a special
+	build_children handler for menu items that does
+	gtk_menu_item_set_submenu for GtkMenu `children'.
+
 2001-06-25  James Henstridge  <james@daa.com.au>
 
 	* libglade-convert: new program that takes a stab at converting

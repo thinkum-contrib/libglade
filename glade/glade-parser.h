@@ -79,7 +79,7 @@ struct _GladeChildInfo {
     guint n_properties;
 
     GladeWidgetInfo *child;
-    gboolean composite_child;
+    gchar *internal_child;
 };
 
 typedef struct _GladeInterface GladeInterface;

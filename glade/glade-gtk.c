@@ -37,6 +37,25 @@ window_new(GladeXML *xml, GType widget_type, GladeWidgetInfo *info)
     return window;
 }
 
+void
+menuitem_build_children(GladeXML *self, GtkWidget *w,
+			GladeWidgetInfo *info, const char *longname)
+{
+    gint i, j;
+
+    g_object_ref(G_OBJECT(w));
+    for (i = 0; i < info->n_children; i++) {
+	GladeWidgetInfo *childinfo = info->children[i].child;
+	GtkWidget *child = glade_xml_build_widget(self, childinfo, longname);
+
+	if (GTK_IS_MENU(child))
+	    gtk_menu_item_set_submenu(GTK_MENU_ITEM(w), GTK_MENU(child));
+	else
+	    gtk_container_add(GTK_CONTAINER(w), child);
+    }
+    g_object_unref(G_OBJECT(w));
+}
+
 static GladeWidgetBuildData widget_data[] = {
     { "GtkAccelLabel", glade_standard_build_widget, NULL,
       gtk_accel_label_get_type },
@@ -52,7 +71,7 @@ static GladeWidgetBuildData widget_data[] = {
       gtk_calendar_get_type },
     { "GtkCheckButton", glade_standard_build_widget, glade_standard_build_children,
       gtk_check_button_get_type },
-    { "GtkCheckMenuItem", glade_standard_build_widget, glade_standard_build_children,
+    { "GtkCheckMenuItem", glade_standard_build_widget, menuitem_build_children,
       gtk_check_menu_item_get_type },
     { "GtkCList", glade_standard_build_widget, glade_standard_build_children,
       gtk_clist_get_type },
@@ -104,7 +123,7 @@ static GladeWidgetBuildData widget_data[] = {
       gtk_hseparator_get_type },
     { "GtkImage", glade_standard_build_widget, NULL,
       gtk_image_get_type },
-    { "GtkImageMenuItem", glade_standard_build_widget, glade_standard_build_children,
+    { "GtkImageMenuItem", glade_standard_build_widget, menuitem_build_children,
       gtk_image_menu_item_get_type },
     { "GtkInputDialog", window_new, glade_standard_build_children,
       gtk_input_dialog_get_type },
@@ -120,7 +139,7 @@ static GladeWidgetBuildData widget_data[] = {
       gtk_menu_get_type },
     { "GtkMenuBar", glade_standard_build_widget, glade_standard_build_children,
       gtk_menu_bar_get_type },
-    { "GtkMenuItem", glade_standard_build_widget, glade_standard_build_children,
+    { "GtkMenuItem", glade_standard_build_widget, menuitem_build_children,
       gtk_menu_item_get_type },
     { "GtkMessageDialog", window_new, glade_standard_build_children,
       gtk_message_dialog_get_type },
@@ -140,7 +159,7 @@ static GladeWidgetBuildData widget_data[] = {
       gtk_progress_bar_get_type },
     { "GtkRadioButton", glade_standard_build_widget, glade_standard_build_children,
       gtk_radio_button_get_type },
-    { "GtkRadioMenuItem", glade_standard_build_widget, glade_standard_build_children,
+    { "GtkRadioMenuItem", glade_standard_build_widget, menuitem_build_children,
       gtk_radio_menu_item_get_type },
     { "GtkScrolledWindow", glade_standard_build_widget, glade_standard_build_children,
       gtk_scrolled_window_get_type },
