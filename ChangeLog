@@ -1,3 +1,8 @@
+2004-11-08  James Henstridge  <james@jamesh.id.au>
+
+	* glade/glade-gtk.c (toolbar_build_children): update to use newer
+	toolbar APIs even for older glade files.
+
 Sat Oct 23 23:56:14 2004  Jonathan Blandford  <jrb@redhat.com>
 
 	* glade/glade-gtk.c (_glade_init_gtk_widgets): add

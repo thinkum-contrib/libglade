@@ -872,50 +872,62 @@ toolbar_build_children (GladeXML *xml, GtkWidget *parent,
 	    if (iconw)
 		gtk_widget_show (iconw);
 
-	    if (new_group)
-		gtk_toolbar_append_space (GTK_TOOLBAR (parent));
+	    if (new_group) {
+		GtkWidget *toolitem = GTK_WIDGET (gtk_tool_item_new ());
+
+		gtk_container_add (GTK_CONTAINER (parent), toolitem);
+		gtk_widget_show (toolitem);
+	    }
 
 	    /* FIXME: these should be translated */
 	    if (!strcmp (childinfo->child->classname, "toggle")) {
-		child = gtk_toolbar_append_element (
-		    GTK_TOOLBAR (parent),
-		    GTK_TOOLBAR_CHILD_TOGGLEBUTTON, NULL,
-		    label, tooltip, NULL, iconw, NULL, NULL);
-		gtk_toggle_button_set_active(
-		    GTK_TOGGLE_BUTTON (child), active);
+		child = g_object_new (GTK_TYPE_TOGGLE_TOOL_BUTTON,
+				      "label", label,
+				      "use_stock", use_stock,
+				      "toggled", active,
+				      NULL);
 	    } else if (!strcmp (childinfo->child->classname, "radio")) {
-		child = gtk_toolbar_append_element (
-		    GTK_TOOLBAR (parent),
-		    GTK_TOOLBAR_CHILD_RADIOBUTTON, NULL,
-		    label, tooltip, NULL, iconw, NULL, NULL);
-
+		child = g_object_new (GTK_TYPE_RADIO_TOOL_BUTTON,
+				      "label", label,
+				      "use_stock", use_stock,
+				      "toggled", active,
+				      NULL);
 		if (group_name) {
 		    g_object_set (G_OBJECT (child),
 				  "group", glade_xml_get_widget (xml, group_name),
 				  NULL);
 		}
-	    } else
-		child = gtk_toolbar_append_item (
-		    GTK_TOOLBAR (parent),
-		    label, tooltip, NULL, iconw, NULL, NULL);
+	    } else {
+		child = g_object_new (GTK_TYPE_TOOL_BUTTON,
+				      "label", label,
+				      "use_stock", use_stock,
+				      NULL);
+	    }
+	    if (iconw)
+		gtk_tool_button_set_icon_widget (GTK_TOOL_BUTTON (child),
+						 iconw);
 	    
 	    /* GTK+ doesn't support use_underline directly, so we have to hack
 	       it. */
 	    if (use_underline) {
-		GList *elem = g_list_last (GTK_TOOLBAR (parent)->children);
-		GtkToolbarChild *toolbar_child = elem->data;
-		gtk_label_set_use_underline (GTK_LABEL (toolbar_child->label),
-					     TRUE);
+		GtkWidget *labelw = gtk_tool_button_get_label_widget (GTK_TOOL_BUTTON (child));
+		gtk_label_set_use_underline (GTK_LABEL (labelw), TRUE);
 	    }
+
+	    gtk_container_add (GTK_CONTAINER (parent), child);
 
 	    glade_xml_set_common_params (xml, child, childinfo->child);
 	} else {
 	    child = glade_xml_build_widget (xml, childinfo->child);
 
-	    if (GTK_IS_TOOL_ITEM (child))
-		gtk_toolbar_insert (GTK_TOOLBAR (parent), GTK_TOOL_ITEM (child), -1);
-	    else
-		gtk_toolbar_append_widget (GTK_TOOLBAR (parent), child, NULL, NULL);
+	    if (!GTK_IS_TOOL_ITEM (child)) {
+		GtkWidget *toolitem = GTK_WIDGET (gtk_tool_item_new ());
+
+		gtk_container_add (GTK_CONTAINER (toolitem), child);
+		gtk_widget_show (toolitem);
+		child = toolitem;
+	    }
+	    gtk_container_add (GTK_CONTAINER (parent), child);
 	}
     }
 }
