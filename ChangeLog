@@ -1,5 +1,9 @@
 2002-03-11  James Henstridge  <james@daa.com.au>
 
+	* configure.in: update version number.
+
+	* NEWS: news updates.
+
 	* glade/glade-xml.c (glade_xml_handle_internal_child): get rid of
 	a warning.
 

@@ -1,3 +1,10 @@
+libglade-1.99.9: 11-March-2002
+	- make build stuff compatible with autoconf-2.53.  This tarball
+	  is built with autoconf-2.53 and automake-1.6.
+	- fixes for GtkLayout's build_children routine
+	- normalise property names (s/-/_/) when parsing glade files.
+	- support for wmclass_name and wmclass_class window properties.
+
 libglade-1.99.8: 26-February-2002
 	- various libglade-convert updates.  These updates will make
 	  libglade-convert produce significantly better glade 2.0

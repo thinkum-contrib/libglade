@@ -1,6 +1,6 @@
--*- mode: m4 -*-
+-*- mode: autoconf -*-
 AC_PREREQ(2.52)
-AC_INIT(libglade, 1.99.8,
+AC_INIT(libglade, 1.99.9,
         [http://bugzilla.gnome.org/enter_bug.cgi?product=libglade])
 
 AC_CONFIG_SRCDIR([test-libglade.c])
@@ -82,6 +82,10 @@ if test "x$GCC" = xyes; then
   esac
 fi
 changequote([,])dnl
+
+dnl hack to get aclocal to use the ACLOCAL_FLAGS env var
+ACLOCAL_AMFLAGS=\${ACLOCAL_FLAGS}
+AC_SUBST(ACLOCAL_AMFLAGS)
 
 AC_OUTPUT([
 Makefile
