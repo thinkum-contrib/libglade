@@ -45,7 +45,7 @@
 
 <!ELEMENT accessibility (atkrelation | atkaction | atkproperty)* >
 
-<!ELEMENT signal EMPTY >
+<!ELEMENT signal (property*) >
 <!ATTLIST signal
   name CDATA #REQUIRED
   handler CDATA #REQUIRED

@@ -1,3 +1,8 @@
+Fri Jan 23 01:07:10 2004  Matthias Clasen  <maclas@gmx.de>
+
+	* glade-2.0.dtd: Allow <property> in <signal> for the benefit
+	of glademm.  (#88968, Christof Petig)
+
 Fri Jan 23 01:01:44 2004  Matthias Clasen  <maclas@gmx.de>
 
 	* glade/glade-gtk.c (toolbar_build_children): Support tooltips
