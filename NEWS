@@ -1,3 +1,8 @@
+libglade-0.1: 27-May-1999
+	- Many fixes from many people.  This version should actually be
+	  useable.
+	- Now includes documentation.
+
 libglade-0.0.3: 2-November-1998
 	- Forgot to include makekeys.awk -- this may have caused problems
 	  for some people.

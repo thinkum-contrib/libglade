@@ -1,3 +1,17 @@
+1999-05-27  James Henstridge  <james@daa.com.au>
+
+	* libglade-config.in (libs): add gnome libraries to the link line.
+	(the gnome macros evaluate to nothing if gnome is not found).
+
+	* test-libglade.c: small fix so that it will build without gnome.
+
+	* NEWS: updated news.
+
+	* libglade.spec: same here.  Also include documentation in devel
+	tarball.
+
+	* configure.in: bumped version number up to 0.1.
+
 1999-05-23  Jacob Berkman  <jberk+@cmu.edu>
 
 	* doc/Makefile.am: added an if GNOME_SUPPORT

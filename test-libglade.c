@@ -9,6 +9,8 @@
 
 char *filename = NULL, *rootnode = NULL;
 gboolean no_connect = FALSE;
+
+#ifdef ENABLE_GNOME
 static poptContext ctx;
 
 static const struct poptOption options [] = {
@@ -16,6 +18,7 @@ static const struct poptOption options [] = {
           N_("Do not connect signals") },
         { NULL, '\0', 0, NULL, 0 }
 };
+#endif
 
 int main (int argc, char **argv)
 {

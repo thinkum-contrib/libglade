@@ -1,5 +1,5 @@
 # Note that this is NOT a relocatable package
-%define ver      0.0.2
+%define ver      0.1
 %define rel      1
 %define prefix   /usr
 
@@ -86,3 +86,7 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 %{prefix}/lib/lib*.so
 %{prefix}/lib/*a
 %{prefix}/include/glade/*
+
+%doc test-libglade.c
+%doc *.glade
+%doc %{prefix}/share/gnome/libglade/*
