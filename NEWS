@@ -1,3 +1,14 @@
+libglade-0.14: 10-July-2000
+	- radio menu item support (from patch by Mitch Chapman)
+	- make accelerators visible in GtkPixmapMenuitems.
+	- Added a glade_set_custom_handler to allow better control
+	  over creation of `Custom' widgets.  This can be used by
+	  language bindings or other applications that want more
+	  control over custom widget handling.
+	- add tearoff menu items to menus if gnome settings say that
+	  they should be shown.
+	- a few other bug fixes.
+
 libglade-0.13: 20-May-2000
 	- improved bonobo support from Michael Meeks.
 	- building documentation doesn't require an X connection now.
