@@ -10,7 +10,7 @@
 LTVERSION = 0:0:0
 
 INCLUDES = -DG_LOG_DOMAIN=\"libglade\" -I$(top_srcdir) $(LIBGLADE_CFLAGS) \
-	-DGLADE_MODULE_DIR=\""$(glademoduledir)"\"
+	-DGLADE_LIBDIR=\""$(libdir)"\"
 
 glademoduledir = $(libdir)/libglade/2.0
 
