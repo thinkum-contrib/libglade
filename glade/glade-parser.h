@@ -26,6 +26,8 @@
 #include <glib.h>
 #include <gdk/gdk.h>
 
+G_BEGIN_DECLS
+
 typedef struct _GladeProperty GladeProperty;
 struct _GladeProperty {
     gchar *name;
@@ -88,6 +90,8 @@ struct _GladeInterface {
     GladeWidgetInfo **toplevels;
     guint n_toplevels;
 
+    GHashTable *names;
+
     GHashTable *strings;
 };
 
@@ -99,5 +103,6 @@ void            glade_interface_destroy   (GladeInterface *interface);
 void            glade_interface_dump      (GladeInterface *interface,
 					   const gchar *filename);
 
+G_END_DECLS
 
 #endif

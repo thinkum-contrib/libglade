@@ -1,4 +1,4 @@
-/* -*- Mode: C; c-basic-offset: 8 -*-
+/* -*- Mode: C; c-basic-offset: 4 -*-
  * libglade - a library for building interfaces from XML files at runtime
  * Copyright (C) 1998-2001  James Henstridge <james@daa.com.au>
  *
@@ -27,82 +27,71 @@
 #include <gtk/gtkwindow.h>
 #include <gtk/gtkaccelgroup.h>
 #include <glade/glade-xml.h>
-#include <glade/glade-widget-tree.h>
+#include <glade/glade-parser.h>
 
 struct _GladeXMLPrivate {
-	GladeWidgetTree *tree; /* the tree for this GladeXML */
+    GladeInterface *tree; /* the tree for this GladeXML */
 
-	GtkTooltips *tooltips; /* if not NULL, holds all tooltip info */
+    GtkTooltips *tooltips; /* if not NULL, holds all tooltip info */
 
-	/*
-	 * hash tables of widgets.  The keys are stored as widget data, and get
-	 * freed with those widgets.
-	 */
-	GHashTable *name_hash;
-	GHashTable *longname_hash;
+    /*
+     * hash tables of widgets.  The keys are stored as widget data,
+     * and get * freed with those widgets.
+     */
+    GHashTable *name_hash;
+    GHashTable *longname_hash;
 	
-	/*
-	 * hash table of signals.  The Data is a GList of GladeSignalData
-	 * structures which get freed when the GladeXML object is destroyed
-	 */
-	GHashTable *signals;
+    /*
+     * hash table of signals.  The Data is a GList of GladeSignalData
+     * structures which get freed when the GladeXML object is
+     * destroyed
+     */
+    GHashTable *signals;
 
-	/*
-	 * This hash table contains GSLists that are the radio groups
-	 * bound to each name.
-	 */
-	GHashTable *radio_groups;
+    /*
+     * This hash table contains GSLists that are the radio groups *
+     * bound to each name.
+     */
+    GHashTable *radio_groups;
 
-	/* the current toplevel being built */
-	GtkWindow *toplevel;
+    /* the current toplevel being built */
+    GtkWindow *toplevel;
 
-	/*
-	 * These items are for handling accelerator groups.  The first
-	 * is the main accelerator group for the current window.  The
-	 * second is an slist of groups, which is used for the uline
-	 * accel groups for menu entries.
-	 */
-	GSList *accel_groups;
-	GSList *uline_accels;
+    /*
+     * These items are for handling accelerator groups.  The first *
+     * is the main accelerator group for the current window.  The *
+     * second is an slist of groups, which is used for the uline *
+     * accel groups for menu entries.
+     */
+    GSList *accel_groups;
 
-	/* an accel intended for the parent of a widget */
-	guint parent_accel;
-	/* a list of label uline accels for widgets that don't exist yet */
-	GList *focus_ulines;
+    /* a list of label uline accels for widgets that don't exist yet */
+    GList *focus_ulines;
 
-	/* these hold the focus and default widgets for a window until they
-	 * get packed into the window -- we can't call gtk_widget_grab_focus
-	 * or grab_default until this occurs */
-	GtkWidget *focus_widget;
-	GtkWidget *default_widget;
+    /* these hold the focus and default widgets for a window until they
+     * get packed into the window -- we can't call gtk_widget_grab_focus
+     * or grab_default until this occurs */
+    GtkWidget *focus_widget;
+    GtkWidget *default_widget;
 };
 
 typedef struct _GladeFocusULine GladeFocusULine;
 struct _GladeFocusULine {
-	const gchar *widget_name;
-	guint key;
+    const gchar *widget_name;
+    guint key;
 };
 
 typedef struct _GladeSignalData GladeSignalData;
 struct _GladeSignalData {
-	GtkObject *signal_object;
-	char *signal_name;
-	char *signal_data;    /* this isn't actually used, but is in the XML */
-	char *connect_object; /* or NULL if there is none */
-	gboolean signal_after;
+    GtkObject *signal_object;
+    char *signal_name;
+    char *connect_object; /* or NULL if there is none */
+    gboolean signal_after;
 };
 
 typedef GtkWidget *(GladeExtendedFunc) (GladeXML *self, GladeWidgetInfo *info,
 					char **error);
 extern GladeExtendedFunc *glade_xml_build_extended_widget;
-
-/*
- * parse an XML document, evaluating any styles found.  Uses a cached copy
- * of the GladeWidgetTree structure if this file has been parsed previously.
- * It also extracts a tree of all the <widget> tags to make it easier to
- * build interfaces
- */
-GladeWidgetTree *glade_tree_get   (const char *filename);
 
 #endif
 

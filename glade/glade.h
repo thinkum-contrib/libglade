@@ -22,9 +22,9 @@
 #ifndef GLADE_H
 #define GLADE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+#include <glib.h>
+
+G_BEGIN_DECLS
 	
 /* must be called before use of libglade */
 void glade_init(void);
@@ -48,9 +48,7 @@ void glade_gnome_db_init(void);
  * do any library initialisation and call glade_register_widgets */
 void glade_load_module(const char *module);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 	
 #include <glade/glade-xml.h>
 /* don't include glade-build.h -- it is only for widget set definitions */

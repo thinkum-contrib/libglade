@@ -1,4 +1,19 @@
+2001-05-18  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c: other changes just to get it to compile
+	correctly.  It is still broken.
+
 2001-05-17  James Henstridge  <james@daa.com.au>
+
+	* glade/Makefile.am: update makefiles to compile in new parser
+	rather than old.
+
+	* glade/glade-xml.c: remove uline accel stuff, and comment out the
+	label accel stuff until I rewrite it to use mnemonics.
+
+	* glade/glade-private.h: remove uline accel related members.
+
+	* glade/glade-build.h: remove uline accel interfaces.
 
 	* glade/glade-parser.h (glade_interface_dump): add extra prototype.
 

@@ -27,9 +27,7 @@
 #include <gtk/gtkwidget.h>
 #include <gtk/gtktooltips.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 #define GLADE_TYPE_XML            (glade_xml_get_type())
 #define GLADE_XML(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GLADE_TYPE_XML, GladeXML))
@@ -58,11 +56,10 @@ struct _GladeXMLClass {
 };
 
 GType     glade_xml_get_type    (void);
-GladeXML *glade_xml_new       (const char *fname, const char *root);
-GladeXML *glade_xml_new_with_domain (const char *fname, const char *root,
-				     const char *domain);
-GladeXML *glade_xml_new_from_memory (char *buffer, int size, const char *root,
-				     const char *domain);
+GladeXML *glade_xml_new       (const char *fname, const char *root,
+			       const char *domain);
+GladeXML *glade_xml_new_from_buffer (const char *buffer, int size,
+				     const char *root, const char *domain);
 gboolean glade_xml_construct  (GladeXML *self, const char *fname,
 			       const char *root, const char *domain);
 
@@ -132,8 +129,7 @@ typedef GtkWidget *(* GladeXMLCustomWidgetHandler) (GladeXML *xml,
 void glade_set_custom_handler(GladeXMLCustomWidgetHandler handler,
 			      gpointer user_data);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 	
 #endif
+

@@ -123,6 +123,7 @@ create_widget_info(GladeInterface *interface, const xmlChar **attrs)
     }
     if (info->class == NULL || info->name == NULL)
 	g_warning("<widget> element missing required attributes!");
+    g_hash_table_insert(interface->names, info->name, info);
     return info;
 }
 
@@ -341,6 +342,7 @@ glade_parser_start_document(GladeParseState *state)
     state->content = g_string_sized_new(128);
 
     state->interface = g_new0(GladeInterface, 1);
+    state->interface->names = g_hash_table_new(g_str_hash, g_str_equal);
     state->interface->strings = g_hash_table_new_full(g_str_hash,
 						      g_str_equal,
 						      (GDestroyNotify)g_free,
@@ -864,6 +866,8 @@ glade_interface_destroy(GladeInterface *interface)
     for (i = 0; i < interface->n_toplevels; i++)
 	widget_info_free(interface->toplevels[i]);
     g_free(interface->toplevels);
+
+    g_hash_table_destroy(interface->names);
 
     /* free the strings hash table.  The destroy notify will take care
      * of the strings. */

@@ -49,7 +49,7 @@ static void glade_xml_class_init(GladeXMLClass *class);
 static GObjectClass *parent_class;
 static void glade_xml_finalize(GObject *object);
 
-static void glade_xml_build_interface(GladeXML *xml, GladeWidgetTree *tree,
+static void glade_xml_build_interface(GladeXML *xml, GladeInterface *iface,
 				      const char *root);
 
 GladeExtendedFunc *glade_xml_build_extended_widget = NULL;
@@ -113,8 +113,6 @@ glade_xml_init (GladeXML *self)
 	priv->radio_groups = g_hash_table_new (g_str_hash, g_str_equal);
 	priv->toplevel = NULL;
 	priv->accel_groups = NULL;
-	priv->uline_accels = NULL;
-	priv->parent_accel = 0;
 	priv->focus_ulines = NULL;
 	priv->default_widget = NULL;
 	priv->focus_widget = NULL;
@@ -135,7 +133,7 @@ glade_xml_init (GladeXML *self)
  * Returns: the newly created GladeXML object, or NULL on failure.
  */
 GladeXML *
-glade_xml_new(const char *fname, const char *root)
+glade_xml_new(const char *fname, const char *root, const char *domain)
 {
 	GladeXML *self = g_object_new(GLADE_TYPE_XML, NULL);
 
@@ -192,29 +190,29 @@ gboolean
 glade_xml_construct (GladeXML *self, const char *fname, const char *root,
 		     const char *domain)
 {
-	GladeWidgetTree *tree;
+	GladeInterface *iface;
 
 	g_return_val_if_fail(self != NULL, FALSE);
 	g_return_val_if_fail(fname != NULL, FALSE);
 
-	tree = glade_tree_get(fname);
+	iface = glade_parser_parse_file(fname);
 
-	if (!tree)
+	if (!iface)
 		return FALSE;
 
-	self->priv->tree = tree;
+	self->priv->tree = iface;
 	if (self->txtdomain) g_free(self->txtdomain);
 	self->txtdomain = g_strdup(domain);
 	if (self->filename)
 		g_free(self->filename);
 	self->filename = g_strdup(fname);
-	glade_xml_build_interface(self, tree, root);
+	glade_xml_build_interface(self, iface, root);
 
 	return TRUE;
 }
 
 /**
- * glade_xml_new_from_memory:
+ * glade_xml_new_from_buffer:
  * @buffer: the memory buffer containing the XML document.
  * @size: the size of the buffer.
  * @root: the widget node in @buffer to start building from (or %NULL)
@@ -228,20 +226,21 @@ glade_xml_construct (GladeXML *self, const char *fname, const char *root,
  *
  * Returns: the newly created GladeXML object, or NULL on failure.
  */
-GladeXML *glade_xml_new_from_memory(char *buffer, int size, const char *root,
-				    const char *domain)
+GladeXML *
+glade_xml_new_from_buffer(const char *buffer, int size, const char *root,
+			  const char *domain)
 {
 	GladeXML *self;
-	GladeWidgetTree *tree = glade_widget_tree_parse_memory(buffer, size);
+	GladeInterface *iface = glade_parser_parse_buffer(buffer, size);
 
-	if (!tree)
+	if (!iface)
 		return NULL;
 	self = g_object_new(GLADE_TYPE_XML, NULL);
 
-	self->priv->tree = tree;
+	self->priv->tree = iface;
 	self->txtdomain = g_strdup(domain);
 	self->filename = NULL;
-	glade_xml_build_interface(self, tree, root);
+	glade_xml_build_interface(self, iface, root);
 
 	return self;
 }
@@ -284,10 +283,10 @@ glade_xml_signal_connect (GladeXML *self, const char *handlername,
 			 * someone */
 			if (data->signal_after)
 				gtk_signal_connect_after(data->signal_object, data->signal_name,
-							 func, data->signal_data);
+							 func, NULL);
 			else
 				gtk_signal_connect(data->signal_object, data->signal_name,
-						   func, data->signal_data);
+						   func, NULL);
 		}
 	}
 }
@@ -319,10 +318,10 @@ autoconnect_foreach(const char *signal_handler, GList *signals,
 				 * someone */
 				if (data->signal_after)
 					gtk_signal_connect_after(data->signal_object, data->signal_name,
-								 func, data->signal_data);
+								 func, NULL);
 				else
 					gtk_signal_connect(data->signal_object, data->signal_name,
-							   func, data->signal_data);
+							   func, NULL);
 			}
 		}
 }
@@ -380,7 +379,7 @@ autoconnect_full_foreach(const char *signal_handler, GList *signals,
 		}
 
 		(* conn->func) (signal_handler, data->signal_object,
-				data->signal_name, data->signal_data,
+				data->signal_name, NULL,
 				connect_object, data->signal_after,
 				conn->user_data);
 	}
@@ -716,7 +715,6 @@ glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window)
 		glade_xml_pop_accel(xml);
 	/* maybe put an assert that xml->priv->accel_groups == NULL here? */
 	xml->priv->accel_groups = NULL;
-	xml->priv->parent_accel = 0;
 	/* the window should hold a reference to the tooltips object */
 	gtk_object_ref(GTK_OBJECT(xml->priv->tooltips));
 	gtk_object_set_data_full(GTK_OBJECT(window), tooltips_key,
@@ -786,49 +784,7 @@ glade_xml_ensure_accel(GladeXML *xml)
 	return (GtkAccelGroup *)xml->priv->accel_groups->data;
 }
 
-/**
- * glade_xml_push_uline_accel:
- * @xml: the GladeXML object.
- * @uline: the underline accelerator group.
- *
- * Push a new uline accel group onto the stack.  This is intended for use
- * by GtkMenu so that GtkMenuItem's can set up underline accelerators.
- */
-void
-glade_xml_push_uline_accel(GladeXML *xml, GtkAccelGroup *uline) {
-	xml->priv->uline_accels = g_slist_prepend(xml->priv->uline_accels,
-						  uline);
-}
-
-/* glade_xml_pop_uline_accel:
- * @xml: the GladeXML object.
- *
- * Pops the uline accel group.  This will usually be called after a GtkMenu
- * has built all its children.
- */
-void
-glade_xml_pop_uline_accel(GladeXML *xml) {
-	g_return_if_fail(xml->priv->uline_accels != NULL);
-	xml->priv->uline_accels = g_slist_remove(xml->priv->uline_accels,
-					xml->priv->uline_accels->data);
-}
-
-/*
- * glade_xml_get_uline_accel:
- * @xml: the GladeXML object.
- *
- * This function is intended for use in menu items when setting up underline
- * accelerators.
- * Returns: the current uline accel group, or NULL if there is none.
- */
-GtkAccelGroup *
-glade_xml_get_uline_accel(GladeXML *xml) {
-	if (xml->priv->uline_accels)
-		return xml->priv->uline_accels->data;
-	else
-		return NULL;
-}
-
+#if 0
 /**
  * glade_xml_handle_label_accel:
  * @xml: the GladeXML object.
@@ -884,6 +840,7 @@ glade_xml_get_parent_accel(GladeXML *xml)
 	xml->priv->parent_accel = 0;
 	return key;
 }
+#endif
 
 /**
  * glade_xml_gettext:
@@ -916,16 +873,15 @@ glade_xml_gettext(GladeXML *xml, const char *msgid)
 static void
 glade_xml_add_signals(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
 {
-	GList *tmp;
+	gint i;
 
-	for (tmp = info->signals; tmp; tmp = tmp->next) {
-		GladeSignalInfo *sig = tmp->data;
+	for (i = 0; i < info->n_signals; i++) {
+		GladeSignalInfo *sig = &info->signals[i];
 		GladeSignalData *data = g_new0(GladeSignalData, 1);
 		GList *list;
 
 		data->signal_object = GTK_OBJECT(w);
 		data->signal_name = sig->name;
-		data->signal_data = sig->data;
 		data->connect_object = sig->object;
 		data->signal_after = sig->after;
 
@@ -938,9 +894,10 @@ glade_xml_add_signals(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
 static void
 glade_xml_add_accels(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
 {
-	GList *tmp;
-	for (tmp = info->accelerators; tmp; tmp = tmp->next) {
-		GladeAcceleratorInfo *accel = tmp->data;
+	gint i;
+	for (i = 0; i < info->n_accels; i++) {
+		GladeAccelInfo *accel = &info->accels[i];
+
 		debug(g_message("New Accel: key=%d,mod=%d -> %s:%s",
 				accel->key, accel->modifiers,
 				gtk_widget_get_name(w), accel->signal));
@@ -949,18 +906,6 @@ glade_xml_add_accels(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
 					   accel->key, accel->modifiers,
 					   GTK_ACCEL_VISIBLE);
 	}
-}
-
-static void
-glade_style_attach (GtkWidget *widget, const char *style)
-{
-	const char *name = glade_get_widget_long_name (widget);
-	char *full_name;
-				
-	full_name = g_strconcat ("widget \"", name, "\" style \"GLADE_",
-				 style, "_style\"\n", NULL);
-	gtk_rc_parse_string(full_name);
-	g_free (full_name);
 }
 
 static void
@@ -996,7 +941,7 @@ glade_xml_finalize(GObject *object)
 
 	if (priv) {
 		if (priv->tree)
-			glade_widget_tree_unref(priv->tree);
+			glade_interface_destroy(priv->tree);
 		/* strings are owned in the cached GladeWidgetTree structure */
 		g_hash_table_destroy(priv->name_hash);
 		/* strings belong to individual widgets -- don't free them */
@@ -1114,15 +1059,15 @@ glade_enum_from_string (GtkType type, const char *string)
 }
 
 static void
-glade_xml_build_interface(GladeXML *self, GladeWidgetTree *tree,
+glade_xml_build_interface(GladeXML *self, GladeInterface *iface,
 			  const char *root)
 {
-	GList *tmp;
+	gint i;
 	GladeWidgetInfo *wid;
 	GtkWidget *w;
 
 	if (root) {
-		wid = g_hash_table_lookup(tree->names, root);
+		wid = g_hash_table_lookup(iface->names, root);
 		g_return_if_fail(wid != NULL);
 		w = glade_xml_build_widget(self, wid, NULL);
 		if (GTK_IS_WINDOW(w)) {
@@ -1133,10 +1078,8 @@ glade_xml_build_interface(GladeXML *self, GladeWidgetTree *tree,
 		}
 	} else {
 		/* build all toplevel nodes */
-		for (tmp = tree->widgets; tmp != NULL; tmp = tmp->next) {
-			wid = tmp->data;
-			glade_xml_build_widget(self, wid, NULL);
-		}
+		for (i = 0; i < iface->n_toplevels; i++)
+			glade_xml_build_widget(self, iface->toplevels[i],NULL);
 		if (self->priv->focus_widget)
 			gtk_widget_grab_focus(self->priv->focus_widget);
 		if (self->priv->default_widget)
@@ -1312,6 +1255,7 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 	}
 
 	gtk_widget_set_name(widget, info->name);
+#if 0
 	if (info->tooltip) {
 		gtk_tooltips_set_tip(self->priv->tooltips,
 				     widget,
@@ -1368,6 +1312,7 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 			gtk_widget_set_extension_events(widget, ex);
 		}
 	}
+#endif
 
 	if (parent_long)
 		w_longname = g_strconcat(parent_long, ".", info->name, NULL);
@@ -1383,13 +1328,12 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 	g_hash_table_insert(self->priv->name_hash, info->name, widget);
 	g_hash_table_insert(self->priv->longname_hash, w_longname, widget);
 
-	if (info->style)
-		glade_style_attach(widget, info->style->name);
-
 	if (data && data->build_children && info->children)
 		data->build_children(self, widget, info, w_longname);
+#if 0
 	if (info->visible)
 		gtk_widget_show(widget);
+#endif
 }
 
 /**
@@ -1408,10 +1352,11 @@ void
 glade_standard_build_children(GladeXML *self, GtkWidget *w,
 			      GladeWidgetInfo *info, const char *longname)
 {
-	GList *tmp;
+	gint i;
 
-	for (tmp = info->children; tmp != NULL; tmp = tmp->next) {
-		GtkWidget *child = glade_xml_build_widget(self, tmp->data,
+	for (i = 0; i < info->n_children; i++) {
+		GladeWidgetInfo *childinfo = info->children[i].child;
+		GtkWidget *child = glade_xml_build_widget(self, childinfo,
 							  longname);
 		gtk_container_add(GTK_CONTAINER(w), child);
 	}
@@ -1428,12 +1373,12 @@ glade_standard_build_children(GladeXML *self, GtkWidget *w,
 GtkAdjustment *
 glade_get_adjustment(GladeWidgetInfo *info)
 {
-	GList *tmp;
+	gint i;
 	gdouble hvalue=1, hlower=0, hupper=100, hstep=1, hpage=100, hpage_size=10;
 
-	for (tmp = info->attributes; tmp != NULL; tmp = tmp->next) {
-		GladeAttribute *attr = tmp->data;
-		gchar *name = attr->name;
+	for (i = 0; i < info->n_properties; i++) {
+		GladeProperty *prop = &info->properties[i];
+		gchar *name = prop->name;
 
 		if (name[0] == 'h')
 			name++;
@@ -1441,25 +1386,25 @@ glade_get_adjustment(GladeWidgetInfo *info)
 		switch (name[0]) {
 		case 'l':
 			if (!strcmp(name, "lower"))
-				hlower = g_strtod(attr->value, NULL);
+				hlower = g_strtod(prop->value, NULL);
 			break;
 		case 'p':
 			if (!strcmp(name, "page"))
-				hpage = g_strtod(attr->value, NULL);
+				hpage = g_strtod(prop->value, NULL);
 			else if (!strcmp(name, "page_size"))
-				hpage_size=g_strtod(attr->value, NULL);
+				hpage_size=g_strtod(prop->value, NULL);
 			break;
 		case 's':
 			if (!strcmp(name, "step"))
-				hstep = g_strtod(attr->value, NULL);
+				hstep = g_strtod(prop->value, NULL);
 			break;
 		case 'u':
 			if (!strcmp(name, "upper"))
-				hupper = g_strtod(attr->value, NULL);
+				hupper = g_strtod(prop->value, NULL);
 			break;
 		case 'v':
 			if (!strcmp(name, "value"))
-				hvalue = g_strtod(attr->value, NULL);
+				hvalue = g_strtod(prop->value, NULL);
 			break;
 		}
 	}
@@ -1480,59 +1425,59 @@ glade_get_adjustment(GladeWidgetInfo *info)
 void
 glade_xml_set_window_props(GtkWindow *window, GladeWidgetInfo *info)
 {
-	GList *tmp;
+	gint i;
 	gboolean allow_grow = window->allow_grow;
 	gboolean allow_shrink = window->allow_shrink;
 	gboolean auto_shrink = window->auto_shrink;
 	gchar *wmname = NULL, *wmclass = NULL;
 
-	for (tmp = info->attributes; tmp != NULL; tmp = tmp->next) {
-		GladeAttribute *attr = tmp->data;
+	for (i = 0; i < info->n_properties; i++) {
+		GladeProperty *prop = &info->properties[i];
 
-		switch (attr->name[0]) {
+		switch (prop->name[0]) {
 		case 'a':
-			if (!strcmp(attr->name, "allow_grow"))
-				allow_grow = attr->value[0] == 'T';
-			else if (!strcmp(attr->name, "allow_shrink"))
-				allow_shrink = attr->value[0] == 'T';
-			else if (!strcmp(attr->name, "auto_shrink"))
-				auto_shrink = attr->value[0] == 'T';
+			if (!strcmp(prop->name, "allow_grow"))
+				allow_grow = prop->value[0] == 'T';
+			else if (!strcmp(prop->name, "allow_shrink"))
+				allow_shrink = prop->value[0] == 'T';
+			else if (!strcmp(prop->name, "auto_shrink"))
+				auto_shrink = prop->value[0] == 'T';
 			break;
 		case 'd':
-			if (!strcmp(attr->name, "default_height"))
+			if (!strcmp(prop->name, "default_height"))
 				gtk_window_set_default_size(window,
-					-2, strtol(attr->value, NULL, 0));
-			else if (!strcmp(attr->name, "default_width"))
+					-2, strtol(prop->value, NULL, 0));
+			else if (!strcmp(prop->name, "default_width"))
 				 gtk_window_set_default_size(window,
-					strtol(attr->value, NULL, 0), -2);
+					strtol(prop->value, NULL, 0), -2);
 			break;
 		case 'm':
-			if (!strcmp(attr->name, "modal"))
+			if (!strcmp(prop->name, "modal"))
 				gtk_window_set_modal(window,
-						     attr->value[0] == 'T');
+						     prop->value[0] == 'T');
 			break;
 		case 'p':
-			if (!strcmp(attr->name, "position"))
+			if (!strcmp(prop->name, "position"))
 				gtk_window_set_position(window,
 					glade_enum_from_string(
 						GTK_TYPE_WINDOW_POSITION,
-						attr->value));
+						prop->value));
 			break;
 		case 'w':
-			if (!strcmp(attr->name, "wmclass_name"))
-				wmname = attr->value;
-			else if (!strcmp(attr->name, "wmclass_class"))
-				wmclass = attr->value;
+			if (!strcmp(prop->name, "wmclass_name"))
+				wmname = prop->value;
+			else if (!strcmp(prop->name, "wmclass_class"))
+				wmclass = prop->value;
 			break;
 		case 'x':
-			if (attr->name[1] == '\0')
+			if (prop->name[1] == '\0')
 				gtk_widget_set_uposition(GTK_WIDGET(window),
-					strtol(attr->value, NULL, 0), -2);
+					strtol(prop->value, NULL, 0), -2);
 			break;
 		case 'y':
-			if (attr->name[1] == '\0')
+			if (prop->name[1] == '\0')
 				gtk_widget_set_uposition(GTK_WIDGET(window),
-					-2, strtol(attr->value, NULL, 0));
+					-2, strtol(prop->value, NULL, 0));
 			break;
 		}
 	}

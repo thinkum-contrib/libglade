@@ -22,6 +22,7 @@
 #ifndef GLADE_BUILD_H
 #define GLADE_BUILD_H
 
+#include <glib.h>
 #include <glade/glade-xml.h>
 #include <gtk/gtktypeutils.h>
 #include <gtk/gtkwidget.h>
@@ -29,11 +30,9 @@
 #include <gtk/gtkaccelgroup.h>
 #include <gtk/gtkadjustment.h>
 
-#include <glade/glade-widget-tree.h>
+#include <glade/glade-parser.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 	
 /* create a new widget of some type.  Don't parse `standard' widget options */
 typedef GtkWidget *(* GladeNewFunc) (GladeXML *xml,
@@ -66,15 +65,12 @@ GtkAccelGroup *glade_xml_pop_accel(GladeXML *xml);
 /* make sure that xml->priv->accel_group is a valid AccelGroup */
 GtkAccelGroup *glade_xml_ensure_accel(GladeXML *xml);
 
-/* functions for manipulating the uline accel group stack */
-void           glade_xml_push_uline_accel(GladeXML *xml, GtkAccelGroup *uline);
-void           glade_xml_pop_uline_accel (GladeXML *xml);
-GtkAccelGroup *glade_xml_get_uline_accel (GladeXML *xml);
-
+#if 0
 /* this is the handler for GtkLabel accelerators */
 void           glade_xml_handle_label_accel(GladeXML *xml, const gchar *target,
 					    guint key);
 guint          glade_xml_get_parent_accel  (GladeXML *xml);
+#endif
 
 /* set standard properties on a GtkWindow widget */
 void           glade_xml_set_window_props (GtkWindow *window,
@@ -112,8 +108,6 @@ GtkWidget *glade_create_custom(GladeXML *xml, gchar *func_name, gchar *name,
 			       gint int1, gint int2);
 
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 	
 #endif
