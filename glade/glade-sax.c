@@ -34,7 +34,7 @@
 
 #include <gtk/gtk.h>
 
-#include <parser.h>
+#include <libxml/parser.h>
 
 #include "glade-widget-tree.h"
 

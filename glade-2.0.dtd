@@ -1,12 +1,14 @@
 <!-- proposed DTD for new glade format -->
 
 <!ELEMENT glade-interface (requires*, widget*) >
+<!ATTLIST glade-interface
+  xmlns CDATA #FIXED 'http://glade.gnome.org/glade-2.0.dtd' >
 
 <!ELEMENT requires EMPTY >
 <!ATTLIST requires
   lib CDATA #REQUIRED >
 
-<!ELEMENT widget (property*, signal*, children?) >
+<!ELEMENT widget (property*, signal*, child*) >
 <!ATTLIST widget
   class CDATA #REQUIRED
   id ID #REQUIRED >
@@ -19,5 +21,15 @@
   type CDATA #IMPLIED >
 
 <!ELEMENT signal EMPTY >
+<!ATTLIST signal
+  name CDATA #REQUIRED
+  handler CDATA #REQUIRED
+  after (yes|no) 'no'
+  object IDREF #IMPLIED >
 
-<!ELEMENT children (widget)* >
+<!ELEMENT child (property*, widget) >
+<!-- composite children should not have any properties set on them.
+     (Composite children are things like the scrollbars in a
+     GtkScrolledWindow, or the vbox in a GtkDialog). -->
+<!ATTLIST child
+  composite-child (yes|no) 'no' >

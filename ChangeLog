@@ -1,3 +1,11 @@
+2001-05-05  James Henstridge  <james@daa.com.au>
+
+	* glade-2.0.dtd: update DTD
+
+	* glade/glade-sax.c: change include path.  It would seem that this
+	parser compiles without problem with libxml2.  It may even work
+	correctly :)
+
 2001-05-03  James Henstridge  <james@daa.com.au>
 
 	* glade-2.0.dtd: check in initial work on a new DTD for glade.

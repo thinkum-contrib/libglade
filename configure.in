@@ -23,7 +23,7 @@ AC_ARG_PROGRAM
 
 AM_PROG_LIBTOOL
 
-AM_PATH_GTK_2_0(1.3.5)
+AM_PATH_GTK_2_0(1.3.4)
 
 AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
 
@@ -83,6 +83,8 @@ dnl gettext stuff ... there is no message catalog for libglade -- libglade
 dnl provides translation for the XML files it reads in.
 ALL_LINGUAS=""
 AM_GNOME_GETTEXT
+BUILD_INCLUDED_LIBINTL=no
+AC_SUBST(BUILD_INCLUDED_LIBINTL)
 
 AC_OUTPUT([Makefile
 libglade.spec
