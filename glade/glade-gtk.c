@@ -74,31 +74,34 @@ static void box_build_children(GladeXML *xml, GtkWidget *w, GNode *node,
       if (!strcmp(xmlnode->name, "child"))
 	break;
     /* catch cases where child node doesn't exist */
-    if (!xmlnode) gtk_box_pack_start_defaults(GTK_BOX(w), child);
-    for (xmlnode = xmlnode->childs; xmlnode; xmlnode = xmlnode->next) {
-      char *content = xmlNodeGetContent(xmlnode);
-      switch (xmlnode->name[0]) {
-      case 'e':
-	if (!strcmp(xmlnode->name, "expand"))
-	  expand = content[0] == 'T';
-	break;
-      case 'f':
-	if (!strcmp(xmlnode->name, "fill"))
-	  fill = content[0] == 'T';
-	break;
-      case 'p':
-	if (!strcmp(xmlnode->name, "padding"))
-	  padding = strtol(content, NULL, 0);
-	else if (!strcmp(xmlnode->name, "pack"))
-	  start = strcmp(content, "GTK_PACK_START") == 0;
-	break;
+    if (!xmlnode)
+      gtk_box_pack_start_defaults(GTK_BOX(w), child);
+    else {
+      for (xmlnode = xmlnode->childs; xmlnode; xmlnode = xmlnode->next) {
+	char *content = xmlNodeGetContent(xmlnode);
+	switch (xmlnode->name[0]) {
+	case 'e':
+	  if (!strcmp(xmlnode->name, "expand"))
+	    expand = content[0] == 'T';
+	  break;
+	case 'f':
+	  if (!strcmp(xmlnode->name, "fill"))
+	    fill = content[0] == 'T';
+	  break;
+	case 'p':
+	  if (!strcmp(xmlnode->name, "padding"))
+	    padding = strtol(content, NULL, 0);
+	  else if (!strcmp(xmlnode->name, "pack"))
+	    start = strcmp(content, "GTK_PACK_START") == 0;
+	  break;
+	}
+	if (content) free(content);
       }
-      if (content) free(content);
+      if (start)
+	gtk_box_pack_start(GTK_BOX(w), child, expand, fill, padding);
+      else
+	gtk_box_pack_end(GTK_BOX(w), child, expand, fill, padding);
     }
-    if (start)
-      gtk_box_pack_start(GTK_BOX(w), child, expand, fill, padding);
-    else
-      gtk_box_pack_end(GTK_BOX(w), child, expand, fill, padding);
   }
 }
 
@@ -336,28 +339,33 @@ static void dialog_build_children(GladeXML *xml, GtkWidget *w, GNode *node,
   g_free(vboxname);
 }
 
-static void misc_set(GtkMisc *misc, xmlNodePtr info) {
-  gint num;
-  for (info = info->childs; info; info = info->next) {
-    char *content = xmlNodeGetContent(info);
-    switch (info->name[0]) {
-    case 'x':
-      num = strtol(content, NULL, 0);
-      if (!strcmp(info->name, "xalign"))
-	gtk_misc_set_alignment(misc, num, misc->yalign);
-      else if (!strcmp(info->name, "xpad"))
-	gtk_misc_set_padding(misc, num, misc->ypad);
-      break;
-    case 'y':
-      num = strtol(content, NULL, 0);
-      if (!strcmp(info->name, "yalign"))
-	gtk_misc_set_alignment(misc, misc->xalign, num);
-      else if (!strcmp(info->name, "ypad"))
-	gtk_misc_set_padding(misc, misc->xpad, num);
-      break;
-    }
-    if (content) free(content);
-  }
+static void
+misc_set (GtkMisc *misc, xmlNodePtr info)
+{
+	for (info = info->childs; info; info = info->next){
+		char *content = xmlNodeGetContent(info);
+		switch (info->name[0]) {
+		case 'x':
+			if (!strcmp (info->name, "xalign")){
+				gfloat align = atof (content);
+				gtk_misc_set_alignment(misc, align, misc->yalign);
+			} else if (!strcmp(info->name, "xpad")){
+				gint pad = strtol(content, NULL, 0);
+				gtk_misc_set_padding(misc, pad, misc->ypad);
+			} break;
+			
+		case 'y':
+			if (!strcmp(info->name, "yalign")){
+				gfloat align = atof (content);
+				gtk_misc_set_alignment(misc, misc->xalign, align);
+			} else if (!strcmp(info->name, "ypad")){
+				gint pad = strtol(content, NULL, 0);
+				gtk_misc_set_padding(misc, misc->xpad, pad);
+			}
+			break;
+		}
+		if (content) free(content);
+	}
 }
 
 static GtkAdjustment *get_adjustment(xmlNodePtr node) {

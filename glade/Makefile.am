@@ -9,24 +9,30 @@ endif
 
 INCLUDES = $(THE_FLAGS) $(XML_CFLAGS)
 
-lib_LTLIBRARIES = libglade.la
-libglade_la_SOURCES = \
-	glade-init.c \
-	glade-xml.c \
-	glade-gtk.c \
-	glade-tree.c \
-	glade-styles.c \
-	glade-keys.c \
+the_sources =		\
+	glade-init.c 	\
+	glade-xml.c 	\
+	glade-gtk.c 	\
+	glade-tree.c 	\
+	glade-styles.c 	\
+	glade-keys.c 	\
 	glade-private.h
 
-libglade_la_LIBADD = $(THE_LIBS) $(XML_LIBS)
-
-gladeincludedir = $(includedir)/glade
-
-gladeinclude_HEADERS = \
-	glade.h \
-	glade-xml.h \
+the_headers =		\
+	glade.h 	\
+	glade-xml.h 	\
 	glade-build.h
+
+if LIBGLADE_FULLDIST
+lib_LTLIBRARIES      = libglade.la
+libglade_la_SOURCES  = $(the_sources)
+libglade_la_LIBADD   = $(THE_LIBS) $(XML_LIBS)
+gladeincludedir      = $(includedir)/glade
+gladeinclude_HEADERS = $(the_headers)
+else
+lib_LIBRARIES        = libglade.a
+libglade_a_SOURCES   = $(the_sources) $(the_headers)
+endif
 
 BUILT_SOURCES = glade-keys.c
 EXTRA_DIST = makekeys.awk

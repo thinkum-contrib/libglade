@@ -1,3 +1,10 @@
+1999-04-23  Miguel de Icaza  <miguel@nuclecu.unam.mx>
+
+	* glade/glade-gtk.c: Fix.  If we encounter a placeholder, the code
+	was dereferencing a null pointer.  
+
+	(misc_set): pad is an integer, align is a float.
+
 1999-04-22  Miguel de Icaza  <miguel@nuclecu.unam.mx>
 
 	* test-libglade.c (main): Add GNOME support.  Use

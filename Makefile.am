@@ -14,10 +14,13 @@ INCLUDES = $(THE_FLAGS) $(XML_CFLAGS)
 
 EXTRA_DIST = libglade.spec test.glade simple.glade example.glade
 
+if LIBGLADE_FULLDIST
+else
 bin_SCRIPTS = libglade-config
-
+endif
 noinst_PROGRAMS = test-libglade
 
 test_libglade_SOURCES = test-libglade.c
 test_libglade_LDADD = glade/libglade.la $(THE_LIBS) $(XML_LIBS)
+
 
