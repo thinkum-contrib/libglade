@@ -1,3 +1,10 @@
+2000-05-06   Ramiro Estrugo  <ramiro@eazel.com>
+
+	* configure.in: AM_CONDITIONAL needs to be called on the bonobo
+	flag, so restore that.  Also add AC_SUBST(BONOBO_SUPPORT_FALSE) to
+	make sure it gets substituted in libglade-config, otherwise bad
+	things happen.
+
 2000-05-05   Maciej Stachowiak  <mjs@eazel.com>
 
 	* configure.in: actually substitute the BONOBO_SUPPORT_FALSE flag
