@@ -69,7 +69,11 @@ static void
 set_tooltip(GladeXML *xml, GtkWidget *widget,
 	    const gchar *prop_name, const gchar *prop_value)
 {
-    gtk_tooltips_set_tip(xml->priv->tooltips, widget, prop_value, NULL);
+    if (GTK_IS_TOOL_ITEM (widget))
+	gtk_tool_item_set_tooltip (GTK_TOOL_ITEM (widget), xml->priv->tooltips,
+				   prop_value, NULL);
+    else
+	gtk_tooltips_set_tip(xml->priv->tooltips, widget, prop_value, NULL);
 }
 
 static void
@@ -912,6 +916,13 @@ toolbar_build_children (GladeXML *xml, GtkWidget *parent,
 	    if (use_underline) {
 		GtkWidget *labelw = gtk_tool_button_get_label_widget (GTK_TOOL_BUTTON (child));
 		gtk_label_set_use_underline (GTK_LABEL (labelw), TRUE);
+	    }
+
+	    if (tooltip) {
+		gtk_tool_item_set_tooltip (GTK_TOOL_ITEM (child),
+					   xml->priv->tooltips,
+					   tooltip, NULL);
+		
 	    }
 
 	    gtk_container_add (GTK_CONTAINER (parent), child);

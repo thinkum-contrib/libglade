@@ -2,6 +2,10 @@
 
 	* glade/glade-gtk.c (toolbar_build_children): update to use newer
 	toolbar APIs even for older glade files.
+	(set_tooltip): use gtk_tool_item_set_tooltip() to set the tooltip
+	on GtkToolItems instead of gtk_tooltips_set_tip().
+	(toolbar_build_children): call gtk_tool_item_set_tooltip() to set
+	the tip on tool items in the compatibility code.
 
 Sat Oct 23 23:56:14 2004  Jonathan Blandford  <jrb@redhat.com>
 
