@@ -78,14 +78,14 @@ maintainer-clean-local: clean
 	cd $(srcdir) && rm -rf sgml html $(DOC_MODULE)-decl-list.txt $(DOC_MODULE)-decl.txt 
 
 install-data-local: 
-	$(mkinstalldirs) $(TARGET_DIR)
+	$(mkinstalldirs) $(DESTDIR)$(TARGET_DIR)
 	(installfiles=`echo $(srcdir)/html/*.html`; \
 	if test "$$installfiles" = '$(srcdir)/html/*.html'; \
 	then echo '-- Nothing to install' ; \
 	else \
 	  for i in $$installfiles; do \
 	    echo '-- Installing '$$i ; \
-	    $(INSTALL_DATA) $$i $(TARGET_DIR); \
+	    $(INSTALL_DATA) $$i $(DESTDIR)$(TARGET_DIR); \
 	  done; \
 	  echo '-- Installing $(srcdir)/html/index.sgml' ; \
 	  $(INSTALL_DATA) $(srcdir)/html/index.sgml $(TARGET_DIR); \
@@ -94,11 +94,11 @@ install-data-local:
 	fi)
 
 dist-hook:
-	mkdir $(distdir)/html
-	mkdir $(distdir)/sgml
-	mkdir $(distdir)/tmpl
-	-cp $(srcdir)/html/*.html $(srcdir)/html/*.css $(distdir)/html
-	-cp $(srcdir)/tmpl/*.sgml $(distdir)/tmpl
-	-cp $(srcdir)/sgml/*.sgml $(distdir)/sgml
+	$(mkinstalldirs) $(DESTDIR)$(distdir)/html
+	$(mkinstalldirs) $(DESTDIR)$(distdir)/sgml
+	$(mkinstalldirs) $(DESTDIR)$(distdir)/tmpl
+	-cp $(srcdir)/html/*.html $(srcdir)/html/*.css $(DESTDIR)$(distdir)/html
+	-cp $(srcdir)/tmpl/*.sgml $(DESTDIR)$(distdir)/tmpl
+	-cp $(srcdir)/sgml/*.sgml $(DESTDIR)$(distdir)/sgml
 
 .PHONY : html sgml templates scan
