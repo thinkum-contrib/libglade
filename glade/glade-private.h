@@ -67,6 +67,12 @@ struct _GladeXMLPrivate {
 	guint parent_accel;
 	/* a list of label uline accels for widgets that don't exist yet */
 	GList *focus_ulines;
+
+	/* these hold the focus and default widgets for a window until they
+	 * get packed into the window -- we can't call gtk_widget_grab_focus
+	 * or grab_default until this occurs */
+	GtkWidget *focus_widget;
+	GtkWidget *default_widget;
 };
 
 typedef struct _GladeFocusULine GladeFocusULine;

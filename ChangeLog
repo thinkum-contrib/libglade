@@ -1,3 +1,17 @@
+1999-09-19  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c (glade_xml_set_common_params): check if the widget
+	is the default or focus widget for the window.
+	(glade_xml_set_toplevel): call gtk_widget_grab_default or grab_focus
+	on the appropriate widgets when we are ready to build the next window.
+	(glade_xml_build_interface): set the default/focus widgets for the
+	last window to be built as well.
+	(glade_xml_init): set default_widget and focus_widget to NULL at
+	startup.
+
+	* glade/glade-private.h (GladeXMLPrivate): add members to hold default
+	and focus widgets for a window.
+
 1999-09-18  Miguel de Icaza  <miguel@gnu.org>
 
 	* glade/glade-sax.c: Set can_focus to zero initially.  If the

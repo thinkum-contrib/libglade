@@ -104,6 +104,8 @@ glade_xml_init (GladeXML *self)
 	priv->uline_accels = NULL;
 	priv->parent_accel = 0;
 	priv->focus_ulines = NULL;
+	priv->default_widget = NULL;
+	priv->focus_widget = NULL;
 }
 
 /**
@@ -560,6 +562,12 @@ glade_get_widget_tree(GtkWidget *widget)
 void
 glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window)
 {
+	if (xml->priv->focus_widget)
+		gtk_widget_grab_focus(xml->priv->focus_widget);
+	if (xml->priv->default_widget)
+		gtk_widget_grab_default(xml->priv->default_widget);
+	xml->priv->focus_widget = NULL;
+	xml->priv->default_widget = NULL;
 	xml->priv->toplevel = window;
 	/* new toplevel needs new accel group */
 	xml->priv->accel_group = NULL;
@@ -835,17 +843,28 @@ glade_xml_build_interface(GladeXML *self, GladeWidgetTree *tree,
 {
 	GList *tmp;
 	GladeWidgetInfo *wid;
+	GtkWidget *w;
 
 	if (root) {
 		wid = g_hash_table_lookup(tree->names, root);
 		g_return_if_fail(wid != NULL);
-		glade_xml_build_widget(self, wid, NULL);
+		w = glade_xml_build_widget(self, wid, NULL);
+		if (GTK_IS_WINDOW(w)) {
+		       if (self->priv->focus_widget)
+			   gtk_widget_grab_focus(self->priv->focus_widget);
+		       if (self->priv->default_widget)
+			   gtk_widget_grab_default(self->priv->default_widget);
+		}
 	} else {
 		/* build all toplevel nodes */
 		for (tmp = tree->widgets; tmp != NULL; tmp = tmp->next) {
 			wid = tmp->data;
 			glade_xml_build_widget(self, wid, NULL);
 		}
+		if (self->priv->focus_widget)
+			gtk_widget_grab_focus(self->priv->focus_widget);
+		if (self->priv->default_widget)
+			gtk_widget_grab_default(self->priv->default_widget);
 	}
 }
 
@@ -1023,7 +1042,10 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 		GTK_WIDGET_SET_FLAGS(widget, GTK_CAN_DEFAULT);
 	if (info->can_focus)
 		GTK_WIDGET_SET_FLAGS(widget, GTK_CAN_FOCUS);
-
+	if (info->has_default)
+		self->priv->default_widget = widget;
+	if (info->has_focus)
+		self->priv->focus_widget = widget;
 
 	for (tmp = info->attributes; tmp != NULL; tmp = tmp->next) {
 		GladeAttribute *attr = tmp->data;
