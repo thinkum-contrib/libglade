@@ -1,4 +1,14 @@
 
+# Before making a release, the LTVERSION string should be modified.
+# The string is of the form C:R:A.
+# - If interfaces have been changed or added, but binary compatibility has
+#   been preserved, change to C+1:0:A+1
+# - If binary compatibility has been broken (eg removed or changed interfaces)
+#   change to C+1:0:0
+# - If the interface is the same as the previous version, change to C:R+1:A
+
+LTVERSION = 1:0:1
+
 if GNOME_SUPPORT
 THE_FLAGS = $(GNOME_INCLUDEDIR)
 else
@@ -26,12 +36,16 @@ lib_LTLIBRARIES      = libglade.la $(build_glade_gnome)
 
 if GNOME_SUPPORT
 build_glade_gnome = libglade-gnome.la
+endif
+
 libglade_gnome_la_SOURCES  = glade-gnome.c glade-build.h glade-xml.h
 libglade_gnome_la_LIBADD   = $(GNOME_LIBDIR) $(GNOMEUI_LIBS) $(XML_LIBS)
-endif
+libglade_gnome_la_LDFLAGS  = -version-info $(LTVERSION)
 
 libglade_la_SOURCES  = $(the_sources)
 libglade_la_LIBADD   = $(GTK_LIBS) $(XML_LIBS)
+libglade_la_LDFLAGS  = -version-info $(LTVERSION)
+
 gladeincludedir      = $(includedir)/glade
 gladeinclude_HEADERS = $(the_headers)
 
