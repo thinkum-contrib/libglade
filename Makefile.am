@@ -10,8 +10,8 @@ INCLUDES = $(THE_FLAGS) $(XML_CFLAGS)
 
 EXTRA_DIST =			\
 	libglade.spec		\
-	libglade.spec.in	\
 	libgladeConf.sh		\
+	libglade.spec.in	\
 	test.glade		\
 	simple.glade		\
 	example.glade		\

@@ -2,6 +2,7 @@ AC_INIT(test-libglade.c)
 AM_CONFIG_HEADER(config.h)
 
 AM_INIT_AUTOMAKE(libglade, 0.2)
+AM_MAINTAINER_MODE
 
 dnl get the GNOME macros
 AM_ACLOCAL_INCLUDE(macros)
