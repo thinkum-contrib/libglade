@@ -1924,7 +1924,7 @@ glade_xml_handle_internal_child(GladeXML *self, GtkWidget *parent,
        if (glade_xml_set_value_from_string(self, pspec,
 					   info->properties[i].value,
 					   &value)) {
-	   g_object_set_property(child, pspec->name, &value);
+	   g_object_set_property(G_OBJECT(child), pspec->name, &value);
 	   g_value_unset(&value);
        }
     }

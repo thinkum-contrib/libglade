@@ -1,3 +1,1 @@
-#undef ENABLE_NLS
-#undef HAVE_GETTEXT
 

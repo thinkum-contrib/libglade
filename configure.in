@@ -54,41 +54,18 @@ AH_BOTTOM(
 
 dnl check for a copy of python >= 2.0 with the xml.parsers.expat module.
 AC_MSG_CHECKING([for Python >= 2.0 with expat support])
-AC_CACHE_VAL([jh_cv_path_python],
-[if test "x$PYTHON" != x; then
-  jh_cv_path_python="$PYTHON"
-else
-dnl python code to check for required python
-jh_python_check='
-import sys, string
-if sys.version_info < (2,0,0):
-    sys.exit(1)
-try:
+JH_PYTHON_CHECK(
+(2,0,0),
+[try:
     import xml.parsers.expat
 except ImportError:
-    sys.exit(1)
-sys.exit(0)'
-dnl
-  for jh_python in python python2 python2.2 python2.1 python2.0; do
-    AC_SHELL_PATH_WALK(,
-[if test -x "$ac_dir/$jh_python"; then
-  if "$ac_dir/$jh_python" -c "$jh_python_check" 1>&AC_FD_CC 2>&AC_FD_CC
-  then
-    jh_cv_path_python="$ac_dir/$jh_python"
-    break
-  fi
-fi])
-    test -n "$jh_cv_path_python" && break
-  done
-fi])
-if test -n "$jh_cv_path_python"; then
-  PYTHON="$jh_cv_path_python"
-  AC_MSG_RESULT([$jh_cv_path_python])
-else
-  PYTHON="/usr/bin/env python"
-  AC_MSG_RESULT([not found.  Defaulting to /usr/bin/env python])
-fi
-AM_CONDITIONAL(HAVE_PYTHON, test -n "$jh_cv_path_python")
+    sys.exit(1)],
+[AC_MSG_RESULT([$PYTHON])
+have_python=true],
+[AC_MSG_RESULT([not found.])
+have_python=false])
+
+AM_CONDITIONAL(HAVE_PYTHON, $have_python)
 AC_SUBST(PYTHON)
 
 dnl add debugging options ...

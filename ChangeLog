@@ -1,3 +1,17 @@
+2002-03-11  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c (glade_xml_handle_internal_child): get rid of
+	a warning.
+
+	* configure.in (have_python): use the macro I split out.
+
+	* acinclude.m4: move the python check into a macro in acinclude,
+	as it was a bit complicated.  Also, inline implementation of
+	AC_SHELL_PATH_WALK, as it isn't part of autoconf-2.53.
+
+	* acconfig.h: remove last two lines, as the glib macro was updated
+	with third argument to AC_DEFINE.
+
 2002-03-10  James Henstridge  <james@daa.com.au>
 
 	* examples/simple.glade: add a wmclass_name property to the
