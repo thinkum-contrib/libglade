@@ -29,7 +29,6 @@
 
 #ifdef __cplusplus
 extern "C" {
-#pragma }
 #endif /* __cplusplus */
 	
 #define GLADE_XML(obj) GTK_CHECK_CAST((obj), glade_xml_get_type(), GladeXML)

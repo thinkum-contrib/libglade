@@ -1,3 +1,8 @@
+2000-10-08  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.h: remove "#pragma }", which was stuffing up a
+	C++ compiler
+
 2000-10-07  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-gnome.c (pbox_page_setup_signals): ditto.
