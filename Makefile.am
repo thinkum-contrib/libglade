@@ -42,6 +42,4 @@ EXTRA_DIST = \
   examples/simple.glade \
   examples/first.glade \
   examples/example.glade \
-  examples/bonobo.glade \
-  config.h.win32 \
-  makefile.mingw
+  examples/bonobo.glade

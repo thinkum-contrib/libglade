@@ -1,15 +1,26 @@
+if PLATFORM_WIN32
+
+test_libglade_gtk_exp = test-libglade-gtk.exp
+
+test-libglade-gtk.exp : test-libglade-gtk.o
+	dlltool --output-exp test-libglade-gtk.exp test-libglade-gtk.o
+
+endif
+
 if HAVE_PYTHON
 python_tests = test-convert
+TESTS_ENVIRONMENT = PYTHON=$(PYTHON)
 endif
 
 check_PROGRAMS = test-libglade-gtk test-value-parse
 
 TESTS = $(python_tests) test-value-parse
-TESTS_ENVIRONMENT = PYTHON=$(PYTHON)
 
 INCLUDES = -I$(top_srcdir) $(LIBGLADE_CFLAGS)
 
 LDADD = $(top_builddir)/glade/libglade-2.0.la
+
+test_libglade_gtk_LDADD = $(top_builddir)/glade/libglade-2.0.la $(test_libglade_gtk_exp)
 
 LDFLAGS = -export-dynamic
 

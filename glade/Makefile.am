@@ -9,6 +9,26 @@
 
 LTVERSION = 0:1:0
 
+if PLATFORM_WIN32
+no_undefined = -no-undefined
+endif
+
+if OS_WIN32
+export_symbols = -export-symbols glade.def
+
+install-libtool-import-lib:
+	$(INSTALL) .libs/libglade-2.0.dll.a $(DESTDIR)$(libdir)
+
+uninstall-libtool-import-lib:
+	-rm $(DESTDIR)$(libdir)/libglade-2.0.dll.a
+else
+
+export_symbols = -export-symbols-regex "^[^_].*"
+
+install-libtool-import-lib:
+uninstall-libtool-import-lib:
+endif
+
 INCLUDES = \
   -DG_LOG_DOMAIN=\"libglade\" \
   -I$(top_srcdir) \
@@ -40,8 +60,11 @@ libglade_2_0_la_SOURCES  = \
   glade-private.h
 
 libglade_2_0_la_LIBADD   = $(LIBGLADE_LIBS)
-libglade_2_0_la_LDFLAGS  = -version-info $(LTVERSION) -export-symbols-regex "^[^_].*"
+libglade_2_0_la_LDFLAGS  = -version-info $(LTVERSION) $(export_symbols) $(no_undefined)
 
 EXTRA_DIST = $(gladeinclude_HEADERS) \
-	makefile.mingw	\
 	glade.def
+
+install-data-local: install-libtool-import-lib
+
+uninstall-local: uninstall-libtool-import-lib
