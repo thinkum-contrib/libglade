@@ -1,3 +1,26 @@
+2000-04-15  James Henstridge  <james@daa.com.au>
+
+	Notebook patch from Jon K Hellan:
+	
+	* glade/glade-gtk.c (notebook_build_children): push accelerators for
+	each notebook page, so only accels on the visible page are enabled.
+
+	* glade/glade-gnome.c (propbox_build_children): push accelerators for
+	each notebook page, so only accels on the visible page are enabled.
+
+	* glade/glade-xml.c (glade_xml_{push,pop}_accel): change over to
+	these for accelerator handling.
+
+	* glade/glade-build.h: add prototypes for glade_xml_{push,pop}_accel.
+
+	Memory leak fixes from Morten:
+	
+	* glade/glade-xml.c (glade_xml_destroy): free the radio group hash
+	table after building the widgets.  Leak also found by Morten.
+
+	* glade/glade-gtk.c (combo_new): free combo item list.  Bug reported
+	by Morten
+
 2000-04-01  Michael Meeks  <michael@helixcode.com>
 
 	* glade/glade-bonobo.c (gnome_control_new): update to new Bonobo API.

@@ -330,6 +330,44 @@ note_change_page(GtkWidget *child, GtkNotebook *notebook)
 }
 
 static void
+note_page_mapped (GtkWidget *page, GtkAccelGroup *accel_group)
+{
+	GtkWidget *dialog = gtk_widget_get_toplevel (GTK_WIDGET (page));
+
+	gtk_window_add_accel_group (GTK_WINDOW (dialog), accel_group);
+}
+
+static void
+note_page_unmapped (GtkWidget *page, GtkAccelGroup *accel_group)
+{
+	GtkWidget *dialog = gtk_widget_get_toplevel (GTK_WIDGET (page));
+
+	gtk_window_remove_accel_group (GTK_WINDOW (dialog), accel_group);
+}
+
+static void
+note_page_destroyed (GtkWidget *page, GtkAccelGroup *accel_group)
+{
+	gtk_accel_group_unref (accel_group);
+}
+
+static void note_page_setup_signals (GtkWidget *page, GtkAccelGroup *accel)
+{
+	gtk_signal_connect (GTK_OBJECT (page),
+			    "map",
+			    GTK_SIGNAL_FUNC (note_page_mapped),
+			    accel);
+	gtk_signal_connect (GTK_OBJECT (page),
+			    "unmap",
+			    GTK_SIGNAL_FUNC (note_page_unmapped),
+			    accel);
+	gtk_signal_connect (GTK_OBJECT (page),
+			    "destroy",
+			    GTK_SIGNAL_FUNC (note_page_destroyed),
+			    accel);
+}
+
+static void
 notebook_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info,
 			 const char *longname)
 {
@@ -345,10 +383,15 @@ notebook_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info,
 
 	for (tmp = info->children; tmp; tmp = tmp->next) {
 		GladeWidgetInfo *cinfo = tmp->data;
-		GtkWidget *child = glade_xml_build_widget (xml,cinfo,longname);
+		GtkWidget *child;
 		GList *tmp2;
-		GladeAttribute *attr = NULL;;
+		GladeAttribute *attr = NULL;
+		GtkAccelGroup *accel;
 
+		accel = glade_xml_push_accel(xml);
+		child = glade_xml_build_widget (xml,cinfo,longname);
+		note_page_setup_signals(child, accel);
+		glade_xml_pop_accel(xml);
 		for (tmp2 = cinfo->attributes; tmp2; tmp2 = tmp2->next) {
 			attr = tmp2->data;
 			if (!strcmp(attr->name, "child_name"))
@@ -1152,6 +1195,7 @@ combo_new (GladeXML *xml, GladeWidgetInfo *info)
 				if (item_list)
 					gtk_combo_set_popdown_strings(
 						GTK_COMBO(combo), item_list);
+				g_list_free(item_list);
 				g_strfreev(items);
 			}
 			break;

@@ -104,7 +104,7 @@ glade_xml_init (GladeXML *self)
 	priv->signals = g_hash_table_new(g_str_hash, g_str_equal);
 	priv->radio_groups = g_hash_table_new (g_str_hash, g_str_equal);
 	priv->toplevel = NULL;
-	priv->accel_group = NULL;
+	priv->accel_groups = NULL;
 	priv->uline_accels = NULL;
 	priv->parent_accel = 0;
 	priv->focus_ulines = NULL;
@@ -708,8 +708,43 @@ glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window)
 	xml->priv->default_widget = NULL;
 	xml->priv->toplevel = window;
 	/* new toplevel needs new accel group */
-	xml->priv->accel_group = NULL;
+	g_slist_free(xml->priv->accel_groups);
+	xml->priv->accel_groups = NULL;
 	xml->priv->parent_accel = 0;
+}
+
+ /**
+ * glade_xml_push_accel:
+ * @xml: the GladeXML object.
+ *
+ * Make a new accel group amd push onto the stack.  This is intended for use
+ * by GtkNotebook so that each notebook page can set up its own accelerators.
+ * Returns: The current GtkAccelGroup after push.
+ */
+GtkAccelGroup *
+glade_xml_push_accel(GladeXML *xml) {
+	GtkAccelGroup *accel = gtk_accel_group_new();
+       
+	xml->priv->accel_groups
+		= g_slist_prepend(xml->priv->accel_groups, accel);
+	return accel;
+}
+
+/* glade_xml_pop_accel:
+ * @xml: the GladeXML object.
+ *
+ * Pops the accel group.  This will usually be called after a GtkNotebook page
+ * has been built.
+ * Returns: The current GtkAccelGroup after pop.
+ */
+GtkAccelGroup *
+glade_xml_pop_accel(GladeXML *xml) {
+	g_return_val_if_fail(xml->priv->accel_groups != NULL, NULL);
+
+	xml->priv->accel_groups
+		= g_slist_remove(xml->priv->accel_groups,
+				 xml->priv->accel_groups->data);
+	return xml->priv->accel_groups ? xml->priv->accel_groups->data : NULL;
 }
 
 /**
@@ -724,13 +759,13 @@ glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window)
 GtkAccelGroup *
 glade_xml_ensure_accel(GladeXML *xml)
 {
-	if (!xml->priv->accel_group) {
-		xml->priv->accel_group = gtk_accel_group_new();
+	if (!xml->priv->accel_groups) {
+		glade_xml_push_accel(xml);
 		if (xml->priv->toplevel)
 			gtk_window_add_accel_group(xml->priv->toplevel,
-						   xml->priv->accel_group);
+					xml->priv->accel_groups->data);
 	}
-	return xml->priv->accel_group;
+	return (GtkAccelGroup *)xml->priv->accel_groups->data;
 }
 
 /**
@@ -923,6 +958,12 @@ glade_xml_destroy_signals(char *key, GList *signal_datas)
 }
 
 static void
+free_radio_groups(gpointer key, gpointer value, gpointer user_data)
+{
+	g_free(key);  /* the string name */
+}
+
+static void
 glade_xml_destroy(GtkObject *object)
 {
 	GladeXML *self = GLADE_XML(object);
@@ -945,7 +986,8 @@ glade_xml_destroy(GtkObject *object)
 	g_hash_table_destroy(priv->signals);
 
 	/* the group name strings are owned by the GladeWidgetTree */
-	g_hash_table_destroy (priv->radio_groups);
+	g_hash_table_foreach(self->priv->radio_groups, free_radio_groups,NULL);
+	g_hash_table_destroy(priv->radio_groups);
 	
 	g_free (self->priv);
 	if (parent_class->destroy)

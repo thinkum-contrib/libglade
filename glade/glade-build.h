@@ -59,6 +59,10 @@ void glade_register_widgets(const GladeWidgetBuildData *widgets);
 /* set the current toplevel widget while building (use NULL to unset) */
 void glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window);
 
+/* push and pop accelerator groups on a stack */
+GtkAccelGroup *glade_xml_push_accel(GladeXML *xml);
+GtkAccelGroup *glade_xml_pop_accel(GladeXML *xml);
+
 /* make sure that xml->priv->accel_group is a valid AccelGroup */
 GtkAccelGroup *glade_xml_ensure_accel(GladeXML *xml);
 

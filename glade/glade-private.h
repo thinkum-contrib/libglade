@@ -62,7 +62,7 @@ struct _GladeXMLPrivate {
 	 * second is an slist of groups, which is used for the uline
 	 * accel groups for menu entries.
 	 */
-	GtkAccelGroup *accel_group;
+	GSList *accel_groups;
 	GSList *uline_accels;
 
 	/* an accel intended for the parent of a widget */
