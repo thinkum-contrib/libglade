@@ -128,6 +128,19 @@ main (int argc, char **argv)
     if (!xml) {
 	g_warning("something bad happened while creating the interface");
 	return 1;
+    } else {
+	/* show toplevels */
+	int    i;
+	char **tops;
+
+	tops = glade_xml_get_toplevel_names (xml);
+
+	for (i = 0; tops && tops [i]; i++) {
+	    GtkWidget *w = glade_xml_get_widget (xml, tops [i]);
+	    gtk_widget_show (w);
+	}
+
+	g_strfreev (tops);
     }
 
     /* if you pass the rootnode argument to libglade, it will only

@@ -34,6 +34,7 @@ window_new(GladeXML *xml, GType widget_type, GladeWidgetInfo *info)
     GtkWidget *window = glade_standard_build_widget(xml, widget_type, info);
 
     glade_xml_set_toplevel(xml, GTK_WINDOW(window));
+
     return window;
 }
 

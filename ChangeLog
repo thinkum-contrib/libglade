@@ -1,5 +1,21 @@
 2001-10-10  Michael Meeks  <michael@ximian.com>
 
+	* libglade-convert (handle_file): hide toplevel
+	windows. (hide_toplevel): impl.
+	(fixup_as_type): ensure that x/y_options are always
+	set to clobber obscure gtk+ defaults.
+
+	* test-libglade.c (main): show all the top levels.
+
+	* glade/glade-xml.c (glade_xml_init, glade_xml_finalize),
+	(glade_xml_set_toplevel): track the toplevel's names
+	(glade_xml_get_toplevel_names): impl.
+
+	* glade/glade-gtk.c (window_new): pass info to
+	set_toplevel.
+
+2001-10-10  Michael Meeks  <michael@ximian.com>
+
 	* glade/glade-gtk.c (notebook_build_children): remove
 	packing property assignments.
 

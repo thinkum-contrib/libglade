@@ -111,6 +111,8 @@ GList     *glade_xml_get_widget_prefix       (GladeXML *self,
 gchar     *glade_xml_relative_file           (GladeXML *self,
 					      const gchar *filename);
 
+gchar    **glade_xml_get_toplevel_names      (GladeXML *self);
+
 /* don't free the results of these two ... */
 const char *glade_get_widget_name      (GtkWidget *widget);
 GladeXML   *glade_get_widget_tree      (GtkWidget *widget);

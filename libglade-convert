@@ -288,7 +288,8 @@ renamed_props = {
     'GtkTable': [ ('rows', 'n-rows'), ('columns', 'n-columns') ],
     'GtkSpinButton' : [ ('snap', 'snap_to_ticks') ],
     'GtkCombo' : [ ('use_arrows', 'enable_arrow_keys'),
-                   ('use_arrows_always', 'enable_arrows_always') ],
+                   ('use_arrows_always', 'enable_arrows_always'),
+                   ('ok_if_empty', 'enable_empty') ],
     'GnomeFileEntry' : [ ( 'directory', 'directory_entry' ) ]
 }
 
@@ -412,6 +413,8 @@ def fixup_as_type(widget, type):
                 del childdef['xfill']
             if options:
                 childdef['x_options'] = string.join(options,'|')
+            else: # Gtk+ has some wierd defaults here clobber them
+                childdef['x_options'] = ''
             
             options = []
             if childdef.has_prop('yexpand'):
@@ -428,6 +431,8 @@ def fixup_as_type(widget, type):
                 del childdef['yfill']
             if options:
                 childdef['y_options'] = string.join(options,'|')
+            else: # Gtk+ has some wierd defaults here clobber them
+                childdef['y_options'] = ''
 
     # fixup GtkNotebook child tab widgets.
     if type == 'GtkNotebook':
@@ -558,6 +563,10 @@ def check_widget(widget, requirelist=[]):
     for childdef in widget.children:
         check_widget(childdef.widget, requirelist)
 
+def hide_toplevel(widget):
+    if not widget.has_prop('visible'):
+        widget['visible'] = 'no'
+
 # --- parse the file for widget definitions, fixup problems and dump.
 
 def handle_file(filename):
@@ -572,6 +581,7 @@ def handle_file(filename):
     requireslist = []
 
     for widgetdef in widgets:
+        hide_toplevel(widgetdef)
         fixup_widget(widgetdef)
         upgrade_widget(widgetdef)
         check_widget(widgetdef, requireslist)

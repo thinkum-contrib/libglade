@@ -185,6 +185,8 @@ the actual widgets from the XML node data structures.
 
 @xml: 
 @window: 
+<!-- # Unused Parameters # -->
+@info: 
 
 
 <!-- ##### FUNCTION glade_xml_push_accel ##### -->

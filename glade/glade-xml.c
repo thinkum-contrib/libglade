@@ -1741,3 +1741,21 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
     if (data && data->build_children && info->children)
 	data->build_children(self, widget, info);
 }
+
+gchar **
+glade_xml_get_toplevel_names (GladeXML *self)
+{
+    int i;
+    gchar **ret;
+    GladeInterface *tree;
+    
+    tree = self->priv->tree;
+
+    ret = g_new (gchar *, tree->n_toplevels + 1);
+
+    for (i = 0; i < tree->n_toplevels; i++)
+	ret [i] = g_strdup (tree->toplevels [i]->name);
+    ret[i] = NULL;
+
+    return ret;
+}
