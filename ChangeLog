@@ -1,3 +1,18 @@
+2002-08-19  James Henstridge  <james@daa.com.au>
+
+	* glade/glade.def: update to the list of exported symbols for
+	libglade-2.0.
+
+	* glade/Makefile.am (libglade_2_0_la_LDFLAGS): don't export
+	underscore prefixed symbols.
+
+	* glade/glade-init.c (get_module_path): make default dir
+	$(libdir)/libglade/2.0.  We don't want to be searching $(libdir),
+	as there are other libgnome.so's there (eg. gnome-libs-1.x).
+	(find_module): get rid of the subdir stuff.  It isn't necessary
+	for libglade.
+	(glade_require): don't pass an argument to find_module().
+
 2002-08-18  Havoc Pennington  <hp@pobox.com>
 
 	* autogen.sh: hardcode aclocal-1.4/automake-1.4 so that users with

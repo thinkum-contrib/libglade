@@ -98,9 +98,9 @@ get_module_path (void)
     gchar *default_dir;
     
     if (exe_prefix)
-	default_dir = g_build_filename (exe_prefix, "lib", NULL);
+	default_dir = g_build_filename (exe_prefix, "lib", "libglade", "2.0", NULL);
     else
-	default_dir = g_strdup (GLADE_LIBDIR);
+	default_dir = g_build_filename (GLADE_LIBDIR, "libglade", "2.0", NULL);
     
     module_path = g_strconcat (module_path_env ? module_path_env : "",
 			       module_path_env ? G_SEARCHPATH_SEPARATOR_S : "",
@@ -116,7 +116,6 @@ get_module_path (void)
 
 static GModule *
 find_module (gchar      **module_path,
-	     const gchar *subdir,
 	     const gchar *name)
 {
     GModule *module;
@@ -127,24 +126,6 @@ find_module (gchar      **module_path,
 	return g_module_open (name, G_MODULE_BIND_LAZY);
     
     for (i = 0; module_path[i]; i++) {
-	gchar *version_directory;
-	
-#ifndef G_OS_WIN32 /* ignoring GTK_BINARY_VERSION elsewhere too */
-	version_directory = g_build_filename (module_path[i], subdir, NULL);
-	module_name = g_module_build_path (version_directory, name);
-	g_free (version_directory);
-	
-	/*g_print ("trying: %s\n", module_name);*/
-
-	if (g_file_test (module_name, G_FILE_TEST_EXISTS)) {
-	    module = g_module_open (module_name, G_MODULE_BIND_LAZY);
-	    g_free (module_name);
-	    return module;
-	}
-      
-	g_free (module_name);
-#endif
-	
 	module_name = g_module_build_path (module_path[i], name);
 	
 	if (g_file_test (module_name, G_FILE_TEST_EXISTS)) {
@@ -202,7 +183,7 @@ glade_require(const gchar *library)
     if (!module_path)
 	module_path = get_module_path ();
 
-    module = find_module (module_path, "libglade/2.0", library);
+    module = find_module (module_path, library);
 
     if (!module) {
 	g_warning("Could not load support for `%s': %s", library,
