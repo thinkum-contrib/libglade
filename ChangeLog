@@ -1,5 +1,10 @@
 1999-06-06  James Henstridge  <james@daa.com.au>
 
+	* glade/glade-gtk.c: added support for the Custom widget (the widget
+	is created with a user defined function).  This should make it easier
+	to produce a complete UI from a program, using custom widgets for the
+	complicated parts of the UI.
+
 	* glade/glade-gnome.c: added build routines for a few of the
 	widgets that are in the current CVS version of GLADE.  I haven't
 	done wrappers for GnomeApp, GnomeDialog, GnomeMessageBox and GLADE's

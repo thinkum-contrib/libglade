@@ -2075,6 +2075,58 @@ colorselectiondialog_new (GladeXML *xml, GNode *node)
 	return gtk_color_selection_dialog_new("ColorSel");
 }
 
+static GtkWidget *
+custom_new (GladeXML *xml, GNode *node) {
+	typedef GtkWidget *(* create_func)(gchar *name,
+					   gchar *string1, gchar *string2,
+					   gint int1, gint int2);
+	GtkWidget *wid = NULL;
+	xmlNodePtr info = ((xmlNodePtr)node->data)->childs;
+	gchar *name=NULL, *func_name = NULL, *string1 = NULL, *string2 = NULL;
+	gint int1 = 0, int2 = 0;
+	create_func func;
+	GModule *allsymbols;
+
+	if (!g_module_supported()) {
+		g_error("custom_new requires gmodule to work correctly");
+		return NULL;
+	}
+
+	for (; info; info = info->next) {
+		char *content = xmlNodeGetContent(info);
+
+		if (!strcmp(info->name, "name")) {
+			if (name) g_free(name);
+			name = g_strdup(content);
+		} else if (!strcmp(info->name, "creation_function")) {
+			if (func_name) g_free(func_name);
+			func_name = g_strdup(content);
+		} else if (!strcmp(info->name, "string1")) {
+			if (string1) g_free(string1);
+			string1 = g_strdup(content);
+		} else if (!strcmp(info->name, "string2")) {
+			if (string2) g_free(string2);
+			string2 = g_strdup(content);
+		} else if (!strcmp(info->name, "int1"))
+			int1 = strtol(content, NULL, 0);
+		else if (!strcmp(info->name, "int2"))
+			int2 = strtol(content, NULL, 0);
+		if (content)
+			free(content);
+	}
+	allsymbols = g_module_open(NULL, 0);
+	if (g_module_symbol(allsymbols, func_name, (gpointer *)&func))
+		wid = func(name, string1, string2, int1, int2);
+	else
+		g_warning("could not func widget creation function");
+	g_module_close(allsymbols);
+	if (name) g_free(name);
+	if (func_name) g_free(func_name);
+	if (string1) g_free(string1);
+	if (string2) g_free(string2);
+	return wid;
+}
+
 static const GladeWidgetBuildData widget_data[] = {
 	/* general widgets */
 	{"GtkLabel",         label_new,         NULL},
@@ -2143,6 +2195,9 @@ static const GladeWidgetBuildData widget_data[] = {
 	{"GtkWindow",        window_new,        glade_standard_build_children},
 	{"GtkDialog",        dialog_new,        dialog_build_children},
 	{"GtkColorSelectionDialog", colorselectiondialog_new, NULL},
+
+  /* the custom widget */
+	{"Custom",           custom_new,        NULL},
 	{NULL, NULL, NULL}
 };
 
