@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 
 # yes, this requires python 2.x and an XML parser module (eg. PyExpat)
 
