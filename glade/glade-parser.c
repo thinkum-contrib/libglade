@@ -825,7 +825,7 @@ glade_parser_end_element(GladeParseState *state, const xmlChar *name)
 	if (!state->props)
 	    state->props = g_array_new(FALSE, FALSE, sizeof(GladeProperty));
 	prop.name = state->prop_name;
-	if (state->translate_prop) {
+	if (state->translate_prop && state->content->str[0] != '\0') {
 	    prop.value = alloc_string(state->interface,
 			dgettext(state->domain, state->content->str));
 	} else {
@@ -847,7 +847,7 @@ glade_parser_end_element(GladeParseState *state, const xmlChar *name)
 	if (!state->props)
 	    state->props = g_array_new(FALSE, FALSE, sizeof(GladeProperty));
 	prop.name = state->prop_name;
-	if (state->translate_prop) {
+	if (state->translate_prop && state->content->str[0] != '\0') {
 	    prop.value = alloc_string(state->interface,
 			dgettext(state->domain, state->content->str));
 	} else {
@@ -909,7 +909,7 @@ glade_parser_end_element(GladeParseState *state, const xmlChar *name)
 	if (!state->props)
 	    state->props = g_array_new(FALSE, FALSE, sizeof(GladeProperty));
 	prop.name = state->prop_name;
-	if (state->translate_prop) {
+	if (state->translate_prop && state->content->str[0] != '\0') {
 	    prop.value = alloc_string(state->interface,
 			dgettext(state->domain, state->content->str));
 	} else {
