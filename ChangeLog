@@ -1,3 +1,8 @@
+2001-05-13  James Henstridge  <james@daa.com.au>
+
+	* doc/glade-2.0.dia: a diagram of the SAX parser flow for the new
+	format.
+
 2001-05-06  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-xml.c: change to a GObject.
