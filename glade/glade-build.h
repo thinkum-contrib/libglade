@@ -47,6 +47,15 @@ void glade_register_widgets(const GladeWidgetBuildData *widgets);
 GtkWidget *glade_xml_build_widget(GladeXML *self, GNode *node,
 				  const char *parent_long);
 
+/* This function performs half of what glade_xml_build_widget does.  It is
+ * useful when the widget has already been created.  Usually it would not
+ * have any use at all. */
+void       glade_xml_set_common_params(GladeXML *self,
+				       GtkWidget *widget,
+				       GNode *node,
+				       const char *parent_long,
+				       const char *widget_class);
+
 /* A standard child building routine that can be used in widget builders */
 void glade_standard_build_children(GladeXML *self, GtkWidget *w,
 				   GNode *node, const char *longname);

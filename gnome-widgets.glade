@@ -453,6 +453,11 @@
 	  <class>GtkButton</class>
 	  <child_name>Toolbar:button</child_name>
 	  <name>button1</name>
+	  <signal>
+	    <name>clicked</name>
+	    <handler>toolbar_new</handler>
+	    <last_modification_time>Thu, 10 Jun 1999 06:50:35 GMT</last_modification_time>
+	  </signal>
 	  <label>New</label>
 	  <stock_pixmap>GNOME_STOCK_PIXMAP_NEW</stock_pixmap>
 	</widget>
@@ -461,6 +466,11 @@
 	  <class>GtkButton</class>
 	  <child_name>Toolbar:button</child_name>
 	  <name>button2</name>
+	  <signal>
+	    <name>clicked</name>
+	    <handler>toolbar_open</handler>
+	    <last_modification_time>Thu, 10 Jun 1999 06:50:44 GMT</last_modification_time>
+	  </signal>
 	  <label>Open</label>
 	  <stock_pixmap>GNOME_STOCK_PIXMAP_OPEN</stock_pixmap>
 	</widget>

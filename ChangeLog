@@ -1,3 +1,26 @@
+1999-06-10  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gtk.c (pixmap_new): the filename of the pixmap should
+	be relative to the xml file.
+	(toolbar_new, toolbar_build_children): fixed up toolbar support.  I
+	used code from the examples by Craig M. Buchek and Gary Ross.  The
+	actual implementation is different than both, but the sample code
+	was very helpful.
+
+	* doc/libglade-sections.txt: added extra entries to documentation.
+
+	* glade/glade-xml.c (glade_xml_set_common_params): new function that
+	exposes some of the work that glade_xml_build_widget performs.
+
+	* glade/glade-xml.h, glade/glade-xml.c (glade_xml_relative_file):
+	new function that resolves a filename that is relative to the XML
+	file for an interface.  This is useful for resolving image file
+	names and other external files.
+	
+	* glade/glade-xml.c (glade_xml_build_widget): make the height and
+	width setting code work correctly (before, setting width would unset
+	the height and vice versa).
+
 1999-06-09  James Henstridge  <james@daa.com.au>
 
 	* Makefile.am (EXTRA_DIST): added the custom.glade and

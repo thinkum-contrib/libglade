@@ -37,9 +37,13 @@ GLADE_IS_XML
 GladeNewFunc
 GladeBuildChildrenFunc
 glade_xml_build_widget
+glade_xml_set_common_params
 GladeWidgetBuildData
 glade_register_widgets
 <SUBSECTION Helper Routines>
+glade_xml_relative_file
 glade_enum_from_string
+glade_get_adjustment
+glade_standard_build_children
 </SECTION>
 

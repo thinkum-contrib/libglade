@@ -394,6 +394,88 @@ dialog_build_children (GladeXML *xml, GtkWidget *w, GNode *node,
 }
 
 static void
+toolbar_build_children (GladeXML *xml, GtkWidget *w, GNode *node,
+			const char *longname)
+{
+	xmlNodePtr info;
+	GNode *childnode;
+	char *content;
+
+	for (childnode = node->children; childnode;
+	     childnode = childnode->next) {
+		GtkWidget *child;
+		xmlNodePtr xmlnode = childnode->data;
+
+		/* insert a space into the toolbar if required */
+		for (xmlnode = xmlnode->childs; xmlnode;
+		     xmlnode = xmlnode->next)
+			if (!strcmp(xmlnode->name, "child"))
+				break;
+		if (xmlnode) { /* the <child> node exists */
+			for (xmlnode = xmlnode->childs; xmlnode;
+			     xmlnode = xmlnode->next)
+				if (!strcmp(xmlnode->name, "new_group"))
+					break;
+			if (xmlnode) {
+				content = xmlNodeGetContent(xmlnode);
+				if (content[0] == 'T')
+					gtk_toolbar_append_space(
+							GTK_TOOLBAR(w));
+				free(content);
+			}
+		}
+		
+		/* check to see if this is a special Toolbar:button or just
+		 * a standard widget we are adding to the toolbar */
+		xmlnode = childnode->data;
+		for (xmlnode = xmlnode->childs; xmlnode;
+		     xmlnode = xmlnode->next)
+			if (!strcmp(xmlnode->name, "child_name"))
+				break;
+		content = xmlNodeGetContent (xmlnode);
+		if (xmlnode && !strcmp(content, "Toolbar:button")) {
+			char *label = NULL, *icon = NULL;
+			GtkWidget *iconw = NULL;
+
+			if (content) free(content);
+			xmlnode = childnode->data;
+			for (xmlnode = xmlnode->childs; xmlnode;
+			     xmlnode = xmlnode->next) {
+				content = xmlNodeGetContent(xmlnode);
+				if (!strcmp(xmlnode->name, "label")) {
+					if (label) g_free(label);
+					label = g_strdup(content);
+				} else if (!strcmp(xmlnode->name, "icon")) {
+					if (icon) g_free(icon);
+					icon = glade_xml_relative_file(xml,
+								content);
+				}
+				if (content) free(content);
+			}
+			if (icon) {
+				GdkPixmap *pix;
+				GdkBitmap *mask;
+				pix = gdk_pixmap_colormap_create_from_xpm(NULL,
+					gtk_widget_get_colormap(w), &mask,
+					NULL, icon);
+				g_free(icon);
+				iconw = gtk_pixmap_new(pix, mask);
+			}
+			child = gtk_toolbar_append_item(GTK_TOOLBAR(w),
+							label, NULL, NULL,
+							iconw, NULL, NULL);
+			glade_xml_set_common_params(xml, child, childnode,
+						    longname, "GtkButton");
+		} else {
+			if (content) free(content);
+			child = glade_xml_build_widget(xml,childnode,longname);
+			gtk_toolbar_append_widget(GTK_TOOLBAR(w), child,
+						  NULL, NULL);
+		}
+	}
+}
+
+static void
 misc_set (GtkMisc *misc, xmlNodePtr info)
 {
 	for (info = info->childs; info; info = info->next){
@@ -1230,7 +1312,8 @@ toolbar_new(GladeXML *xml, GNode *node)
 	GtkWidget *tool;
 	xmlNodePtr info = ((xmlNodePtr)node->data)->childs;
 	GtkOrientation orient = GTK_ORIENTATION_HORIZONTAL;
-	GtkToolbarStyle style = GTK_TOOLBAR_ICONS;
+	GtkToolbarStyle style = GTK_TOOLBAR_BOTH;
+	GtkToolbarSpaceStyle spaces = GTK_TOOLBAR_SPACE_EMPTY;
 	int space_size = 5;
 	gboolean tooltips = TRUE;
 
@@ -1246,12 +1329,15 @@ toolbar_new(GladeXML *xml, GNode *node)
 		case 's':
 			if (!strcmp(info->name, "space_size"))
 				space_size = strtol(content, NULL, 0);
-			else if (!strcmp(info->name, "style"))
-				style = glade_enum_from_string(GTK_TYPE_TOOLBAR_STYLE,
-							       content);
+			else if (!strcmp(info->name, "space_style"))
+				spaces = glade_enum_from_string(
+					GTK_TYPE_TOOLBAR_SPACE_STYLE, content);
 			break;
 		case 't':
-			if (!strcmp(info->name, "tooltips"))
+			if (!strcmp(info->name, "type"))
+				style = glade_enum_from_string(
+					GTK_TYPE_TOOLBAR_STYLE, content);
+			else if (!strcmp(info->name, "tooltips"))
 				tooltips = content[0] == 'T';
 			break;
 		}
@@ -1261,6 +1347,7 @@ toolbar_new(GladeXML *xml, GNode *node)
 	}
 	tool = gtk_toolbar_new(orient, style);
 	gtk_toolbar_set_space_size(GTK_TOOLBAR(tool), space_size);
+	gtk_toolbar_set_space_style(GTK_TOOLBAR(tool), spaces);
 	gtk_toolbar_set_tooltips(GTK_TOOLBAR(tool), tooltips);
 	return tool;
 }
@@ -1309,7 +1396,7 @@ pixmap_new(GladeXML *xml, GNode *node)
 
 		if (!strcmp(info->name, "filename")) {
 			if (filename) g_free(filename);
-			filename = g_strdup(content);
+			filename = glade_xml_relative_file(xml, content);
 			break;
 		}
 		if (content)
@@ -2179,7 +2266,7 @@ static const GladeWidgetBuildData widget_data[] = {
 	{"GtkHScrollbar",    hscrollbar_new,    NULL},
 	{"GtkVScrollbar",    vscrollbar_new,    NULL},
 	{"GtkStatusbar",     statusbar_new,     NULL},
-	{"GtkToolbar",       toolbar_new,       NULL},
+	{"GtkToolbar",       toolbar_new,       toolbar_build_children},
 	{"GtkProgressBar",   progressbar_new,   NULL},
 	{"GtkArrow",         arrow_new,         NULL},
 	/* {"GtkImage",         image_new,         NULL}, */

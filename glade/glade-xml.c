@@ -289,6 +289,32 @@ glade_xml_get_widget_by_long_name(GladeXML *self,
 }
 
 /**
+ * glade_xml_relative_file
+ * @self: the GladeXML object.
+ * @filename: the filename.
+ *
+ * This function resolves a relative pathname, using the directory of the
+ * XML file as a base.  If the pathname is absolute, then the original
+ * filename is returned.
+ *
+ * Returns: the filename.  The result must be g_free'd.
+ */
+gchar *
+glade_xml_relative_file(GladeXML *self, const gchar *filename)
+{
+	gchar *dirname, *tmp;
+	g_return_val_if_fail(filename != NULL, NULL);
+
+	if (g_path_is_absolute(filename)) /* an absolute pathname */
+		return g_strdup(filename);
+	/* prepend XML file's dir onto filename */
+	dirname = g_dirname(self->filename);	
+	tmp = g_strconcat(dirname, G_DIR_SEPARATOR_S, filename);
+	g_free(dirname);
+	return tmp;
+}
+
+/**
  * glade_get_widget_name:
  * @widget: the widget
  *
@@ -639,8 +665,7 @@ glade_xml_build_widget(GladeXML *self, GNode *node,
 		       const char *parent_long)
 {
 	xmlNodePtr xml = node->data, tmp;
-	char *widget_class, *w_name = NULL, *w_longname, *w_style = NULL;
-	gboolean visible = TRUE;
+	char *widget_class;
 	GladeWidgetBuildData *data;
 	GtkWidget *ret;
 
@@ -667,10 +692,49 @@ glade_xml_build_widget(GladeXML *self, GNode *node,
 		free(widget_class);
 		return ret;
 	}
-	free(widget_class);
 	g_assert(data->new);
 	ret = data->new(self, node);
+	glade_xml_set_common_params(self, ret, node,parent_long, widget_class);
+	free(widget_class);
+	return ret;
+}
 
+/**
+ * glade_xml_set_common_params
+ * @self: the GladeXML widget.
+ * @widget: the widget to set parameters on.
+ * @xml: the XML node for this widget.
+ * @parent_long: the long name of the parent widget.
+ * @widget_class: the class of this widget, or NULL to guess the class.
+ *
+ * This function sets the common parameters on a widget, and is responsible
+ * for inserting it into the GladeXML object's internal structures.  It will
+ * also add the children to this widget.  Usually this function is only called
+ * by glade_xml_build_widget, but is exposed for difficult cases, such as
+ * setting up toolbar buttons and the like.
+ */
+void
+glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
+			    GNode *node, const char *parent_long,
+			    const char *widget_class)
+{
+	xmlNodePtr xml = node->data, tmp;
+	GladeWidgetBuildData *data;
+	char *w_name = NULL, *w_longname, *w_style = NULL;
+	gboolean visible = TRUE;
+
+	/* get the build data */
+	if (!widget_table)
+		widget_table = g_hash_table_new(g_str_hash, g_str_equal);
+	if (!widget_class) {
+		char *content;
+		tmp = glade_tree_find_node(xml, "class");
+		content = xmlNodeGetContent(tmp);
+		data = g_hash_table_lookup(widget_table, content);
+		free(content);
+	} else
+		data = g_hash_table_lookup(widget_table, widget_class);
+	
   /* set some common parameters that apply to all (or most) widgets */
 	for (tmp = xml->childs; tmp != NULL; tmp = tmp->next) {
 		const char *name = tmp->name;
@@ -679,42 +743,43 @@ glade_xml_build_widget(GladeXML *self, GNode *node,
 		switch (name[0]) {
 		case 'a':
 			if (!strcmp(name, "accelerator"))
-				glade_xml_add_accel(ret, tmp);
+				glade_xml_add_accel(widget, tmp);
 			break;
 		case 'A': /* The old accelerator tag used 'Accelerator'
 			   * rather than 'accelerator'. */
 			if (!strcmp(name, "Accelerator"))
-				glade_xml_add_accel(ret, tmp);
+				glade_xml_add_accel(widget, tmp);
 			break;
 		case 'b':
 			if (!strcmp(name, "border_width")) {
 				long width = strtol(value, NULL, 0);
-				gtk_container_set_border_width(GTK_CONTAINER(ret), width);
+				gtk_container_set_border_width(
+						GTK_CONTAINER(widget), width);
 			}
 			break;
 		case 'c':
-			if (!strcmp(name, "can_default")){
+			if (!strcmp(name, "can_default")) {
 				if (*value == 'T')
-					GTK_WIDGET_SET_FLAGS(ret, GTK_CAN_DEFAULT);
-			} else if (!strcmp(name, "can_focus")){
+					GTK_WIDGET_SET_FLAGS(widget, GTK_CAN_DEFAULT);
+			} else if (!strcmp(name, "can_focus")) {
 				if (*value == 'T')
-					GTK_WIDGET_SET_FLAGS(ret, GTK_CAN_FOCUS);
+					GTK_WIDGET_SET_FLAGS(widget, GTK_CAN_FOCUS);
 			}
 			break;
 		case 'e':
 			if (!strcmp(name, "events")) {
 				long events = strtol(value, NULL, 0);
-				gtk_widget_set_events(ret, events);
+				gtk_widget_set_events(widget, events);
 			} else if (!strcmp(name, "extension_events")) {
 				GdkExtensionMode ex =
 					glade_enum_from_string(GTK_TYPE_GDK_EXTENSION_MODE, value);
-				gtk_widget_set_extension_events(ret, ex);
+				gtk_widget_set_extension_events(widget, ex);
 			}
 			break;
 		case 'h':
 			if (!strcmp(name, "height")) {
 				long height = strtol(value, NULL, 0);
-				gtk_widget_set_usize(ret, -1, height);
+				gtk_widget_set_usize(widget, -2, height);
 			}
 			break;
 		case 'n':
@@ -725,23 +790,23 @@ glade_xml_build_widget(GladeXML *self, GNode *node,
 			break;
 		case 's':
 			if (!strcmp(name, "sensitive"))
-				gtk_widget_set_sensitive(ret, *value == 'T');
+				gtk_widget_set_sensitive(widget, *value=='T');
 			else if (!strcmp(name, "style_name")) {
 				if (w_style) g_free(w_style);
 				w_style = g_strdup(value);
 			} else if (!strcmp(name, "signal"))
-				glade_xml_add_signal(self, ret, tmp);
+				glade_xml_add_signal(self, widget, tmp);
 			break;
 		case 'S': /* The old signal tag used 'Signal' rather than
 			   * 'signal'. */
 			if (!strcmp(name, "Signal"))
-				glade_xml_add_signal(self, ret, tmp);
+				glade_xml_add_signal(self, widget, tmp);
 			break;
 		case 't':
 			if (!strcmp(name, "tooltip")) {
 				if (self->priv->tooltips == NULL)
 					self->priv->tooltips = gtk_tooltips_new();
-				gtk_tooltips_set_tip(self->priv->tooltips, ret, value, NULL);
+				gtk_tooltips_set_tip(self->priv->tooltips, widget, value, NULL);
 			}
 			break;
 		case 'v':
@@ -751,39 +816,38 @@ glade_xml_build_widget(GladeXML *self, GNode *node,
 		case 'w':
 			if (!strcmp(name, "width")) {
 				long width = strtol(value, NULL, 0);
-				gtk_widget_set_usize(ret, width, -1);
+				gtk_widget_set_usize(widget, width, -2);
 			}
 			break;
 		}
 		if (value) free(value);
 	}
 	g_assert(w_name != NULL);
-	gtk_widget_set_name(ret, w_name);
+	gtk_widget_set_name(widget, w_name);
 	if (parent_long)
 		w_longname = g_strconcat(parent_long, ".", w_name, NULL);
 	else
 		w_longname = g_strdup(w_name);
 	/* store this information as data of the widget.  w_longname is owned by
 	 * the widget now */
-	gtk_object_set_data(GTK_OBJECT(ret), glade_xml_tag, self);
-	gtk_object_set_data_full(GTK_OBJECT(ret), glade_xml_name_tag,
+	gtk_object_set_data(GTK_OBJECT(widget), glade_xml_tag, self);
+	gtk_object_set_data_full(GTK_OBJECT(widget), glade_xml_name_tag,
 				 w_name, (GtkDestroyNotify)g_free);
-	gtk_object_set_data_full(GTK_OBJECT(ret), glade_xml_longname_tag,
+	gtk_object_set_data_full(GTK_OBJECT(widget), glade_xml_longname_tag,
 				 w_longname, (GtkDestroyNotify)g_free);
 	/* store widgets in hash table, for easy lookup */
-	g_hash_table_insert(self->priv->name_hash, w_name, ret);
-	g_hash_table_insert(self->priv->longname_hash, w_longname, ret);
+	g_hash_table_insert(self->priv->name_hash, w_name, widget);
+	g_hash_table_insert(self->priv->longname_hash, w_longname, widget);
 
 	if (w_style) {
-		glade_style_attach(ret, w_style);
+		glade_style_attach(widget, w_style);
 		g_free(w_style);
 	}
 
 	if (data->build_children && node->children)
-		data->build_children(self, ret, node, w_longname);
+		data->build_children(self, widget, node, w_longname);
 	if (visible)
-		gtk_widget_show(ret);
-	return ret;
+		gtk_widget_show(widget);
 }
 
 /**
