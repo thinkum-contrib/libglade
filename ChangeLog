@@ -6,6 +6,10 @@
 	* configure.in (build_bonobo): add a --enable-bonobo=yes/no/auto
 	switch
 
+2001-08-24  Xavier Ordoquy <mcarkan@users.sourceforge.net>
+
+        * glade/Makefile.am: added the glib domain log
+
 2001-08-24  James Henstridge  <james@daa.com.au>
 
 	* libglade-convert (WidgetDef.dump, ChildDef.dump): look at
