@@ -1,3 +1,8 @@
+2002-05-12  Jacob Berkman  <jacob@ximian.com>
+
+	* doc/Makefile.am (EXTRA_DIST): remove libglade-decl.txt.
+	hopefully this will fix the build and not break anything else
+
 2002-05-12  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-xml.c (add_relation): get reference counting right

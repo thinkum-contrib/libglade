@@ -33,7 +33,6 @@ endif
 noinst_DATA = $(html_stamp)
 
 EXTRA_DIST = \
-  libglade-decl.txt \
   libglade-sections.txt \
   libglade-docs.sgml \
   libglade-dtd.sgml \
