@@ -9,10 +9,6 @@
 
 LTVERSION = 0:1:0
 
-if PLATFORM_WIN32
-no_undefined = -no-undefined
-endif
-
 if OS_WIN32
 export_symbols = -export-symbols glade.def
 
@@ -60,7 +56,7 @@ libglade_2_0_la_SOURCES  = \
   glade-private.h
 
 libglade_2_0_la_LIBADD   = $(LIBGLADE_LIBS)
-libglade_2_0_la_LDFLAGS  = -version-info $(LTVERSION) $(export_symbols) $(no_undefined)
+libglade_2_0_la_LDFLAGS  = -version-info $(LTVERSION) $(export_symbols) -no-undefined
 
 EXTRA_DIST = $(gladeinclude_HEADERS) \
 	glade.def

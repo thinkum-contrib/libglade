@@ -1,3 +1,8 @@
+2003-04-29  Masahiro Sakai  <sakai@tom.sfc.keio.ac.jp>
+
+	* glade/Makefile.am (libglade_2_0_la_LDFLAGS) use -no-undefined
+	unconditionaly.
+
 2003-01-06  Tor Lillqvist  <tml@iki.fi>
 
 	Use same style auto* build for Win32 as GLib etc:
