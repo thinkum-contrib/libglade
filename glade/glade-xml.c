@@ -88,6 +88,7 @@ glade_xml_init (GladeXML *self)
 	self->priv = priv = g_new (GladeXMLPrivate, 1);
 
 	self->filename = NULL;
+	self->textdomain = NULL;
 	priv->tooltips = NULL;
 	priv->name_hash = g_hash_table_new(g_str_hash, g_str_equal);
 	priv->longname_hash = g_hash_table_new(g_str_hash, g_str_equal);
@@ -309,7 +310,7 @@ glade_xml_relative_file(GladeXML *self, const gchar *filename)
 		return g_strdup(filename);
 	/* prepend XML file's dir onto filename */
 	dirname = g_dirname(self->filename);	
-	tmp = g_strconcat(dirname, G_DIR_SEPARATOR_S, filename);
+	tmp = g_strconcat(dirname, G_DIR_SEPARATOR_S, filename, NULL);
 	g_free(dirname);
 	return tmp;
 }
@@ -526,6 +527,8 @@ glade_xml_destroy(GtkObject *object)
 	
 	if (self->filename)
 		g_free(self->filename);
+	if (self->textdomain)
+		g_free(self->textdomain);
 
 	g_hash_table_destroy(priv->name_hash);
 	g_hash_table_destroy(priv->longname_hash);

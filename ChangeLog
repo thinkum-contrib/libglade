@@ -1,5 +1,23 @@
 1999-06-11  James Henstridge  <james@daa.com.au>
 
+	* glade/glade-xml.h: added textdomain attribute to GladeXML structure
+	that will hold the gettext text domain used for translations.  This
+	is just in preparation -- I haven't added i18n to libglade yet.
+
+	* glade/glade-xml.c (glade_xml_relative_file): small fix in call
+	to g_strconcat().  This one was picked up by Gary Ross.
+
+	* glade/glade-gnome.c (get_stock_name): now reads GNOME_STOCK_PIXMAP_
+	and GNOME_STOCK_MENU_ style stock names correctly.
+	(toolbar_new, toolbar_build_children): functions for building toolbars
+	that is aware of stock icons.  Now the toolbars look correct.
+	(menu_new, menubar_new, menushell_build_children): Handle stock
+	menu items correctly.  It even handles gnome-libs' internal
+	translation of stock menu item labels.
+	(pixmapmenuitem_new): This function does not worry about stock menu
+	items now.  It does handle pixmaps next to the menu items though
+	like it should.
+
 	* Makefile.am (bin_SCRIPTS): added libglade-xgettext.
 
 	* libglade-xgettext: a small program that can extract translation
