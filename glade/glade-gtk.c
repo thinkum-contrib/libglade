@@ -851,16 +851,8 @@ toolbar_build_children (GladeXML *xml, GtkWidget *parent,
 	       here, partly because GTK+ doesn't have direct support for stock
 	       toggle & radio items. */
 	    if (use_stock) {
-		GtkStockItem item;
-
-		if (gtk_stock_lookup (label, &item)) {
-		    /* Set stock to label, so the icon is created below. */
-		    stock = label;
-		    label = item.label;
-
-		    /* Most stock items have mnemonic accelerators. */
-		    use_underline = TRUE;
-		}
+		stock = label;
+		label = NULL;
 	    }
 
 	    if (stock) {
@@ -887,24 +879,26 @@ toolbar_build_children (GladeXML *xml, GtkWidget *parent,
 	    if (!strcmp (childinfo->child->classname, "toggle")) {
 		child = g_object_new (GTK_TYPE_TOGGLE_TOOL_BUTTON,
 				      "label", label,
-				      "use_stock", use_stock,
-				      "toggled", active,
+				      "stock_id", stock,
 				      NULL);
+		gtk_toggle_tool_button_set_active
+		    (GTK_TOGGLE_TOOL_BUTTON (child), active);
 	    } else if (!strcmp (childinfo->child->classname, "radio")) {
 		child = g_object_new (GTK_TYPE_RADIO_TOOL_BUTTON,
 				      "label", label,
-				      "use_stock", use_stock,
-				      "toggled", active,
+				      "stock_id", stock,
 				      NULL);
 		if (group_name) {
 		    g_object_set (G_OBJECT (child),
 				  "group", glade_xml_get_widget (xml, group_name),
 				  NULL);
 		}
+		gtk_toggle_tool_button_set_active
+		    (GTK_TOGGLE_TOOL_BUTTON (child), active);
 	    } else {
 		child = g_object_new (GTK_TYPE_TOOL_BUTTON,
 				      "label", label,
-				      "use_stock", use_stock,
+				      "stock_id", stock,
 				      NULL);
 	    }
 	    if (iconw)

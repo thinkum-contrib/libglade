@@ -1,5 +1,8 @@
 2004-11-09  James Henstridge  <james@jamesh.id.au>
 
+	* glade/glade-gtk.c (toolbar_build_children): fix a few errors in
+	the conversion of old style toolbar items.
+
 	* Makefile.am (install-data-local, uninstall-local): fix up rules
 	so that they aren't run if the XML catalog isn't found.  They
 	still ignore errors though.
