@@ -1484,9 +1484,9 @@ static GtkWidget *vpaned_new(GladeXML *xml, GNode *node) {
   for (; info; info = info->next) {
     char *content = xmlNodeGetContent(info);
     if (!strcmp(info->name, "handle_size"))
-      gtk_set_paned_handle_size(GTK_PANED(paned), g_strtod(content, NULL));
+      gtk_paned_set_handle_size(GTK_PANED(paned), g_strtod(content, NULL));
     else if (!strcmp(info->name, "gutter_size"))
-      gtk_set_paned_gutter_size(GTK_PANED(paned), g_strtod(content, NULL));
+      gtk_paned_set_gutter_size(GTK_PANED(paned), g_strtod(content, NULL));
     if (content) free(content);
   }
   return paned;

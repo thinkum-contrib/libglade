@@ -24,4 +24,5 @@ missing
 .exrc
 test-libglade
 *.o
-
+.libs
+.deps
