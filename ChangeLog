@@ -1,5 +1,29 @@
 2001-10-10  Michael Meeks  <michael@ximian.com>
 
+	* test-libglade.c (main): re-do the init so we
+	don't get gnome-program moanings.
+
+	* Makefile.am: upd.
+
+	* configure.in: define WITH_GNOME, WITH_BONOBO
+
+	* acconfig.h: cover them.
+
+	* test-libglade.c: use the new defines.
+
+	* libglade-convert: GtkSpinButton, GtkCombo,
+	GnomeFileEntry updates,
+	(fixup_as_type): recurse for GnomePropertyBox
+	missing GtkDialog.
+
+	* glade/glade-gtk.c (notebook_build_children):
+	don't set 'type' properties on things.
+
+	* glade/glade-gtk.c (notebook_build_children):
+	prune warning.
+
+2001-10-10  Michael Meeks  <michael@ximian.com>
+
 	* glade/glade-xml.c (glade_flags_from_string):
 	re-write, bug fix.
 

@@ -51,8 +51,8 @@
 #include <glade/glade.h>
 #include <glade/glade-build.h>
 
-#ifdef WITH_BONOBOUI
-#  include <libbonoboui.h>
+#ifdef WITH_GNOME
+#  include <libgnomeui/libgnomeui.h>
 #endif
 
 static void
@@ -88,9 +88,13 @@ main (int argc, char **argv)
 
     /* initialise libraries */
     gtk_init(&argc, &argv);
-#ifdef WITH_BONOBOUI
-    if (!bonobo_ui_init ("test-libglade", VERSION, &argc, argv))
-	g_error (_("Can not bonobo_ui_init"));
+
+#ifdef WITH_GNOME
+    if (!gnome_program_init ("Terminal", VERSION,
+			     LIBGNOMEUI_MODULE,
+			     argc, argv,
+			     NULL))
+	g_error ("Cannot gnome_program_init ()");
 #endif
 
     /* initialise libglade itself */

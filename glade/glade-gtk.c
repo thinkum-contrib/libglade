@@ -67,9 +67,6 @@ notebook_build_children(GladeXML *self, GtkWidget *parent,
 	MENU_ITEM
     } type;
 
-
-    g_warning ("Notebook build children");
-
     g_object_ref(G_OBJECT(parent));
     for (i = 0; i < info->n_children; i++) {
 	GladeWidgetInfo *childinfo = info->children[i].child;
@@ -102,7 +99,7 @@ notebook_build_children(GladeXML *self, GtkWidget *parent,
 	for (j = 0; j < info->children[i].n_properties; j++) {
 	    const char *name = info->children[i].properties[j].name;
 
-	    if (strcmp (info->name, "type"))
+	    if (strcmp (name, "type"))
 		glade_xml_set_packing_property (
 		    self, parent, child, name,
 		    info->children[i].properties[j].value);

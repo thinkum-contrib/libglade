@@ -2,4 +2,5 @@
 #undef HAVE_CATGETS
 #undef HAVE_GETTEXT
 #undef HAVE_LC_MESSAGES
-
+#undef WITH_GNOME
+#undef WITH_BONOBO

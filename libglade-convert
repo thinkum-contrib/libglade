@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 
 # yes, this requires python 2.x and an XML parser module (eg. PyExpat)
 
@@ -278,6 +278,7 @@ obsolete_props = {
     'GtkVScrollbar': [ 'policy' ],
     'GtkHRuler': [ 'metric' ],
     'GtkVRuler': [ 'metric' ],
+    'GnomeFileEntry' : [ 'max_saved' ],
 }
 
 renamed_props = {
@@ -289,6 +290,10 @@ renamed_props = {
     'GtkNotebook': [ ('popup_enable', 'enable-popup') ],
     'GtkRange': [ ('policy', 'update-policy') ],
     'GtkTable': [ ('rows', 'n-rows'), ('columns', 'n-columns') ],
+    'GtkSpinButton' : [ ('snap', 'snap_to_ticks') ],
+    'GtkCombo' : [ ('use_arrows', 'enable_arrow_keys'),
+                   ('use_arrows_always', 'enable_arrows_always') ],
+    'GnomeFileEntry' : [ ( 'directory', 'directory_entry' ) ]
 }
 
 # child properties to change on specific widgets
@@ -502,7 +507,7 @@ def fixup_as_type(widget, type):
         childdef = widget.children[0]
         childdef.internal_child = 'notebook'
         del childdef.widget['child_name']
-
+        fixup_as_type (widget, 'GtkWindow')
         return 1 # don't let GtkDialog mangle us ...
 
     return 0

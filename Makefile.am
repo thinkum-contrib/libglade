@@ -1,6 +1,8 @@
 SUBDIRS = glade doc
 
-INCLUDES = $(GTK_CFLAGS) $(XML_CFLAGS)
+INCLUDES = $(GTK_CFLAGS) $(XML_CFLAGS) \
+	$(LIBGLADE_BONOBO_CFLAGS)      \
+	$(LIBGLADE_GNOME_CFLAGS)
 
 bin_SCRIPTS = libglade-convert
 
@@ -9,7 +11,8 @@ pkgconfig_DATA = libglade-2.0.pc
 
 noinst_PROGRAMS = test-libglade
 
-test_libglade_LDADD = glade/libglade-2.0.la $(GTK_LIBS) $(XML_LIBS)
+test_libglade_LDADD = glade/libglade-2.0.la $(GTK_LIBS) $(XML_LIBS) \
+	$(LIBGLADE_BONOBO_LIBS) $(LIBGLADE_GNOME_LIBS)
 test_libglade_SOURCES = test-libglade.c
 
 #small hack to get distcheck to work
