@@ -1,3 +1,8 @@
+1999-11-12  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gnome.c (pixmapmenuitem_new): make sure labels are
+	left justified in GtkPixmapMenuItems.
+
 1999-11-01  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-gtk.c (label_new, accellabel_new): understand the wrap
