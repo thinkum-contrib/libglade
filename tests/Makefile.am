@@ -7,14 +7,14 @@ INCLUDES = \
 	$(LIBGLADE_CFLAGS)
 
 test-libglade-gtk.glade2: test-libglade-gtk.glade $(top_srcdir)/libglade-convert
-	$(PYTHON) $(top_srcdir)/libglade-convert \
+	$(PYTHON) $(top_builddir)/libglade-convert \
 		$(srcdir)/test-libglade-gtk.glade \
 		> test-libglade-gtk.glade2.tmp \
 	&& mv test-libglade-gtk.glade2.tmp \
 		test-libglade-gtk.glade2
 
 test-libglade-gtk-noupgrade.glade2: test-libglade-gtk.glade $(top_srcdir)/libglade-convert
-	$(PYTHON) $(top_srcdir)/libglade-convert --no-upgrade \
+	$(PYTHON) $(top_builddir)/libglade-convert --no-upgrade \
 		$(srcdir)/test-libglade-gtk.glade \
 		> test-libglade-gtk-noupgrade.glade2.tmp \
 	&& mv test-libglade-gtk-noupgrade.glade2.tmp \
@@ -33,3 +33,6 @@ $(test_libglade_gtk_noupgrade_OBJECTS): test-libglade-gtk-noupgrade.glade2
 TESTS = test-libglade-gtk test-libglade-gtk-noupgrade
 
 EXTRA_DIST = test-libglade-gtk.glade
+
+distclean-local:
+	rm -f test-libglade-gtk.glade2 test-libglade-gtk-noupgrade.glade2

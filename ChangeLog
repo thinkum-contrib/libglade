@@ -1,3 +1,12 @@
+2001-11-26  James Henstridge  <james@daa.com.au>
+
+	* tests/Makefile.am (test-libglade-gtk.glade2): libglade-convert
+	is now in $(top_builddir), as it is a generated file.
+	(test-libglade-gtk-noupgrade.glade2): same here.
+	(distclean-local): add rule to remove files created by tests.
+
+	* configure.in: update version number and version requirements.
+
 2001-11-23  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-xml.c (get_custom_prop_info): don't dereference
