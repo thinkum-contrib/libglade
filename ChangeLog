@@ -1,3 +1,10 @@
+2001-10-24  jacob berkman  <jacob@ximian.com>
+
+	* glade/glade-gnome.c:
+	* glade/glade-bonobo.c:
+	* glade/glade-canvas.c: moved to libgnomeui, libbonoboui,
+	libgnomecanvas
+
 2001-10-24  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-gtk.c (_glade_init_gtk_widgets): same here.
