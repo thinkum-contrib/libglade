@@ -471,6 +471,43 @@ gtk_dialog_build_children(GladeXML *self, GtkWidget *w,
     g_list_free (children);
 }
 
+
+static void
+frame_build_children(GladeXML *self, GtkWidget *parent,
+		     GladeWidgetInfo *info)
+{
+    gint i, j;
+    enum {
+	FRAME_ITEM,
+	LABEL_ITEM
+    } type;
+
+    g_object_ref(G_OBJECT(parent));
+    for (i = 0; i < info->n_children; i++) {
+	GladeWidgetInfo *childinfo = info->children[i].child;
+	GtkWidget *child = glade_xml_build_widget(self, childinfo);
+
+	type = FRAME_ITEM;
+	/* there should really only be 2 children */
+	for (j = 0; j < info->children[i].n_properties; j++) {
+	    if (!strcmp (info->children[i].properties[j].name, "type")) {
+		const char *value = info->children[i].properties[j].value;
+
+		if (!strcmp (value, "label_item"))
+		    type = LABEL_ITEM;
+		break;
+	    }
+	}
+
+	if (type == LABEL_ITEM) {
+	    gtk_frame_set_label_widget (GTK_FRAME (parent), child);
+	} else {
+	    gtk_container_add (GTK_CONTAINER (parent), child);
+	}
+    }
+    g_object_unref(G_OBJECT(parent));
+}
+
 static void
 notebook_build_children(GladeXML *self, GtkWidget *parent,
 			GladeWidgetInfo *info)
@@ -993,7 +1030,7 @@ _glade_init_gtk_widgets(void)
     glade_register_widget (GTK_TYPE_ARROW, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_ASPECT_FRAME, glade_standard_build_widget,
-			   glade_standard_build_children, NULL);
+			   frame_build_children, NULL);
     glade_register_widget (GTK_TYPE_BUTTON, glade_standard_build_widget,
 			   glade_standard_build_children, NULL);
     glade_register_widget (GTK_TYPE_CALENDAR, glade_standard_build_widget,
@@ -1031,7 +1068,7 @@ _glade_init_gtk_widgets(void)
     glade_register_widget (GTK_TYPE_FONT_SELECTION_DIALOG, NULL,
 			   glade_standard_build_children, fontseldlg_find_internal_child);
     glade_register_widget (GTK_TYPE_FRAME, glade_standard_build_widget,
-			   glade_standard_build_children, NULL);
+			   frame_build_children, NULL);
     glade_register_widget (GTK_TYPE_GAMMA_CURVE, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_HANDLE_BOX, glade_standard_build_widget,

@@ -1,3 +1,9 @@
+Tue Apr  9 22:20:01 2002  Jonathan Blandford  <jrb@gnome.org>
+
+	* glade/glade-gtk.c (frame_build_children): Add a "label_item"
+	child type to Frames so they can put child widgets in their
+	header.
+
 2002-03-30  James Henstridge  <james@daa.com.au>
 
 	* configure.in (AC_INIT): increment version number.
