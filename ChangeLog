@@ -1,5 +1,11 @@
 1999-07-28  James Henstridge  <james@daa.com.au>
 
+	* glade/glade-sax.c: the parser was saving the border_width attribute
+	to width, which caused a few problems.
+	(gladeEndDocument): removed a debugging message.
+
+	* glade/glade-gnome.c (*_new): converted the rest of this library.
+	
 	* glade/glade-gnome.c (*_build_children): converted over all the
 	child building routines.  Now I just need to do all the *_new
 	functions.

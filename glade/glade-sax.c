@@ -1,4 +1,28 @@
 /* -*- Mode: C; c-basic-offset: 4 -*- */
+/* libglade - a library for building interfaces from XML files at runtime
+ * Copyright (C) 1998, 1999  James Henstridge <james@daa.com.au>
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the 
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA  02111-1307, USA.
+ */
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -210,7 +234,7 @@ static void gladeEndDocument(GladeParseState *state) {
     if (state->cur_attr)
 	g_free(state->cur_attr);
     state->cur_attr = NULL;
-    g_message("Ending state == %s", states[state->state]);
+    debug(g_message("Ending state == %s", states[state->state]));
     g_string_free(state->content, TRUE);
     if (state->unknown_depth != 0)
 	g_warning("unknown_depth != 0 (%d)", state->unknown_depth);
@@ -352,7 +376,7 @@ static void gladeEndElement(GladeParseState *state, const CHAR *name) {
 	} else if (!strcmp(name, "tooltip"))
 	    state->widget->tooltip = g_strdup(state->content->str);
 	else if (!strcmp(name, "border_width"))
-	    state->widget->width = strtol(state->content->str, NULL, 0);
+	    state->widget->border_width = strtol(state->content->str, NULL, 0);
 	else if (!strcmp(name, "width"))
 	    state->widget->width = strtol(state->content->str, NULL, 0);
 	else if (!strcmp(name, "height"))
