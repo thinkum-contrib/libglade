@@ -1161,6 +1161,8 @@ _glade_init_gtk_widgets(void)
     glade_register_custom_prop (GTK_TYPE_TOOL_BUTTON, "icon", tool_button_set_icon);
     glade_register_custom_prop (GTK_TYPE_COMBO_BOX, "items", combo_box_set_items);
 
+    glade_register_widget (GTK_TYPE_ABOUT_DIALOG, NULL,
+			   NULL, NULL);
     glade_register_widget (GTK_TYPE_ACCEL_LABEL, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_ALIGNMENT, glade_standard_build_widget,
@@ -1207,6 +1209,8 @@ _glade_init_gtk_widgets(void)
 			   expander_build_children, NULL);
     glade_register_widget (GTK_TYPE_FILE_CHOOSER, glade_standard_build_widget,
 			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_FILE_CHOOSER_BUTTON, glade_standard_build_widget,
+			   NULL, NULL);
     glade_register_widget (GTK_TYPE_FILE_SELECTION, NULL,
 			   glade_standard_build_children, filesel_find_internal_child);
     glade_register_widget (GTK_TYPE_FIXED, glade_standard_build_widget,
@@ -1237,6 +1241,8 @@ _glade_init_gtk_widgets(void)
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_HSEPARATOR, glade_standard_build_widget,
 			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_ICON_VIEW, glade_standard_build_widget,
+			   NULL, NULL);
     glade_register_widget (GTK_TYPE_IMAGE, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_IMAGE_MENU_ITEM, glade_standard_build_widget,
@@ -1257,6 +1263,8 @@ _glade_init_gtk_widgets(void)
 			   glade_standard_build_children, NULL);
     glade_register_widget (GTK_TYPE_MENU_ITEM, glade_standard_build_widget,
 			   menuitem_build_children, NULL);
+    glade_register_widget (GTK_TYPE_MENU_TOOL_BUTTON, glade_standard_build_widget,
+			   NULL, NULL);
     glade_register_widget (GTK_TYPE_MESSAGE_DIALOG, NULL,
 			   glade_standard_build_children, NULL);
     glade_register_widget (GTK_TYPE_NOTEBOOK, glade_standard_build_widget,

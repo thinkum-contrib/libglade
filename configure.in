@@ -2,9 +2,9 @@
 AC_PREREQ(2.52)
 
 m4_define([required_libxml_version], [2.4.10])
-m4_define([required_glib_version],   [2.4.0])
+m4_define([required_glib_version],   [2.5.0])
 m4_define([required_atk_version],    [1.0.0])
-m4_define([required_gtk_version],    [2.4.0])
+m4_define([required_gtk_version],    [2.5.0])
 
 AC_INIT([libglade], [2.4.0],
         [http://bugzilla.gnome.org/enter_bug.cgi?product=libglade])
