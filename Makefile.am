@@ -38,6 +38,7 @@ EXTRA_DIST = \
   glade-2.0.dtd \
   libglade.spec.in \
   libglade.spec \
+  libglade-zip.in \
   libglade-2.0.pc.in \
   libglade-2.0-uninstalled.pc.in \
   libglade-convert.in \

@@ -1,3 +1,11 @@
+2005-02-28  Tor Lillqvist  <tml@novell.com>
+
+	* libglade-zip.in: New file, for building zipfile-based Win32
+	distribution.
+
+	* Makefile.am
+	* configure.in: Distribute it, expand it.
+
 2005-02-11  James Henstridge  <james@jamesh.id.au>
 
 	* NEWS: add news items.
