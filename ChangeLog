@@ -1,3 +1,18 @@
+Mon Jan 12 21:52:07 2004  Matthias Clasen  <maclas@gmx.de>
+
+	Support disambiguating msgids by adding a context prefix.
+	To learn more about this technique, read the chapter "How to 
+	use gettext in GUI programs" in the gettext manual, and see 
+	the GLib API documentation for g_strip_context(). 
+	
+	* glade-2.0.dtd: Add a context attribute to the property 
+	element.
+	
+	* doc/libglade-docs.xml: Document the context attribute.
+	
+	* glade/glade-parser.c: Call g_strip_context() on  
+	translated properties whose context attribute says "yes".
+
 2003-11-14  Mark McLoughlin  <mark@skynet.ie>
 
 	* configure.in: Version 2.3.1.

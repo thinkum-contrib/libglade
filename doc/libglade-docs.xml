@@ -205,6 +205,16 @@ AC_SUBST(MYPROG_LIBS)
       <function>glade_xml_new()</function> (or the default domain if
       <constant>NULL</constant>).</para>
 
+      <para>Libglade also supports disambiguating properties by 
+      prefixing them with a |-separated context string, e.g.
+      "Menu/Printer|Open" vs. "Menu/File|Open". You must tell Libglade that 
+      the property has a prefix by setting the <parameter>context</parameter> 
+      attribute of the <sgmltag>&lt;property&gt;</sgmltag> element to "yes". 
+      To learn more about this technique, read the chapter "How to use 
+      gettext in GUI programs" in the gettext manual, and see the GLib 
+      API documentation for g_strip_context().
+      </para>
+
       <para>To add the strings found in a glade file to your
       translation catalog template through the use of
       <command>intltool</command>. (XXXX - does this actually work
