@@ -1,3 +1,13 @@
+1999-06-17  James Henstridge  <james@daa.com.au>
+
+	* gnome-widgets.glade: made the test glade file for GNOME a bit
+	nicer.
+
+	* glade/glade-gnome.c (toolbar_new): make toolbar button relief
+	match user preferences.
+
+	* glade/glade-gtk.c (text_new): small bug fix to text widget creation.
+
 1999-06-14  James Henstridge  <james@daa.com.au>
 
 	* glade/glade.h: moved the include of glade/glade-xml.h outside of

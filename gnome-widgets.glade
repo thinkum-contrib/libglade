@@ -2,10 +2,10 @@
 <GTK-Interface>
 
 <project>
-  <name>project2</name>
+  <name>project1</name>
   <directory></directory>
   <source_directory>src</source_directory>
-  <pixmaps_directory>pixmaps</pixmaps_directory>
+  <pixmaps_directory></pixmaps_directory>
   <language>C</language>
   <gnome_support>True</gnome_support>
   <gettext_support>True</gettext_support>
@@ -24,13 +24,13 @@
 
 <widget>
   <class>GnomeApp</class>
-  <name>app1</name>
+  <name>appwin</name>
   <signal>
     <name>destroy</name>
     <handler>gtk_main_quit</handler>
-    <last_modification_time>Thu, 10 Jun 1999 11:57:01 GMT</last_modification_time>
+    <last_modification_time>Thu, 17 Jun 1999 15:06:07 GMT</last_modification_time>
   </signal>
-  <title>project2</title>
+  <title>Libglade-GNOME Test</title>
   <enable_layout_config>True</enable_layout_config>
   <allow_shrink>False</allow_shrink>
   <allow_grow>True</allow_grow>
@@ -56,7 +56,7 @@
       <position>0</position>
       <offset>0</offset>
       <locked>False</locked>
-      <exclusive>True</exclusive>
+      <exclusive>False</exclusive>
       <never_floating>False</never_floating>
       <never_vertical>True</never_vertical>
       <never_horizontal>False</never_horizontal>
@@ -77,86 +77,27 @@
 
 	    <widget>
 	      <class>GtkPixmapMenuItem</class>
-	      <name>new_file1</name>
+	      <name>open2</name>
 	      <signal>
 		<name>activate</name>
-		<handler>on_new_file1_activate</handler>
-		<last_modification_time>Sun, 06 Jun 1999 02:48:12 GMT</last_modification_time>
-	      </signal>
-	      <stock_item>GNOMEUIINFO_MENU_NEW_ITEM</stock_item>
-	      <label>_New File</label>
-	    </widget>
-
-	    <widget>
-	      <class>GtkPixmapMenuItem</class>
-	      <name>open1</name>
-	      <signal>
-		<name>activate</name>
-		<handler>on_open1_activate</handler>
-		<last_modification_time>Sun, 06 Jun 1999 02:48:12 GMT</last_modification_time>
+		<handler>gtk_widget_show</handler>
+		<object>filesel</object>
+		<last_modification_time>Thu, 17 Jun 1999 15:03:18 GMT</last_modification_time>
 	      </signal>
 	      <stock_item>GNOMEUIINFO_MENU_OPEN_ITEM</stock_item>
 	    </widget>
 
 	    <widget>
-	      <class>GtkPixmapMenuItem</class>
-	      <name>save1</name>
-	      <signal>
-		<name>activate</name>
-		<handler>on_save1_activate</handler>
-		<last_modification_time>Sun, 06 Jun 1999 02:48:12 GMT</last_modification_time>
-	      </signal>
-	      <stock_item>GNOMEUIINFO_MENU_SAVE_ITEM</stock_item>
-	    </widget>
-
-	    <widget>
-	      <class>GtkPixmapMenuItem</class>
-	      <name>save_as1</name>
-	      <signal>
-		<name>activate</name>
-		<handler>on_save_as1_activate</handler>
-		<last_modification_time>Sun, 06 Jun 1999 02:48:12 GMT</last_modification_time>
-	      </signal>
-	      <stock_item>GNOMEUIINFO_MENU_SAVE_AS_ITEM</stock_item>
-	    </widget>
-
-	    <widget>
-	      <class>GtkPixmapMenuItem</class>
-	      <name>revert1</name>
-	      <signal>
-		<name>activate</name>
-		<handler>on_revert1_activate</handler>
-		<last_modification_time>Sun, 06 Jun 1999 02:48:12 GMT</last_modification_time>
-	      </signal>
-	      <stock_item>GNOMEUIINFO_MENU_REVERT_ITEM</stock_item>
-	    </widget>
-
-	    <widget>
 	      <class>GtkMenuItem</class>
-	      <name>separator1</name>
+	      <name>show_tests1</name>
+	      <signal>
+		<name>activate</name>
+		<handler>gtk_widget_show</handler>
+		<object>testwin</object>
+		<last_modification_time>Thu, 17 Jun 1999 14:52:01 GMT</last_modification_time>
+	      </signal>
+	      <label>Show Tests</label>
 	      <right_justify>False</right_justify>
-	    </widget>
-
-	    <widget>
-	      <class>GtkPixmapMenuItem</class>
-	      <name>print1</name>
-	      <signal>
-		<name>activate</name>
-		<handler>on_print1_activate</handler>
-		<last_modification_time>Sun, 06 Jun 1999 02:48:12 GMT</last_modification_time>
-	      </signal>
-	      <stock_item>GNOMEUIINFO_MENU_PRINT_ITEM</stock_item>
-	    </widget>
-
-	    <widget>
-	      <class>GtkPixmapMenuItem</class>
-	      <name>print_setup1</name>
-	      <signal>
-		<name>activate</name>
-		<handler>on_print_setup1_activate</handler>
-		<last_modification_time>Sun, 06 Jun 1999 02:48:12 GMT</last_modification_time>
-	      </signal>
-	      <stock_item>GNOMEUIINFO_MENU_PRINT_SETUP_ITEM</stock_item>
 	    </widget>
 
 	    <widget>
@@ -167,22 +108,12 @@
 
 	    <widget>
 	      <class>GtkPixmapMenuItem</class>
-	      <name>close1</name>
-	      <signal>
-		<name>activate</name>
-		<handler>on_close1_activate</handler>
-		<last_modification_time>Sun, 06 Jun 1999 02:48:12 GMT</last_modification_time>
-	      </signal>
-	      <stock_item>GNOMEUIINFO_MENU_CLOSE_ITEM</stock_item>
-	    </widget>
-
-	    <widget>
-	      <class>GtkPixmapMenuItem</class>
 	      <name>exit1</name>
 	      <signal>
 		<name>activate</name>
-		<handler>on_exit1_activate</handler>
-		<last_modification_time>Sun, 06 Jun 1999 02:48:12 GMT</last_modification_time>
+		<handler>gtk_widget_show</handler>
+		<object>closebox</object>
+		<last_modification_time>Thu, 17 Jun 1999 07:44:23 GMT</last_modification_time>
 	      </signal>
 	      <stock_item>GNOMEUIINFO_MENU_EXIT_ITEM</stock_item>
 	    </widget>
@@ -201,22 +132,12 @@
 	    <widget>
 	      <class>GtkPixmapMenuItem</class>
 	      <name>undo1</name>
-	      <signal>
-		<name>activate</name>
-		<handler>on_undo1_activate</handler>
-		<last_modification_time>Sun, 06 Jun 1999 02:48:12 GMT</last_modification_time>
-	      </signal>
 	      <stock_item>GNOMEUIINFO_MENU_UNDO_ITEM</stock_item>
 	    </widget>
 
 	    <widget>
 	      <class>GtkPixmapMenuItem</class>
 	      <name>redo1</name>
-	      <signal>
-		<name>activate</name>
-		<handler>on_redo1_activate</handler>
-		<last_modification_time>Sun, 06 Jun 1999 02:48:12 GMT</last_modification_time>
-	      </signal>
 	      <stock_item>GNOMEUIINFO_MENU_REDO_ITEM</stock_item>
 	    </widget>
 
@@ -231,8 +152,9 @@
 	      <name>cut1</name>
 	      <signal>
 		<name>activate</name>
-		<handler>on_cut1_activate</handler>
-		<last_modification_time>Sun, 06 Jun 1999 02:48:12 GMT</last_modification_time>
+		<handler>gtk_editable_cut_clipboard</handler>
+		<object>textbox</object>
+		<last_modification_time>Thu, 17 Jun 1999 07:34:00 GMT</last_modification_time>
 	      </signal>
 	      <stock_item>GNOMEUIINFO_MENU_CUT_ITEM</stock_item>
 	    </widget>
@@ -242,8 +164,9 @@
 	      <name>copy1</name>
 	      <signal>
 		<name>activate</name>
-		<handler>on_copy1_activate</handler>
-		<last_modification_time>Sun, 06 Jun 1999 02:48:12 GMT</last_modification_time>
+		<handler>gtk_editable_copy_clipboard</handler>
+		<object>textbox</object>
+		<last_modification_time>Thu, 17 Jun 1999 07:34:21 GMT</last_modification_time>
 	      </signal>
 	      <stock_item>GNOMEUIINFO_MENU_COPY_ITEM</stock_item>
 	    </widget>
@@ -253,8 +176,9 @@
 	      <name>paste1</name>
 	      <signal>
 		<name>activate</name>
-		<handler>on_paste1_activate</handler>
-		<last_modification_time>Sun, 06 Jun 1999 02:48:12 GMT</last_modification_time>
+		<handler>gtk_editable_paste_clipboard</handler>
+		<object>textbox</object>
+		<last_modification_time>Thu, 17 Jun 1999 07:34:47 GMT</last_modification_time>
 	      </signal>
 	      <stock_item>GNOMEUIINFO_MENU_PASTE_ITEM</stock_item>
 	    </widget>
@@ -264,89 +188,12 @@
 	      <name>clear1</name>
 	      <signal>
 		<name>activate</name>
-		<handler>on_clear1_activate</handler>
-		<last_modification_time>Sun, 06 Jun 1999 02:48:12 GMT</last_modification_time>
+		<handler>gtk_editable_delete_selection</handler>
+		<object>textbox</object>
+		<last_modification_time>Thu, 17 Jun 1999 07:35:04 GMT</last_modification_time>
 	      </signal>
 	      <stock_item>GNOMEUIINFO_MENU_CLEAR_ITEM</stock_item>
 	    </widget>
-
-	    <widget>
-	      <class>GtkPixmapMenuItem</class>
-	      <name>select_all1</name>
-	      <signal>
-		<name>activate</name>
-		<handler>on_select_all1_activate</handler>
-		<last_modification_time>Sun, 06 Jun 1999 02:48:12 GMT</last_modification_time>
-	      </signal>
-	      <stock_item>GNOMEUIINFO_MENU_SELECT_ALL_ITEM</stock_item>
-	    </widget>
-
-	    <widget>
-	      <class>GtkMenuItem</class>
-	      <name>separator4</name>
-	      <right_justify>False</right_justify>
-	    </widget>
-
-	    <widget>
-	      <class>GtkPixmapMenuItem</class>
-	      <name>find1</name>
-	      <signal>
-		<name>activate</name>
-		<handler>on_find1_activate</handler>
-		<last_modification_time>Sun, 06 Jun 1999 02:48:12 GMT</last_modification_time>
-	      </signal>
-	      <stock_item>GNOMEUIINFO_MENU_FIND_ITEM</stock_item>
-	    </widget>
-
-	    <widget>
-	      <class>GtkPixmapMenuItem</class>
-	      <name>find_again1</name>
-	      <signal>
-		<name>activate</name>
-		<handler>on_find_again1_activate</handler>
-		<last_modification_time>Sun, 06 Jun 1999 02:48:12 GMT</last_modification_time>
-	      </signal>
-	      <stock_item>GNOMEUIINFO_MENU_FIND_AGAIN_ITEM</stock_item>
-	    </widget>
-
-	    <widget>
-	      <class>GtkPixmapMenuItem</class>
-	      <name>replace1</name>
-	      <signal>
-		<name>activate</name>
-		<handler>on_replace1_activate</handler>
-		<last_modification_time>Sun, 06 Jun 1999 02:48:12 GMT</last_modification_time>
-	      </signal>
-	      <stock_item>GNOMEUIINFO_MENU_REPLACE_ITEM</stock_item>
-	    </widget>
-
-	    <widget>
-	      <class>GtkMenuItem</class>
-	      <name>separator5</name>
-	      <right_justify>False</right_justify>
-	    </widget>
-
-	    <widget>
-	      <class>GtkPixmapMenuItem</class>
-	      <name>properties1</name>
-	      <signal>
-		<name>activate</name>
-		<handler>on_properties1_activate</handler>
-		<last_modification_time>Sun, 06 Jun 1999 02:48:12 GMT</last_modification_time>
-	      </signal>
-	      <stock_item>GNOMEUIINFO_MENU_PROPERTIES_ITEM</stock_item>
-	    </widget>
-	  </widget>
-	</widget>
-
-	<widget>
-	  <class>GtkMenuItem</class>
-	  <name>view1</name>
-	  <stock_item>GNOMEUIINFO_MENU_VIEW_TREE</stock_item>
-
-	  <widget>
-	    <class>GtkMenu</class>
-	    <name>view1_menu</name>
 	  </widget>
 	</widget>
 
@@ -362,45 +209,7 @@
 	    <widget>
 	      <class>GtkPixmapMenuItem</class>
 	      <name>preferences1</name>
-	      <signal>
-		<name>activate</name>
-		<handler>on_preferences1_activate</handler>
-		<last_modification_time>Sun, 06 Jun 1999 02:48:12 GMT</last_modification_time>
-	      </signal>
 	      <stock_item>GNOMEUIINFO_MENU_PREFERENCES_ITEM</stock_item>
-	    </widget>
-	  </widget>
-	</widget>
-
-	<widget>
-	  <class>GtkMenuItem</class>
-	  <name>windows1</name>
-	  <stock_item>GNOMEUIINFO_MENU_WINDOWS_TREE</stock_item>
-
-	  <widget>
-	    <class>GtkMenu</class>
-	    <name>windows1_menu</name>
-
-	    <widget>
-	      <class>GtkPixmapMenuItem</class>
-	      <name>create_new_window1</name>
-	      <signal>
-		<name>activate</name>
-		<handler>on_create_new_window1_activate</handler>
-		<last_modification_time>Sun, 06 Jun 1999 02:48:12 GMT</last_modification_time>
-	      </signal>
-	      <stock_item>GNOMEUIINFO_MENU_NEW_WINDOW_ITEM</stock_item>
-	    </widget>
-
-	    <widget>
-	      <class>GtkPixmapMenuItem</class>
-	      <name>close_this_window1</name>
-	      <signal>
-		<name>activate</name>
-		<handler>on_close_this_window1_activate</handler>
-		<last_modification_time>Sun, 06 Jun 1999 02:48:12 GMT</last_modification_time>
-	      </signal>
-	      <stock_item>GNOMEUIINFO_MENU_CLOSE_WINDOW_ITEM</stock_item>
 	    </widget>
 	  </widget>
 	</widget>
@@ -419,8 +228,9 @@
 	      <name>about1</name>
 	      <signal>
 		<name>activate</name>
-		<handler>on_about1_activate</handler>
-		<last_modification_time>Sun, 06 Jun 1999 02:48:12 GMT</last_modification_time>
+		<handler>gtk_widget_show</handler>
+		<object>aboutwin</object>
+		<last_modification_time>Thu, 17 Jun 1999 07:38:13 GMT</last_modification_time>
 	      </signal>
 	      <stock_item>GNOMEUIINFO_MENU_ABOUT_ITEM</stock_item>
 	    </widget>
@@ -458,11 +268,6 @@
 	  <class>GtkButton</class>
 	  <child_name>Toolbar:button</child_name>
 	  <name>button1</name>
-	  <signal>
-	    <name>clicked</name>
-	    <handler>toolbar_new</handler>
-	    <last_modification_time>Thu, 10 Jun 1999 06:50:35 GMT</last_modification_time>
-	  </signal>
 	  <label>New</label>
 	  <stock_pixmap>GNOME_STOCK_PIXMAP_NEW</stock_pixmap>
 	</widget>
@@ -471,11 +276,6 @@
 	  <class>GtkButton</class>
 	  <child_name>Toolbar:button</child_name>
 	  <name>button2</name>
-	  <signal>
-	    <name>clicked</name>
-	    <handler>toolbar_open</handler>
-	    <last_modification_time>Thu, 10 Jun 1999 06:50:44 GMT</last_modification_time>
-	  </signal>
 	  <label>Open</label>
 	  <stock_pixmap>GNOME_STOCK_PIXMAP_OPEN</stock_pixmap>
 	</widget>
@@ -495,6 +295,12 @@
 	  <child>
 	    <new_group>True</new_group>
 	  </child>
+	  <signal>
+	    <name>clicked</name>
+	    <handler>gtk_editable_cut_clipboard</handler>
+	    <object>textbox</object>
+	    <last_modification_time>Thu, 17 Jun 1999 07:31:19 GMT</last_modification_time>
+	  </signal>
 	  <label>Cut</label>
 	  <stock_pixmap>GNOME_STOCK_PIXMAP_CUT</stock_pixmap>
 	</widget>
@@ -503,6 +309,12 @@
 	  <class>GtkButton</class>
 	  <child_name>Toolbar:button</child_name>
 	  <name>button5</name>
+	  <signal>
+	    <name>clicked</name>
+	    <handler>gtk_editable_copy_clipboard</handler>
+	    <object>textbox</object>
+	    <last_modification_time>Thu, 17 Jun 1999 07:32:16 GMT</last_modification_time>
+	  </signal>
 	  <label>Copy</label>
 	  <stock_pixmap>GNOME_STOCK_PIXMAP_COPY</stock_pixmap>
 	</widget>
@@ -511,6 +323,12 @@
 	  <class>GtkButton</class>
 	  <child_name>Toolbar:button</child_name>
 	  <name>button6</name>
+	  <signal>
+	    <name>clicked</name>
+	    <handler>gtk_editable_paste_clipboard</handler>
+	    <object>textbox</object>
+	    <last_modification_time>Thu, 17 Jun 1999 07:33:13 GMT</last_modification_time>
+	  </signal>
 	  <label>Paste</label>
 	  <stock_pixmap>GNOME_STOCK_PIXMAP_PASTE</stock_pixmap>
 	</widget>
@@ -519,6 +337,12 @@
 	  <class>GtkButton</class>
 	  <child_name>Toolbar:button</child_name>
 	  <name>button7</name>
+	  <signal>
+	    <name>clicked</name>
+	    <handler>gtk_editable_delete_selection</handler>
+	    <object>textbox</object>
+	    <last_modification_time>Thu, 17 Jun 1999 07:33:30 GMT</last_modification_time>
+	  </signal>
 	  <label>Clear</label>
 	  <stock_pixmap>GNOME_STOCK_PIXMAP_CLEAR</stock_pixmap>
 	</widget>
@@ -526,266 +350,12 @@
     </widget>
 
     <widget>
-      <class>GtkTable</class>
+      <class>GtkText</class>
       <child_name>GnomeDock:contents</child_name>
-      <name>table1</name>
-      <rows>4</rows>
-      <columns>3</columns>
-      <homogeneous>False</homogeneous>
-      <row_spacing>0</row_spacing>
-      <column_spacing>0</column_spacing>
-
-      <widget>
-	<class>GnomeColorPicker</class>
-	<name>colorpicker1</name>
-	<child>
-	  <left_attach>0</left_attach>
-	  <right_attach>1</right_attach>
-	  <top_attach>0</top_attach>
-	  <bottom_attach>1</bottom_attach>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <xexpand>False</xexpand>
-	  <yexpand>False</yexpand>
-	  <xshrink>False</xshrink>
-	  <yshrink>False</yshrink>
-	  <xfill>False</xfill>
-	  <yfill>False</yfill>
-	</child>
-	<can_focus>True</can_focus>
-	<dither>True</dither>
-	<use_alpha>False</use_alpha>
-	<title>Pick a color</title>
-      </widget>
-
-      <widget>
-	<class>GnomeFontPicker</class>
-	<name>fontpicker1</name>
-	<child>
-	  <left_attach>1</left_attach>
-	  <right_attach>2</right_attach>
-	  <top_attach>0</top_attach>
-	  <bottom_attach>1</bottom_attach>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <xexpand>False</xexpand>
-	  <yexpand>False</yexpand>
-	  <xshrink>False</xshrink>
-	  <yshrink>False</yshrink>
-	  <xfill>False</xfill>
-	  <yfill>False</yfill>
-	</child>
-	<can_focus>True</can_focus>
-	<title>Pick a Font</title>
-	<preview_text>AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz</preview_text>
-	<mode>GNOME_FONT_PICKER_MODE_PIXMAP</mode>
-	<show_size>True</show_size>
-	<use_font>False</use_font>
-	<use_font_size>14</use_font_size>
-      </widget>
-
-      <widget>
-	<class>GnomeIconEntry</class>
-	<name>iconentry1</name>
-	<child>
-	  <left_attach>2</left_attach>
-	  <right_attach>3</right_attach>
-	  <top_attach>0</top_attach>
-	  <bottom_attach>1</bottom_attach>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <xexpand>False</xexpand>
-	  <yexpand>False</yexpand>
-	  <xshrink>False</xshrink>
-	  <yshrink>False</yshrink>
-	  <xfill>True</xfill>
-	  <yfill>True</yfill>
-	</child>
-      </widget>
-
-      <widget>
-	<class>GnomeHRef</class>
-	<name>href1</name>
-	<child>
-	  <left_attach>0</left_attach>
-	  <right_attach>1</right_attach>
-	  <top_attach>1</top_attach>
-	  <bottom_attach>2</bottom_attach>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <xexpand>False</xexpand>
-	  <yexpand>False</yexpand>
-	  <xshrink>False</xshrink>
-	  <yshrink>False</yshrink>
-	  <xfill>False</xfill>
-	  <yfill>False</yfill>
-	</child>
-	<can_focus>True</can_focus>
-	<url>http://www.gnome.org/</url>
-	<label>Gnome Website</label>
-      </widget>
-
-      <widget>
-	<class>GnomeEntry</class>
-	<name>entry1</name>
-	<child>
-	  <left_attach>1</left_attach>
-	  <right_attach>2</right_attach>
-	  <top_attach>1</top_attach>
-	  <bottom_attach>2</bottom_attach>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <xexpand>True</xexpand>
-	  <yexpand>False</yexpand>
-	  <xshrink>False</xshrink>
-	  <yshrink>False</yshrink>
-	  <xfill>True</xfill>
-	  <yfill>False</yfill>
-	</child>
-	<history_id>Hist</history_id>
-	<max_saved>10</max_saved>
-      </widget>
-
-      <widget>
-	<class>GnomeFileEntry</class>
-	<name>fileentry1</name>
-	<child>
-	  <left_attach>1</left_attach>
-	  <right_attach>2</right_attach>
-	  <top_attach>2</top_attach>
-	  <bottom_attach>3</bottom_attach>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <xexpand>True</xexpand>
-	  <yexpand>True</yexpand>
-	  <xshrink>False</xshrink>
-	  <yshrink>False</yshrink>
-	  <xfill>True</xfill>
-	  <yfill>True</yfill>
-	</child>
-	<history_id>The history</history_id>
-	<title>Hello</title>
-	<directory>False</directory>
-	<modal>False</modal>
-      </widget>
-
-      <widget>
-	<class>GtkClock</class>
-	<name>clock1</name>
-	<child>
-	  <left_attach>2</left_attach>
-	  <right_attach>3</right_attach>
-	  <top_attach>1</top_attach>
-	  <bottom_attach>2</bottom_attach>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <xexpand>False</xexpand>
-	  <yexpand>False</yexpand>
-	  <xshrink>False</xshrink>
-	  <yshrink>False</yshrink>
-	  <xfill>False</xfill>
-	  <yfill>False</yfill>
-	</child>
-	<type>GTK_CLOCK_REALTIME</type>
-	<format>%H:%M</format>
-	<seconds>0</seconds>
-	<interval>60</interval>
-      </widget>
-
-      <widget>
-	<class>GnomeAnimator</class>
-	<name>animator1</name>
-	<child>
-	  <left_attach>0</left_attach>
-	  <right_attach>1</right_attach>
-	  <top_attach>2</top_attach>
-	  <bottom_attach>3</bottom_attach>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <xexpand>True</xexpand>
-	  <yexpand>False</yexpand>
-	  <xshrink>False</xshrink>
-	  <yshrink>False</yshrink>
-	  <xfill>True</xfill>
-	  <yfill>True</yfill>
-	</child>
-      </widget>
-
-      <widget>
-	<class>GnomeLess</class>
-	<name>less1</name>
-	<child>
-	  <left_attach>0</left_attach>
-	  <right_attach>1</right_attach>
-	  <top_attach>3</top_attach>
-	  <bottom_attach>4</bottom_attach>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <xexpand>True</xexpand>
-	  <yexpand>True</yexpand>
-	  <xshrink>False</xshrink>
-	  <yshrink>False</yshrink>
-	  <xfill>True</xfill>
-	  <yfill>True</yfill>
-	</child>
-      </widget>
-
-      <widget>
-	<class>GnomeCalculator</class>
-	<name>calculator1</name>
-	<child>
-	  <left_attach>1</left_attach>
-	  <right_attach>2</right_attach>
-	  <top_attach>3</top_attach>
-	  <bottom_attach>4</bottom_attach>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <xexpand>True</xexpand>
-	  <yexpand>False</yexpand>
-	  <xshrink>False</xshrink>
-	  <yshrink>False</yshrink>
-	  <xfill>True</xfill>
-	  <yfill>True</yfill>
-	</child>
-      </widget>
-
-      <widget>
-	<class>GnomePaperSelector</class>
-	<name>paperselector1</name>
-	<child>
-	  <left_attach>2</left_attach>
-	  <right_attach>3</right_attach>
-	  <top_attach>3</top_attach>
-	  <bottom_attach>4</bottom_attach>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <xexpand>True</xexpand>
-	  <yexpand>False</yexpand>
-	  <xshrink>False</xshrink>
-	  <yshrink>False</yshrink>
-	  <xfill>True</xfill>
-	  <yfill>True</yfill>
-	</child>
-      </widget>
-
-      <widget>
-	<class>GnomeSpell</class>
-	<name>spell1</name>
-	<child>
-	  <left_attach>2</left_attach>
-	  <right_attach>3</right_attach>
-	  <top_attach>2</top_attach>
-	  <bottom_attach>3</bottom_attach>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <xexpand>True</xexpand>
-	  <yexpand>False</yexpand>
-	  <xshrink>False</xshrink>
-	  <yshrink>False</yshrink>
-	  <xfill>True</xfill>
-	  <yfill>True</yfill>
-	</child>
-      </widget>
+      <name>textbox</name>
+      <can_focus>True</can_focus>
+      <editable>True</editable>
+      <text>The cut copy paste and clear buttons should work correctly.</text>
     </widget>
   </widget>
 
@@ -798,19 +368,39 @@
       <expand>True</expand>
       <fill>True</fill>
     </child>
-    <has_progress>True</has_progress>
+    <has_progress>False</has_progress>
     <has_status>True</has_status>
   </widget>
 </widget>
 
 <widget>
-  <class>GnomeDialog</class>
-  <name>dialog1</name>
-  <auto_close>False</auto_close>
-  <hide_on_close>False</hide_on_close>
-  <allow_shrink>False</allow_shrink>
-  <allow_grow>False</allow_grow>
-  <auto_shrink>False</auto_shrink>
+  <class>GnomeAbout</class>
+  <name>aboutwin</name>
+  <visible>False</visible>
+  <signal>
+    <name>clicked</name>
+    <handler>gtk_widget_hide</handler>
+    <last_modification_time>Thu, 17 Jun 1999 07:37:41 GMT</last_modification_time>
+  </signal>
+  <copyright>Copyright (C) 1999</copyright>
+  <authors>James Henstridge &lt;james@daa.com.au&gt;
+</authors>
+  <comments>A simple program demonstrating what is possible with GNOME and
+libglade.  This interface has been coded entirely with GLADE, and
+no C code specific to this interface has been written.</comments>
+</widget>
+
+<widget>
+  <class>GnomeMessageBox</class>
+  <name>closebox</name>
+  <visible>False</visible>
+  <signal>
+    <name>clicked</name>
+    <handler>gtk_main_quit</handler>
+    <last_modification_time>Thu, 17 Jun 1999 07:42:57 GMT</last_modification_time>
+  </signal>
+  <type>GNOME_MESSAGE_BOX_INFO</type>
+  <message>The application is about to quit</message>
 
   <widget>
     <class>GtkVBox</class>
@@ -823,24 +413,6 @@
     </child>
     <homogeneous>False</homogeneous>
     <spacing>8</spacing>
-
-    <widget>
-      <class>GtkDial</class>
-      <name>dial1</name>
-      <child>
-	<padding>0</padding>
-	<expand>True</expand>
-	<fill>True</fill>
-      </child>
-      <view_only>False</view_only>
-      <update_policy>GTK_UPDATE_CONTINUOUS</update_policy>
-      <value>0</value>
-      <lower>0</lower>
-      <upper>100</upper>
-      <step>0</step>
-      <page>0</page>
-      <page_size>0</page_size>
-    </widget>
 
     <widget>
       <class>GtkHButtonBox</class>
@@ -866,31 +438,373 @@
 	<can_focus>True</can_focus>
 	<stock_button>GNOME_STOCK_BUTTON_OK</stock_button>
       </widget>
-
-      <widget>
-	<class>GtkButton</class>
-	<name>button9</name>
-	<can_default>True</can_default>
-	<can_focus>True</can_focus>
-	<stock_button>GNOME_STOCK_BUTTON_APPLY</stock_button>
-      </widget>
-
-      <widget>
-	<class>GtkButton</class>
-	<name>button10</name>
-	<can_default>True</can_default>
-	<can_focus>True</can_focus>
-	<stock_button>GNOME_STOCK_BUTTON_CANCEL</stock_button>
-      </widget>
     </widget>
   </widget>
 </widget>
 
 <widget>
-  <class>GnomeMessageBox</class>
-  <name>messagebox1</name>
-  <type>GNOME_MESSAGE_BOX_ERROR</type>
-  <message>Hello World</message>
+  <class>GtkWindow</class>
+  <name>testwin</name>
+  <visible>False</visible>
+  <signal>
+    <name>delete_event</name>
+    <handler>gtk_widget_hide</handler>
+    <last_modification_time>Thu, 17 Jun 1999 14:53:15 GMT</last_modification_time>
+  </signal>
+  <signal>
+    <name>delete_event</name>
+    <handler>gtk_true</handler>
+    <last_modification_time>Thu, 17 Jun 1999 14:53:29 GMT</last_modification_time>
+  </signal>
+  <title>Widget Tests</title>
+  <type>GTK_WINDOW_TOPLEVEL</type>
+  <position>GTK_WIN_POS_NONE</position>
+  <allow_shrink>False</allow_shrink>
+  <allow_grow>True</allow_grow>
+  <auto_shrink>False</auto_shrink>
+
+  <widget>
+    <class>GtkNotebook</class>
+    <name>notebook1</name>
+    <can_focus>True</can_focus>
+    <show_tabs>True</show_tabs>
+    <show_border>True</show_border>
+    <tab_pos>GTK_POS_TOP</tab_pos>
+    <scrollable>True</scrollable>
+    <tab_hborder>2</tab_hborder>
+    <tab_vborder>2</tab_vborder>
+    <popup_enable>False</popup_enable>
+    <num_pages>13</num_pages>
+
+    <widget>
+      <class>GnomeColorPicker</class>
+      <name>colorpicker1</name>
+      <border_width>100</border_width>
+      <can_focus>True</can_focus>
+      <dither>True</dither>
+      <use_alpha>False</use_alpha>
+      <title>Pick a color</title>
+    </widget>
+
+    <widget>
+      <class>GtkLabel</class>
+      <child_name>Notebook:tab</child_name>
+      <name>label1</name>
+      <label>Colour Picker</label>
+      <justify>GTK_JUSTIFY_CENTER</justify>
+      <xalign>0.5</xalign>
+      <yalign>0.5</yalign>
+      <xpad>0</xpad>
+      <ypad>0</ypad>
+    </widget>
+
+    <widget>
+      <class>GnomeFontPicker</class>
+      <name>fontpicker1</name>
+      <border_width>75</border_width>
+      <can_focus>True</can_focus>
+      <title>Pick a Font</title>
+      <preview_text>AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz</preview_text>
+      <mode>GNOME_FONT_PICKER_MODE_FONT_INFO</mode>
+      <show_size>True</show_size>
+      <use_font>True</use_font>
+      <use_font_size>14</use_font_size>
+    </widget>
+
+    <widget>
+      <class>GtkLabel</class>
+      <child_name>Notebook:tab</child_name>
+      <name>label2</name>
+      <label>Font Picker</label>
+      <justify>GTK_JUSTIFY_CENTER</justify>
+      <xalign>0.5</xalign>
+      <yalign>0.5</yalign>
+      <xpad>0</xpad>
+      <ypad>0</ypad>
+    </widget>
+
+    <widget>
+      <class>GnomeIconEntry</class>
+      <name>iconentry1</name>
+    </widget>
+
+    <widget>
+      <class>GtkLabel</class>
+      <child_name>Notebook:tab</child_name>
+      <name>label3</name>
+      <label>Icon Sel</label>
+      <justify>GTK_JUSTIFY_CENTER</justify>
+      <xalign>0.5</xalign>
+      <yalign>0.5</yalign>
+      <xpad>0</xpad>
+      <ypad>0</ypad>
+    </widget>
+
+    <widget>
+      <class>GnomeHRef</class>
+      <name>href1</name>
+      <border_width>150</border_width>
+      <can_focus>True</can_focus>
+      <url>http://www.daa.com.au/~james/gnome/</url>
+      <label>My Gnome Site</label>
+    </widget>
+
+    <widget>
+      <class>GtkLabel</class>
+      <child_name>Notebook:tab</child_name>
+      <name>label4</name>
+      <label>HRef</label>
+      <justify>GTK_JUSTIFY_CENTER</justify>
+      <xalign>0.5</xalign>
+      <yalign>0.5</yalign>
+      <xpad>0</xpad>
+      <ypad>0</ypad>
+    </widget>
+
+    <widget>
+      <class>GnomeEntry</class>
+      <name>entry1</name>
+      <history_id>EntTest</history_id>
+      <max_saved>10</max_saved>
+    </widget>
+
+    <widget>
+      <class>GtkLabel</class>
+      <child_name>Notebook:tab</child_name>
+      <name>label5</name>
+      <label>Entry</label>
+      <justify>GTK_JUSTIFY_CENTER</justify>
+      <xalign>0.5</xalign>
+      <yalign>0.5</yalign>
+      <xpad>0</xpad>
+      <ypad>0</ypad>
+    </widget>
+
+    <widget>
+      <class>GnomeFileEntry</class>
+      <name>fileentry1</name>
+      <border_width>50</border_width>
+      <history_id>FileEntTest</history_id>
+      <directory>False</directory>
+      <modal>False</modal>
+    </widget>
+
+    <widget>
+      <class>GtkLabel</class>
+      <child_name>Notebook:tab</child_name>
+      <name>label6</name>
+      <label>File Entry</label>
+      <justify>GTK_JUSTIFY_CENTER</justify>
+      <xalign>0.5</xalign>
+      <yalign>0.5</yalign>
+      <xpad>0</xpad>
+      <ypad>0</ypad>
+    </widget>
+
+    <widget>
+      <class>GtkDial</class>
+      <name>dial1</name>
+      <view_only>False</view_only>
+      <update_policy>GTK_UPDATE_CONTINUOUS</update_policy>
+      <value>0</value>
+      <lower>0</lower>
+      <upper>100</upper>
+      <step>0</step>
+      <page>0</page>
+      <page_size>0</page_size>
+    </widget>
+
+    <widget>
+      <class>GtkLabel</class>
+      <child_name>Notebook:tab</child_name>
+      <name>label7</name>
+      <label>Dial</label>
+      <justify>GTK_JUSTIFY_CENTER</justify>
+      <xalign>0.5</xalign>
+      <yalign>0.5</yalign>
+      <xpad>0</xpad>
+      <ypad>0</ypad>
+    </widget>
+
+    <widget>
+      <class>GtkClock</class>
+      <name>clock1</name>
+      <type>GTK_CLOCK_REALTIME</type>
+      <format>%H:%M</format>
+      <seconds>0</seconds>
+      <interval>60</interval>
+    </widget>
+
+    <widget>
+      <class>GtkLabel</class>
+      <child_name>Notebook:tab</child_name>
+      <name>label8</name>
+      <label>Clock</label>
+      <justify>GTK_JUSTIFY_CENTER</justify>
+      <xalign>0.5</xalign>
+      <yalign>0.5</yalign>
+      <xpad>0</xpad>
+      <ypad>0</ypad>
+    </widget>
+
+    <widget>
+      <class>GnomeAnimator</class>
+      <name>animator1</name>
+    </widget>
+
+    <widget>
+      <class>GtkLabel</class>
+      <child_name>Notebook:tab</child_name>
+      <name>label9</name>
+      <label>Animator</label>
+      <justify>GTK_JUSTIFY_CENTER</justify>
+      <xalign>0.5</xalign>
+      <yalign>0.5</yalign>
+      <xpad>0</xpad>
+      <ypad>0</ypad>
+    </widget>
+
+    <widget>
+      <class>GnomeCalculator</class>
+      <name>calculator1</name>
+    </widget>
+
+    <widget>
+      <class>GtkLabel</class>
+      <child_name>Notebook:tab</child_name>
+      <name>label10</name>
+      <label>Calculator</label>
+      <justify>GTK_JUSTIFY_CENTER</justify>
+      <xalign>0.5</xalign>
+      <yalign>0.5</yalign>
+      <xpad>0</xpad>
+      <ypad>0</ypad>
+    </widget>
+
+    <widget>
+      <class>GnomeLess</class>
+      <name>less1</name>
+      <font>-b&amp;h-lucidatypewriter-bold-r-normal-*-*-140-*-*-m-*-iso8859-1</font>
+    </widget>
+
+    <widget>
+      <class>GtkLabel</class>
+      <child_name>Notebook:tab</child_name>
+      <name>label11</name>
+      <label>Less</label>
+      <justify>GTK_JUSTIFY_CENTER</justify>
+      <xalign>0.5</xalign>
+      <yalign>0.5</yalign>
+      <xpad>0</xpad>
+      <ypad>0</ypad>
+    </widget>
+
+    <widget>
+      <class>GnomePaperSelector</class>
+      <name>paperselector1</name>
+      <border_width>50</border_width>
+    </widget>
+
+    <widget>
+      <class>GtkLabel</class>
+      <child_name>Notebook:tab</child_name>
+      <name>label12</name>
+      <label>PaperSel</label>
+      <justify>GTK_JUSTIFY_CENTER</justify>
+      <xalign>0.5</xalign>
+      <yalign>0.5</yalign>
+      <xpad>0</xpad>
+      <ypad>0</ypad>
+    </widget>
+
+    <widget>
+      <class>GnomeSpell</class>
+      <name>spell1</name>
+    </widget>
+
+    <widget>
+      <class>GtkLabel</class>
+      <child_name>Notebook:tab</child_name>
+      <name>label13</name>
+      <label>GnomeSpell</label>
+      <justify>GTK_JUSTIFY_CENTER</justify>
+      <xalign>0.5</xalign>
+      <yalign>0.5</yalign>
+      <xpad>0</xpad>
+      <ypad>0</ypad>
+    </widget>
+  </widget>
+</widget>
+
+<widget>
+  <class>GtkFileSelection</class>
+  <name>filesel</name>
+  <border_width>10</border_width>
+  <visible>False</visible>
+  <signal>
+    <name>delete_event</name>
+    <handler>gtk_widget_hide</handler>
+    <last_modification_time>Thu, 17 Jun 1999 14:58:58 GMT</last_modification_time>
+  </signal>
+  <signal>
+    <name>delete_event</name>
+    <handler>gtk_true</handler>
+    <last_modification_time>Thu, 17 Jun 1999 14:59:07 GMT</last_modification_time>
+  </signal>
+  <title>Select File</title>
+  <type>GTK_WINDOW_TOPLEVEL</type>
+  <position>GTK_WIN_POS_NONE</position>
+  <show_file_op_buttons>True</show_file_op_buttons>
+  <allow_shrink>False</allow_shrink>
+  <allow_grow>True</allow_grow>
+  <auto_shrink>False</auto_shrink>
+
+  <widget>
+    <class>GtkButton</class>
+    <child_name>FileSel:ok_button</child_name>
+    <name>ok_button1</name>
+    <can_default>True</can_default>
+    <can_focus>True</can_focus>
+    <signal>
+      <name>clicked</name>
+      <handler>gtk_widget_hide</handler>
+      <object>filesel</object>
+      <last_modification_time>Thu, 17 Jun 1999 15:02:33 GMT</last_modification_time>
+    </signal>
+    <signal>
+      <name>clicked</name>
+      <handler>gtk_widget_show</handler>
+      <object>msgdialog</object>
+      <last_modification_time>Thu, 17 Jun 1999 15:02:51 GMT</last_modification_time>
+    </signal>
+    <label>OK</label>
+  </widget>
+
+  <widget>
+    <class>GtkButton</class>
+    <child_name>FileSel:cancel_button</child_name>
+    <name>cancel_button1</name>
+    <can_default>True</can_default>
+    <can_focus>True</can_focus>
+    <signal>
+      <name>clicked</name>
+      <handler>gtk_widget_hide</handler>
+      <object>filesel</object>
+      <last_modification_time>Thu, 17 Jun 1999 14:59:25 GMT</last_modification_time>
+    </signal>
+    <label>Cancel</label>
+  </widget>
+</widget>
+
+<widget>
+  <class>GnomeDialog</class>
+  <name>msgdialog</name>
+  <visible>False</visible>
+  <auto_close>True</auto_close>
+  <hide_on_close>True</hide_on_close>
+  <allow_shrink>False</allow_shrink>
+  <allow_grow>False</allow_grow>
+  <auto_shrink>False</auto_shrink>
 
   <widget>
     <class>GtkVBox</class>
@@ -903,6 +817,24 @@
     </child>
     <homogeneous>False</homogeneous>
     <spacing>8</spacing>
+
+    <widget>
+      <class>GtkLabel</class>
+      <name>label14</name>
+      <child>
+	<padding>0</padding>
+	<expand>False</expand>
+	<fill>False</fill>
+      </child>
+      <label>If this was a real application, clicking on the
+OK button would probably have done something
+useful, rather than just displaying this dialog.</label>
+      <justify>GTK_JUSTIFY_CENTER</justify>
+      <xalign>0.5</xalign>
+      <yalign>0.5</yalign>
+      <xpad>0</xpad>
+      <ypad>0</ypad>
+    </widget>
 
     <widget>
       <class>GtkHButtonBox</class>
@@ -923,23 +855,13 @@
 
       <widget>
 	<class>GtkButton</class>
-	<name>button11</name>
+	<name>button9</name>
 	<can_default>True</can_default>
 	<can_focus>True</can_focus>
 	<stock_button>GNOME_STOCK_BUTTON_OK</stock_button>
       </widget>
     </widget>
   </widget>
-</widget>
-
-<widget>
-  <class>GnomeAbout</class>
-  <name>about2</name>
-  <copyright>GPL</copyright>
-  <authors>James
-Anon
-</authors>
-  <comments>Hello World</comments>
 </widget>
 
 </GTK-Interface>

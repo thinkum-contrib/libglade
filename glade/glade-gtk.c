@@ -741,7 +741,9 @@ text_new(GladeXML *xml, GNode *node)
 	wid = gtk_text_new(NULL, NULL);
 	if (text) {
 		char *tmp = _(text);
-		gtk_editable_insert_text(GTK_EDITABLE(wid), tmp, strlen(tmp), NULL);
+		gint pos = 0;
+		gtk_editable_insert_text(GTK_EDITABLE(wid), tmp, strlen(tmp),
+					 &pos);
 		g_free(text);
 	}
 	gtk_text_set_editable(GTK_TEXT(wid), editable);
