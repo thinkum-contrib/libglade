@@ -1,3 +1,9 @@
+Fri Jan 23 01:18:33 2004  Matthias Clasen  <maclas@gmx.de>
+
+	* glade/glade-build.h: 
+	* glade/glade-xml.c (glade_register_widget): Don't use the
+	C++ keyword 'new' as argument name.  (#96050, Bas Driessen)
+
 Fri Jan 23 01:07:10 2004  Matthias Clasen  <maclas@gmx.de>
 
 	* glade-2.0.dtd: Allow <property> in <signal> for the benefit

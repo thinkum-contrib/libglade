@@ -1193,21 +1193,21 @@ struct _GladeWidgetBuildData {
 /**
  * glade_register_widget:
  * @type: the GType of the widget.
- * @new: the function used to construct instances of the widget.
+ * @new_func: the function used to construct instances of the widget.
  * @build_children: function used to construct children (or NULL).
  * @find_internal_child: function to find internal children (or NULL).
  *
  * This function is used to register new construction functions for a
  * widget type.  The child building routine would call
- * glade_xml_build_widget on each child node to create the child
+ * glade_xml_build_widget() on each child node to create the child
  * before packing it.
  *
  * This function is mainly useful for addon widget modules for libglade
- * (it would get called from the glade_init_module function).
+ * (it would get called from the glade_init_module() function).
  */
 void
 glade_register_widget(GType type,
-		      GladeNewFunc new,
+		      GladeNewFunc new_func,
 		      GladeBuildChildrenFunc build_children,
 		      GladeFindInternalChildFunc find_internal_child)
 {
