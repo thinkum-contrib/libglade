@@ -53,7 +53,9 @@ while test $# -gt 0; do
 	;;
 
     --cflags)
-       	echo -I@includedir@
+	if test "@includedir@" != /usr/include ; then
+	    echo -I@includedir@
+	fi
        	;;
 
     --libs)

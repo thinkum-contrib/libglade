@@ -3,6 +3,9 @@ AM_CONFIG_HEADER(config.h)
 
 AM_INIT_AUTOMAKE(libglade, 0.0.3)
 
+dnl get the GNOME macros
+AM_ACLOCAL_INCLUDE(macros)
+
 AC_ARG_ENABLE(debug, [  --enable-debug             enable debugging output],,
   [enable_debug=no])
 
@@ -39,14 +42,13 @@ GNOME_INIT_HOOK([
 	AC_DEFINE(ENABLE_GNOME)
 ])
 AM_CONDITIONAL(GNOME_SUPPORT, $have_gnome)
+dnl gnumeric doesn't use this configure script, so LIBGLADE_FULLDIST is
+dnl false when building libglade as part of gnumeric.
+AM_CONDITIONAL(LIBGLADE_FULLDIST, true)
 GNOME_COMPILE_WARNINGS
 
-LIBGLADE_LIBDIR='-L${libdir}'
-LIBGLADE_INCLUDEDIR='-I${includedir}'
 LIBGLADE_LIBS="-lglade $XML_LIBS"
-AC_SUBST(LIBGLADE_LIBDIR)
-AC_SUBST(LIBGLADE_INCLUDEDIR)
 AC_SUBST(LIBGLADE_LIBS)
 
-AC_OUTPUT(Makefile glade/Makefile libglade-config)
+AC_OUTPUT(Makefile macros/Makefile glade/Makefile libglade-config)
 

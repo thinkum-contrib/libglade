@@ -45,6 +45,14 @@ static void glade_xml_destroy(GtkObject *object);
 static void glade_xml_build_interface(GladeXML *xml, GladeTreeData *tree,
 				      const char *root);
 
+/**
+ * glade_xml_get_type
+ *
+ * Description:
+ * Creates the typecode for the GladeXML object type.
+ *
+ * Returns: the typecode for the GladeXML object type.
+ */
 GtkType glade_xml_get_type(void) {
   static GtkType xml_type = 0;
   if (!xml_type) {
@@ -77,6 +85,21 @@ static void glade_xml_init(GladeXML *self) {
   self->signals = g_hash_table_new(g_str_hash, g_str_equal);
 }
 
+/**
+ * glade_xml_new
+ * @fname: the XML file name.
+ * @root: the widget node in @fname to start building from (or %NULL)
+ *
+ * Description:
+ * Creates a new GladeXML object (and the corresponding widgets) from the
+ * XML file @fname.  Optionally it will only build the interface from the
+ * widget node @root (if it is not %NULL).  This feature is useful if you
+ * only want to build say a toolbar or menu from the XML file, but not the
+ * window it is embedded in.  Note also that the XML parse tree is cached
+ * to speed up creating another GladeXML object for the same file
+ *
+ * Returns: the newly created GladeXML object.
+ */
 GladeXML *glade_xml_new(const char *fname, const char *root) {
   GladeXML *self = gtk_type_new(glade_xml_get_type());
 
@@ -84,6 +107,16 @@ GladeXML *glade_xml_new(const char *fname, const char *root) {
   return self;
 }
 
+/**
+ * glade_xml_construct
+ * @self: the GladeXML object
+ * @fname: the XML filename
+ * @root: the root widget node (or %NULL for none)
+ *
+ * Description:
+ * This routine can be used by bindings (such as gtk--) to help construct
+ * a GladeXML object, if it is needed.
+ */
 void glade_xml_construct(GladeXML *self, const char *fname, const char *root) {
   GladeTreeData *tree = glade_tree_get(fname);
 
@@ -94,6 +127,17 @@ void glade_xml_construct(GladeXML *self, const char *fname, const char *root) {
   if (self->tooltips) gtk_tooltips_enable(self->tooltips);
 }
 
+/**
+ * glade_xml_signal_connect
+ * @self: the GladeXML object
+ * @signalname: the signal handler name
+ * @func: the signal handler function
+ *
+ * Description:
+ * In the glade interface descriptions, signal handlers are specified for
+ * widgets by name.  This function allows you to connect a C function to
+ * all signals in the GladeXML file with the given signal handler name.
+ */
 void glade_xml_signal_connect(GladeXML *self, const char *signalname,
 			      GtkSignalFunc func) {
   GList *signals = g_hash_table_lookup(self->signals, signalname);
@@ -153,6 +197,20 @@ static void autoconnect_foreach(char *signal_handler, GList *signals,
     }
 }
 
+/**
+ * glade_xml_signal_autoconnect
+ * @self: the GladeXML object.
+ *
+ * Description:
+ * This function is a variation of glade_xml_signal_connect.  It uses
+ * gmodule's introspective features (by openning the module %NULL) to
+ * look at the application's symbol table.  From here it tries to match
+ * the signal handler names given in the interface description with
+ * symbols in the application and connects the signals.
+ * 
+ * Note that this function will not work correctly if gmodule is not
+ * supported on the platform.
+ */
 void glade_xml_signal_autoconnect(GladeXML *self) {
   GModule *allsymbols;
   if (!g_module_supported())
@@ -161,24 +219,82 @@ void glade_xml_signal_autoconnect(GladeXML *self) {
   /* get a handle on the main executable -- use this to find symbols */
   allsymbols = g_module_open(NULL, 0);
   g_hash_table_foreach(self->signals, (GHFunc)autoconnect_foreach, allsymbols);
+  g_module_close(allsymbols);
 }
 
+/**
+ * glade_xml_get_widget
+ * @self: the GladeXML object.
+ * @name: the name of the widget.
+ *
+ * Description:
+ * This function is used to get a pointer to the GtkWidget corresponding to
+ * @name in the interface description.  You would use this if you have to do
+ * anything to the widget after loading.
+ *
+ * Returns: the widget matching @name, or %NULL if none exists.
+ */
 GtkWidget *glade_xml_get_widget(GladeXML *self, const char *name) {
   return g_hash_table_lookup(self->name_hash, name);
 }
+
+/**
+ * glade_xml_get_widget_by_long_name
+ * @self: the GladeXML object.
+ * @longname: the long name of the widget (eg toplevel.parent.widgetname).
+ *
+ * Description:
+ * This function is used to get a pointer to the GtkWidget corresponding to
+ * @longname in the interface description.  You would use this if you have
+ * to do anything to the widget after loading.  This function differs from
+ * glade_xml_get_widget, in that you have to give the long form of the
+ * widget name, with all its parent widget names, separated by periods.
+ *
+ * Returns: the widget matching @longname, or %NULL if none exists.
+ */
 GtkWidget *glade_xml_get_widget_by_long_name(GladeXML *self,
 					     const char *longname) {
   return g_hash_table_lookup(self->longname_hash, longname);
 }
 
+/**
+ * glade_get_widget_name
+ * @widget: the widget
+ *
+ * Description:
+ * Used to get the name of a widget that was generated by a GladeXML object.
+ *
+ * Returns: the name of the widget.
+ */
 const char *glade_get_widget_name(GtkWidget *widget) {
   return (const char *)gtk_object_get_data(GTK_OBJECT(widget),
 					   glade_xml_name_tag);
 }
+
+/**
+ * glade_get_widget_long_name
+ * @widget: the widget
+ *
+ * Description:
+ * Used to get the long name of a widget that was generated by a GladeXML
+ * object.
+ *
+ * Returns: the long name of the widget.
+ */
 const char *glade_get_widget_long_name(GtkWidget *widget) {
   return (const char *)gtk_object_get_data(GTK_OBJECT(widget),
 					   glade_xml_longname_tag);
 }
+
+/**
+ * glade_get_widget_tree
+ * @widget: the widget
+ *
+ * Description:
+ * This function is used to get the GladeXML object that built this widget.
+ *
+ * Returns: the GladeXML object that built this widget.
+ */
 GladeXML *glade_get_widget_tree(GtkWidget *widget) {
   return gtk_object_get_data(GTK_OBJECT(widget), glade_xml_tag);
 }
@@ -338,6 +454,7 @@ static void glade_xml_destroy(GtkObject *object) {
     (* parent_class->destroy)(object);
 }
 
+/* private -- used by widget building routines only */
 gint glade_enum_from_string(GtkType type, const char *string) {
   GtkEnumValue *val = gtk_type_enum_find_value(type, string);
 
@@ -368,6 +485,21 @@ static void glade_xml_build_interface(GladeXML *self, GladeTreeData *tree,
 
 static GHashTable *widget_table = NULL;
 
+/**
+ * glade_register_widgets
+ * @widgets: a NULL terminated array of GladeWidgetBuildData structures.
+ *
+ * Description:
+ * This function is used to register new sets of widget building functions.
+ * each member of @widgets contains the widget name, a function to build
+ * a widget of that type, and optionally a function to build the children
+ * of this widget.  The child building routine would call
+ * glade_xml_build_widget on each child node to create the child before
+ * packing it.
+ *
+ * This function is mainly useful for addon widget modules for libglade
+ * (it would get called from the glade_init_module function).
+ */
 void glade_register_widgets(const GladeWidgetBuildData *widgets) {
   int i = 0;
   if (!widget_table)
@@ -378,6 +510,27 @@ void glade_register_widgets(const GladeWidgetBuildData *widgets) {
   }
 }
 
+/**
+ * glade_xml_build_widget
+ * @self: the GladeXML object.
+ * @node: the GNode holding the xmlNode of the child
+ * @parent_long: the long name of the parent object.
+ *
+ * Description:
+ * This function is not intended for people who just use libglade.  Instead
+ * it is for people extending it (it is designed to be called in the child
+ * build routine defined for the parent widget).  It first checks the type
+ * of the widget from the class tag, then calls the corresponding widget
+ * creation routine.  This routine sets up all the settings specific to that
+ * type of widget.  Then general widget settings are performed on the widget.
+ * Then it sets up accelerators for the widget, and extracts any signal
+ * information for the widget.  Then it checks to see if there are any
+ * child widget nodes for this widget, and if so calls the widget's
+ * build routine, which will create the children with this function and add
+ * them to the widget in the appropriate way.  Finally it returns the widget.
+ * 
+ * Returns: the newly created widget.
+ */
 GtkWidget *glade_xml_build_widget(GladeXML *self, GNode *node,
 				  const char *parent_long) {
   xmlNodePtr xml = node->data, tmp;

@@ -6,7 +6,7 @@ THE_FLAGS = $(GTK_CFLAGS)
 THE_LIBS  = $(GTK_LIBS)
 endif
 
-SUBDIRS = glade
+SUBDIRS = macros glade
 
 #CFLAGS += -Wall -Wpointer-arith -Wstrict-prototypes
 

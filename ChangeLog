@@ -1,3 +1,22 @@
+1999-04-24  James Henstridge  <james@daa.com.au>
+
+	* libglade-config.in: don't output -I/usr/include if that is where
+	the headers are, as this location is already in the search path.
+
+	* configure.in: removed some unused substitutions.
+
+	* Makefile.am (SUBDIRS): added macros subdirectory.
+
+	* configure.in: set the automake conditional LIBGLADE_FULLDIST to
+	true.  When libglade is built as part of the gnumeric build, this
+	configure script is not used, so the makefiles use the value of
+	LIBGLADE_FULLDIST from the toplevel gnumeric makefile.  Also added
+	a call to AM_ACLOCAL_INCLUDE to find the correct macros.
+
+	* glade/glade-init.c, glade/glade-xml.c: added gnome-libs style
+	documentation comments to these files, so libglade API docs can be
+	generated easily.
+
 1999-04-23  Miguel de Icaza  <miguel@nuclecu.unam.mx>
 
 	* glade/glade-gtk.c: Fix.  If we encounter a placeholder, the code

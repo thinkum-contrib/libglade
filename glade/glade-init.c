@@ -25,12 +25,34 @@
 
 void glade_init_gtk_widgets(void);
 
+/**
+ * glade_init
+ * 
+ * Description:
+ * Should be called before creating any GladeXML objects.  Currently all it
+ * does is register all the widget building routines, so they can be found
+ * by widget name.  In the future it may do some more initialisation work.
+ */
 void glade_init(void) {
   glade_init_gtk_widgets();
 
   /* probably should do something about auto-loading of widget sets here */
 }
 
+/**
+ * glade_load_module
+ * @module: the shared library.
+ *
+ * Description:
+ * This routine loads the shared library @module, and calls the function
+ * glade_init_module.  If the file doesn't exist, or it doesn't contain
+ * a glade_init_module function, the loading fails.  The idea of this
+ * function is to allow new widget building routines to be loaded into
+ * libglade at runtime.
+ *
+ * This would be a lot more useful if special tags in the XML file could
+ * trigger the loading of modules.
+ */
 void glade_load_module(const char *module) {
   GModule *mod;
   char *module_name;
