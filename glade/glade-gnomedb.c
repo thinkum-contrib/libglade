@@ -44,7 +44,7 @@ dblogin_new(GladeXML *xml, GladeWidgetInfo *info)
 {
 	GtkWidget *wid;
      
-	wid = gnome_db_login_new (NULL, NULL, NULL);
+	wid = gnome_db_login_new (NULL);
      
 	return wid;
 }
@@ -55,7 +55,7 @@ dblogindlg_new (GladeXML *xml, GladeWidgetInfo *info)
 	GtkWidget *wid = NULL;
 	GtkWidget *wid2 = NULL;
      
-	wid2 = gnome_db_login_new (NULL,NULL,NULL);
+	wid2 = gnome_db_login_new (NULL);
           
 	wid = gnome_db_logindlg_new (GNOME_DB_LOGIN (wid2), NULL);
      
@@ -150,7 +150,7 @@ dberror_new (GladeXML *xml, GladeWidgetInfo *info)
 {
 	GtkWidget *wid;
        
-	wid = gnome_db_error_new (NULL);
+	wid = gnome_db_error_new ();
      
 	return (wid);
 }
@@ -160,7 +160,7 @@ dberrordlg_new (GladeXML *xml, GladeWidgetInfo *info)
 {
 	GtkWidget *wid;
        
-	wid = gnome_db_errordlg_new (NULL, NULL);
+	wid = gnome_db_error_dialog_new (NULL);
      
 	return (wid);
 }

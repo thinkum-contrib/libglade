@@ -1,3 +1,7 @@
+2002-01-29  Rodrigo Moya <rodrigo@gnome-db.org>
+
+	* glade/glade-gnomedblib.c: updated for latest GNOME-DB API.
+	
 2002-01-07  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-sax.c: s/CHAR/xmlChar/
