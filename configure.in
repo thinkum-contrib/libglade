@@ -50,5 +50,10 @@ GNOME_COMPILE_WARNINGS
 AC_CHECK_PROG(GTKDOC, gtkdoc-mkdb, true, false)
 AM_CONDITIONAL(HAVE_GTK_DOC, $GTKDOC)
 
-AC_OUTPUT(Makefile macros/Makefile glade/Makefile doc/Makefile libglade-config)
+AC_OUTPUT([Makefile
+libglade.spec
+macros/Makefile
+glade/Makefile
+doc/Makefile
+libglade-config])
 

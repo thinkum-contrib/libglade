@@ -1,17 +1,18 @@
 # Note that this is NOT a relocatable package
-%define ver      0.1
-%define rel      1
-%define prefix   /usr
+%define name	@PACKAGE@
+%define ver	@VERSION@
+%define rel     SNAP
+%define prefix	/usr
 
 Summary: libglade library
-Name: libglade
+Name: %name
 Version: %ver
 Release: %rel
 Copyright: LGPL
 Group: X11/Libraries
 Source: ftp://ftp.daa.com.au/pub/james/gnome/libglade-%{ver}.tar.gz
 Requires: gtk+ libxml
-BuildRoot: /var/tmp/libglade-root
+BuildRoot: /var/tmp/%{name}-root
 Packager: James Henstridge
 URL: http://www.gnome.org
 Docdir: %{prefix}/doc
@@ -61,13 +62,13 @@ else
 fi
 
 %install
-rm -rf $RPM_BUILD_ROOT
+[ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
 
 make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
 %clean
-#rm -rf $RPM_BUILD_ROOT
+[ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
 
 %post -p /sbin/ldconfig
 
@@ -86,6 +87,7 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 %{prefix}/lib/lib*.so
 %{prefix}/lib/*a
 %{prefix}/include/glade/*
+%{prefix}/share/aclocal/*
 
 %doc test-libglade.c
 %doc *.glade

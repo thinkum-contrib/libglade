@@ -1,3 +1,10 @@
+1999-06-06  Erik Walthinsen  <omega@cse.ogi.edu>
+
+	* converted libglade.spec to libglade.spec.in, made appropiate
+	changes in .cvsignore, Makefile.am, and configure.in.
+
+	* added libglade.m4 to the spec file
+
 1999-06-07  James Henstridge  <james@daa.com.au>
 
 	* custom.glade: an example of using custom widgets.  In this example,

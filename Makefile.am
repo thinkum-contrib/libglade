@@ -8,7 +8,12 @@ endif
 
 INCLUDES = $(THE_FLAGS) $(XML_CFLAGS)
 
-EXTRA_DIST = libglade.spec test.glade simple.glade example.glade libglade.m4
+EXTRA_DIST =			\
+	libglade.spec.in	\
+	test.glade		\
+	simple.glade		\
+	example.glade		\
+	libglade.m4
 
 if LIBGLADE_FULLDIST
 bin_SCRIPTS = libglade-config
@@ -25,4 +30,5 @@ SUBDIRS = glade $(extra_dirs)
 
 test_libglade_SOURCES = test-libglade.c
 
-
+dist-hook:
+	cp libglade.spec $(distdir)
