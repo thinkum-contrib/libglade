@@ -1,3 +1,8 @@
+2002-05-06  James Henstridge  <james@daa.com.au>
+
+	* configure.in: push version number back up to 12.  This is
+	to help Jacob's snapshots.
+
 2002-04-28  Murray Cumming  <murrayc@usa.net>
 
 	* glade/glade-xml.c (get_build_data):
