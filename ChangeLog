@@ -1,3 +1,7 @@
+2002-04-28  James Henstridge  <james@daa.com.au>
+
+	* configure.in: decrement version number.
+
 2002-04-26  Murray Cumming  <murrayc@usa.net>
 
 	* glade/glade-xml.c: gtkmm's derived gtypes don't use 
