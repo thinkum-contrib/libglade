@@ -2040,7 +2040,7 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 	    data->build_children(self, widget, info);
 	else
 	    g_warning ("widget %s (%s) has children, but is not a GtkContainer.",
-		       info->name, g_type_name (G_INSTANCE_TYPE (widget)));
+		       info->name, g_type_name (G_TYPE_FROM_INSTANCE (widget)));
     }
 }
 
