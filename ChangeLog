@@ -1,3 +1,15 @@
+2002-02-07  jacob berkman  <jacob@ximian.com>
+
+	* glade/glade-xml.c (glade_xml_relative_file): use
+	g_path_get_dirname()
+
+	* glade/glade-gtk.c: re-enable deprecated and broken widgets,
+	since we need to provide them for porting purposes
+	(pixmap_set_filename): use g_object_unref() rather than various
+	deprecated calls
+
+	* glade/Makefile.am (INCLUDES): add -DFOO_DISABLE_DEPRECATED
+
 2002-02-07  James Henstridge  <james@daa.com.au>
 
 	* configure.in: increment version number.

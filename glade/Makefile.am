@@ -9,8 +9,16 @@
 
 LTVERSION = 0:0:0
 
-INCLUDES = -DG_LOG_DOMAIN=\"libglade\" -I$(top_srcdir) $(LIBGLADE_CFLAGS) \
-	-DGLADE_LIBDIR=\""$(libdir)"\"
+INCLUDES = \
+	-DG_LOG_DOMAIN=\"libglade\"	\
+	-I$(top_srcdir)			\
+	$(LIBGLADE_CFLAGS) 		\
+	-DGLADE_LIBDIR=\""$(libdir)"\"	\
+	-DG_DISABLE_DEPRECATED		\
+	-DGDK_DISABLE_DEPRECATED	\
+	-DGDK_PIXBUF_DISABLE_DEPRECATED	\
+	-DGTK_DISABLE_DEPRECATED	\
+	-DGNOME_DISABLE_DEPRECATED
 
 glademoduledir = $(libdir)/libglade/2.0
 

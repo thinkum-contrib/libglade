@@ -27,13 +27,17 @@
 #include <stdlib.h>
 
 /* for GtkText et all */
+#ifndef GTK_ENABLE_BROKEN
 #define GTK_ENABLE_BROKEN
+#endif
+#ifdef GTK_DISABLE_DEPRECATED
+#undef GTK_DISABLE_DEPRECATED
+#endif
 #include <gtk/gtk.h>
 
 #include <glade/glade.h>
 #include <glade/glade-build.h>
 #include <glade/glade-private.h>
-
 
 #define INT(s)   (strtol ((s), NULL, 0))
 #define BOOL(s)  (g_ascii_tolower (*(s)) == 't' || g_ascii_tolower (*(s)) == 'y' || INT (s))
@@ -94,10 +98,10 @@ pixmap_set_filename (GladeXML *xml, GtkWidget *w,
     gdk_pixbuf_render_pixmap_and_mask (pb, &pixmap, &bitmap, 127);
     gtk_pixmap_set (GTK_PIXMAP (w), pixmap, bitmap);
 
-    if (pixmap) gdk_pixmap_unref (pixmap);
-    if (bitmap) gdk_bitmap_unref (bitmap);
+    if (pixmap) g_object_unref (pixmap);
+    if (bitmap) g_object_unref (bitmap);
 
-    gdk_pixbuf_unref (pb);
+    g_object_unref (pb);
 }
 
 static void

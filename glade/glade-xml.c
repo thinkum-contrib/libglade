@@ -571,7 +571,7 @@ glade_xml_relative_file(GladeXML *self, const gchar *filename)
     if (g_path_is_absolute(filename)) /* an absolute pathname */
 	return g_strdup(filename);
     /* prepend XML file's dir onto filename */
-    dirname = g_dirname(self->filename);	
+    dirname = g_path_get_dirname(self->filename);	
     tmp = g_strconcat(dirname, G_DIR_SEPARATOR_S, filename, NULL);
     g_free(dirname);
     return tmp;
