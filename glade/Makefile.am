@@ -9,13 +9,7 @@
 
 LTVERSION = 2:5:2
 
-if GNOME_SUPPORT
-THE_FLAGS = $(GNOME_INCLUDEDIR)
-else
-THE_FLAGS = $(GTK_CFLAGS)
-endif
-
-INCLUDES = -I$(srcdir)/.. $(THE_FLAGS) $(XML_CFLAGS) -I$(srcdir)/..
+INCLUDES = -I$(srcdir)/.. $(XML_CFLAGS) $(GTK_CFLAGS) $(GNOME_INCLUDEDIR)
 
 the_sources =		\
 	glade-init.c 	\

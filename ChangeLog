@@ -1,3 +1,13 @@
+2000-03-12  James Henstridge  <james@daa.com.au>
+
+	* glade/Makefile.am (INCLUDES): don't bother with the THE_FLAGS
+	stuff.  If gnome support is not enabled, then the GNOME_INCLUDEDIR
+	macro will expand to nothing.
+
+	* glade/glade-gnome.c (pixmapmenuitem_new): check for a user icon
+	as well as stock icons.  This change is based on a patch from
+	David Santiago <mrcooger@cyberverse.com>.
+
 2000-03-10  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-gnome.c (gnome_uiinfo_mapping): added an entry for
