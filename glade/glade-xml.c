@@ -89,7 +89,7 @@ glade_xml_get_type(void)
 static void
 glade_xml_class_init (GladeXMLClass *class)
 {
-    parent_class = g_type_class_ref (G_TYPE_OBJECT);
+    parent_class = g_type_class_peek_parent (class);
 
     G_OBJECT_CLASS(class)->finalize = glade_xml_finalize;
 }
@@ -1122,8 +1122,9 @@ glade_xml_build_interface(GladeXML *self, GladeInterface *iface,
 	}
     } else {
 	/* build all toplevel nodes */
-	for (i = 0; i < iface->n_toplevels; i++)
-	    glade_xml_build_widget(self, iface->toplevels[i],NULL);
+	for (i = 0; i < iface->n_toplevels; i++) {
+	    w = glade_xml_build_widget(self, iface->toplevels[i],NULL);
+	}
 	if (self->priv->focus_widget)
 	    gtk_widget_grab_focus(self->priv->focus_widget);
 	if (self->priv->default_widget)
@@ -1211,11 +1212,47 @@ glade_xml_set_value_from_string (GParamSpec *pspec,
 	g_value_set_string(value, string);
 	break;
     case G_TYPE_BOXED:
+	if (G_VALUE_HOLDS(value, GDK_TYPE_COLOR)) {
+	    GdkColor colour = { 0, };
+
+	    if (gdk_color_parse(string, &colour) &&
+		gdk_colormap_alloc_color(gtk_widget_get_default_colormap(),
+					 &colour, FALSE, TRUE)) {
+		g_value_set_boxed(value, &colour);
+	    } else {
+		g_warning ("could not parse colour name `%s'", string);
+		ret = FALSE;
+	    }
+	} else
+	    ret = FALSE;
+	break;
+    case G_TYPE_OBJECT:
+	if (G_VALUE_HOLDS(value, GTK_TYPE_ADJUSTMENT)) {
+	    GtkAdjustment *adj =
+		GTK_ADJUSTMENT(gtk_adjustment_new(0, 0, 100, 1, 10, 10));
+	    gchar *ptr = (gchar *)string;
+
+	    adj->value = g_strtod(ptr, &ptr);
+	    adj->lower = g_strtod(ptr, &ptr);
+	    adj->upper = g_strtod(ptr, &ptr);
+	    adj->step_increment = g_strtod(ptr, &ptr);
+	    adj->page_increment = g_strtod(ptr, &ptr);
+	    adj->page_size = g_strtod(ptr, &ptr);
+
+	    g_value_set_object(value, adj);
+	    gtk_object_sink(GTK_OBJECT(adj));
+	} else
+	    ret = FALSE;
+	break;
     default:
-	g_warning("unsupported property type `%s'", g_type_name(prop_type));
-	g_value_unset(value);
 	ret = FALSE;
 	break;
+    }
+
+    if (!ret) {
+	g_warning("unsupported type `%s' for property `%s'",
+		  g_type_name(prop_type), pspec->name);
+	g_value_unset(value);
     }
     return ret;
 }

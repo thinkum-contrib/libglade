@@ -1,3 +1,15 @@
+2001-08-16  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c (glade_xml_set_value_from_string): add support
+	for GdkColor and GtkAdjustment type values.
+	(glade_xml_set_value_from_string): make the unsupported property
+	type message include the ParamSpec name in the error.
+
+	* libglade-convert (collect_adjustment): collect properties that
+	define an adjustment into a single property.
+	(fixup_widget): collect adjustments for range widgets, spin
+	buttons, viewports, scrolled windows and layouts.
+
 2001-08-15  James Henstridge  <james@daa.com.au>
 
 	* libglade-convert: rewrite large portions of the script to make
