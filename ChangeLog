@@ -1,3 +1,10 @@
+2001-08-26  James Henstridge  <james@daa.com.au>
+
+	* libglade-2.0.pc.in (moduledir): add variable to .pc file so that
+	other packages can find out where to put libglade modules.
+
+	* configure.in: increment version number.
+
 2001-08-25  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-xml.c (glade_xml_handle_widget_prop): add function
