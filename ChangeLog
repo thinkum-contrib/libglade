@@ -1,3 +1,10 @@
+2002-01-16  jacob berkman  <jacob@ximian.com>
+
+	* libglade-convert.in (upgrade_widget): make GtkTextView wrap
+	words by default
+	(renamed_props): add some more properties for gnome-font-picker to
+	convert
+
 2002-01-14  Damon Chaplin  <damon@ximian.com>
 
 	* glade/glade-parser.c (handle_signal): ignore last_modification_time.
@@ -449,7 +456,7 @@ Fri Oct 19 15:14:03 2001  Jonathan Blandford  <jrb@redhat.com>
 	(fixup_as_type): deal to some extent with
 	GtkOptionMenus & their sub-labels.
 
-Thu Oct 18 01:21:27 2001  Jonathan Blandford  <jrb@redhat.com>>
+Thu Oct 18 01:21:27 2001  Jonathan Blandford  <jrb@redhat.com>
 
 	* glade/glade-gtk.c (option_menu_build_children): Handle
 	GtkOptionMenu.
