@@ -24,6 +24,10 @@
 #include <gtk/gtkwidget.h>
 #include <gtk/gtktooltips.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+	
 #define GLADE_XML(obj) GTK_CHECK_CAST((obj), glade_xml_get_type(), GladeXML)
 #define GLADE_XML_CLASS(klass) GTK_CHECK_CLASS_CAST((klass), glade_xml_get_type(), GladeXMLClass)
 #define GLADE_IS_XML(obj) GTK_CHECK_TYPE((obj), glade_xml_get_type())
@@ -87,5 +91,8 @@ const char *glade_get_widget_long_name (GtkWidget *widget);
 
 GladeXML   *glade_get_widget_tree      (GtkWidget *widget);
 
-
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+	
 #endif

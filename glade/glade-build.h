@@ -24,6 +24,10 @@
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkadjustment.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+	
 /* create a new widget of some type.  Don't parse `standard' widget options */
 typedef GtkWidget *(* GladeNewFunc) (GladeXML *xml,
 				     GNode *node);
@@ -70,4 +74,8 @@ gint glade_enum_from_string(GtkType type, const char *string);
 /* a wrapper for gettext */
 char *glade_xml_gettext(GladeXML *xml, const char *msgid);
 
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+	
 #endif

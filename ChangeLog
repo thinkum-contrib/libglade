@@ -1,3 +1,9 @@
+1999-06-13  Richard Hestilow  <hestgray@ionet.net>
+
+	* glade/glade-xml.h, glade-build.h, glade.h: added 
+	"#ifdef __cplusplus" wrappers, otherwise was giving linktime
+	errors with g++.
+	
 1999-06-12  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-xml.c: fixed up gettext call.
