@@ -160,6 +160,7 @@ doc/Makefile
 doc/version.xml
 tests/Makefile
 libglade-2.0.pc
+libglade-2.0-uninstalled.pc
 libglade-convert
 ])
 

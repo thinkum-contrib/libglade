@@ -39,6 +39,7 @@ EXTRA_DIST = \
   libglade.spec.in \
   libglade.spec \
   libglade-2.0.pc.in \
+  libglade-2.0-uninstalled.pc.in \
   libglade-convert.in \
   examples/simple.glade \
   examples/first.glade \
