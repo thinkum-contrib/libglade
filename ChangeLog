@@ -1,3 +1,7 @@
+1999-09-01  Pablo Saratxaga <pablo@mandrakesoft.com>
+
+	* po/da.po: added danish file
+
 1999-08-24  James Henstridge  <james@daa.com.au>
 
 	* test-libglade.c (main): when building only part of the widget tree,

@@ -1,0 +1,18 @@
+# Libglade in danish.
+# Copyright (C) 1999 Free Software Foundation, Inc.
+# Birger Langkjer <birger.langkjer@image.dk>, 1999.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libglade 0.3\n"
+"POT-Creation-Date: 1999-08-07 21:53+0800\n"
+"PO-Revision-Date: 1999-08-24 23:10+0100\n"
+"Last-Translator: Birger Langkjer <birger.langkjer@image.dk>\n"
+"Language-Team: Danish <dltp@lists.wiktor.dk>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=iso-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: test-libglade.c:18
+msgid "Do not connect signals"
+msgstr "Forbind ikke signaler"
