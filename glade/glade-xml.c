@@ -26,6 +26,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <glade/glade-xml.h>
+#include <glade/glade-init.h>
 #include <glade/glade-build.h>
 #include <glade/glade-private.h>
 #include <gmodule.h>
@@ -819,7 +820,6 @@ glade_xml_add_atk_relations(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
     gint i;
     AtkObject *atko = gtk_widget_get_accessible (w);
     AtkRelationSet *relations = atk_object_ref_relation_set (atko);
-    gint n_relations = 0;
     
     for (i = 0; i < info->n_relations; i++) {
 	GladeAtkRelationInfo *relation_info = &info->relations[i];
@@ -875,7 +875,6 @@ glade_xml_add_accessibility_info(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *i
     AtkObject *atko = gtk_widget_get_accessible (w);
     
     for (i = 0; i < info->n_atk_props; i++) {
-	GParameter param = { NULL };
 	GParamSpec *pspec;
 	GValue value = { 0 };
 
@@ -928,7 +927,6 @@ static void
 remove_data_func(gpointer key, gpointer value, gpointer user_data)
 {
     GObject *object = value;
-    GladeXML *xml = user_data;
 
     g_object_set_qdata(object, glade_xml_tree_id, NULL);
     g_object_set_qdata(object, glade_xml_name_id, NULL);
@@ -1404,6 +1402,37 @@ glade_standard_build_widget(GladeXML *xml, GType widget_type,
 }
 
 /**
+ * glade_xml_set_packing_property:
+ * @self: the GladeXML object.
+ * @parent: the container widget.
+ * @child: the contained child
+ * @name: the name of the property
+ * @value: it's stringified value
+ * 
+ * This sets the packing property on container @parent of widget
+ * @child with @name to @value
+ **/
+void
+glade_xml_set_packing_property (GladeXML   *self,
+				GtkWidget  *parent, GtkWidget  *child,
+				const char *name,   const char *value)
+{
+    GValue gvalue = { 0 };
+    GParamSpec *pspec;
+
+    pspec = gtk_container_class_find_child_property(
+	G_OBJECT_GET_CLASS(parent), name);
+    if (!pspec)
+	g_warning("unknown child property `%s' for container `%s'",
+		  name, G_OBJECT_TYPE_NAME(parent));
+    else if (glade_xml_set_value_from_string(self, pspec, value, &gvalue)) {
+	gtk_container_child_set_property(GTK_CONTAINER(parent), child,
+					 name, &gvalue);
+	g_value_unset(&gvalue);
+    }
+}
+
+/**
  * glade_standard_build_children
  * @self: the GladeXML object.
  * @parent: the container widget.
@@ -1439,27 +1468,15 @@ glade_standard_build_children(GladeXML *self, GtkWidget *parent,
 
 	g_object_ref(G_OBJECT(child));
 	gtk_widget_freeze_child_notify(child);
+
 	gtk_container_add(GTK_CONTAINER(parent), child);
-	for (j = 0; j < info->children[i].n_properties; j++) {
-	    const gchar *name = info->children[i].properties[j].name;
-	    GValue value = { 0 };
-	    GParamSpec *pspec;
 
-	    pspec = gtk_container_class_find_child_property(
-		G_OBJECT_GET_CLASS(parent), name);
-	    if (!pspec) {
-		g_warning("unknown child property `%s' for container `%s'",
-			  name, G_OBJECT_TYPE_NAME(parent));
-		continue;
-	    }
+	for (j = 0; j < info->children[i].n_properties; j++)
+	    glade_xml_set_packing_property (
+		self, parent, child,
+		info->children[i].properties[j].name,
+		info->children[i].properties[j].value);
 
-	    if (glade_xml_set_value_from_string(self, pspec,
-			info->children[i].properties[j].value, &value)) {
-		gtk_container_child_set_property(GTK_CONTAINER(parent), child,
-						 name, &value);
-		g_value_unset(&value);
-	    }
-	}
 	gtk_widget_thaw_child_notify(child);
 	g_object_unref(G_OBJECT(child));
     }
@@ -1538,7 +1555,6 @@ GtkWidget *
 glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info)
 {
     GladeWidgetBuildData *data;
-    GType widget_type;
     GtkWidget *ret;
 
     debug(g_message("Widget class: %s", info->class));

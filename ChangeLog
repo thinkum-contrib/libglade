@@ -1,3 +1,25 @@
+2001-10-10  Michael Meeks  <michael@ximian.com>
+
+	* Makefile.am: hook up tests, set dodgy env. var
+	to trigger them.
+
+	* test-libglade.c: run tests on env. or --run-tests
+
+2001-10-09  Michael Meeks  <michael@ximian.com>
+
+	* test-libglade.c (run_tests): impl.
+
+	* libglade-convert (WidgetDef.append_prop): impl.
+	(fixup_as_type): deal with tab widgets.
+
+	* glade/glade-gtk.c (notebook_build_children): impl. nasty
+	hacks around curious gtk_notebook API.
+	(widget_data): update to point at notebook.
+
+	* glade/glade-xml.c: prune scads of warnings.
+	(glade_xml_set_packing_property): split out of
+	(glade_standard_build_children): here.
+
 2001-10-09  Michael Meeks  <michael@ximian.com>
 
 	* libglade-convert (fixup_widget): split out recursion into

@@ -41,7 +41,7 @@ void
 menuitem_build_children(GladeXML *self, GtkWidget *w,
 			GladeWidgetInfo *info)
 {
-    gint i, j;
+    gint i;
 
     g_object_ref(G_OBJECT(w));
     for (i = 0; i < info->n_children; i++) {
@@ -54,6 +54,64 @@ menuitem_build_children(GladeXML *self, GtkWidget *w,
 	    gtk_container_add(GTK_CONTAINER(w), child);
     }
     g_object_unref(G_OBJECT(w));
+}
+
+void
+notebook_build_children(GladeXML *self, GtkWidget *parent,
+			GladeWidgetInfo *info)
+{
+    gint i, j, tab = 0;
+    enum {
+	PANE_ITEM,
+	TAB_ITEM,
+	MENU_ITEM
+    } type;
+
+
+    g_warning ("Notebook build children");
+
+    g_object_ref(G_OBJECT(parent));
+    for (i = 0; i < info->n_children; i++) {
+	GladeWidgetInfo *childinfo = info->children[i].child;
+	GtkWidget *child = glade_xml_build_widget(self, childinfo);
+
+	type = PANE_ITEM;
+	for (j = 0; j < info->children[i].n_properties; j++) {
+	    if (!strcmp (info->children[i].properties[j].name, "type")) {
+		const char *value = info->children[i].properties[j].value;
+
+		if (!strcmp (value, "tab"))
+		    type = TAB_ITEM;
+		break;
+	    }
+	}
+
+	g_object_ref(G_OBJECT(child));
+	gtk_widget_freeze_child_notify(child);
+
+	if (type == TAB_ITEM) { /* The GtkNotebook API blows */
+	    GtkWidget *body;
+
+	    body = gtk_notebook_get_nth_page (GTK_NOTEBOOK (parent), (tab - 1));
+	    gtk_notebook_set_tab_label (GTK_NOTEBOOK (parent), body, child);
+	} else {
+	    gtk_notebook_append_page (GTK_NOTEBOOK (parent), child, NULL);
+	    tab++;
+	}
+
+	for (j = 0; j < info->children[i].n_properties; j++) {
+	    const char *name = info->children[i].properties[j].name;
+
+	    if (strcmp (info->name, "type"))
+		glade_xml_set_packing_property (
+		    self, parent, child, name,
+		    info->children[i].properties[j].value);
+	}
+	
+	gtk_widget_thaw_child_notify(child);
+	g_object_unref(G_OBJECT(child));
+    }
+    g_object_unref(G_OBJECT(parent));
 }
 
 static GtkWidget *
@@ -223,7 +281,7 @@ static GladeWidgetBuildData widget_data[] = {
       gtk_menu_item_get_type },
     { "GtkMessageDialog", window_new, glade_standard_build_children,
       gtk_message_dialog_get_type },
-    { "GtkNotebook", glade_standard_build_widget, glade_standard_build_children,
+    { "GtkNotebook", glade_standard_build_widget, notebook_build_children,
       gtk_notebook_get_type },
     { "GtkOptionMenu", glade_standard_build_widget, glade_standard_build_children,
       gtk_option_menu_get_type },

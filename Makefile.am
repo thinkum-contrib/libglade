@@ -29,3 +29,6 @@ EXTRA_DIST = \
   config.h.win32 \
   makefile.mingw
 
+TESTS_ENVIRONMENT = \
+	LIBGLADE_REGRESSION=1
+TESTS = test-libglade

@@ -101,6 +101,11 @@ class WidgetDef:
             if self.properties.has_key(name):
                 self.property_names.remove(name)
                 del self.properties[name]
+        def append_prop(self,name,value):
+            if not self.properties.has_key(name):
+                self.property_names.append(name)
+            self.properties[name] = value;
+                
         def dump(self, indent):
             if self.widget.has_prop('obsolete'):
                 return
@@ -422,6 +427,17 @@ def fixup_as_type(widget, type):
                 del childdef['yfill']
             if options:
                 childdef['y_options'] = string.join(options,'|')
+
+    # fixup GtkNotebook child tab widgets.
+    if type == 'GtkNotebook':
+        for childdef in widget.children:
+            if childdef.widget.has_prop ('child_name'):
+                if childdef.widget['child_name'] == 'Notebook:tab':
+                    del childdef.widget['child_name']
+                    childdef.append_prop ('type', 'tab')
+                else:
+                    print >> sys.stderr , 'Unknown child_name %s', \
+                          childdef['child_name']
 
     # fix up adjustment properties
     if type in ('GtkHScale', 'GtkHScrollbar',
