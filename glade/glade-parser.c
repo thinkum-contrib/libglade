@@ -1105,6 +1105,9 @@ glade_parser_parse_file(const gchar *file, const gchar *domain)
     }
     if (state.state != PARSER_FINISH) {
 	g_warning("did not finish in PARSER_FINISH state!");
+	if (state.interface)
+	    glade_interface_destroy(state.interface);
+	return NULL;
     }
     return state.interface;
 }
@@ -1143,6 +1146,9 @@ glade_parser_parse_buffer(const gchar *buffer, gint len, const gchar *domain)
     }
     if (state.state != PARSER_FINISH) {
 	g_warning("did not finish in PARSER_FINISH state!");
+	if (state.interface)
+	    glade_interface_destroy(state.interface);
+	return NULL;
     }
     return state.interface;
 }

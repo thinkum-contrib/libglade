@@ -1,5 +1,10 @@
 2002-01-29  James Henstridge  <james@daa.com.au>
 
+	* glade/glade-parser.c (glade_parser_parse_file): if the parser
+	didn't finish in the correct state, the XML file was invalid, so
+	return NULL.
+	(glade_parser_parse_buffer): same here.
+
 	* configure.in: add long prominant warning message if
 	libglade-convert wasn't built.
 
