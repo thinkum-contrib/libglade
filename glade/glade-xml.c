@@ -57,8 +57,6 @@ static void glade_xml_destroy(GtkObject *object);
 static void glade_xml_build_interface(GladeXML *xml, GladeWidgetTree *tree,
 				      const char *root);
 
-static void glade_xml_widget_destroy(GtkObject *object, GladeXML *xml);
-
 GladeExtendedFunc *glade_xml_build_extended_widget = NULL;
 
 /**
@@ -994,10 +992,6 @@ remove_data_func(gpointer key, gpointer value, gpointer user_data)
     GtkObject *object = value;
     GladeXML *xml = user_data;
 
-    /* disconnect the signal handler */
-    gtk_signal_disconnect_by_func(object,
-			GTK_SIGNAL_FUNC(glade_xml_widget_destroy), xml);
-
     gtk_object_set_data_by_id(object, glade_xml_tree_id, NULL);
     gtk_object_set_data_by_id(object, glade_xml_name_id, NULL);
     gtk_object_set_data_by_id(object, glade_xml_longname_id, NULL);
@@ -1017,8 +1011,7 @@ glade_xml_destroy(GtkObject *object)
 	self->txtdomain = NULL;
 
 	if (priv) {
-		/* disconnect signals and remove data from all widgets
-                 * in long name hash */
+		/* remove data from all widgets in long name hash */
 		g_hash_table_foreach(priv->longname_hash,
 				     remove_data_func, self);
 
@@ -1442,9 +1435,9 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 	 * name_hash on destruction. Use connect_object so the handler
 	 * is automatically removed on finalization of the GladeXML
 	 * object. */
-	gtk_signal_connect(GTK_OBJECT(widget), "destroy",
-			   GTK_SIGNAL_FUNC(glade_xml_widget_destroy),
-			   GTK_OBJECT(self));
+	gtk_signal_connect_while_alive(GTK_OBJECT(widget), "destroy",
+				GTK_SIGNAL_FUNC(glade_xml_widget_destroy),
+				self, GTK_OBJECT(self));
 
 	if (info->style)
 		glade_style_attach(widget, info->style->name);

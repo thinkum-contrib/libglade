@@ -1,5 +1,10 @@
 2001-09-01  James Henstridge  <james@daa.com.au>
 
+	* glade/glade-xml.c (remove_data_func): don't remove the signal
+	handler here.
+	(glade_xml_set_common_params): use connect_while_alive variant to
+	connect up glade_xml_widget_destroy instead.
+
 	* libgladeConf.sh.in (LIBGLADE_INCLUDEDIR): change include dir.
 
 	* libglade-config.in: change -I flag for --cflags
