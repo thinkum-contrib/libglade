@@ -738,7 +738,13 @@ label_new (GladeXML *xml, GladeWidgetInfo *info)
 	}
 
 	label = gtk_label_new("");
-	key = gtk_label_parse_uline(GTK_LABEL(label), _(string));
+	if (string){
+		char *s = string [0] ? _(string) : "";
+		
+		key = gtk_label_parse_uline(GTK_LABEL(label), s);
+	} else
+		key = 0;
+	
 	if (key)
 		glade_xml_handle_label_accel(xml, focus_target, key);
 	if (just != GTK_JUSTIFY_CENTER)
@@ -865,9 +871,11 @@ button_new(GladeXML *xml, GladeWidgetInfo *info)
 	}
 	if (string != NULL) {
 		guint key;
+		char *s = string [0] ? _(string) : "";
+		
 		button = gtk_button_new_with_label("");
 		key = gtk_label_parse_uline(GTK_LABEL(GTK_BIN(button)->child),
-					    _(string));
+					    _(s));
 		if (key)
 			gtk_widget_add_accelerator(button, "clicked",
 						   glade_xml_ensure_accel(xml),
@@ -895,9 +903,11 @@ togglebutton_new(GladeXML *xml, GladeWidgetInfo *info)
 	}
 	if (string != NULL) {
 		guint key;
+		char *s = string [0] ? _(string) : "";
+		
 		button = gtk_toggle_button_new_with_label("");
 		key = gtk_label_parse_uline(GTK_LABEL(GTK_BIN(button)->child),
-					    _(string));
+					    _(s));
 		if (key)
 			gtk_widget_add_accelerator(button, "clicked",
 						   glade_xml_ensure_accel(xml),
@@ -928,9 +938,11 @@ checkbutton_new (GladeXML *xml, GladeWidgetInfo *info)
 	}
 	if (string != NULL) {
 		guint key;
+		char *s = string [0] ? _(string) : "";
+		
 		button = gtk_check_button_new_with_label("");
 		key = gtk_label_parse_uline(GTK_LABEL(GTK_BIN(button)->child),
-					    _(string));
+					    _(s));
 		if (key)
 			gtk_widget_add_accelerator(button, "clicked",
 						   glade_xml_ensure_accel(xml),
@@ -972,9 +984,11 @@ radiobutton_new(GladeXML *xml, GladeWidgetInfo *info)
 	}
 	if (string != NULL) {
 		guint key;
+		char *s = string [0] ? _(string) : "";
+		
 		button = gtk_radio_button_new_with_label(group, "");
 		key = gtk_label_parse_uline(GTK_LABEL(GTK_BIN(button)->child),
-					    _(string));
+					    _(s));
 		if (key)
 			gtk_widget_add_accelerator(button, "clicked",
 						   glade_xml_ensure_accel(xml),
@@ -1613,9 +1627,10 @@ menuitem_new(GladeXML *xml, GladeWidgetInfo *info)
 	if (label) {
 		GtkAccelGroup *accel;
 		guint key;
+		char *s = label [0] ? _(label) : "";
 		menuitem = gtk_menu_item_new_with_label("");
 		key = gtk_label_parse_uline(
-				GTK_LABEL(GTK_BIN(menuitem)->child), _(label));
+				GTK_LABEL(GTK_BIN(menuitem)->child), s);
 		if (key) {
 			accel = glade_xml_get_uline_accel(xml);
 			if (accel)
@@ -1662,8 +1677,14 @@ checkmenuitem_new(GladeXML *xml, GladeWidgetInfo *info)
 			toggle = attr->value[0] == 'T';
 	}
 	menuitem = gtk_check_menu_item_new_with_label("");
-	key = gtk_label_parse_uline(
-			GTK_LABEL(GTK_BIN(menuitem)->child), _(label));
+	if (label){
+		char *s = label [0] ? _(label) : "";
+		
+		key = gtk_label_parse_uline(
+			GTK_LABEL(GTK_BIN(menuitem)->child), s);
+	} else
+		key = 0;
+	
 	if (key) {
 		accel = glade_xml_get_uline_accel(xml);
 		if (accel)
@@ -1712,8 +1733,13 @@ radiomenuitem_new(GladeXML *xml, GladeWidgetInfo *info)
 
 	/* XXXX -- must do something about radio item groups ... */
 	menuitem = gtk_radio_menu_item_new_with_label(NULL, "");
-	key = gtk_label_parse_uline(
-			GTK_LABEL(GTK_BIN(menuitem)->child), _(label));
+	if (label){
+		char *s = label [0] ? _(label) : "";
+		
+		key = gtk_label_parse_uline(
+			GTK_LABEL(GTK_BIN(menuitem)->child), s);
+	} else
+		key = 0;
 	if (key) {
 		accel = glade_xml_get_uline_accel(xml);
 		if (accel)

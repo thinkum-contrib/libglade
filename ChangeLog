@@ -1,3 +1,13 @@
+1999-09-13  Miguel de Icaza  <miguel@nuclecu.unam.mx>
+
+	* glade/glade-gtk.c (label_new): Do not translate a string if it
+	is empty. 
+	(button_new): ditto.
+	(checkbutton_new): ditto.
+	(menuitem_new): ditto.
+	(checkmenuitem_new): ditto.
+	(radiomenuitem_new): ditto
+
 1999-09-12  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-sax.c: got rid of an infinite loop in the accelerator

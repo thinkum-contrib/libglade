@@ -4,19 +4,19 @@
 </para>
 
 
-<!-- ##### MACRO GLADE_XML ##### -->
-<para>
-
-</para>
-
-@obj: 
-
 <!-- ##### FUNCTION glade_xml_get_type ##### -->
 <para>
 
 </para>
 
 @Returns: 
+
+<!-- ##### MACRO GLADE_XML ##### -->
+<para>
+
+</para>
+
+@obj: 
 
 <!-- ##### MACRO GLADE_XML_CLASS ##### -->
 <para>
