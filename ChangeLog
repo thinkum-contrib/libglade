@@ -1,3 +1,9 @@
+1999-05-16  Raja R Harinath  <harinath@cs.umn.edu>
+
+	* glade/Makefile.am (glade-keys.c): Mention explicitly that
+	glade-keys.c is built in $(srcdir).
+	* glade/glade-gtk.c (button_stock_new): Declare type for `len'.
+
 1999-05-11  James Henstridge  <james@daa.com.au>
 
 	* doc/*: use gtkdoc to generate documentation for libglade.

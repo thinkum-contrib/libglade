@@ -651,7 +651,7 @@ stock_compare (const void *a, const void *b)
 static GtkWidget *button_stock_new (const char *stock_name)
 {
 	GtkWidget *w;
-	const len = strlen ("GNOME_STOCK_BUTTON_");
+	const int len = strlen ("GNOME_STOCK_BUTTON_");
 	gnome_map_t *v;
 	gnome_map_t base;
 		

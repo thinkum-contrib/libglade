@@ -38,5 +38,5 @@ endif
 BUILT_SOURCES = glade-keys.c
 EXTRA_DIST = makekeys.awk $(the_headers)
 
-glade-keys.c: makekeys.awk $(GDK_KEYSYMS)
+$(srcdir)/glade-keys.c: makekeys.awk $(GDK_KEYSYMS)
 	$(AWK) -f $(srcdir)/makekeys.awk < $(GDK_KEYSYMS) > $(srcdir)/glade-keys.c
