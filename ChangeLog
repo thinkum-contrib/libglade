@@ -1,3 +1,17 @@
+1999-06-09  James Henstridge  <james@daa.com.au>
+
+	* Makefile.am (EXTRA_DIST): added the custom.glade and
+	gnome-widgets.glade examples to the distribution.
+
+	* glade/glade-xml.h, glade/glade-xml.c: changed the second argument
+	name in glade_xml_signal_connect to handlername, so that people who
+	don't want to read the docs do not get confused as easily :)
+
+1999-06-09  Michael Meeks  <michael@edenproject.org>
+
+	* glade/glade-xml.c (glade_xml_new): Added return NULL on error
+	(glade_xml_construct): Added boolean - success return value.
+
 1999-06-08  James Henstridge  <james@daa.com.au>
 
 	* Makefile.am (confexec_DATA): install the libgladeConf.sh script.

@@ -57,10 +57,10 @@ struct _GladeSignalData {
 
 GtkType glade_xml_get_type    (void);
 GladeXML *glade_xml_new       (const char *fname, const char *root);
-void glade_xml_construct      (GladeXML *self, const char *fname,
+gboolean glade_xml_construct  (GladeXML *self, const char *fname,
 			       const char *root);
 
-void glade_xml_signal_connect (GladeXML *self, const char *signalname,
+void glade_xml_signal_connect (GladeXML *self, const char *handlername,
 			       GtkSignalFunc func);
 /*
  * use gmodule to connect signals automatically.  Basically a symbol with

@@ -107,14 +107,17 @@ glade_xml_init (GladeXML *self)
  * window it is embedded in.  Note also that the XML parse tree is cached
  * to speed up creating another GladeXML object for the same file
  *
- * Returns: the newly created GladeXML object.
+ * Returns: the newly created GladeXML object, or NULL on failure.
  */
 GladeXML *
 glade_xml_new(const char *fname, const char *root)
 {
 	GladeXML *self = gtk_type_new(glade_xml_get_type());
 
-	glade_xml_construct(self, fname, root);
+	if (!glade_xml_construct(self, fname, root)) {
+		gtk_object_destroy(GTK_OBJECT(self));
+		return NULL;
+	}
 	return self;
 }
 
@@ -126,13 +129,16 @@ glade_xml_new(const char *fname, const char *root)
  *
  * This routine can be used by bindings (such as gtk--) to help construct
  * a GladeXML object, if it is needed.
+ *
+ * Returns: TRUE if the construction succeeded.
  */
-void
+gboolean
 glade_xml_construct (GladeXML *self, const char *fname, const char *root)
 {
 	GladeTreeData *tree = glade_tree_get(fname);
 
-	g_return_if_fail(tree != NULL);
+	if (!tree)
+		return FALSE;
 
 	if (self->filename)
 		g_free(self->filename);
@@ -141,12 +147,14 @@ glade_xml_construct (GladeXML *self, const char *fname, const char *root)
 
 	if (self->priv->tooltips)
 		gtk_tooltips_enable(self->priv->tooltips);
+
+	return TRUE;
 }
 
 /**
  * glade_xml_signal_connect:
  * @self: the GladeXML object
- * @signalname: the signal handler name
+ * @handlername: the signal handler name
  * @func: the signal handler function
  *
  * In the glade interface descriptions, signal handlers are specified for
@@ -154,7 +162,7 @@ glade_xml_construct (GladeXML *self, const char *fname, const char *root)
  * all signals in the GladeXML file with the given signal handler name.
  */
 void
-glade_xml_signal_connect (GladeXML *self, const char *signalname,
+glade_xml_signal_connect (GladeXML *self, const char *handlername,
 			  GtkSignalFunc func)
 {
 	GList *signals = g_hash_table_lookup(self->priv->signals, signalname);

@@ -14,6 +14,8 @@ EXTRA_DIST =			\
 	test.glade		\
 	simple.glade		\
 	example.glade		\
+	custom.glade		\
+	gnome-widgets.glade	\
 	libglade.m4
 
 if LIBGLADE_FULLDIST
