@@ -592,6 +592,8 @@ glade_parser_start_element(GladeParseState *state,
 		    state->context_prop = !strcmp(attrs[i+1], "yes");
 		else if (!strcmp(attrs[i], "agent"))
 		    bad_agent = strcmp(attrs[i], "libglade") != 0;
+		else if (!strcmp(attrs[i], "comments"))
+		    /* Do nothing. */;
 		else
 		    g_warning("unknown attribute `%s' for <property>.",
 			      attrs[i]);
@@ -648,6 +650,8 @@ glade_parser_start_element(GladeParseState *state,
 		    state->translate_prop = !strcmp(attrs[i+1], "yes");
 		else if (!strcmp(attrs[i], "context"))
 		    state->context_prop = !strcmp(attrs[i+1], "yes");
+		else if (!strcmp(attrs[i], "comments"))
+		    /* Do nothing. */;
 		else
 		    g_warning("unknown attribute `%s' for <atkproperty>.",
 			      attrs[i]);
@@ -801,6 +805,8 @@ glade_parser_start_element(GladeParseState *state,
 		    state->context_prop = !strcmp(attrs[i+1], "yes");
 		else if (!strcmp(attrs[i], "agent"))
 		    bad_agent = strcmp(attrs[i], "libglade") != 0;
+		else if (!strcmp(attrs[i], "comments"))
+		    /* Do nothing. */;
 		else
 		    g_warning("unknown attribute `%s' for <property>.",
 			      attrs[i]);
