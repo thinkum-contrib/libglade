@@ -39,9 +39,14 @@
 #  include <libintl.h>
 #endif
 
-static const char *glade_xml_tag = "GladeXML::";
-static const char *glade_xml_name_tag = "GladeXML::name";
-static const char *glade_xml_longname_tag = "GladeXML::longname";
+static const gchar *glade_xml_tree_key     = "GladeXML::tree";
+static GQuark       glade_xml_tree_id      = 0;
+static const gchar *glade_xml_name_key     = "GladeXML::name";
+static GQuark       glade_xml_name_id      = 0;
+static const gchar *glade_xml_longname_key = "GladeXML::longname";
+static GQuark       glade_xml_longname_id  = 0;
+static const gchar *glade_xml_tooltips_key = "GladeXML::tooltips";
+static GQuark       glade_xml_tooltips_id  = 0;
 
 static void glade_xml_init(GladeXML *xml);
 static void glade_xml_class_init(GladeXMLClass *klass);
@@ -51,6 +56,8 @@ static void glade_xml_destroy(GtkObject *object);
 
 static void glade_xml_build_interface(GladeXML *xml, GladeWidgetTree *tree,
 				      const char *root);
+
+static void glade_xml_widget_destroy(GtkObject *object, GladeXML *xml);
 
 GladeExtendedFunc *glade_xml_build_extended_widget = NULL;
 
@@ -87,6 +94,11 @@ glade_xml_class_init (GladeXMLClass *klass)
 	parent_class = gtk_type_class(gtk_data_get_type());
 
 	GTK_OBJECT_CLASS(klass)->destroy = glade_xml_destroy;
+
+	glade_xml_tree_id = g_quark_from_static_string(glade_xml_tree_key);
+	glade_xml_name_id = g_quark_from_static_string(glade_xml_name_key);
+	glade_xml_longname_id = g_quark_from_static_string(glade_xml_longname_key);
+	glade_xml_tooltips_id = g_quark_from_static_string(glade_xml_tooltips_key);
 }
 
 static void
@@ -94,7 +106,7 @@ glade_xml_init (GladeXML *self)
 {
 	GladeXMLPrivate *priv;
 	
-	self->priv = priv = g_new (GladeXMLPrivate, 1);
+	self->priv = priv = g_new0 (GladeXMLPrivate, 1);
 
 	self->filename = NULL;
 	self->txtdomain = NULL;
@@ -642,8 +654,8 @@ glade_get_widget_name(GtkWidget *widget)
 {
 	g_return_val_if_fail(widget != NULL, NULL);
 
-	return (const char *)gtk_object_get_data(GTK_OBJECT(widget),
-						 glade_xml_name_tag);
+	return (const char *)gtk_object_get_data_by_id(GTK_OBJECT(widget),
+						       glade_xml_name_id);
 }
 
 /**
@@ -661,8 +673,8 @@ glade_get_widget_long_name (GtkWidget *widget)
 {
 	g_return_val_if_fail(widget != NULL, NULL);
 
-	return (const char *)gtk_object_get_data(GTK_OBJECT(widget),
-						 glade_xml_longname_tag);
+	return (const char *)gtk_object_get_data_by_id(GTK_OBJECT(widget),
+						       glade_xml_longname_id);
 }
 
 /**
@@ -679,7 +691,8 @@ glade_get_widget_tree(GtkWidget *widget)
 {
 	g_return_val_if_fail(widget != NULL, NULL);
 
-	return gtk_object_get_data(GTK_OBJECT(widget), glade_xml_tag);
+	return gtk_object_get_data_by_id(GTK_OBJECT(widget),
+					 glade_xml_tree_id);
 }
 
 /* ------------------------------------------- */
@@ -697,8 +710,6 @@ glade_get_widget_tree(GtkWidget *widget)
 void
 glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window)
 {
-	static char *tooltips_key = "libglade::GladeXML::tooltips";
-
 	if (xml->priv->focus_widget)
 		gtk_widget_grab_focus(xml->priv->focus_widget);
 	if (xml->priv->default_widget)
@@ -714,9 +725,10 @@ glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window)
 	xml->priv->parent_accel = 0;
 	/* the window should hold a reference to the tooltips object */
 	gtk_object_ref(GTK_OBJECT(xml->priv->tooltips));
-	gtk_object_set_data_full(GTK_OBJECT(window), tooltips_key,
-				 xml->priv->tooltips,
-				 (GtkDestroyNotify)gtk_object_unref);
+	gtk_object_set_data_by_id_full(GTK_OBJECT(window),
+				       glade_xml_tooltips_id,
+				       xml->priv->tooltips,
+				       (GtkDestroyNotify)gtk_object_unref);
 }
 
  /**
@@ -977,6 +989,21 @@ free_radio_groups(gpointer key, gpointer value, gpointer user_data)
 }
 
 static void
+remove_data_func(gpointer key, gpointer value, gpointer user_data)
+{
+    GtkObject *object = value;
+    GladeXML *xml = user_data;
+
+    /* disconnect the signal handler */
+    gtk_signal_disconnect_by_func(object,
+			GTK_SIGNAL_FUNC(glade_xml_widget_destroy), xml);
+
+    gtk_object_set_data_by_id(object, glade_xml_tree_id, NULL);
+    gtk_object_set_data_by_id(object, glade_xml_name_id, NULL);
+    gtk_object_set_data_by_id(object, glade_xml_longname_id, NULL);
+}
+
+static void
 glade_xml_destroy(GtkObject *object)
 {
 	GladeXML *self = GLADE_XML(object);
@@ -990,8 +1017,11 @@ glade_xml_destroy(GtkObject *object)
 	self->txtdomain = NULL;
 
 	if (priv) {
-		if (priv->tree)
-			glade_widget_tree_unref(priv->tree);
+		/* disconnect signals and remove data from all widgets
+                 * in long name hash */
+		g_hash_table_foreach(priv->longname_hash,
+				     remove_data_func, self);
+
 		/* strings are owned in the cached GladeWidgetTree structure */
 		g_hash_table_destroy(priv->name_hash);
 		/* strings belong to individual widgets -- don't free them */
@@ -1012,6 +1042,10 @@ glade_xml_destroy(GtkObject *object)
 		/* there should only be at most one accel group on stack */
 		if (priv->accel_groups)
 			glade_xml_pop_accel(self);
+
+		/* free tree last, so that strings it owns stay around */
+		if (priv->tree)
+			glade_widget_tree_unref(priv->tree);
 
 		g_free (self->priv);
 	}
@@ -1261,6 +1295,30 @@ glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info,
 	return ret;
 }
 
+static void
+glade_xml_widget_destroy(GtkObject *object, GladeXML *xml)
+{
+	gchar *name;
+
+	g_return_if_fail(object != NULL);
+	g_return_if_fail(GTK_IS_OBJECT(object));
+	g_return_if_fail(xml != NULL);
+	g_return_if_fail(GLADE_IS_XML(xml));
+
+	name = gtk_object_get_data_by_id(object, glade_xml_name_id);
+
+	if (!name) return;
+
+	g_hash_table_remove(xml->priv->name_hash, name);
+	gtk_object_set_data_by_id(object, glade_xml_name_id, NULL);
+
+	name = gtk_object_get_data_by_id(object, glade_xml_longname_id);
+	g_hash_table_remove(xml->priv->longname_hash, name);
+	gtk_object_set_data_by_id(object, glade_xml_longname_id, NULL);
+
+	gtk_object_set_data_by_id(object, glade_xml_tree_id, NULL);
+}
+
 /**
  * glade_xml_set_common_params
  * @self: the GladeXML widget.
@@ -1370,13 +1428,23 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 		w_longname = g_strdup(info->name);
 	/* store this information as data of the widget.  w_longname is owned by
 	 * the widget now */
-	gtk_object_set_data(GTK_OBJECT(widget), glade_xml_tag, self);
-	gtk_object_set_data(GTK_OBJECT(widget), glade_xml_name_tag,info->name);
-	gtk_object_set_data_full(GTK_OBJECT(widget), glade_xml_longname_tag,
-				 w_longname, (GtkDestroyNotify)g_free);
+	gtk_object_set_data_by_id(GTK_OBJECT(widget), glade_xml_tree_id, self);
+	gtk_object_set_data_by_id(GTK_OBJECT(widget), glade_xml_name_id,
+				  info->name);
+	gtk_object_set_data_by_id_full(GTK_OBJECT(widget),
+				       glade_xml_longname_id,
+				       w_longname, (GtkDestroyNotify)g_free);
 	/* store widgets in hash table, for easy lookup */
 	g_hash_table_insert(self->priv->name_hash, info->name, widget);
 	g_hash_table_insert(self->priv->longname_hash, w_longname, widget);
+
+	/* set up function to remove widget from GladeXML object's
+	 * name_hash on destruction. Use connect_object so the handler
+	 * is automatically removed on finalization of the GladeXML
+	 * object. */
+	gtk_signal_connect(GTK_OBJECT(widget), "destroy",
+			   GTK_SIGNAL_FUNC(glade_xml_widget_destroy),
+			   GTK_OBJECT(self));
 
 	if (info->style)
 		glade_style_attach(widget, info->style->name);

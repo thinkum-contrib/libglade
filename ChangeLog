@@ -1,3 +1,18 @@
+2001-09-01  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c (glade_xml_init): use g_new0 to allocate
+	private structure.
+	(*): use GQuarks when setting/getting data for a marginal speed
+	improvement.
+	(glade_xml_widget_destroy): function that cleans up dangling
+	pointers inside the GladeXML object when a widget is destroyed.
+	(glade_xml_set_common_params): connect up glade_xml_widget_destroy
+	to each widget that gets constructed.
+	(remove_data_func): function that removes data from a widget in
+	the long name hash, and disconnects the destroy signal handler.
+	(glade_xml_destroy): iterate through longname_hash with
+	remove_data_func, to clean up signals.
+
 2001-04-04  John Gotts  <jgotts@linuxsavvy.com>
 
 	* libglade.spec.in: Fixed the Group:'s.  Also cleaned up the build
