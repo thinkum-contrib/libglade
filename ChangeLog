@@ -1,5 +1,11 @@
 2001-06-25  James Henstridge  <james@daa.com.au>
 
+	* libglade-convert: new program that takes a stab at converting
+	old glade files to the new format.
+
+	* glade/glade-parser.c (flush_accels): fix bug here where the
+	wrong member of the GladeParseState structure was freed.
+
 	* examples/simple.glade: update to use a container child property.
 
 	* glade/glade-xml.c (glade_standard_build_children): add support

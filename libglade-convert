@@ -1,0 +1,217 @@
+#!/usr/bin/env python
+
+# yes, this required python 2.x
+
+import sys
+import string
+import xml.dom.minidom
+
+def munge_widget_properties(properties):
+    props = []
+    seen_visible = 0
+    for name, value in properties:
+	if name == 'visible': seen_visible = 1
+	
+	if value == 'True': value = 'yes'
+	elif value == 'False': value = 'no'
+	props.append((name, value))
+    if not seen_visible:
+	props.append(('visible', 'yes'))
+    return props
+
+def munge_child_properties(properties):
+    props = []
+    has_xoptions = 0
+    xoptions = []
+    has_yoptions = 0
+    yoptions = []
+    for name, value in properties:
+	if value == 'True': value = 'yes'
+	elif value == 'False': value = 'no'
+
+	if name == 'xpad': name = 'x_padding'
+	elif name == 'ypad': name = 'y_padding'
+	elif name == 'xexpand':
+	    if value == 'yes':
+		xoptions.append('expand')
+		has_xoptions = 1
+	    continue
+	elif name == 'xshrink':
+	    if value == 'yes':
+		xoptions.append('shrink')
+		has_xoptions = 1
+	    continue
+	elif name == 'xfill':
+	    if value == 'yes':
+		xoptions.append('fill')
+		has_xoptions = 1
+	    continue
+	elif name == 'yexpand':
+	    if value == 'yes':
+		yoptions.append('expand')
+		has_yoptions = 1
+	    continue
+	elif name == 'yshrink':
+	    if value == 'yes':
+		yoptions.append('shrink')
+		has_yoptions = 1
+	    continue
+	elif name == 'yfill':
+	    if value == 'yes':
+		yoptions.append('fill')
+		has_yoptions = 1
+	    continue
+	
+	props.append((name, value))
+    if has_xoptions:
+	props.append(('x_options', string.join(xoptions,'|')))
+    if has_yoptions:
+	props.append(('y_options', string.join(yoptions,'|')))
+    return props
+
+def totext(nodelist):
+    return string.join(map(lambda node: node.toxml(), nodelist), '')
+
+def handle_signal(signalnode):
+    name = None
+    handler = None
+    object = None
+    after = 0
+    for node in signalnode.childNodes:
+	if node.nodeType != node.ELEMENT_NODE:
+	    continue
+	if node.nodeName == 'name':
+	    name = totext(node.childNodes)
+	elif node.nodeName == 'handler':
+	    handler = totext(node.childNodes)
+	elif node.nodeName == 'object':
+	    object = totext(node.childNodes)
+	elif node.nodeName == 'after':
+	    after = (totext(node.childNodes) == 'True')
+    ret = '<signal name="%s" handler="%s"' % (name, handler)
+    if object: ret = ret + ' object="' + object + '"'
+    if after: ret = ret + ' after="no"'
+    return ret + ' />'
+
+def handle_accel(accelnode):
+    key = None
+    modifiers = None
+    signal = None
+    for node in accelnode.childNodes:
+	if node.nodeType != node.ELEMENT_NODE:
+	    continue
+	if node.nodeName == 'key':
+	    key = totext(node.childNodes)
+	    if key[:4] == 'GDK_': key = key[4:]
+	elif node.nodeName == 'modifiers':
+	    modifiers = totext(node.childNodes)
+	elif node.nodeName == 'signal':
+	    signal = totext(node.childNodes)
+
+    return '<accelerator key="%s" modifiers="%s" signal="%s" />' % \
+	   (key, modifiers, signal)
+
+def get_child_props(widgetnode):
+    for node in widgetnode.childNodes:
+	if node.nodeType != node.ELEMENT_NODE:
+	    continue
+	if node.nodeName == 'child':
+	    child = node
+	    break
+    else:
+	return []
+    childprops = []
+    for node in child.childNodes:
+	if node.nodeType != node.ELEMENT_NODE:
+	    continue
+	childprops.append((node.nodeName, totext(node.childNodes)))
+    return munge_child_properties(childprops)
+
+def handle_widget(widgetnode, indent):
+    name = None
+    klass = None
+    properties = []
+    signals = []
+    accels = []
+    children = []
+    for node in widgetnode.childNodes:
+	if node.nodeType != node.ELEMENT_NODE:
+	    continue
+	if node.nodeName == 'widget':
+	    children.append(node)
+	elif node.nodeName == 'name':
+	    name = totext(node.childNodes)
+	elif node.nodeName == 'class':
+	    klass = totext(node.childNodes)
+	elif node.nodeName in ('signal', 'Signal'):
+	    signals.append(handle_signal(node))
+	elif node.nodeName in ('accelerator', 'Accelerator'):
+	    accels.append(handle_accel(node))
+	elif node.nodeName == 'child':
+	    pass
+	else:
+	    properties.append((node.nodeName, totext(node.childNodes)))
+
+    # start element:
+    print '%s<widget class="%s" id="%s">' % (indent, klass, name)
+
+    # properties:
+    properties = munge_widget_properties(properties)
+    for name, value in properties:
+	print '%s  <property name="%s">%s</property>' % (indent, name, value)
+
+    if properties and (signals or accels or children): print
+
+    # signals
+    for signal in signals:
+	print '%s  %s' % (indent, signal)
+
+    if signals and (accels or children): print
+
+    # accels
+    for accel in accels:
+	print '%s  %s' % (indent, accel)
+
+    if accels and children: print
+
+    # children
+    for child in children:
+	print '%s  <child>' % (indent,)
+
+	childprops = get_child_props(child)
+	for name, value in childprops:
+	    print '%s    <property name="%s">%s</property>' % \
+		  (indent, name, value)
+
+	if childprops: print
+
+	handle_widget(child, indent + '    ')
+
+	print '%s  </child>' % (indent,)
+
+    # close off
+    print '%s</widget>' % (indent,)
+
+def handle_file(filename):
+    document = xml.dom.minidom.parse(filename)
+    root = document.documentElement
+
+    print '<?xml version="1.0" standalone="no"?>'
+    print '<!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd" >'
+    print
+    print '<glade-interface>'
+    indent = '  '
+
+    for node in root.childNodes:
+	if node.nodeType == node.ELEMENT_NODE and \
+	   node.nodeName == 'widget':
+	    handle_widget(node, indent)
+
+    print '</glade-interface>'
+    document.unlink() # only needed for python interpreters without cyclic gc
+
+if __name__ == '__main__':
+    if len(sys.argv) != 2:
+	print >> sys.stderr, 'usage: libglade-convert oldfile.glade'
+	sys.exit(1)
+    handle_file(sys.argv[1])

@@ -186,9 +186,9 @@ flush_accels(GladeParseState *state)
     if (state->accels) {
 	state->widget->accels = (GladeAccelInfo *)state->accels->data;
 	state->widget->n_accels = state->accels->len;
-	g_array_free(state->signals, FALSE);
+	g_array_free(state->accels, FALSE);
     }
-    state->signals = NULL;
+    state->accels = NULL;
 }
 
 static inline void
