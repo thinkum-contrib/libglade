@@ -10,8 +10,7 @@
 LTVERSION = 0:0:0
 
 INCLUDES = -DG_LOG_DOMAIN=\"libglade\" -I$(top_srcdir) $(XML_CFLAGS) \
-	$(GTK_CFLAGS) -DGLADE_MODULE_DIR=\""$(glademoduledir)"\" \
-	$(LIBGLADE_BONOBO_CFLAGS) $(LIBGLADE_GNOME_CFLAGS)
+	$(GTK_CFLAGS) -DGLADE_MODULE_DIR=\""$(glademoduledir)"\"
 
 glademoduledir = $(libdir)/libglade/2.0
 
