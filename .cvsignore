@@ -18,6 +18,9 @@ stamp-h.in
 stamp.h
 version.h
 config.h.in
+install-sh
+mkinstalldirs
+missing
 .exrc
 test-libglade
 *.o
