@@ -1,5 +1,8 @@
 2000-06-26  James Henstridge  <james@daa.com.au>
 
+	* glade/glade-gnome.c (menushell_build_children): add tearoffs to
+	menus if gnome_preferences_get_menus_have_tearoff() is true.
+
 	* glade/glade-gtk.c (custom_new): use glade_create_custom.
 
 	* glade/glade-build.h: prototype for glade_create_custom.
