@@ -1,4 +1,4 @@
-/* -*- Mode: C; c-basic-offset: 8 -*-
+/* -*- Mode: C; c-basic-offset: 4 -*-
  * libglade - a library for building interfaces from XML files at runtime
  * Copyright (C) 1998-2001  James Henstridge <james@daa.com.au>
  *
@@ -26,7 +26,10 @@
 #include <glib.h>
 #include <gmodule.h>
 
-void glade_init_gtk_widgets (void);
+#include "glade-init.h"
+#include "glade-build.h"
+
+void _glade_init_gtk_widgets (void);
 
 /**
  * glade_init:
@@ -38,57 +41,104 @@ void glade_init_gtk_widgets (void);
 void
 glade_init(void)
 {
-	static gboolean initialised = FALSE;
+    static gboolean initialised = FALSE;
 
-	if (initialised) return;
-	initialised = TRUE;
-	glade_init_gtk_widgets();
+    if (initialised) return;
+    initialised = TRUE;
+    _glade_init_gtk_widgets();
 
-	/*probably should do something about auto-loading of widget sets here*/
+    /*probably should do something about auto-loading of widget sets here*/
+}
+
+gchar *
+glade_module_check_version(gint version)
+{
+  if (version != GLADE_MODULE_API_VERSION)
+    return "Wrong plugin API version";
+  else
+    return NULL;
+}
+
+static GPtrArray *loaded_packages = NULL;
+
+/**
+ * glade_require:
+ * @library: the required library
+ *
+ * Ensure that a required library is available.  If it is not already
+ * available, libglade will attempt to dynamically load a module that
+ * contains the handlers for that library.
+ */
+
+void
+glade_require(const gchar *library)
+{
+    gboolean already_loaded = FALSE;
+    gchar *filename;
+    GModule *module;
+    void (* init_func)(void);
+
+    if (loaded_packages) {
+	gint i;
+
+	for (i = 0; i < loaded_packages->len; i++)
+	    if (!strcmp(library, g_ptr_array_index(loaded_packages, i))) {
+		already_loaded = TRUE;
+		break;
+	    }
+    }
+
+    if (already_loaded)
+	return;
+
+    filename = g_strconcat(GLADE_MODULE_DIR, G_DIR_SEPARATOR_S, library,
+			   ".la", NULL);
+    module = g_module_open(filename, G_MODULE_BIND_LAZY);
+    if (!module) {
+	g_warning("Could not load support for `%s': %s", library,
+		  g_module_error());
+	g_free(filename);
+	return;
+    }
+    g_free(filename);
+
+    if (!g_module_symbol(module, "glade_module_register_widgets",
+			 (gpointer)init_func)) {
+	g_warning("could not find `%s' init function: %s", library,
+		  g_module_error());
+	g_module_close(module);
+	return NULL;
+    }
+
+    init_func();
+    g_module_make_resident(module);
 }
 
 /**
- * glade_load_module:
- * @module: the shared library.
+ * glade_provide:
+ * @library: the provided library
  *
- * This routine loads the shared library @module, and calls the function
- * glade_init_module.  If the file doesn't exist, or it doesn't contain
- * a glade_init_module function, the loading fails.  The idea of this
- * function is to allow new widget building routines to be loaded into
- * libglade at runtime.
- *
- * This would be a lot more useful if special tags in the XML file could
- * trigger the loading of modules.
+ * This function should be called by a module to assert that it
+ * provides wrappers for a particular library.  This should be called
+ * by the register_widgets() function of a libglade module so that it
+ * isn't loaded twice, for instance.
  */
+
 void
-glade_load_module (const char *module)
+glade_provide(const gchar *library)
 {
-	GModule *mod;
-	char *module_name;
-	void (*init_func)(void) = NULL;
+    gboolean already_loaded = FALSE;
+    gint i;
 
-	if (!g_module_supported()) {
-		g_warning("No gmodule support -- module '%s' not loaded", module);
-		return;
+    if (!loaded_packages)
+	loaded_packages = g_ptr_array_new();
+
+    for (i = 0; i < loaded_packages->len; i++)
+	if (!strcmp(library, g_ptr_array_index(loaded_packages, i))) {
+	    already_loaded = TRUE;
+	    break;
 	}
 
-	if (module[0]=='/' || (module[0]=='l' && module[1]=='i' && module[2]=='b'))
-		module_name = g_strdup(module);
-	else
-		module_name = g_strconcat("lib", module, ".so", NULL);
-	mod = g_module_open(module_name, G_MODULE_BIND_LAZY);
-
-	if (mod && g_module_symbol(mod, "glade_init_module", (gpointer*)&init_func)) {
-		if (init_func) {
-			g_module_make_resident(mod);
-			init_func();
-		} else
-			g_module_close(mod);
-	} else {
-		g_warning("Failed to load module '%s': %s",
-			  mod ? g_module_name(mod) : module_name, g_module_error());
-		g_module_close(mod);
-	}
-
-	g_free(module_name);
+    if (!already_loaded)
+	g_ptr_array_add(loaded_packages, g_strdup(library));
 }

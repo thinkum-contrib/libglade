@@ -1,3 +1,11 @@
+2001-05-19  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-init.h: header file containing gnome-init.c
+	prototypes (rather than having them in glade.h).
+
+	* glade/glade-init.c (glade_require, glade_provide): new functions
+	to handle dynamic loading of modules.
+
 2001-05-18  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-xml.c: other changes just to get it to compile

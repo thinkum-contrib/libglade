@@ -23,6 +23,7 @@
 #define GLADE_BUILD_H
 
 #include <glib.h>
+#include <gmodule.h>
 #include <glade/glade-xml.h>
 #include <gtk/gtktypeutils.h>
 #include <gtk/gtkwidget.h>
@@ -107,6 +108,24 @@ GtkWidget *glade_create_custom(GladeXML *xml, gchar *func_name, gchar *name,
 			       gchar *string1, gchar *string2,
 			       gint int1, gint int2);
 
+
+/* the module dynamic loading interface ... */
+
+/* increase this when there is a binary incompatible change in the
+ * libglade module API */
+#define GLADE_MODULE_API_VERSION 1
+gchar *glade_module_check_version(gint version);
+
+#define GLADE_MODULE_CHECK_INIT \
+G_MODULE_EXPORT const gchar *g_module_check_init(GModule *gmodule); \
+const gchar * \
+g_module_check_init(GModule *gmodule) \
+{ \
+  return dia_plugin_check_version(DIA_PLUGIN_API_VERSION); \
+}
+
+/* prototype for plugin init function (should be implemented by plugin) */
+G_MODULE_EXPORT void glade_module_register_widgets(void);
 
 G_END_DECLS
 	
