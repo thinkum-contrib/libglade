@@ -1,3 +1,14 @@
+1999-06-07  James Henstridge  <james@daa.com.au>
+
+	* custom.glade: an example of using custom widgets.  In this example,
+	it creates a color selection widget, but the code could be used for
+	creating any widget.  The custom widget code also requires that
+	gmodule functions correctly on the system.
+	
+	* glade/glade-xml.c, glade/glade-gtk.c: don't close the module
+	opened by g_module_open(NULL, 0).  Reference counting does not
+	apear to be done on this GModule structure.
+
 1999-06-06  Miguel de Icaza  <miguel@gnu.org>
 
 	* glade/glade-xml.c (glade_xml_destroy): Ok, another fix to my

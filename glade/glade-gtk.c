@@ -2145,7 +2145,6 @@ custom_new (GladeXML *xml, GNode *node) {
 		wid = func(name, string1, string2, int1, int2);
 	else
 		g_warning("could not func widget creation function");
-	g_module_close(allsymbols);
 	if (name) g_free(name);
 	if (func_name) g_free(func_name);
 	if (string1) g_free(string1);

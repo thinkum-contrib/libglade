@@ -241,7 +241,6 @@ glade_xml_signal_autoconnect (GladeXML *self)
 	/* get a handle on the main executable -- use this to find symbols */
 	allsymbols = g_module_open(NULL, 0);
 	g_hash_table_foreach(self->priv->signals, (GHFunc)autoconnect_foreach, allsymbols);
-	g_module_close(allsymbols);
 }
 
 /**
