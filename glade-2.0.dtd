@@ -1,0 +1,23 @@
+<!-- proposed DTD for new glade format -->
+
+<!ELEMENT glade-interface (requires*, widget*) >
+
+<!ELEMENT requires EMPTY >
+<!ATTLIST requires
+  lib CDATA #REQUIRED >
+
+<!ELEMENT widget (property*, signal*, children?) >
+<!ATTLIST widget
+  class CDATA #REQUIRED
+  id ID #REQUIRED >
+
+<!ELEMENT property (#PCDATA) >
+<!-- type is an optional tag, and should be the string name of the
+     GType for the property -->
+<!ATTLIST property
+  name CDATA #REQUIRED
+  type CDATA #IMPLIED >
+
+<!ELEMENT signal EMPTY >
+
+<!ELEMENT children (widget)* >

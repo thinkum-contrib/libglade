@@ -1,5 +1,7 @@
 2001-05-03  James Henstridge  <james@daa.com.au>
 
+	* glade-2.0.dtd: check in initial work on a new DTD for glade.
+
 	* *: start to change build stuff for gtk+ 2.0 and libxml2.  Stable
 	branch is libglade-1-0.
 
