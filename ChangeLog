@@ -1,3 +1,16 @@
+2004-11-29  James Henstridge  <james@jamesh.id.au>
+
+	* NEWS: add news items.
+
+	* glade/glade-xml.c (add_relation): apply Padraig O'brian's patch
+	to fix up AtkRelation creation.  Fixes bug #158708.
+
+2004-11-22  James Henstridge  <james@jamesh.id.au>
+
+	* glade/Makefile.am: update libtool version number.
+
+	* NEWS: update news file.
+
 2004-05-19  Daniel Elstner  <daniel.elstner@gmx.net>
 
 	* glade/glade-gtk.c (combo_box_entry_find_internal_child): New
