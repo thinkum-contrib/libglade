@@ -1,5 +1,22 @@
 2004-11-09  James Henstridge  <james@jamesh.id.au>
 
+	* Makefile.am (install-data-local, uninstall-local): fix up rules
+	so that they aren't run if the XML catalog isn't found.  They
+	still ignore errors though.
+
+	* acconfig.h, acinclude.m4: remove, since they aren't needed
+	anymore.
+
+	* configure.in: update to use AM_PATH_PYTHON, and use
+	JH_PATH_XML_CATALOG to check for location on XML catalog (this
+	adds a --with-xml-catalog argument, which solves a few bugs).
+
+	* m4/jh_xml_catalog.m4: new file containing macro to check for XML
+	catalog.
+
+	* autogen.sh (have_autoconf): require Automake 1.9 or 1.8, include
+	m4/ subdirectory.
+
 	* glade/glade-xml.c (glade_xml_set_value_from_string): handle
 	GtkWidget type values, but don't throw an error if the named
 	widget doesn't exist yet.

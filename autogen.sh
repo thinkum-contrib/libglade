@@ -25,7 +25,7 @@ if $have_libtool ; then : ; else
 	echo
 	echo "You must have libtool 1.4 installed to compile $PROJECT."
 	echo "Install the appropriate package for your distribution,"
-	echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
+	echo "or get the source tarball at http://ftp.gnu.org/gnu/libtool/"
 	DIE=1
 fi
 
@@ -42,20 +42,20 @@ if $have_autoconf ; then : ; else
 	echo
 	echo "You must have autoconf installed to compile $PROJECT."
 	echo "libtool the appropriate package for your distribution,"
-	echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
+	echo "or get the source tarball at http://ftp.gnu.org/gnu/autoconf/"
 	DIE=1
 fi
 
-if automake-1.8 --version < /dev/null > /dev/null 2>&1; then
+if automake-1.9 --version < /dev/null > /dev/null 2>&1; then
+  AUTOMAKE=automake-1.9
+  ACLOCAL=aclocal-1.9
+elif automake-1.8 --version < /dev/null > /dev/null 2>&1; then
   AUTOMAKE=automake-1.8
   ACLOCAL=aclocal-1.8
-elif automake-1.7 --version < /dev/null > /dev/null 2>&1; then
-  AUTOMAKE=automake-1.7
-  ACLOCAL=aclocal-1.7
 else
 	echo
-	echo "You must have automake >= 1.7 installed to compile $PROJECT."
-	echo "Get http://ftp.gnu.org/gnu/automake/automake-1.8.4.tar.gz"
+	echo "You must have automake >= 1.8 installed to compile $PROJECT."
+	echo "Get http://ftp.gnu.org/gnu/automake/automake-1.9.3.tar.bz2"
 	echo "(or a newer version if it is available)"
 	DIE=1
 fi
@@ -98,7 +98,7 @@ fi
 libtoolize --force || exit 1
 gtkdocize || exit 1
 
-$ACLOCAL $ACLOCAL_FLAGS || exit 1
+$ACLOCAL -I m4 $ACLOCAL_FLAGS || exit 1
 
 autoconf || exit 1
 
@@ -106,7 +106,7 @@ autoconf || exit 1
 autoheader || exit 1
 test -f config.h.in && touch config.h.in
 
-$AUTOMAKE --add-missing || exit 1
+$AUTOMAKE --add-missing --force || exit 1
 
 cd $ORIGDIR
 
