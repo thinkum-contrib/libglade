@@ -1,5 +1,8 @@
 2002-02-21  James Henstridge  <james@daa.com.au>
 
+	* libglade.spec.in (CATALOG): install and remove the catalog in
+	scripts.
+
 	* Makefile.am: prepend xmlcatalog rules with a dash, so that they
 	don't break the build if we can't write to /etc/xml/catalog.
 
