@@ -1,5 +1,10 @@
 2001-08-23  James Henstridge  <james@daa.com.au>
 
+	* configure.in: update program version number.
+	(build_bonobo): make sure PKG_CHECK_MODULES doesn't cause
+	configure to fail if libbonoboui is not found.  Bonobo support is
+	a soft dependency, and we can get along fine without it.
+
 	* glade/glade-xml.c (glade_xml_widget_destroy): set up a destroy
 	handler on widgets that removes them from the GladeXML object's
 	name hash.  Also nullifies libglade's object data on the object.

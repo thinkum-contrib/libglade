@@ -40,50 +40,55 @@ typedef struct _GladeXMLClass GladeXMLClass;
 typedef struct _GladeXMLPrivate GladeXMLPrivate;
 
 struct _GladeXML {
-  /* <public> */
-  GObject parent;
+    /* <public> */
+    GObject parent;
 
-  char *filename;
-  char *txtdomain;
+    char *filename;
+    char *txtdomain;
 
-  /* <private> */
-  GladeXMLPrivate *priv;
+    /* <private> */
+    GladeXMLPrivate *priv;
 };
 
 struct _GladeXMLClass {
-  GObjectClass parent_class;
+    GObjectClass parent_class;
 };
 
-GType     glade_xml_get_type    (void);
-GladeXML *glade_xml_new       (const char *fname, const char *root,
-			       const char *domain);
-GladeXML *glade_xml_new_from_buffer (const char *buffer, int size,
-				     const char *root, const char *domain);
-gboolean glade_xml_construct  (GladeXML *self, const char *fname,
-			       const char *root, const char *domain);
+GType      glade_xml_get_type            (void);
+GladeXML  *glade_xml_new                 (const char *fname, const char *root,
+					  const char *domain);
+GladeXML  *glade_xml_new_from_buffer     (const char *buffer, int size,
+					  const char *root,
+					  const char *domain);
+gboolean   glade_xml_construct           (GladeXML *self, const char *fname,
+					  const char *root,
+					  const char *domain);
 
-void glade_xml_signal_connect (GladeXML *self, const char *handlername,
-			       GtkSignalFunc func);
-void glade_xml_signal_connect_data (GladeXML *self, const char *handlername,
-				    GtkSignalFunc func, gpointer user_data);
+void       glade_xml_signal_connect      (GladeXML *self,
+					  const char *handlername,
+					  GtkSignalFunc func);
+void       glade_xml_signal_connect_data (GladeXML *self,
+					  const char *handlername,
+					  GtkSignalFunc func,
+					  gpointer user_data);
 /*
  * use gmodule to connect signals automatically.  Basically a symbol with
  * the name of the signal handler is searched for, and that is connected to
  * the associated symbols.  So setting gtk_main_quit as a signal handler
  * for the destroy signal of a window will do what you expect.
  */
-void       glade_xml_signal_autoconnect      (GladeXML *self);
+void       glade_xml_signal_autoconnect  (GladeXML *self);
 
 /* if the gtk_signal_connect_object behaviour is required, connect_object
  * will point to the object, otherwise it will be NULL.
  */
-typedef void (*GladeXMLConnectFunc)          (const gchar *handler_name,
-					      GtkObject *object,
-					      const gchar *signal_name,
-					      const gchar *signal_data,
-					      GtkObject *connect_object,
-					      gboolean after,
-					      gpointer user_data);
+typedef void (*GladeXMLConnectFunc) (const gchar *handler_name,
+				     GtkObject *object,
+				     const gchar *signal_name,
+				     const gchar *signal_data,
+				     GtkObject *connect_object,
+				     gboolean after,
+				     gpointer user_data);
 
 /*
  * These two are to make it easier to use libglade with an interpreted
@@ -110,6 +115,7 @@ gchar     *glade_xml_relative_file           (GladeXML *self,
 /* don't free the results of these two ... */
 const char *glade_get_widget_name      (GtkWidget *widget);
 GladeXML   *glade_get_widget_tree      (GtkWidget *widget);
+
 
 /* interface for changing the custom widget handling */
 typedef GtkWidget *(* GladeXMLCustomWidgetHandler) (GladeXML *xml,

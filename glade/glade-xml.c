@@ -1575,25 +1575,6 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
     glade_xml_add_signals(self, widget, info);
     glade_xml_add_accels(self, widget, info);
 
-#if 0
-    for (tmp = self->priv->focus_ulines; tmp; tmp = tmp->next) {
-	GladeFocusULine *uline = tmp->data;
-
-	if (!strcmp(uline->widget_name, info->name)) {
-	    /* it is for us ... */
-	    gtk_widget_add_accelerator(widget, "grab_focus",
-				       glade_xml_ensure_accel(self),
-				       uline->key, GDK_MOD1_MASK, 0);
-	    tmp = tmp->next;
-	    self->priv->focus_ulines =
-		g_list_remove(self->priv->focus_ulines, uline);
-	    g_free(uline);
-	}
-	if (!tmp)
-	    break;
-    }
-#endif
-
     gtk_widget_set_name(widget, info->name);
 #if 0
     if (info->tooltip) {
@@ -1601,51 +1582,6 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 			     widget,
 			     glade_xml_gettext(self, info->tooltip),
 			     NULL);
-    }
-
-    gtk_widget_set_usize(widget, info->width, info->height);
-    if (info->border_width > 0)
-	gtk_container_set_border_width(GTK_CONTAINER(widget),
-				       info->border_width);
-    gtk_widget_set_sensitive(widget, info->sensitive);
-    if (info->can_default)
-	GTK_WIDGET_SET_FLAGS(widget, GTK_CAN_DEFAULT);
-    if (info->can_focus)
-	GTK_WIDGET_SET_FLAGS(widget, GTK_CAN_FOCUS);
-    else
-	GTK_WIDGET_UNSET_FLAGS(widget, GTK_CAN_FOCUS);
-    if (info->has_default)
-	self->priv->default_widget = widget;
-    if (info->has_focus)
-	self->priv->focus_widget = widget;
-
-    for (tmp = info->attributes; tmp != NULL; tmp = tmp->next) {
-	GladeAttribute *attr = tmp->data;
-
-	if (!strcmp(attr->name, "events")) {
-	    char *tmpptr, *endptr;
-	    long events = strtol(attr->value, &endptr, 0);
-
-	    /* format conversion error */
-	    if (attr->value == endptr) {
-		events = 0;
-		tmpptr = attr->value;
-		while ((endptr = strchr(tmpptr, ' '))) {
-		    char *str = g_strndup(tmpptr, endptr-tmpptr);
-		    events |= glade_enum_from_string(GDK_TYPE_EVENT_MASK, str);
-		    g_free(str);
-		    tmpptr = endptr;
-		    while (tmpptr[0] == ' ' || tmpptr[0] == '|')
-			tmpptr++;
-		}
-		events |= glade_enum_from_string(GDK_TYPE_EVENT_MASK, tmpptr);
-	    }
-	    gtk_widget_set_events(widget, events);
-	} else if (!strcmp(attr->name, "extension_events")) {
-	    GdkExtensionMode ex =
-		glade_enum_from_string(GDK_TYPE_EXTENSION_MODE, attr->value);
-	    gtk_widget_set_extension_events(widget, ex);
-	}
     }
 #endif
 
@@ -1665,8 +1601,4 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 
     if (data && data->build_children && info->children)
 	data->build_children(self, widget, info);
-#if 0
-    if (info->visible)
-	gtk_widget_show(widget);
-#endif
 }

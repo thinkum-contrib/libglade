@@ -36,13 +36,13 @@
 G_BEGIN_DECLS
 	
 /* create a new widget of some type.  Don't parse `standard' widget options */
-typedef GtkWidget *(* GladeNewFunc) (GladeXML *xml,
-				     GType widget_type,
-				     GladeWidgetInfo *info);
+typedef GtkWidget *(* GladeNewFunc)               (GladeXML *xml,
+						   GType widget_type,
+						   GladeWidgetInfo *info);
 /* call glade_xml_build_widget on each child node, and pack in self */
-typedef void (* GladeBuildChildrenFunc) (GladeXML *xml,
-					 GtkWidget *parent,
-					 GladeWidgetInfo *info);
+typedef void       (* GladeBuildChildrenFunc)     (GladeXML *xml,
+						   GtkWidget *parent,
+						   GladeWidgetInfo *info);
 typedef GtkWidget *(* GladeFindInternalChildFunc) (GladeXML *xml,
 						   GtkWidget *parent,
 						   const char *childname);
