@@ -1,3 +1,10 @@
+2001-05-16  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-parser.[ch]: first checkin of parser for new glade
+	format.  It has a fair amount of code to warn about many
+	violations of the DTD.  It runs silently on some of my test files,
+	so that is a good sign :)
+
 2001-05-13  James Henstridge  <james@daa.com.au>
 
 	* doc/glade-2.0.dia: a diagram of the SAX parser flow for the new
