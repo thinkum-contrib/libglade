@@ -3,9 +3,9 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: Libglade gnome module
+Name: Libglade gnome-db module
 Description: A library providing support for GNOME widgets in libglade
 Version: @VERSION@
-Requires: libglade, gnomeui
-Libs: -L${libdir} -lglade-gnome
-Cflags: -I${includedir}
+Requires: libglade-gnome, libglade
+Libs: -L${libdir} -lglade-gnome @GNOMEDB_LIBS@
+Cflags: -I${includedir} @GNOMEDB_CFLAGS@

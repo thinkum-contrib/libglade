@@ -1,3 +1,26 @@
+2001-02-10  James Henstridge  <james@daa.com.au>
+
+	* libglade.m4 (module_args): recognise "gnomedb" addon library.
+
+	* libglade-config.in (lib_gnomedb): add in rules to show gnomedb
+	flags.
+
+	* libglade-gnome.pc.in (Requires): libglade-gnome requires gnomeui
+	-- this should correct the problem with this file.
+
+	* libglade-gnomedb.pc.in: the pkg-config script for libglade-gnomedb.
+
+	* Makefile.am (pkgconfig_DATA): install a gnomedb pkg-config data
+	file if building gnome-db support.
+
+	* glade/Makefile.am: add rules for gnomedb library and increment
+	libtool version number.
+
+	* configure.in: add gnome-db tests and update version number.
+
+	* glade/glade-gnomedb.c: new file based on the gnomedb support
+	contributed by David Marín Carreño <davefx@bigfoot.com>.
+
 2000-11-29  James Henstridge  <james@daa.com.au>
 
 	A couple of memory leaks found by Morten:
