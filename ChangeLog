@@ -1,3 +1,12 @@
+2000-11-22  James Henstridge  <james@daa.com.au>
+
+	* configure.in (have_bonobo): modify check so that you must pass
+	--enable-bonobo flag to get bonobo support.
+
+	* glade/glade-xml.c (glade_xml_set_toplevel, glade_xml_destroy):
+	pick up a GtkAccelGroup reference leak highlighted by Morten's
+	last patch.
+
 2000-11-21  Morten Welinder  <terra@diku.dk>
 
 	* glade/glade-xml.c (glade_xml_destroy): Plug leak.

@@ -707,7 +707,9 @@ glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window)
 	xml->priv->default_widget = NULL;
 	xml->priv->toplevel = window;
 	/* new toplevel needs new accel group */
-	g_slist_free(xml->priv->accel_groups);
+	if (xml->priv->accel_groups)
+		glade_xml_pop_accel(xml);
+	/* maybe put an assert that xml->priv->accel_groups == NULL here? */
 	xml->priv->accel_groups = NULL;
 	xml->priv->parent_accel = 0;
 	/* the window should hold a reference to the tooltips object */
@@ -1006,9 +1008,10 @@ glade_xml_destroy(GtkObject *object)
 
 		if (priv->tooltips)
 			gtk_object_unref(GTK_OBJECT(priv->tooltips));
-	
+
+		/* there should only be at most one accel group on stack */
 		if (priv->accel_groups)
-			g_slist_free (priv->accel_groups);
+			glade_xml_pop_accel(self);
 
 		g_free (self->priv);
 	}
