@@ -1,3 +1,9 @@
+2000-04-01  Michael Meeks  <michael@helixcode.com>
+
+	* glade/glade-bonobo.c (gnome_control_new): update to new Bonobo API.
+
+	* configure.in (have_bonobo): bump required version to 0.10
+
 2000-03-25  Peter Teichman <peter@helixcode.com>
 
 	* glade/glade-xml.c (glade_xml_build_widget): add set_common_params

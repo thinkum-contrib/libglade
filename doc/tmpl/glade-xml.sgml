@@ -100,6 +100,17 @@ automatically connect as many handlers up as it can that way.
 @xml: 
 
 
+<!-- ##### FUNCTION glade_xml_signal_connect_data ##### -->
+<para>
+
+</para>
+
+@self: 
+@handlername: 
+@func: 
+@user_data: 
+
+
 <!-- ##### FUNCTION glade_xml_signal_autoconnect ##### -->
 <para>
 
@@ -132,6 +143,16 @@ automatically connect as many handlers up as it can that way.
 @Returns: 
 <!-- # Unused Parameters # -->
 @xml: 
+
+
+<!-- ##### FUNCTION glade_xml_get_widget_prefix ##### -->
+<para>
+
+</para>
+
+@self: 
+@name: 
+@Returns: 
 
 
 <!-- ##### FUNCTION glade_get_widget_name ##### -->
