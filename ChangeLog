@@ -1,4 +1,13 @@
+2000-11-08  James Henstridge  <james@daa.com.au>
+
+	* doc/Makefile.am (scan): small fix to the docs directory makefile
+	so that it will build with more recent gtkdoc's.
+
 2000-11-05  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gnome.c (druid_build_children): setup accel groups
+	for the individual pages of the druid, similar to the property box
+	and notebook widgets.
 
 	* test-libglade.c (main): unref the GladeXML object before calling
 	gtk_main.  This shouldn't cause any problems.
