@@ -115,3 +115,13 @@ the actual widgets from the XML node data structures.
 @longname: 
 
 
+<!-- ##### FUNCTION glade_xml_gettext ##### -->
+<para>
+
+</para>
+
+@xml: 
+@msgid: 
+@Returns: 
+
+

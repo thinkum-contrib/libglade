@@ -29,6 +29,13 @@
 #include <gtk/gtk.h>
 #include <tree.h>
 
+#ifndef ENABLE_NLS
+/* a slight optimisation when gettext is off */
+#define glade_xml_gettext(xml, msgid) (msgid)
+#endif
+#undef _
+#define _(msgid) (glade_xml_gettext(xml, msgid))
+
 /* functions to actually build the widgets */
 
 static void
@@ -462,7 +469,7 @@ toolbar_build_children (GladeXML *xml, GtkWidget *w, GNode *node,
 				iconw = gtk_pixmap_new(pix, mask);
 			}
 			child = gtk_toolbar_append_item(GTK_TOOLBAR(w),
-							label, NULL, NULL,
+							_(label), NULL, NULL,
 							iconw, NULL, NULL);
 			glade_xml_set_common_params(xml, child, childnode,
 						    longname, "GtkButton");
@@ -526,7 +533,7 @@ label_new (GladeXML *xml, GNode *node)
 			free (content);
 	}
 
-	label = gtk_label_new(string);
+	label = gtk_label_new(_(string));
 	if (string)
 		g_free(string);
 	if (just != GTK_JUSTIFY_CENTER)
@@ -555,7 +562,7 @@ accellabel_new (GladeXML *xml, GNode *node)
 		if (content)
 			free(content);
 	}
-	label = gtk_accel_label_new(string);
+	label = gtk_accel_label_new(_(string));
 	if (string)
 		g_free(string);
 	if (just != GTK_JUSTIFY_CENTER)
@@ -602,7 +609,7 @@ entry_new (GladeXML *xml, GNode *node)
 		entry = gtk_entry_new();
 
 	if (text) {
-		gtk_entry_set_text(GTK_ENTRY(entry), text);
+		gtk_entry_set_text(GTK_ENTRY(entry), _(text));
 		g_free(text);
 	}
 
@@ -639,7 +646,8 @@ text_new(GladeXML *xml, GNode *node)
 
 	wid = gtk_text_new(NULL, NULL);
 	if (text) {
-		gtk_editable_insert_text(GTK_EDITABLE(wid), text, strlen(text), NULL);
+		char *tmp = _(text);
+		gtk_editable_insert_text(GTK_EDITABLE(wid), tmp, strlen(tmp), NULL);
 		g_free(text);
 	}
 	gtk_text_set_editable(GTK_TEXT(wid), editable);
@@ -668,7 +676,7 @@ button_new(GladeXML *xml, GNode *node)
 			free(content);
 	}
 	if (string != NULL) {
-		button = gtk_button_new_with_label(string);
+		button = gtk_button_new_with_label(_(string));
 	} else
 		button = gtk_button_new();
 
@@ -698,7 +706,7 @@ togglebutton_new(GladeXML *xml, GNode *node)
 			free (content);
 	}
 	if (string != NULL) {
-		button = gtk_toggle_button_new_with_label(string);
+		button = gtk_toggle_button_new_with_label(_(string));
 		g_free(string);
 	} else
 		button = gtk_toggle_button_new();
@@ -729,7 +737,7 @@ checkbutton_new (GladeXML *xml, GNode *node)
 			free(content);
 	}
 	if (string != NULL) {
-		button = gtk_check_button_new_with_label(string);
+		button = gtk_check_button_new_with_label(_(string));
 		g_free(string);
 	} else
 		button = gtk_check_button_new();
@@ -772,7 +780,7 @@ radiobutton_new(GladeXML *xml, GNode *node)
 			free(content);
 	}
 	if (string != NULL) {
-		button = gtk_radio_button_new_with_label(group, string);
+		button = gtk_radio_button_new_with_label(group, _(string));
 		g_free(string);
 	} else
 		button = gtk_radio_button_new (group);
@@ -809,8 +817,9 @@ optionmenu_new(GladeXML *xml, GNode *node)
 		char *content = xmlNodeGetContent(info);
 
 		if (!strcmp(info->name, "items") && content) {
-			char *pos = content;
-			char *items_end = &content[strlen(content)];
+			char *tmp = g_strdup(_(content));
+			char *pos = tmp;
+			char *items_end = &tmp[strlen(tmp)];
 			while (pos < items_end) {
 				gchar *item_end = strchr (pos, '\n');
 				if (item_end == NULL)
@@ -823,6 +832,7 @@ optionmenu_new(GladeXML *xml, GNode *node)
 	
 				pos = item_end + 1;
 			}
+			g_free(tmp);
 		} else if (!strcmp(info->name, "initial_choice"))
 			initial_choice = strtol(content, NULL, 0);
 
@@ -850,8 +860,9 @@ combo_new (GladeXML *xml, GNode *node)
 			break;
 		case 'i':
 			if (!strcmp(info->name, "items") && content) {
-				char *pos = content;
-				char *items_end = &content[strlen(content)];
+				char *tmp = g_strdup(_(content));
+				char *pos = tmp;
+				char *items_end = &tmp[strlen(tmp)];
 				GList *item_list = NULL;
 				while (pos < items_end) {
 					gchar *item_end = strchr (pos, '\n');
@@ -862,7 +873,10 @@ combo_new (GladeXML *xml, GNode *node)
 					item_list = g_list_append(item_list, pos);
 					pos = item_end + 1;
 				}
-				gtk_combo_set_popdown_strings(GTK_COMBO(combo), item_list);
+				g_free(tmp);
+				if (item_list)
+					gtk_combo_set_popdown_strings(
+						GTK_COMBO(combo), item_list);
 			}
 			break;
 		case 'u':
@@ -1464,7 +1478,7 @@ menuitem_new(GladeXML *xml, GNode *node)
 			free(content);
 	}
 	if (label) {
-		menuitem = gtk_menu_item_new_with_label(label);
+		menuitem = gtk_menu_item_new_with_label(_(label));
 		g_free(label);
 	} else
 		menuitem = gtk_menu_item_new();
@@ -1498,7 +1512,7 @@ checkmenuitem_new(GladeXML *xml, GNode *node)
 		if (content)
 			free(content);
 	}
-	menuitem = gtk_check_menu_item_new_with_label(label);
+	menuitem = gtk_check_menu_item_new_with_label(_(label));
 	g_free (label);
 	if (right)
 		gtk_menu_item_right_justify(GTK_MENU_ITEM(menuitem));
@@ -1532,7 +1546,7 @@ radiomenuitem_new(GladeXML *xml, GNode *node)
 	}
 
 	/* XXXX -- must do something about radio item groups ... */
-	menuitem = gtk_radio_menu_item_new_with_label(NULL, label);
+	menuitem = gtk_radio_menu_item_new_with_label(NULL, _(label));
 	g_free(label);
 
 	if (right)
@@ -1747,7 +1761,7 @@ frame_new(GladeXML *xml, GNode *node)
 		if (content)
 			free(content);
 	}
-	frame = gtk_frame_new(label);
+	frame = gtk_frame_new(_(label));
 	if (label)
 		g_free(label);
 	gtk_frame_set_label_align(GTK_FRAME(frame), label_xalign, 0.5);
@@ -1803,7 +1817,7 @@ aspectframe_new(GladeXML *xml, GNode *node)
 		if (content)
 			free(content);
 	}
-	frame = gtk_aspect_frame_new(label, xalign, yalign, ratio, obey_child);
+	frame = gtk_aspect_frame_new(_(label), xalign,yalign,ratio,obey_child);
 	gtk_frame_set_label_align(GTK_FRAME(frame), label_xalign, 0.5);
 	gtk_frame_set_shadow_type(GTK_FRAME(frame), shadow_type);
 	return frame;
@@ -2125,7 +2139,7 @@ window_new (GladeXML *xml, GNode *node)
 			free(content);
 	}
 	win = gtk_window_new(type);
-	gtk_window_set_title(GTK_WINDOW(win), title);
+	gtk_window_set_title(GTK_WINDOW(win), _(title));
 	gtk_window_set_position(GTK_WINDOW(win), pos);
 	gtk_window_set_policy(GTK_WINDOW(win), allow_shrink,allow_grow,auto_shrink);
 
@@ -2163,7 +2177,8 @@ dialog_new(GladeXML *xml, GNode *node)
 			break;
 		case 't':
 			if (!strcmp(info->name, "title"))
-				gtk_window_set_title(GTK_WINDOW(win), content);
+				gtk_window_set_title(GTK_WINDOW(win),
+						     _(content));
 			break;
 		case 'x':
 			if (info->name[1] == '\0') xpos = strtol(content, NULL, 0);

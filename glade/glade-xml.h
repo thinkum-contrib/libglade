@@ -58,8 +58,10 @@ struct _GladeSignalData {
 
 GtkType glade_xml_get_type    (void);
 GladeXML *glade_xml_new       (const char *fname, const char *root);
+GladeXML *glade_xml_new_with_domain (const char *fname, const char *root,
+				     const char *domain);
 gboolean glade_xml_construct  (GladeXML *self, const char *fname,
-			       const char *root);
+			       const char *root, const char *domain);
 
 void glade_xml_signal_connect (GladeXML *self, const char *handlername,
 			       GtkSignalFunc func);

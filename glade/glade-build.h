@@ -67,4 +67,7 @@ GtkAdjustment *glade_get_adjustment(GNode *gnode);
  * integer value for the enum */
 gint glade_enum_from_string(GtkType type, const char *string);
 
+/* a wrapper for gettext */
+char *glade_xml_gettext(GladeXML *xml, const char *msgid);
+
 #endif

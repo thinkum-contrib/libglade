@@ -1,5 +1,23 @@
 1999-06-11  James Henstridge  <james@daa.com.au>
 
+	* glade/glade-xml.[ch] (glade_xml_construct): added a third argument -
+	the translation domain.
+	(glade_xml_new_with_domain): a new constructor that allows you to
+	specify that this GladeXML object use a different translation
+	domain than the default.
+	
+	* glade/glade-xml.c (glade_xml_set_common_params): translate the
+	tooltips.
+
+	* glade/glade-gnome.c: added calls to glade_xml_gettext at appropriate
+	places.
+
+	* glade/glade-gtk.c: added calls to glade_xml_gettext at appropriate
+	places.
+
+	* glade/glade-xml.c (glade_xml_gettext): new function to handle
+	translations of text in widget building routines.
+
 	* glade/glade-xml.h: added textdomain attribute to GladeXML structure
 	that will hold the gettext text domain used for translations.  This
 	is just in preparation -- I haven't added i18n to libglade yet.

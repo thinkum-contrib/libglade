@@ -32,6 +32,10 @@
 #include <gtk/gtkcontainer.h>
 #include <gtk/gtklabel.h>
 
+#ifdef ENABLE_NLS
+#  include <libintl.h>
+#endif
+
 static const char *glade_xml_tag = "GladeXML::";
 static const char *glade_xml_name_tag = "GladeXML::name";
 static const char *glade_xml_longname_tag = "GladeXML::longname";
@@ -115,7 +119,37 @@ glade_xml_new(const char *fname, const char *root)
 {
 	GladeXML *self = gtk_type_new(glade_xml_get_type());
 
-	if (!glade_xml_construct(self, fname, root)) {
+	if (!glade_xml_construct(self, fname, root, NULL)) {
+		gtk_object_destroy(GTK_OBJECT(self));
+		return NULL;
+	}
+	return self;
+}
+
+/**
+ * glade_xml_new_with_domain:
+ * @fname: the XML file name.
+ * @root: the widget node in @fname to start building from (or %NULL)
+ * @domain: the translation domain to use for this interface (or %NULL)
+ *
+ * Creates a new GladeXML object (and the corresponding widgets) from the
+ * XML file @fname.  Optionally it will only build the interface from the
+ * widget node @root (if it is not %NULL).  This feature is useful if you
+ * only want to build say a toolbar or menu from the XML file, but not the
+ * window it is embedded in.  Note also that the XML parse tree is cached
+ * to speed up creating another GladeXML object for the same file.  This
+ * function differs from glade_xml_new in that you can specify a different
+ * translation domain from the default to be used.
+ *
+ * Returns: the newly created GladeXML object, or NULL on failure.
+ */
+GladeXML *
+glade_xml_new_with_domain(const char *fname, const char *root,
+			  const char *domain)
+{
+	GladeXML *self = gtk_type_new(glade_xml_get_type());
+
+	if (!glade_xml_construct(self, fname, root, domain)) {
 		gtk_object_destroy(GTK_OBJECT(self));
 		return NULL;
 	}
@@ -127,6 +161,7 @@ glade_xml_new(const char *fname, const char *root)
  * @self: the GladeXML object
  * @fname: the XML filename
  * @root: the root widget node (or %NULL for none)
+ * @domain: the translation domain (or %NULL for the default)
  *
  * This routine can be used by bindings (such as gtk--) to help construct
  * a GladeXML object, if it is needed.
@@ -134,13 +169,16 @@ glade_xml_new(const char *fname, const char *root)
  * Returns: TRUE if the construction succeeded.
  */
 gboolean
-glade_xml_construct (GladeXML *self, const char *fname, const char *root)
+glade_xml_construct (GladeXML *self, const char *fname, const char *root,
+		     const char *domain)
 {
 	GladeTreeData *tree = glade_tree_get(fname);
 
 	if (!tree)
 		return FALSE;
 
+	if (self->textdomain) g_free(self->textdomain);
+	self->textdomain = g_strdup(domain);
 	if (self->filename)
 		g_free(self->filename);
 	self->filename = g_strdup(fname);
@@ -360,6 +398,32 @@ GladeXML *
 glade_get_widget_tree(GtkWidget *widget)
 {
 	return gtk_object_get_data(GTK_OBJECT(widget), glade_xml_tag);
+}
+
+/**
+ * glade_xml_gettext:
+ * @xml: the GladeXML widget.
+ * @msgid: the string to translate.
+ *
+ * This function is a wrapper for gettext, that uses the translation domain
+ * requested by the user of the function, or the default if no domain has
+ * been specified.  This should be used for translatable strings in all
+ * widget building routines.
+ *
+ * Returns: the translated string
+ */
+char *
+glade_xml_gettext(GladeXML *xml, const char *msgid)
+{
+#ifdef ENABLE_NLS
+	if (!msgid) return NULL;
+	if (xml->textdomain)
+		return dgettext(xml->textdomain, msgid);
+	else
+		return gettext(msgid);
+#else
+	return msgid;
+#endif
 }
 
 /* this is a private function */
@@ -618,6 +682,13 @@ glade_register_widgets(const GladeWidgetBuildData *widgets)
 	}
 }
 
+#ifndef ENABLE_NLS
+/* a slight optimisation when gettext is off */
+#define glade_xml_gettext(xml, msgid) (msgid)
+#endif
+#undef _
+#define _(msgid) (glade_xml_gettext(xml, msgid))
+
 /**
  * GladeNewFunc
  * @xml: The GladeXML object.
@@ -809,7 +880,8 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 			if (!strcmp(name, "tooltip")) {
 				if (self->priv->tooltips == NULL)
 					self->priv->tooltips = gtk_tooltips_new();
-				gtk_tooltips_set_tip(self->priv->tooltips, widget, value, NULL);
+				gtk_tooltips_set_tip(self->priv->tooltips,
+						     widget, _(value), NULL);
 			}
 			break;
 		case 'v':

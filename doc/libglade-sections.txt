@@ -16,9 +16,12 @@ glade_init_gnome_widgets
 GladeXML
 GladeXMLClass
 glade_xml_new
+glade_xml_new_with_domain
 glade_xml_construct
+<SUBSECTION Signal Routines>
 glade_xml_signal_connect
 glade_xml_signal_autoconnect
+<SUBSECTION Widget Accessor Routines>
 glade_xml_get_widget
 glade_xml_get_widget_by_long_name
 glade_get_widget_name
@@ -49,5 +52,7 @@ glade_xml_relative_file
 glade_enum_from_string
 glade_get_adjustment
 glade_standard_build_children
+<SUBSECTION I18N Routines>
+glade_xml_gettext
 </SECTION>
 
