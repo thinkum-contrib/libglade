@@ -1,6 +1,13 @@
+2002-02-17  James Henstridge  <james@daa.com.au>
+
+	* libglade-convert.in (parent_table): GtkRadioButton is a
+	GtkButton.  This should make sure it gets the use_underline
+	property set correctly.
+
 2002-02-10  Chema Celorio  <chema@celorio.com>
 
-	* libglade-convert.in (renamed_props): Add focus_target->mnemonic_widget for GtkLabel
+	* libglade-convert.in (renamed_props): Add
+	focus_target->mnemonic_widget for GtkLabel
 
 Sat Feb  9 09:06:56 2002  Jonathan Blandford  <jrb@redhat.com>
 

@@ -56,7 +56,8 @@ scan-build.stamp: $(top_srcdir)/glade/*.h
 	cd $(srcdir) \
 	&& gtkdoc-scan --module=$(DOC_MODULE) \
 		       --source-dir=$(DOC_SOURCE_DIR) \
-		       --ignore-headers=glade-private.h
+		       --ignore-headers=glade-private.h \
+		       --deprecated-guards="LIBGLADE_DISABLE_DEPRECATED"
 	touch scan-build.stamp
 
 $(DOC_MODULE)-decl.txt $(SCANOBJ_FILES): scan-build.stamp

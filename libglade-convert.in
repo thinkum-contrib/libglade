@@ -402,6 +402,7 @@ parent_table = {
     'GnomeColorPicker'  : 'GtkButton',
     'GtkToggleButton'   : 'GtkButton',
     'GtkCheckButton'    : 'GtkToggleButton',
+    'GtkRadioButton'    : 'GtkToggleButton',
     'GtkColorSelectionDialog': 'GtkDialog',
     'GtkFontSelectionDialog': 'GtkDialog',
 
