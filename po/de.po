@@ -1,0 +1,18 @@
+# German translation for libglade.
+# Copyright (C) 2001 Free Software Foundation, Inc.
+# Christian Meyer  <chrisime@gnome.org>, 2001.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libglade 0.16\n"
+"POT-Creation-Date: 1999-08-07 21:53+0800\n"
+"PO-Revision-Date: 2001-03-08 04:15+0100\n"
+"Last-Translator: Christian Meyer <chrisime@gnome.org>\n"
+"Language-Team: German <gnome-de@gnome.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=iso-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: test-libglade.c:18
+msgid "Do not connect signals"
+msgstr "Signale nicht verbinden"
