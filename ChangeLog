@@ -1,3 +1,11 @@
+2001-12-24  James Henstridge  <james@daa.com.au>
+
+	* configure.in: don't call GNOME_COMMON_INIT.  This gets rid of
+	the dependency on the gnome-common package.
+
+	* autogen.sh: use gtk+'s autogen script rather than the
+	gnome-common based one.
+
 2001-12-12  jacob berkman  <jacob@ximian.com>
 
 	* glade/glade-gtk.c (option_menu_build_children): set the history

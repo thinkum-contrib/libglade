@@ -4,23 +4,120 @@
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 
-PKG_NAME="libglade"
+ORIGDIR=`pwd`
+cd $srcdir
+PROJECT=Libglade
+TEST_TYPE=-d
+FILE=glade
 
-ifs_save="$IFS"; IFS=":"
-for dir in $PATH ; do
-  test -z "$dir" && dir=.
-  if test -f $dir/gnome-autogen.sh ; then
-    gnome_autogen="$dir/gnome-autogen.sh"
-    gnome_datadir=`echo $dir | sed -e 's,/bin$,/share,'`
-    break
-  fi
-done
-IFS="$ifs_save"
+DIE=0
 
-if test -z "$gnome_autogen" ; then
-  echo "You need to install the gnome-common module and make"
-  echo "sure the gnome-autogen.sh script is in your \$PATH."
-  exit 1
+have_libtool=false
+if libtool --version < /dev/null > /dev/null 2>&1 ; then
+	libtool_version=`libtoolize --version | sed 's/^[^0-9]*\([0-9.][0-9.]*\).*/\1/'`
+	case $libtool_version in
+	    1.4*)
+		have_libtool=true
+		;;
+	esac
+fi
+if $have_libtool ; then : ; else
+	echo
+	echo "You must have libtool 1.4 installed to compile $PROJECT."
+	echo "Install the appropriate package for your distribution,"
+	echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
+	DIE=1
 fi
 
-GNOME_DATADIR="$gnome_datadir" USE_GNOME2_MACROS=1 . $gnome_autogen
+have_autoconf=false
+if autoconf --version < /dev/null > /dev/null 2>&1 ; then
+	autoconf_version=`autoconf --version | sed 's/^[^0-9]*\([0-9.][0-9.]*\).*/\1/'`
+	case $autoconf_version in
+	    2.5*)
+		have_autoconf=true
+		;;
+	esac
+fi
+if $have_autoconf ; then : ; else
+	echo
+	echo "You must have autoconf installed to compile $PROJECT."
+	echo "libtool the appropriate package for your distribution,"
+	echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
+	DIE=1
+fi
+
+have_automake=false
+if automake --version < /dev/null > /dev/null 2>&1 ; then
+	automake_version=`automake --version | grep 'automake (GNU automake)' | sed 's/^[^0-9]*\(.*\)/\1/'`
+	case $automake_version in
+	   1.2*|1.3*|1.4) 
+		;;
+	   *)
+		have_automake=true
+		;;
+	esac
+fi
+if $have_automake ; then : ; else
+	echo
+	echo "You must have automake 1.4-p1 installed to compile $PROJECT."
+	echo "Get ftp://ftp.gnu.org/pub/gnu/automake/automake-1.4-p1.tar.gz"
+	echo "(or a newer version if it is available)"
+	DIE=1
+fi
+
+if test "$DIE" -eq 1; then
+	exit 1
+fi
+
+test $TEST_TYPE $FILE || {
+	echo "You must run this script in the top-level $PROJECT directory"
+	exit 1
+}
+
+if test -z "$AUTOGEN_SUBDIR_MODE"; then
+        if test -z "$*"; then
+                echo "I am going to run ./configure with no arguments - if you wish "
+                echo "to pass any to it, please specify them on the $0 command line."
+        fi
+fi
+
+case $CC in
+*xlc | *xlc\ * | *lcc | *lcc\ *) am_opt=--include-deps;;
+esac
+
+if test -z "$ACLOCAL_FLAGS"; then
+
+	acdir=`aclocal --print-ac-dir`
+        m4list="glib-2.0.m4 glib-gettext.m4 gtk-2.0.m4"
+
+	for file in $m4list
+	do
+		if [ ! -f "$acdir/$file" ]; then
+			echo "WARNING: aclocal's directory is $acdir, but..."
+			echo "         no file $acdir/$file"
+			echo "         You may see fatal macro warnings below."
+			echo "         If these files are installed in /some/dir, set the ACLOCAL_FLAGS "
+			echo "         environment variable to \"-I /some/dir\", or install"
+			echo "         $acdir/$file."
+			echo ""
+		fi
+	done
+fi
+
+aclocal $ACLOCAL_FLAGS
+
+libtoolize --force
+
+# optionally feature autoheader
+autoheader
+
+automake -a $am_opt
+autoconf
+cd $ORIGDIR
+
+if test -z "$AUTOGEN_SUBDIR_MODE"; then
+        $srcdir/configure --enable-maintainer-mode "$@"
+
+        echo 
+        echo "Now type 'make' to compile $PROJECT."
+fi
