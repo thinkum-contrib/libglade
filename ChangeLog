@@ -1,3 +1,11 @@
+2001-11-27  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-parser.c (glade_parser_parse_file): revert
+	Gediminas's unaproved patch.  It is not libglade's place to make
+	these sort of gettext calls -- the app is responsible for setting
+	up the gettext text domain.
+	(glade_parser_parse_buffer): same here.
+
 2001-11-27  Gediminas Paulauskas <menesis@delfi.lt>
 
 	* glade/glade-parser.c: retrieve translated messages with UTF-8
