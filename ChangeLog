@@ -1,3 +1,7 @@
+2000-11-21  Morten Welinder  <terra@diku.dk>
+
+	* glade/glade-xml.c (glade_xml_destroy): Plug leak.
+
 2000-11-08  James Henstridge  <james@daa.com.au>
 
 	* doc/Makefile.am (scan): small fix to the docs directory makefile

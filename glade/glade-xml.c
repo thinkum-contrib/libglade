@@ -1007,6 +1007,9 @@ glade_xml_destroy(GtkObject *object)
 		if (priv->tooltips)
 			gtk_object_unref(GTK_OBJECT(priv->tooltips));
 	
+		if (priv->accel_groups)
+			g_slist_free (priv->accel_groups);
+
 		g_free (self->priv);
 	}
 	self->priv = NULL;
