@@ -45,13 +45,25 @@ typedef void       (* GladeBuildChildrenFunc)     (GladeXML *xml,
 						   GladeWidgetInfo *info);
 typedef GtkWidget *(* GladeFindInternalChildFunc) (GladeXML *xml,
 						   GtkWidget *parent,
-						   const char *childname);
+						   const gchar *childname);
+
+typedef void       (* GladeApplyCustomPropFunc)   (GladeXML *xml,
+						   GtkWidget *widget,
+						   const gchar *propname,
+						   const gchar *value);
 
 /* register handlers for a widget */
 void glade_register_widget(GType type,
 			   GladeNewFunc new,
 			   GladeBuildChildrenFunc build_children,
 			   GladeFindInternalChildFunc find_internal_child);
+
+/* register a custom handler for a property (that may not have an
+ * associated gobject property.  Works in conjunction with
+ * glade_standard_build_widget. */
+void glade_register_custom_prop(GType type,
+				const gchar *prop_name,
+				GladeApplyCustomPropFunc apply_prop);
 
 /* set the current toplevel widget while building (use NULL to unset) */
 void glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window);

@@ -1,3 +1,18 @@
+2001-11-23  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c (glade_xml_add_atk_relations): change to match
+	ATK API change.
+	(glade_xml_add_atk_actions): don't warn when the action name can't
+	be found, as it may only get registered when libgail is loaded.
+
+2001-11-22  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c (glade_register_custom_prop): new function to
+	register a custom handler for a particular property.
+	(get_custom_prop_info): function to all the custom property
+	handlers for a particular type (it checks parents for properties
+	and caches the results).
+
 2001-11-21  James Henstridge  <james@daa.com.au>
 
 	* Makefile.am (EXTRA_DIST): dist libglade-convert.in rather than

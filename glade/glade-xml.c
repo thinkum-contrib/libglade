@@ -811,7 +811,10 @@ glade_xml_add_atk_actions(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
 					    j,
 					    action_info->description);	
 	    } else {
-		    g_warning("could not find action named %s", action_info->action_name);
+		/* don't show a warning -- the action names might not
+                 * be registered if libgail hasn't been loaded */
+
+		/* g_warning("could not find action named %s", action_info->action_name); */
 	    }
         }
     }	
@@ -853,7 +856,7 @@ glade_xml_add_atk_relations(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
 	GtkWidget *target_widget = glade_xml_get_widget (xml, rinfo->target);
 	AtkRelationType relation_type;
 
-	relation_type = atk_relation_type_from_string (rinfo->type);
+	relation_type = atk_relation_type_for_name (rinfo->type);
 	if (target_widget) {
 	    AtkObject *target_accessible;
 
@@ -1276,6 +1279,126 @@ get_build_data(GType type)
 	return &widget_build_data;
 }
 
+
+/* used to store a GArray of custom property handlers */
+static GQuark       glade_custom_props_id = 0;
+static const gchar *glade_custom_props_key = "libglade::custom-props";
+/* used to store a cache of the property handlers (ie. this type's
+ * properties + parent properties) */
+static GQuark       glade_custom_props_cache_id = 0;
+static const gchar *glade_custom_props_cache_key = "libglade::custom-props-cache";
+typedef struct _CustomPropInfo CustomPropInfo;
+struct _CustomPropInfo {
+    GQuark name_quark;
+    GladeApplyCustomPropFunc apply_prop;
+};
+
+/* utility function for invalidating the cached property key */
+static void
+invalidate_custom_prop_cache(GType type)
+{
+    gpointer data;
+    GType *children;
+    guint i, n_children = 0;
+
+    data = g_type_get_qdata(type, glade_custom_props_cache_id);
+    /* if there is no cached custom prop data, then no children will
+     * have cached data. */
+    if (!data)
+	return;
+
+    g_type_set_qdata(type, glade_custom_props_cache_id, NULL);
+    g_free(data);
+    children = g_type_children(type, &n_children);
+    for (i = 0; i < n_children; i++)
+	invalidate_custom_prop_cache(children[i]);
+    g_free(children);
+}
+
+void
+glade_register_custom_prop(GType type, const gchar *prop_name,
+			   GladeApplyCustomPropFunc apply_prop)
+{
+    GArray *array;
+    CustomPropInfo prop_info;
+    
+    /* set up quarks ... */
+    if (glade_custom_props_id == 0) {
+	glade_custom_props_id = g_quark_from_static_string(glade_custom_props_key);
+	glade_custom_props_cache_id = g_quark_from_static_string(glade_custom_props_cache_key);
+    }
+
+    /* get the GArray of prop info */
+    array = g_type_get_qdata(type, glade_custom_props_id);
+    if (!array) {
+	array = g_array_new(TRUE, FALSE, sizeof(CustomPropInfo));
+	g_type_set_qdata(type, glade_custom_props_id, array);
+    }
+
+    /* append the extra prop */
+    prop_info.name_quark = g_quark_from_string(prop_name);
+    prop_info.apply_prop = apply_prop;
+    g_array_append_val(array, prop_info);
+
+    /* invalidate cached info, if any */
+    invalidate_custom_prop_cache(type);
+}
+
+static CustomPropInfo *
+get_custom_prop_info(GType type)
+{
+    CustomPropInfo *prop_info, *parent_info = NULL;
+    GType parent;
+    GArray *array;
+    gint length;
+
+    /* if glade_register_custom_prop hasn't been called ... */
+    if (glade_custom_props_id == 0) {
+	return NULL;
+    }
+
+    /* has the prop info been calculated/cached already? */
+    prop_info = g_type_get_qdata(type, glade_custom_props_cache_id);
+    if (prop_info)
+	return prop_info;
+
+    array = g_type_get_qdata(type, glade_custom_props_id);
+    parent = g_type_parent(type);
+    prop_info = NULL;
+    length = 0;
+    if (parent == G_TYPE_INVALID) {/* hit the top */
+	if (array) {
+	    length = array->len;
+	    prop_info = g_memdup(array->data,
+				 sizeof(CustomPropInfo) * (length + 1));
+	}
+    } else { /* merge parent info with our info */
+	gint count = 0;
+
+	parent_info = get_custom_prop_info(parent);
+	if (parent_info)
+	    while (parent_info[count].name_quark != 0)
+		count++;
+	length = count;
+	if (array) length += array->len;
+	prop_info = g_new(CustomPropInfo, length + 1);
+	/* concatenate info */
+	if (count > 0)
+	    memcpy(prop_info, parent_info,
+		   sizeof(CustomPropInfo) * count);
+	if (array)
+	    memcpy(&prop_info[count], array->data,
+		   sizeof(CustomPropInfo) * array->len);
+    }
+    /* make sure it is null terminated */
+    prop_info[length].name_quark = 0;
+    prop_info[length].apply_prop = NULL;
+
+    g_type_set_qdata(type, glade_custom_props_cache_id, prop_info);
+    return prop_info;
+}
+
+
 /**
  * glade_xml_set_value_from_string
  * @xml: the GladeXML object.
@@ -1404,6 +1527,13 @@ glade_xml_set_value_from_string (GladeXML *xml,
     return ret;
 }
 
+/* a small struct to hold info about a custom prop until we apply it */
+typedef struct _CustomPropData CustomPropData;
+struct _CustomPropData {
+    GladeApplyCustomPropFunc apply_prop;
+    GladeProperty *prop;
+};
+
 /**
  * glade_standard_build_widget
  * @xml: the GladeXML object.
@@ -1422,22 +1552,47 @@ glade_standard_build_widget(GladeXML *xml, GType widget_type,
 			    GladeWidgetInfo *info)
 {
     static GArray *props_array = NULL;
+    static GArray *custom_props_array = NULL;
     GObjectClass *oclass;
+    CustomPropInfo *custom_props;
     GtkWidget *widget;
     GList *deferred_props = NULL, *tmp;
     guint i;
 
-    if (!props_array)
+    if (!props_array) {
 	props_array = g_array_new(FALSE, FALSE, sizeof(GParameter));
+	custom_props_array = g_array_new(FALSE, FALSE, sizeof(CustomPropData));
+    }
 
     /* we ref the class here as a slight optimisation */
     oclass = g_type_class_ref(widget_type);
 
+    custom_props = get_custom_prop_info(widget_type);
+
     /* collect properties */
     for (i = 0; i < info->n_properties; i++) {
+	GQuark name_quark;
 	GParameter param = { NULL };
 	GParamSpec *pspec;
 
+	if (custom_props &&
+	    (name_quark = g_quark_try_string(info->properties[i].name)) != 0) {
+	    gint j = 0;
+
+	    while (custom_props[j].name_quark) {
+		if (custom_props[j].name_quark == name_quark) {
+		    CustomPropData prop_data;
+
+		    prop_data.apply_prop = custom_props[j].apply_prop;
+		    prop_data.prop = &info->properties[i];
+		    g_array_append_val(custom_props_array, prop_data);
+		    break;
+		}
+		j++;
+	    }
+	    if (custom_props[j].name_quark != 0) /* a prop was matched */
+		continue;
+	}
 	pspec = g_object_class_find_property(oclass, info->properties[i].name);
 	if (!pspec) {
 	    g_warning("unknown property `%s' for class `%s'",
@@ -1475,6 +1630,16 @@ glade_standard_build_widget(GladeXML *xml, GType widget_type,
 	g_value_unset(&g_array_index(props_array, GParameter, i).value);
     }
 
+    /* do custom props */
+    for (i = 0; i < custom_props_array->len; i++) {
+	CustomPropData *data;
+
+	data = &g_array_index(custom_props_array, CustomPropData, i);
+	if (data->apply_prop)
+	    (* data->apply_prop) (xml, widget, data->prop->name,
+				  data->prop->value);
+    }
+
     /* handle deferred properties */
     for (tmp = deferred_props; tmp; tmp = tmp->next) {
 	GladeProperty *prop = tmp->data;
@@ -1484,6 +1649,7 @@ glade_standard_build_widget(GladeXML *xml, GType widget_type,
     g_list_free(tmp);
 
     g_array_set_size(props_array, 0);
+    g_array_set_size(custom_props_array, 0);
     g_type_class_unref(oclass);
 
     return widget;
