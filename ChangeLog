@@ -1,3 +1,15 @@
+2001-10-11  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c (glade_xml_handle_widget_prop): use new
+	naming.
+	(glade_xml_set_common_params): handle changes to struct.
+	(glade_xml_add_atk_relations): add an entry to
+	self->priv->deferred_props for forward reference relations.
+	(glade_xml_set_common_params): handle deferred relations here.
+
+	* glade/glade-private.h: expand struct to handle more than just
+	object properties (also do deferred relations).
+
 2001-10-10  Michael Meeks  <michael@ximian.com>
 
 	* libglade-convert (handle_file): hide toplevel

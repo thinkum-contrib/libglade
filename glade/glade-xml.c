@@ -682,9 +682,10 @@ glade_xml_handle_widget_prop(GladeXML *self, GtkWidget *widget,
     } else {
 	GladeDeferredProperty *dprop = g_new(GladeDeferredProperty, 1);
 
-	dprop->target = G_OBJECT(widget);
-	dprop->prop_name = prop_name;
-	dprop->prop_value = value_name;
+	dprop->target_name = value_name;
+	dprop->type = DEFERRED_PROP;
+	dprop->d.prop.object = G_OBJECT(widget);
+	dprop->d.prop.prop_name = prop_name;
 
 	self->priv->deferred_props = g_list_prepend(self->priv->deferred_props,
 						    dprop);
@@ -813,6 +814,29 @@ glade_xml_add_atk_actions(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
     }	
 }
 
+/* helper function for adding relations */
+static void
+add_relation(AtkRelationSet *relations, AtkRelationType relation_type,
+	     AtkObject *target_accessible)
+{
+    AtkRelation *relation;
+
+    relation = atk_relation_set_get_relation_by_type (relations,
+						      relation_type);
+    if (relation) {
+	/* add new target accessible to relation */
+	GPtrArray* target_array = atk_relation_get_target (relation);
+
+	g_ptr_array_remove (target_array, target_accessible);
+	g_ptr_array_add (target_array, target_accessible);
+    } else {
+	/* the relation hasn't been created yet ... */
+	atk_relation_set_add (relations,
+			      atk_relation_new (&target_accessible, 1,
+						relation_type));
+    }
+}
+
 /* this is a private function */
 static void
 glade_xml_add_atk_relations(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
@@ -822,30 +846,27 @@ glade_xml_add_atk_relations(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
     AtkRelationSet *relations = atk_object_ref_relation_set (atko);
     
     for (i = 0; i < info->n_relations; i++) {
-	GladeAtkRelationInfo *relation_info = &info->relations[i];
-	GtkWidget *target_widget = glade_xml_get_widget (xml, relation_info->target);
-	AtkObject *target_accessible;
+	GladeAtkRelationInfo *rinfo = &info->relations[i];
+	GtkWidget *target_widget = glade_xml_get_widget (xml, rinfo->target);
+	AtkRelationType relation_type;
+
+	relation_type = atk_relation_type_from_string (rinfo->type);
 	if (target_widget) {
-	    AtkRelation *relation;
-	    AtkRelationType relation_type;
-	    relation_type = atk_relation_type_from_string (relation_info->type);
-	    relation = atk_relation_set_get_relation_by_type (relations,
-							      relation_type);
+	    AtkObject *target_accessible;
+
 	    target_accessible = gtk_widget_get_accessible (target_widget);
-	    if (relation) {
-		    GPtrArray* target_array = atk_relation_get_target (relation);
-		    g_ptr_array_remove (target_array, target_accessible);
-		    g_ptr_array_add (target_array, target_accessible);
-	    } else { /* this is a new relation... */
-		    AtkObject *persistent = (AtkObject *) g_new0 (AtkObject*, 1);
-		    persistent = target_accessible;
-		    atk_relation_set_add (relations,
-					  atk_relation_new (&persistent,
-							    1,
-							    relation_type));
-	    }
+
+	    add_relation(relations, relation_type, target_accessible);
 	} else {
-		g_warning ("could not find target widget %s for relation %s, skipping it", relation_info->target, relation_info->type);
+	    GladeDeferredProperty *dprop = g_new(GladeDeferredProperty, 1);
+
+	    dprop->target_name = rinfo->target;
+	    dprop->type = DEFERRED_REL;
+	    dprop->d.rel.relation_set = g_object_ref(relations);
+	    dprop->d.rel.relation_type = relation_type;
+
+	    xml->priv->deferred_props =
+		g_list_prepend(xml->priv->deferred_props, dprop);
 	}
     }
     g_object_unref (relations);
@@ -1724,14 +1745,29 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
     while (tmp) {
 	GladeDeferredProperty *dprop = tmp->data;
 
-	if (!strcmp(info->name, dprop->prop_value)) {
+	if (!strcmp(info->name, dprop->target_name)) {
 	    tmp = tmp->next;
 	    self->priv->deferred_props =
 		g_list_remove(self->priv->deferred_props, dprop);
 
-	    g_object_set(G_OBJECT(dprop->target),
-			 dprop->prop_name, G_OBJECT(widget),
-			 NULL);
+	    switch (dprop->type) {
+	    case DEFERRED_PROP:
+		g_object_set(G_OBJECT(dprop->d.prop.object),
+			     dprop->d.prop.prop_name, G_OBJECT(widget),
+			     NULL);
+		break;
+	    case DEFERRED_REL:
+		{
+		    AtkObject *target = gtk_widget_get_accessible(widget);
+
+		    add_relation(dprop->d.rel.relation_set,
+				 dprop->d.rel.relation_type, target);
+		    g_object_unref(dprop->d.rel.relation_set);
+		}
+		break;
+	    default:
+		g_warning("unknown deferred property type");
+	    }
 	    g_free(dprop);
 	} else {
 	    tmp = tmp->next;

@@ -23,6 +23,8 @@
 #define GLADE_PRIVATE_H
 #include <stdio.h>
 #include <glib.h>
+#include <atk/atkrelation.h>
+#include <atk/atkrelationset.h>
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkwindow.h>
 #include <gtk/gtkaccelgroup.h>
@@ -78,9 +80,19 @@ struct _GladeSignalData {
 
 typedef struct _GladeDeferredProperty GladeDeferredProperty;
 struct _GladeDeferredProperty {
-    GObject *target;
-    const gchar *prop_name;
-    const gchar *prop_value;
+    const gchar *target_name;
+
+    enum { DEFERRED_PROP, DEFERRED_REL } type;
+    union {
+	struct {
+	    GObject *object;
+	    const gchar *prop_name;
+	} prop;
+	struct {
+	    AtkRelationSet *relation_set;
+	    AtkRelationType relation_type;
+	} rel;
+    } d;
 };
 
 #endif
