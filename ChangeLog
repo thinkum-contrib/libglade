@@ -1,3 +1,9 @@
+2002-04-28  Murray Cumming  <murrayc@usa.net>
+
+	* glade/glade-xml.c (get_build_data):
+	Look at the parent type in get_build_data()  rather than in
+	glade_xml_build_widget().
+
 2002-04-28  James Henstridge  <james@daa.com.au>
 
 	* configure.in: decrement version number.

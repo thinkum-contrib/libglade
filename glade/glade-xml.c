@@ -1246,7 +1246,18 @@ get_build_data(GType type)
     build_data = g_type_get_qdata(type, glade_build_data_id);
     
     if (build_data)
-	return build_data;
+	return build_data;  /* specific BuildData found */
+
+    /* gtkmm derives it's own types, but they aren't registed with glade_register_widget(),
+     * so look at the base type.
+     * If 3rd party custom widgets haven't used glade_register_widget() then this might mean that
+     * libglade mistakenly uses the base type's functions. */
+     build_data = g_type_get_qdata(g_type_parent(type), glade_build_data_id);
+
+    if (build_data)
+	return build_data;  /* specific BuildData found */
+
+    /* No specifc BuildData found - use something generic: */
     if (g_type_is_a(type, GTK_TYPE_CONTAINER))
 	return &container_build_data;
     else
@@ -1867,14 +1878,6 @@ glade_xml_handle_internal_child(GladeXML *self, GtkWidget *parent,
      * find_internal_child handler */
     while (parent_build_data == NULL && parent != NULL) {
 	parent_build_data = get_build_data(G_OBJECT_TYPE(parent));
-
-	if(parent_build_data->find_internal_child == NULL) {
-		/* gtkmm derives it's own types, but they aren't registed with glade_register_widget(),
-		 * so look at the base type.
-		 * If 3rd party custom widgets haven't used glade_register_widget() then this might mean that
-		 * libglade mistakenly uses the base type's functio. */
-		parent_build_data = get_build_data(g_type_parent(G_OBJECT_TYPE(parent)));
-	}
 
 	if (parent_build_data->find_internal_child != NULL)
 	    break;
