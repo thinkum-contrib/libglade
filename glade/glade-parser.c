@@ -792,8 +792,7 @@ glade_parser_characters(GladeParseState *state, const xmlChar *chars, int len)
     case PARSER_WIDGET_PROPERTY:
     case PARSER_WIDGET_ATK_PROPERTY:
     case PARSER_WIDGET_CHILD_PACKING_PROPERTY:
-	for (i = 0; i < len; i++)
-	    g_string_append_c(state->content, chars[i]);
+	g_string_append_len(state->content, chars, len);
 	break;
     default:
 	/* don't care about content in any other states */
