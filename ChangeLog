@@ -1,3 +1,13 @@
+2000-11-29  James Henstridge  <james@daa.com.au>
+
+	A couple of memory leaks found by Morten:
+	* glade/glade-bonobo.c (gnome_control_new): unref the control
+	frame on error rather than destroying it.  Destroy doesn't unref,
+	so we get a leak.
+
+	* glade/glade-gnome.c (pixmapmenuitem_new): free the filename of
+	the icon file here.
+
 2000-11-28  Jody Goldberg <jgoldberg@home.com>
 
 	* configure.in : Use AM_PROG_LIBTOOL rather than AC_PROG_LIBTOOL
