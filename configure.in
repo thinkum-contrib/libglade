@@ -71,7 +71,7 @@ import sys, string
 if sys.version_info < (2,0,0):
     sys.exit(1)
 try:
-    import xml.parsers
+    import xml.parsers.expat
 except ImportError:
     sys.exit(1)
 sys.exit(0)'

@@ -1,3 +1,7 @@
+2001-11-28  James Henstridge  <james@daa.com.au>
+
+	* configure.in (try): fix up xml.parsers.expat check.
+
 2001-11-27  jacob berkman  <jacob@ximian.com>
 
 	* tests/test-libglade-gtk-noupgrade.c:
