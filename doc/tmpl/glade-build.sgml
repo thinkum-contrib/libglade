@@ -177,16 +177,6 @@ the actual widgets from the XML node data structures.
 @Returns: 
 
 
-<!-- ##### FUNCTION glade_xml_gettext ##### -->
-<para>
-
-</para>
-
-@xml: 
-@msgid: 
-@Returns: 
-
-
 <!-- ##### FUNCTION glade_xml_set_toplevel ##### -->
 <para>
 

@@ -95,6 +95,7 @@ these functions and structures.
 </para>
 
 @file: 
+@domain: 
 @Returns: 
 
 
@@ -105,6 +106,7 @@ these functions and structures.
 
 @buffer: 
 @len: 
+@domain: 
 @Returns: 
 
 

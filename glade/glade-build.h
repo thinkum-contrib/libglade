@@ -112,9 +112,6 @@ void glade_standard_build_children(GladeXML *self, GtkWidget *parent,
 gint  glade_enum_from_string(GType type, const char *string);
 guint glade_flags_from_string(GType type, const char *string);
 
-/* a wrapper for gettext */
-char *glade_xml_gettext(GladeXML *xml, const char *msgid);
-
 /* invoke the custom widget creation function */
 GtkWidget *glade_create_custom(GladeXML *xml, gchar *func_name, gchar *name,
 			       gchar *string1, gchar *string2,

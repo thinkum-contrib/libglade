@@ -96,8 +96,10 @@ struct _GladeInterface {
 };
 
 /* the actual functions ... */
-GladeInterface *glade_parser_parse_file   (const gchar *file);
-GladeInterface *glade_parser_parse_buffer (const gchar *buffer, gint len);
+GladeInterface *glade_parser_parse_file   (const gchar *file,
+					   const gchar *domain);
+GladeInterface *glade_parser_parse_buffer (const gchar *buffer, gint len,
+					   const gchar *domain);
 void            glade_interface_destroy   (GladeInterface *interface);
 
 void            glade_interface_dump      (GladeInterface *interface,

@@ -198,6 +198,15 @@ Libglade SAX Parser
 @Returns: 
 @xml: 
 
+<!-- ##### FUNCTION glade_xml_gettext ##### -->
+<para>
+
+</para>
+
+@xml: 
+@msgid: 
+@Returns: 
+
 <!-- ##### FUNCTION glade_xml_new_from_memory ##### -->
 <para>
 

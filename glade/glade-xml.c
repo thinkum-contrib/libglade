@@ -99,7 +99,6 @@ glade_xml_init (GladeXML *self)
     self->priv = priv = g_new (GladeXMLPrivate, 1);
 
     self->filename = NULL;
-    self->txtdomain = NULL;
 
     priv->tree = NULL;
     priv->tooltips = gtk_tooltips_new();
@@ -192,14 +191,12 @@ glade_xml_construct (GladeXML *self, const char *fname, const char *root,
     g_return_val_if_fail(self != NULL, FALSE);
     g_return_val_if_fail(fname != NULL, FALSE);
 
-    iface = glade_parser_parse_file(fname);
+    iface = glade_parser_parse_file(fname, domain);
 
     if (!iface)
 	return FALSE;
 
     self->priv->tree = iface;
-    if (self->txtdomain) g_free(self->txtdomain);
-    self->txtdomain = g_strdup(domain);
     if (self->filename)
 	g_free(self->filename);
     self->filename = g_strdup(fname);
@@ -228,14 +225,13 @@ glade_xml_new_from_buffer(const char *buffer, int size, const char *root,
 			  const char *domain)
 {
     GladeXML *self;
-    GladeInterface *iface = glade_parser_parse_buffer(buffer, size);
+    GladeInterface *iface = glade_parser_parse_buffer(buffer, size, domain);
 
     if (!iface)
 	return NULL;
     self = g_object_new(GLADE_TYPE_XML, NULL);
 
     self->priv->tree = iface;
-    self->txtdomain = g_strdup(domain);
     self->filename = NULL;
     glade_xml_build_interface(self, iface, root);
 
@@ -795,33 +791,6 @@ glade_xml_get_parent_accel(GladeXML *xml)
 }
 #endif
 
-/**
- * glade_xml_gettext:
- * @xml: the GladeXML object.
- * @msgid: the string to translate.
- *
- * This function is a wrapper for gettext, that uses the translation domain
- * requested by the user of the function, or the default if no domain has
- * been specified.  This should be used for translatable strings in all
- * widget building routines.
- *
- * Returns: the translated string
- */
-char *
-glade_xml_gettext(GladeXML *xml, const char *msgid)
-{
-    if (!msgid || msgid[0] == '\0')
-	return "";
-#ifdef ENABLE_NLS
-    if (xml->txtdomain)
-	return dgettext(xml->txtdomain, msgid);
-    else
-	return gettext(msgid);
-#else
-    return msgid;
-#endif
-}
-
 /* this is a private function */
 static void
 glade_xml_add_signals(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
@@ -895,12 +864,8 @@ glade_xml_finalize(GObject *object)
     GladeXML *self = GLADE_XML(object);
     GladeXMLPrivate *priv = self->priv;
 	
-    if (self->filename)
-	g_free(self->filename);
+    g_free(self->filename);
     self->filename = NULL;
-    if (self->txtdomain)
-	g_free(self->txtdomain);
-    self->txtdomain = NULL;
 
     if (priv) {
 	/* remove data items from all the widgets that are still
@@ -1544,6 +1509,7 @@ glade_xml_widget_destroy(GtkObject *object, GladeXML *xml)
 
     name = g_object_get_data(G_OBJECT(object), glade_xml_name_tag);
 
+    if (!name) return;
     g_hash_table_remove(xml->priv->name_hash, name);
     g_object_set_data(G_OBJECT(object), glade_xml_tag, NULL);
     g_object_set_data(G_OBJECT(object), glade_xml_name_tag, NULL);

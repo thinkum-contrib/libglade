@@ -27,6 +27,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef ENABLE_NLS
+#  include <libintl.h>
+#else
+#  define textdomain(String) (String)
+#  define dgettext(Domain, String) (String)
+#endif
+
 #include <libxml/parser.h>
 
 #include "glade-parser.h"
@@ -81,6 +88,8 @@ typedef struct _GladeParseState GladeParseState;
 struct _GladeParseState {
     ParserState state;
 
+    const gchar *domain;
+
     guint unknown_depth;    /* handle recursive unrecognised tags */
     ParserState prev_state; /* the last `known' state we were in */
 
@@ -92,6 +101,7 @@ struct _GladeParseState {
 
     enum {PROP_NONE, PROP_WIDGET, PROP_ATK, PROP_CHILD } prop_type;
     gchar *prop_name;
+    gboolean translate_prop;
     GArray *props;
 
     GArray *signals;
@@ -355,6 +365,7 @@ glade_parser_start_document(GladeParseState *state)
 
     state->prop_type = PROP_NONE;
     state->prop_name = NULL;
+    state->translate_prop = FALSE;
     state->props = NULL;
 
     state->signals = NULL;
@@ -454,10 +465,14 @@ glade_parser_start_element(GladeParseState *state,
 		state->prop_type != PROP_WIDGET)
 		g_warning("non widget properties defined here (oh no!)");
 	    state->prop_type = PROP_WIDGET;
+	    state->translate_prop = FALSE;
 	    for (i = 0; attrs && attrs[i] != NULL; i += 2) {
 		if (!strcmp(attrs[i], "name"))
 		    state->prop_name = alloc_string(state->interface,
 						    attrs[i+1]);
+		else if (!strcmp(attrs[i], "translatable") &&
+			 !strcmp(attrs[i+1], "yes"))
+		    state->translate_prop = TRUE;
 		else
 		    g_warning("unknown attribute `%s' for <property>.",
 			      attrs[i]);
@@ -497,10 +512,14 @@ glade_parser_start_element(GladeParseState *state,
 		state->prop_type != PROP_ATK)
 		g_warning("non atk properties defined here (oh no!)");
 	    state->prop_type = PROP_ATK;
+	    state->translate_prop = FALSE;
 	    for (i = 0; attrs && attrs[i] != NULL; i += 2) {
 		if (!strcmp(attrs[i], "name"))
 		    state->prop_name = alloc_string(state->interface,
 						    attrs[i+1]);
+		else if (!strcmp(attrs[i], "translatable") &&
+			 !strcmp(attrs[i+1], "yes"))
+		    state->translate_prop = TRUE;
 		else
 		    g_warning("unknown attribute `%s' for <property>.",
 			      attrs[i]);
@@ -616,10 +635,14 @@ glade_parser_start_element(GladeParseState *state,
 		state->prop_type != PROP_CHILD)
 		g_warning("non child properties defined here (oh no!)");
 	    state->prop_type = PROP_CHILD;
+	    state->translate_prop = FALSE;
 	    for (i = 0; attrs && attrs[i] != NULL; i += 2) {
 		if (!strcmp(attrs[i], "name"))
 		    state->prop_name = alloc_string(state->interface,
 						    attrs[i+1]);
+		else if (!strcmp(attrs[i], "translatable") &&
+			 !strcmp(attrs[i+1], "yes"))
+		    state->translate_prop = TRUE;
 		else
 		    g_warning("unknown attribute `%s' for <property>.",
 			      attrs[i]);
@@ -700,7 +723,11 @@ glade_parser_end_element(GladeParseState *state, const xmlChar *name)
 	if (!state->props)
 	    state->props = g_array_new(FALSE, FALSE, sizeof(GladeProperty));
 	prop.name = state->prop_name;
-	prop.value = alloc_string(state->interface, state->content->str);
+	if (state->translate_prop)
+	    prop.value = alloc_string(state->interface,
+			dgettext(state->domain, state->content->str));
+	else
+	    prop.value = alloc_string(state->interface, state->content->str);
 	g_array_append_val(state->props, prop);
 	state->prop_name = NULL;
 	state->state = PARSER_WIDGET;
@@ -717,7 +744,11 @@ glade_parser_end_element(GladeParseState *state, const xmlChar *name)
 	if (!state->props)
 	    state->props = g_array_new(FALSE, FALSE, sizeof(GladeProperty));
 	prop.name = state->prop_name;
-	prop.value = alloc_string(state->interface, state->content->str);
+	if (state->translate_prop)
+	    prop.value = alloc_string(state->interface,
+			dgettext(state->domain, state->content->str));
+	else
+	    prop.value = alloc_string(state->interface, state->content->str);
 	g_array_append_val(state->props, prop);
 	state->prop_name = NULL;
 	state->state = PARSER_WIDGET_ATK;
@@ -762,7 +793,11 @@ glade_parser_end_element(GladeParseState *state, const xmlChar *name)
 	if (!state->props)
 	    state->props = g_array_new(FALSE, FALSE, sizeof(GladeProperty));
 	prop.name = state->prop_name;
-	prop.value = alloc_string(state->interface, state->content->str);
+	if (state->translate_prop)
+	    prop.value = alloc_string(state->interface,
+			dgettext(state->domain, state->content->str));
+	else
+	    prop.value = alloc_string(state->interface, state->content->str);
 	g_array_append_val(state->props, prop);
 	state->prop_name = NULL;
 	state->state = PARSER_WIDGET_CHILD_PACKING;
@@ -915,6 +950,7 @@ glade_interface_destroy(GladeInterface *interface)
 /**
  * glade_parser_parse_file
  * @file: the filename of the glade XML file.
+ * @domain: the translation domain for the XML file.
  *
  * This function parses a Glade XML interface file to a GladeInterface
  * object (which is libglade's internal representation of the
@@ -926,11 +962,16 @@ glade_interface_destroy(GladeInterface *interface)
  * Returns: the GladeInterface structure for the XML file.
  */
 GladeInterface *
-glade_parser_parse_file(const gchar *file)
+glade_parser_parse_file(const gchar *file, const gchar *domain)
 {
     GladeParseState state = { 0 };
 
     state.interface = NULL;
+    if (domain)
+	state.domain = domain;
+    else
+	state.domain = textdomain(NULL);
+
     if (xmlSAXUserParseFile(&glade_parser, &state, file) < 0) {
 	g_warning("document not well formed!");
 	glade_interface_destroy(state.interface);
@@ -946,6 +987,7 @@ glade_parser_parse_file(const gchar *file)
  * glade_parser_parse_buffer
  * @buffer: a buffer in memory containing XML data.
  * @len: the length of @buffer.
+ * @domain: the translation domain for the XML file.
  *
  * This function is similar to glade_parser_parse_file, except that it
  * parses XML data from a buffer in memory.  This could be used to
@@ -957,11 +999,16 @@ glade_parser_parse_file(const gchar *file)
  * Returns: the GladeInterface structure for the XML buffer.
  */
 GladeInterface *
-glade_parser_parse_buffer(const gchar *buffer, gint len)
+glade_parser_parse_buffer(const gchar *buffer, gint len, const gchar *domain)
 {
     GladeParseState state = { 0 };
 
     state.interface = NULL;
+    if (domain)
+	state.domain = domain;
+    else
+	state.domain = textdomain(NULL);
+
     if (xmlSAXUserParseMemory(&glade_parser, &state, buffer, len) < 0) {
 	g_warning("document not well formed!");
 	glade_interface_destroy(state.interface);

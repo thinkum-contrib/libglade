@@ -1,3 +1,29 @@
+2001-08-24  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-build.h: remove reference to gettext.
+
+	* glade/glade-xml.c (glade_xml_construct): pass domain argument on
+	to glade_parser_parse_file.
+	(glade_xml_new_from_buffer): pass domain argument on to
+	glade_parser_parse_buffer.
+	(glade_xml_gettext): remove function.
+	Remove references to the GladeXML.txtdomain member.
+
+	* glade/glade-bonobo.c (glade_bonobo_widget_new): cast to GObject.
+	Remove reference to glade_xml_gettext.
+
+	* glade/glade-parser.c (GladeParseState): add domain member to
+	hold the translation domain being used for the XML file.  Also add
+	a translate_prop member to say whether the member should be
+	translated.
+	(glade_parser_start_element): check for translatable attribute on
+	property elements.
+	(glade_parser_end_element): if property is to be translated, pass
+	it through dgettext.
+
+	* glade/glade-parser.h: add domain argument to the GladeInterface
+	constructors.
+
 2001-08-23  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-parser.c (glade_parser_characters): use

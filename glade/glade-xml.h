@@ -44,7 +44,6 @@ struct _GladeXML {
     GObject parent;
 
     char *filename;
-    char *txtdomain;
 
     /* <private> */
     GladeXMLPrivate *priv;
