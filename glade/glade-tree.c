@@ -40,7 +40,7 @@ recurse_tree (xmlNodePtr xmlnode, GNode *parent, GHashTable *hash)
 	for (tmp = xmlnode->childs; tmp != NULL; tmp = tmp->next) {
 		char *content = xmlNodeGetContent(tmp);
 		if (tmp->name && !strcmp(tmp->name, "name"))
-			g_hash_table_insert(hash, content, self);
+			g_hash_table_insert(hash, g_strdup(content), self);
 		else if (tmp->name && !strcmp(tmp->name, "widget"))
 			recurse_tree(tmp, self, hash);
 		if (content) free(content);
@@ -84,6 +84,8 @@ destroy_func(gpointer val)
 		return;
 	xmlFreeDoc(tree->xml);
 	g_node_destroy(tree->tree);
+	/* free all the keys in the widget name hash */
+	g_hash_table_foreach(tree->hash, (GHFunc)g_free, NULL);
 	g_hash_table_destroy(tree->hash);
 	g_free(tree);
 }

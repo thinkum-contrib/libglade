@@ -25,6 +25,11 @@
 <widget>
   <class>GnomeApp</class>
   <name>app1</name>
+  <signal>
+    <name>destroy</name>
+    <handler>gtk_main_quit</handler>
+    <last_modification_time>Thu, 10 Jun 1999 11:57:01 GMT</last_modification_time>
+  </signal>
   <title>project2</title>
   <enable_layout_config>True</enable_layout_config>
   <allow_shrink>False</allow_shrink>

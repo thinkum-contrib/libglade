@@ -1,5 +1,21 @@
 1999-06-10  James Henstridge  <james@daa.com.au>
 
+	* glade/glade-gnome.c: implemented the GnomeApp, GnomeAppBar,
+	GnomeDock, GnomeDockItem and GtkPixmapItem (sort of).  Just about
+	everything displays, except that the GNOMEUIINFO stuff, which is
+	not properly implemented at this point in time.
+
+	* glade/glade-gnome.c (about_new): make the about dialog creation
+	routine use the values of gnome_app_id and gnome_app_version.
+
+	* glade/glade-tree.c (recurse_tree, destroy_func): the hash table of
+	widget name -> xmlNode was broken.  It was freeing the keys before
+	they were used.  This bug is from when I was converting libglade
+	over to using xmlNodeGetContent().  It should now be possible to
+	use the glade_xml_new("filename", "rootnode") style of initialisation,
+	and signal handlers that should be connected with
+	gtk_signal_connect_object should now work correctly as well.
+
 	* glade/glade-gtk.c (pixmap_new): the filename of the pixmap should
 	be relative to the xml file.
 	(toolbar_new, toolbar_build_children): fixed up toolbar support.  I
