@@ -270,7 +270,7 @@ clist_new (GladeXML *xml, GType widget_type,
 
 	glade_xml_handle_widget_prop(xml, clist, prop->name, prop->value);
     }
-    g_list_free(tmp);
+    g_list_free(deferred_props);
 
     g_array_set_size(props_array, 0);
     g_type_class_unref(oclass);

@@ -1,3 +1,7 @@
+2001-11-05  jacob berkman  <jacob@ximian.com>
+
+	* glade/glade-gtk.c (clist_new): free the correct list
+
 2001-10-31  James Henstridge  <james@daa.com.au>
 
 	* doc/Makefile.am: remove update-libglade crack, as it breaks the
