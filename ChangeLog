@@ -1,3 +1,9 @@
+Wed Oct 17 02:15:10 2001  Jonathan Blandford  <jrb@redhat.com>
+
+	* glade/glade-gtk.c (gtk_dialog_build_children): Handle dialog
+	buttons better.
+	(build_button): ditto
+
 2001-10-11  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-xml.c (glade_xml_handle_widget_prop): use new

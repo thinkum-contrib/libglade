@@ -58,6 +58,32 @@ menuitem_build_children(GladeXML *self, GtkWidget *w,
 }
 
 void
+gtk_dialog_build_children(GladeXML *self, GtkWidget *w,
+			  GladeWidgetInfo *info)
+
+{
+    GtkDialog *dialog = GTK_DIALOG (w);
+    GtkWidget *button;
+    GList *children, *list;
+
+    glade_standard_build_children (self, w, info);
+
+    if (dialog->action_area == NULL)
+	return;
+    children = gtk_container_get_children (GTK_CONTAINER (dialog->action_area));
+    for (list = children; list; list = list->next) {
+	gtk_widget_ref (GTK_WIDGET (list->data));
+	gtk_container_remove (GTK_CONTAINER (dialog->action_area), GTK_WIDGET (list->data));
+    }
+    for (list = children; list; list = list->next) {
+	gint response_id;
+	response_id = GPOINTER_TO_INT (g_object_steal_data (G_OBJECT (list->data), "response_id"));
+	gtk_dialog_add_action_widget (dialog, GTK_WIDGET (list->data), response_id);
+    }
+    g_list_free (children);
+}
+
+void
 notebook_build_children(GladeXML *self, GtkWidget *parent,
 			GladeWidgetInfo *info)
 {
@@ -95,6 +121,30 @@ notebook_build_children(GladeXML *self, GtkWidget *parent,
 	}
     }
     g_object_unref(G_OBJECT(parent));
+}
+
+static GtkWidget *
+build_button(GladeXML *xml, GType widget_type,
+	     GladeWidgetInfo *info)
+{
+    GtkWidget *widget;
+    gint i, response_id;
+    gboolean response_id_set = FALSE;
+
+    for (i = 0; i < info->n_properties; i++) {
+	if (!strcmp (info->properties[i].name, "response_id")) {
+	    response_id = strtol (info->properties[i].value, 0, NULL);
+	    response_id_set = TRUE;
+	    break;
+	}
+    }
+
+    widget = glade_standard_build_widget (xml, widget_type, info);
+
+    if (response_id_set)
+	g_object_set_data (G_OBJECT (widget), "response_id", GINT_TO_POINTER (response_id));
+
+    return widget;
 }
 
 static GtkWidget *
@@ -186,7 +236,7 @@ static GladeWidgetBuildData widget_data[] = {
       gtk_arrow_get_type },
     { "GtkAspectFrame", glade_standard_build_widget, glade_standard_build_children,
       gtk_aspect_frame_get_type },
-    { "GtkButton", glade_standard_build_widget, glade_standard_build_children,
+    { "GtkButton", build_button, glade_standard_build_children,
       gtk_button_get_type },
     { "GtkCalendar", glade_standard_build_widget, NULL,
       gtk_calendar_get_type },
@@ -206,7 +256,7 @@ static GladeWidgetBuildData widget_data[] = {
       gtk_ctree_get_type },
     { "GtkCurve", glade_standard_build_widget, NULL,
       gtk_curve_get_type },
-    { "GtkDialog", glade_standard_build_widget, glade_standard_build_children,
+    { "GtkDialog", glade_standard_build_widget, gtk_dialog_build_children,
       gtk_dialog_get_type, 0, dialog_find_internal_child },
     { "GtkDrawingArea", glade_standard_build_widget, NULL,
       gtk_drawing_area_get_type },
