@@ -99,6 +99,9 @@ glade_xml_init (GladeXML *self)
 	priv->longname_hash = g_hash_table_new(g_str_hash, g_str_equal);
 	priv->signals = g_hash_table_new(g_str_hash, g_str_equal);
 	priv->radio_groups = g_hash_table_new (g_str_hash, g_str_equal);
+	priv->toplevel = NULL;
+	priv->accel_group = NULL;
+	priv->uline_accels = NULL;
 }
 
 /**
@@ -503,6 +506,90 @@ glade_get_widget_tree(GtkWidget *widget)
 	return gtk_object_get_data(GTK_OBJECT(widget), glade_xml_tag);
 }
 
+/* ------------------------------------------- */
+
+
+/**
+ * glade_xml_set_toplevel:
+ * @xml: the GladeXML object.
+ * @window: the toplevel.
+ *
+ * This is used while the tree is being built to set the toplevel window that
+ * is currently being built.  It is mainly used to enable GtkAccelGroup's to
+ * be bound to the correct window, but could have other uses.
+ */
+void
+glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window)
+{
+	xml->priv->toplevel = window;
+	/* new toplevel needs new accel group */
+	xml->priv->accel_group = NULL;
+}
+
+/**
+ * glade_xml_ensure_accel:
+ * @xml: the GladeXML object.
+ *
+ * This function is used to get the current GtkAccelGroup.  If there isn't
+ * one, a new one is created and bound to the current toplevel window (if
+ * a toplevel has been set).
+ * Returns: the current GtkAccelGroup.
+ */
+GtkAccelGroup *
+glade_xml_ensure_accel(GladeXML *xml)
+{
+	if (!xml->priv->accel_group) {
+		xml->priv->accel_group = gtk_accel_group_new();
+		if (xml->priv->toplevel)
+			gtk_window_add_accel_group(xml->priv->toplevel,
+						   xml->priv->accel_group);
+	}
+	return xml->priv->accel_group;
+}
+
+/**
+ * glade_xml_push_uline_accel:
+ * @xml: the GladeXML object.
+ * @uline: the underline accelerator group.
+ *
+ * Push a new uline accel group onto the stack.  This is intended for use
+ * by GtkMenu so that GtkMenuItem's can set up underline accelerators.
+ */
+void
+glade_xml_push_uline_accel(GladeXML *xml, GtkAccelGroup *uline) {
+	xml->priv->uline_accels = g_slist_prepend(xml->priv->uline_accels,
+						  uline);
+}
+
+/* glade_xml_pop_uline_accel:
+ * @xml: the GladeXML object.
+ *
+ * Pops the uline accel group.  This will usually be called after a GtkMenu
+ * has built all its children.
+ */
+void
+glade_xml_pop_uline_accel(GladeXML *xml) {
+	g_return_if_fail(xml->priv->uline_accels != NULL);
+	xml->priv->uline_accels = g_slist_remove(xml->priv->uline_accels,
+					xml->priv->uline_accels->data);
+}
+
+/*
+ * glade_xml_get_uline_accel:
+ * @xml: the GladeXML object.
+ *
+ * This function is intended for use in menu items when setting up underline
+ * accelerators.
+ * Returns: the current uline accel group, or NULL if there is none.
+ */
+GtkAccelGroup *
+glade_xml_get_uline_accel(GladeXML *xml) {
+	if (xml->priv->uline_accels)
+		return xml->priv->uline_accels->data;
+	else
+		return NULL;
+}
+
 /**
  * glade_xml_gettext:
  * @xml: the GladeXML widget.
@@ -554,7 +641,7 @@ glade_xml_add_signals(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
 }
 
 static void
-glade_xml_add_accels(GtkWidget *w, GladeWidgetInfo *info)
+glade_xml_add_accels(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
 {
 	GList *tmp;
 	for (tmp = info->accelerators; tmp; tmp = tmp->next) {
@@ -563,7 +650,7 @@ glade_xml_add_accels(GtkWidget *w, GladeWidgetInfo *info)
 				accel->key, accel->modifiers,
 				gtk_widget_get_name(w), accel->signal));
 		gtk_widget_add_accelerator(w, accel->signal,
-					   gtk_accel_group_get_default(),
+					   glade_xml_ensure_accel(xml),
 					   accel->key, accel->modifiers,
 					   GTK_ACCEL_VISIBLE);
 	}
@@ -801,7 +888,7 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 		widget_table = g_hash_table_new(g_str_hash, g_str_equal);
 	data = g_hash_table_lookup(widget_table, info->class);
 	glade_xml_add_signals(self, widget, info);
-	glade_xml_add_accels(widget, info);
+	glade_xml_add_accels(self, widget, info);
 
 	gtk_widget_set_name(widget, info->name);
 	if (info->tooltip) {

@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include <glib.h>
 #include <gtk/gtkwidget.h>
+#include <gtk/gtkwindow.h>
+#include <gtk/gtkaccelgroup.h>
 #include <glade/glade-xml.h>
 #include <glade/glade-widget-tree.h>
 
@@ -46,6 +48,18 @@ struct _GladeXMLPrivate {
 	 * bound to each name.
 	 */
 	GHashTable *radio_groups;
+
+	/* the current toplevel being built */
+	GtkWindow *toplevel;
+
+	/*
+	 * These items are for handling accelerator groups.  The first
+	 * is the main accelerator group for the current window.  The
+	 * second is an slist of groups, which is used for the uline
+	 * accel groups for menu entries.
+	 */
+	GtkAccelGroup *accel_group;
+	GSList *uline_accels;
 };
 
 /*

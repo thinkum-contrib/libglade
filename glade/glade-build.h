@@ -23,6 +23,8 @@
 #include <glade/glade-xml.h>
 #include <gtk/gtktypeutils.h>
 #include <gtk/gtkwidget.h>
+#include <gtk/gtkwindow.h>
+#include <gtk/gtkaccelgroup.h>
 #include <gtk/gtkadjustment.h>
 
 #include <glade/glade-widget-tree.h>
@@ -49,6 +51,17 @@ typedef struct {
  * They will be added to a hash table, with the name as the key, to be
  * used by glade_xml_build_widget */
 void glade_register_widgets(const GladeWidgetBuildData *widgets);
+
+/* set the current toplevel widget while building (use NULL to unset) */
+void glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window);
+
+/* make sure that xml->priv->accel_group is a valid AccelGroup */
+GtkAccelGroup *glade_xml_ensure_accel(GladeXML *xml);
+
+/* functions for manipulating the uline accel group stack */
+void           glade_xml_push_uline_accel(GladeXML *xml, GtkAccelGroup *uline);
+void           glade_xml_pop_uline_accel (GladeXML *xml);
+GtkAccelGroup *glade_xml_get_uline_accel (GladeXML *xml);
 
 /* this function is called to build the interface by GladeXML */
 GtkWidget *glade_xml_build_widget(GladeXML *self, GladeWidgetInfo *info,

@@ -74,5 +74,11 @@ glade_get_adjustment
 glade_standard_build_children
 <SUBSECTION I18N Routines>
 glade_xml_gettext
+<SUBSECTION AccelGroup Routines>
+glade_xml_set_toplevel
+glade_xml_ensure_accel
+glade_xml_push_uline_accel
+glade_xml_pop_uline_accel
+glade_xml_get_uline_accel
 </SECTION>
 

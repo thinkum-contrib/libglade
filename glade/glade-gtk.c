@@ -42,12 +42,19 @@ menushell_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info,
 			  const char *longname)
 {
 	GList *tmp;
+	gboolean uline;
 
+	uline = strcmp(info->class, "GtkMenuBar") != 0;
+	if (uline)
+		glade_xml_push_uline_accel(xml,
+			gtk_menu_ensure_uline_accel_group(GTK_MENU(w)));
 	for (tmp = info->children; tmp; tmp = tmp->next) {
 		GtkWidget *child = glade_xml_build_widget(xml, tmp->data,
 							  longname);
 		gtk_menu_shell_append(GTK_MENU_SHELL(w), child);
 	}
+	if (uline)
+		glade_xml_pop_uline_accel(xml);
 }
 
 static void
@@ -1418,9 +1425,28 @@ menuitem_new(GladeXML *xml, GladeWidgetInfo *info)
 		else if (!strcmp(attr->name, "right_justify"))
 			right = attr->value[0] == 'T';
 	}
-	if (label)
-		menuitem = gtk_menu_item_new_with_label(_(label));
-	else
+	if (label) {
+		GtkAccelGroup *accel;
+		guint key;
+		menuitem = gtk_menu_item_new_with_label("");
+		key = gtk_label_parse_uline(
+				GTK_LABEL(GTK_BIN(menuitem)->child), _(label));
+		if (key) {
+			accel = glade_xml_get_uline_accel(xml);
+			if (accel)
+				gtk_widget_add_accelerator(menuitem,
+							   "activate_item",
+							   accel, key, 0, 0);
+			else {
+				/* not inside a GtkMenu -- must be on menubar*/
+				accel = glade_xml_ensure_accel(xml);
+				gtk_widget_add_accelerator(menuitem,
+							   "activate_item",
+							   accel, key,
+							   GDK_MOD1_MASK, 0);
+			}
+		}
+	} else
 		menuitem = gtk_menu_item_new();
 
 	if (right)
@@ -1432,6 +1458,8 @@ static GtkWidget *
 checkmenuitem_new(GladeXML *xml, GladeWidgetInfo *info)
 {
 	GtkWidget *menuitem;
+	GtkAccelGroup *accel;
+	guint key;
 	GList *tmp;
 	char *label = NULL;
 	gboolean right = FALSE, active = FALSE, toggle = FALSE;
@@ -1448,7 +1476,24 @@ checkmenuitem_new(GladeXML *xml, GladeWidgetInfo *info)
 		else if (!strcmp(attr->name, "always_show_toggle"))
 			toggle = attr->value[0] == 'T';
 	}
-	menuitem = gtk_check_menu_item_new_with_label(_(label));
+	menuitem = gtk_check_menu_item_new_with_label("");
+	key = gtk_label_parse_uline(
+			GTK_LABEL(GTK_BIN(menuitem)->child), _(label));
+	if (key) {
+		accel = glade_xml_get_uline_accel(xml);
+		if (accel)
+			gtk_widget_add_accelerator(menuitem,
+						   "activate_item",
+						   accel, key, 0, 0);
+		else {
+			/* not inside a GtkMenu -- must be on menubar*/
+			accel = glade_xml_ensure_accel(xml);
+			gtk_widget_add_accelerator(menuitem,
+						   "activate_item",
+						   accel, key,
+						   GDK_MOD1_MASK, 0);
+		}
+	}
 	if (right)
 		gtk_menu_item_right_justify(GTK_MENU_ITEM(menuitem));
 	gtk_check_menu_item_set_state(GTK_CHECK_MENU_ITEM(menuitem), active);
@@ -1461,6 +1506,8 @@ static GtkWidget *
 radiomenuitem_new(GladeXML *xml, GladeWidgetInfo *info)
 {
 	GtkWidget *menuitem;
+	GtkAccelGroup *accel;
+	guint key;
 	GList *tmp;
 	char *label = NULL;
 	gboolean right = FALSE, active = FALSE, toggle = FALSE;
@@ -1479,7 +1526,24 @@ radiomenuitem_new(GladeXML *xml, GladeWidgetInfo *info)
 	}
 
 	/* XXXX -- must do something about radio item groups ... */
-	menuitem = gtk_radio_menu_item_new_with_label(NULL, _(label));
+	menuitem = gtk_radio_menu_item_new_with_label(NULL, "");
+	key = gtk_label_parse_uline(
+			GTK_LABEL(GTK_BIN(menuitem)->child), _(label));
+	if (key) {
+		accel = glade_xml_get_uline_accel(xml);
+		if (accel)
+			gtk_widget_add_accelerator(menuitem,
+						   "activate_item",
+						   accel, key, 0, 0);
+		else {
+			/* not inside a GtkMenu -- must be on menubar*/
+			accel = glade_xml_ensure_accel(xml);
+			gtk_widget_add_accelerator(menuitem,
+						   "activate_item",
+						   accel, key,
+						   GDK_MOD1_MASK, 0);
+		}
+	}
 
 	if (right)
 		gtk_menu_item_right_justify(GTK_MENU_ITEM(menuitem));
@@ -2054,6 +2118,8 @@ window_new (GladeXML *xml, GladeWidgetInfo *info)
 	if (xpos >= 0 || ypos >= 0)
 		gtk_widget_set_uposition(win, xpos, ypos);
 
+	glade_xml_set_toplevel(xml, GTK_WINDOW(win));
+
 	return win;
 }
 
@@ -2115,6 +2181,8 @@ dialog_new(GladeXML *xml, GladeWidgetInfo *info)
 
 	if (xpos >= 0 || ypos >= 0)
 		gtk_widget_set_uposition (win, xpos, ypos);
+
+	glade_xml_set_toplevel(xml, GTK_WINDOW(win));
 
 	return win;
 }
@@ -2181,6 +2249,8 @@ fileselection_new (GladeXML *xml, GladeWidgetInfo *info)
 
 	if (xpos >= 0 || ypos >= 0)
 		gtk_widget_set_uposition(win, xpos, ypos);
+
+	glade_xml_set_toplevel(xml, GTK_WINDOW(win));
 
 	return win;
 }
@@ -2254,6 +2324,8 @@ colorselectiondialog_new (GladeXML *xml, GladeWidgetInfo *info)
 	if (xpos >= 0 || ypos >= 0)
 		gtk_widget_set_uposition(win, xpos, ypos);
 
+	glade_xml_set_toplevel(xml, GTK_WINDOW(win));
+
 	return win;
 }
 
@@ -2319,6 +2391,8 @@ fontselectiondialog_new (GladeXML *xml, GladeWidgetInfo *info)
 
 	if (xpos >= 0 || ypos >= 0)
 		gtk_widget_set_uposition(win, xpos, ypos);
+
+	glade_xml_set_toplevel(xml, GTK_WINDOW(win));
 
 	return win;
 }

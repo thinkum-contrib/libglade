@@ -1,3 +1,29 @@
+1999-08-04  James Henstridge  <james@daa.com.au>
+
+	* doc/libglade-sections.txt: added new functions to documentation
+	list.
+
+	* gnome-widgets.glade: updated xml of the message box widget.
+
+	* glade/glade-gnome.c (messagebox_new): the `type' attribute has been
+	renamed `message_box_type'.
+
+	* glade/glade-gtk.c, glade/glade-gnome.c: added calls to
+	glade_xml_set_toplevel to the routines for all the toplevel window
+	widget types.  Added code to parse uline accelerators for menu items.
+
+	* glade/glade-build.h: added prototypes for the new functions.
+	
+	* glade/glade-xml.c (glade_xml_push_uline_accel,
+	glade_xml_pop_uline_accel, glade_xml_get_uline_accel): helper
+	functions for setting up uline accelerators.
+	(glade_xml_set_toplevel): new function.
+	(glade_xml_ensure_accel): new function to get current (non uline)
+	accel group.
+
+	* glade/glade-private.h (GladeXMLPrivate): added some extra fields
+	to the structure to hold information about the current accel group.
+
 1999-08-02  James Henstridge  <james@daa.com.au>
 
 	* doc/Makefile.am (scan): yet another fix.  Now it runs gtkdoc-scanobj
