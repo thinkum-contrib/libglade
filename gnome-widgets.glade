@@ -499,6 +499,15 @@ the application?</message>
 	</signal>
 	<stock_button>GNOME_STOCK_BUTTON_NO</stock_button>
       </widget>
+
+      <widget>
+	<class>GtkButton</class>
+	<name>button11</name>
+	<can_default>True</can_default>
+	<can_focus>True</can_focus>
+	<label>X</label>
+	<stock_pixmap>GNOME_STOCK_PIXMAP_OPEN</stock_pixmap>
+      </widget>
     </widget>
   </widget>
 </widget>
@@ -745,6 +754,11 @@ the application?</message>
     <widget>
       <class>GnomeAnimator</class>
       <name>animator1</name>
+      <width>0</width>
+      <height>0</height>
+      <loop_type>GNOME_ANIMATOR_LOOP_NONE</loop_type>
+      <playback_direction>False</playback_direction>
+      <playback_speed>1</playback_speed>
     </widget>
 
     <widget>

@@ -1,3 +1,8 @@
+2000-07-30  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-sax.c: fixed small memory leak in glade_widget_tree_unref
+	found by SigWait <sigwait@yahoo.com>.
+
 2000-07-28  Martin Baulig  <baulig@suse.de>
 
 	* configure.in (--without-gnome): New configure parameter to

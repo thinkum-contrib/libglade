@@ -154,6 +154,7 @@ void glade_widget_tree_unref(GladeWidgetTree *tree) {
 	glade_widget_info_free(tmp->data);
     g_list_free(tree->widgets);
     g_hash_table_destroy(tree->names);
+    g_free(tree);
 }
 
 static gchar *glade_style_make_name(void) {
