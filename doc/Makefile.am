@@ -3,7 +3,7 @@
 DOC_MODULE=libglade
 
 # The top-level SGML file.
-DOC_MAIN_SGML_FILE=libglade-docs.sgml
+DOC_MAIN_XML_FILE=libglade-docs.xml
 
 # The directory containing the source code (if it contains documentation).
 DOC_SOURCE_DIR=../glade
@@ -17,7 +17,7 @@ GTKDOC_LIBS = $(LDFLAGS) ../glade/libglade-2.0.la $(LIBGLADE_LIBS)
 
 SCANOBJ_FILES = $(DOC_MODULE).signals $(DOC_MODULE).hierachy $(DOC_MODULE).args
 
-content_files = libglade-dtd.sgml
+content_files =
 
 tmpl_sources = \
   tmpl/glade-init.sgml \
@@ -34,16 +34,10 @@ noinst_DATA = $(html_stamp)
 
 EXTRA_DIST = \
   libglade-sections.txt \
-  libglade-docs.sgml \
-  libglade-dtd.sgml \
+  libglade-docs.xml \
   libglade.types
 
 if ENABLE_GTK_DOC
-libglade-dtd.sgml: $(top_srcdir)/glade-2.0.dtd
-	echo "<![CDATA[" > $(srcdir)/libglade-dtd.sgml
-	cat $(top_srcdir)/glade-2.0.dtd >> $(srcdir)/libglade-dtd.sgml
-	echo "]]>" >> $(srcdir)/libglade-dtd.sgml
-
 scan-build.stamp: $(top_srcdir)/glade/*.h
 	@echo '*** Scanning header files ***'
 	@-chmod -R u+w $(srcdir)
@@ -71,15 +65,17 @@ tmpl.stamp: $(DOC_MODULE)-decl.txt $(SCANOBJ_FILES) $(DOC_MODULE)-sections.txt
 sgml.stamp: tmpl.stamp $(top_srcdir)/glade/*.c $(srcdir)/tmpl/*.sgml
 	@echo '*** Building SGML ***'
 	@-chmod -R u+w $(srcdir)
-	@test -d $(srcdir)/sgml || mkdir $(srcdir)/sgml
+	@test -d $(srcdir)/xml || mkdir $(srcdir)/xml
 	cd $(srcdir) \
-	&& gtkdoc-mkdb --module=$(DOC_MODULE) --source-dir=$(DOC_SOURCE_DIR)
+	&& gtkdoc-mkdb --main-sgml-file=$(DOC_MAIN_XML_FILE) \
+		       --output-format=xml --module=$(DOC_MODULE) \
+		       --source-dir=$(DOC_SOURCE_DIR)
 
-html.stamp: sgml.stamp $(DOC_MAIN_SGML_FILE) $(content_files)
+html.stamp: sgml.stamp $(DOC_MAIN_XML_FILE) $(content_files)
 	@echo '*** Building HTML ***'
 	@-chmod -R u+w $(srcdir)
 	@test -d $(srcdir)/html || mkdir $(srcdir)/html
-	-cd $(srcdir)/html && gtkdoc-mkhtml $(DOC_MODULE) ../$(DOC_MAIN_SGML_FILE)
+	-cd $(srcdir)/html && gtkdoc-mkhtml $(DOC_MODULE) ../$(DOC_MAIN_XML_FILE)
 endif
 
 clean-local:
@@ -88,12 +84,12 @@ clean-local:
 	rm -f *.stamp
 
 maintainer-clean-local: clean
-	cd $(srcdir) && rm -rf sgml html $(DOC_MODULE)-decl-list.txt $(DOC_MODULE)-decl.txt
+	cd $(srcdir) && rm -rf xml html $(DOC_MODULE)-decl-list.txt $(DOC_MODULE)-decl.txt
 
 install-data-local: 
 	$(mkinstalldirs) $(DESTDIR)$(TARGET_DIR)
-	(installfiles=`echo $(srcdir)/html/*.html`; \
-	if test "$$installfiles" = '$(srcdir)/html/*.html'; \
+	(installfiles=`echo $(srcdir)/html/*.html $(srcdir)/html/*.png`; \
+	if test "$$installfiles" = '$(srcdir)/html/*.html $(srcdir)/html/*.png'; \
 	then echo '-- Nothing to install' ; \
 	else \
 	  for i in $$installfiles; do \
@@ -113,10 +109,10 @@ distclean-local:
 
 dist-hook:
 	$(mkinstalldirs) $(DESTDIR)$(distdir)/html
-	$(mkinstalldirs) $(DESTDIR)$(distdir)/sgml
+	$(mkinstalldirs) $(DESTDIR)$(distdir)/xml
 	$(mkinstalldirs) $(DESTDIR)$(distdir)/tmpl
 	-cp $(srcdir)/html/*.html $(srcdir)/html/*.css $(DESTDIR)$(distdir)/html
 	-cp $(srcdir)/tmpl/*.sgml $(DESTDIR)$(distdir)/tmpl
-	-cp $(srcdir)/sgml/*.sgml $(DESTDIR)$(distdir)/sgml
+	-cp $(srcdir)/xml/*.xml $(DESTDIR)$(distdir)/xml
 
-.PHONY : html sgml templates scan
+.PHONY : html xml templates scan
