@@ -1161,3 +1161,78 @@ glade_get_adjustment(GladeWidgetInfo *info)
 						  hstep, hpage, hpage_size));
 }
 
+/**
+ * glade_xml_set_window_props
+ * @window: the GtkWindow to set the properties of.
+ * @info: the GladeWidgetInfo structure holding the properties
+ *
+ * This is a convenience function to set some common attributes on
+ * GtkWindow widgets and widgets derived from GtkWindow.  It does not
+ * set the title or the window type, as these may need special handling
+ * in some widgets.
+ */
+void
+glade_xml_set_window_props(GtkWindow *window, GladeWidgetInfo *info)
+{
+	GList *tmp;
+	gboolean allow_grow = window->allow_grow;
+	gboolean allow_shrink = window->allow_shrink;
+	gboolean auto_shrink = window->auto_shrink;
+	gchar *wmname = NULL, *wmclass = NULL;
+
+	for (tmp = info->attributes; tmp != NULL; tmp = tmp->next) {
+		GladeAttribute *attr = tmp->data;
+
+		switch (attr->name[0]) {
+		case 'a':
+			if (!strcmp(attr->name, "allow_grow"))
+				allow_grow = attr->value[0] == 'T';
+			else if (!strcmp(attr->name, "allow_shrink"))
+				allow_shrink = attr->value[0] == 'T';
+			else if (!strcmp(attr->name, "auto_shrink"))
+				auto_shrink = attr->value[0] == 'T';
+			break;
+		case 'd':
+			if (!strcmp(attr->name, "default_height"))
+				gtk_window_set_default_size(window,
+					-2, strtol(attr->value, NULL, 0));
+			else if (!strcmp(attr->name, "default_width"))
+				 gtk_window_set_default_size(window,
+					strtol(attr->value, NULL, 0), -2);
+			break;
+		case 'm':
+			if (!strcmp(attr->name, "modal"))
+				gtk_window_set_modal(window,
+						     attr->value[0] == 'T');
+			break;
+		case 'p':
+			if (!strcmp(attr->name, "position"))
+				gtk_window_set_position(window,
+					glade_enum_from_string(
+						GTK_TYPE_WINDOW_POSITION,
+						attr->value));
+			break;
+		case 'w':
+			if (!strcmp(attr->name, "wmclass_name"))
+				wmname = attr->value;
+			else if (!strcmp(attr->name, "wmclass_class"))
+				wmclass = attr->value;
+			break;
+		case 'x':
+			if (attr->name[1] == '\0')
+				gtk_widget_set_uposition(GTK_WIDGET(window),
+					strtol(attr->value, NULL, 0), -2);
+			break;
+		case 'y':
+			if (attr->name[1] == '\0')
+				gtk_widget_set_uposition(GTK_WIDGET(window),
+					-2, strtol(attr->value, NULL, 0));
+			break;
+		}
+	}
+	gtk_window_set_policy(window, allow_grow, allow_shrink, auto_shrink);
+	if (wmname != NULL || wmclass != NULL)
+		gtk_window_set_wmclass(window,
+				       wmname  ? wmname  : "",
+				       wmclass ? wmclass : "");
+}

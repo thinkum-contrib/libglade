@@ -1,3 +1,23 @@
+libglade-0.8:  16-November-1999
+	- fixed mem leak in the GtkLabel and GtkAccelLabel creation routines.
+	  Also recognise the wrap property of these widgets.
+	- fixed the code for removing placeholders in the tree, so it actually
+	  works.
+	- fixed the i18n stuff so it doesn't translate empty strings.
+	- take notice of more of the settings on GnomeDruidPageStandard's.
+	- don't depend on internal libxml structures.  This means that libxml
+	  1.7.2 or greater is required, but libglade will be less likely to
+	  break if Daniel changes the internal structures.
+	- fixed recognition of GNOME_STOCK_PIXMAP_EXIT.
+	- some justification fixes for some menu items.
+	- correctly name GnomeDockItems
+	- be more consistent with setting the properties of toplevel windows.
+	  Also added support for the modal and default_width/default_height
+	  properties.
+	- test-libglade.c is now dual licenced under GPL and X style licence.
+	  This clears up any problems with creating a non GPL/LGPL'd
+	  application using test-libglade as a starting point.
+
 libglade-0.7:  28-September-1999
 	- Fixed a bug where libglade would seg fault when you tried to load
 	  a file that did not exist or was not a valid XML file.  This bug

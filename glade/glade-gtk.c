@@ -2351,30 +2351,13 @@ window_new (GladeXML *xml, GladeWidgetInfo *info)
 {
 	GtkWidget *win;
 	GList *tmp;
-	gint xpos = -1, ypos = -1;
-	gboolean allow_shrink = TRUE, allow_grow = TRUE, auto_shrink = FALSE;
-	GtkWindowPosition pos = GTK_WIN_POS_NONE;
 	GtkWindowType type = GTK_WINDOW_TOPLEVEL;
 	char *title = NULL;
-	char *wmname = NULL, *wmclass = NULL;
 
 	for (tmp = info->attributes; tmp; tmp = tmp->next) {
 		GladeAttribute *attr = tmp->data;
 
 		switch (attr->name[0]) {
-		case 'a':
-			if (!strcmp(attr->name, "allow_grow"))
-				allow_grow = attr->value[0] == 'T';
-			else if (!strcmp(attr->name, "allow_shrink"))
-				allow_shrink = attr->value[0] == 'T';
-			else if (!strcmp(attr->name, "auto_shrink"))
-				auto_shrink = attr->value[0] == 'T';
-			break;
-		case 'p':
-			if (!strcmp(attr->name, "position"))
-				pos = glade_enum_from_string(
-					GTK_TYPE_WINDOW_POSITION, attr->value);
-			break;
 		case 't':
 			if (!strcmp(attr->name, "title"))
 				title = attr->value;
@@ -2382,34 +2365,11 @@ window_new (GladeXML *xml, GladeWidgetInfo *info)
 				type = glade_enum_from_string(
 					GTK_TYPE_WINDOW_TYPE, attr->value);
 			break;
-		case 'w':
-			if (!strcmp(attr->name, "wmclass_name"))
-				wmname = attr->value;
-			else if (!strcmp(attr->name, "wmclass_class"))
-				wmclass = attr->value;
-			break;
-		case 'x':
-			if (attr->name[1] == '\0')
-				xpos = strtol(attr->value, NULL, 0);
-			break;
-		case 'y':
-			if (attr->name[1] == '\0')
-				ypos = strtol(attr->value, NULL, 0);
-			break;
 		}
 	}
 	win = gtk_window_new(type);
 	gtk_window_set_title(GTK_WINDOW(win), _(title));
-	gtk_window_set_position(GTK_WINDOW(win), pos);
-	gtk_window_set_policy(GTK_WINDOW(win), allow_shrink, allow_grow,
-			      auto_shrink);
-	if (wmname || wmclass)
-		gtk_window_set_wmclass(GTK_WINDOW(win),
-				       wmname?wmname:"", wmclass?wmclass:"");
-
-	if (xpos >= 0 || ypos >= 0)
-		gtk_widget_set_uposition(win, xpos, ypos);
-
+	glade_xml_set_window_props(GTK_WINDOW(win), info);
 	glade_xml_set_toplevel(xml, GTK_WINDOW(win));
 
 	return win;
@@ -2420,60 +2380,20 @@ dialog_new(GladeXML *xml, GladeWidgetInfo *info)
 {
 	GtkWidget *win = gtk_dialog_new();
 	GList *tmp;
-	gint xpos = -1, ypos = -1;
-	gboolean allow_shrink = TRUE, allow_grow = TRUE, auto_shrink = FALSE;
-	gchar *wmname = NULL, *wmclass = NULL;
 
 	for (tmp = info->attributes; tmp; tmp = tmp->next) {
 		GladeAttribute *attr = tmp->data;
 
 		switch (attr->name[0]) {
-		case 'a':
-			if (!strcmp(attr->name, "allow_grow"))
-				allow_grow = attr->value[0] == 'T';
-			else if (!strcmp(attr->name, "allow_shrink"))
-				allow_shrink = attr->value[0] == 'T';
-			else if (!strcmp(attr->name, "auto_shrink"))
-				auto_shrink = attr->value[0] == 'T';
-			break;
-		case 'p':
-			if (!strcmp(attr->name, "position"))
-				gtk_window_set_position(GTK_WINDOW(win),
-					glade_enum_from_string(
-						GTK_TYPE_WINDOW_POSITION,
-						attr->value));
-			break;
 		case 't':
 			if (!strcmp(attr->name, "title"))
 				gtk_window_set_title(GTK_WINDOW(win),
 						     _(attr->value));
 			break;
-		case 'w':
-			if (!strcmp(attr->name, "wmclass_name"))
-				wmname = attr->value;
-			else if (!strcmp(attr->name, "wmclass_class"))
-				wmclass = attr->value;
-			break;
-		case 'x':
-			if (attr->name[1] == '\0')
-				xpos = strtol(attr->value,NULL,0);
-			break;
-		case 'y':
-			if (attr->name[1] == '\0')
-				ypos = strtol(attr->value,NULL,0);
-			break;
 		}
 	}
-	gtk_window_set_policy(GTK_WINDOW(win), allow_shrink, allow_grow,
-			      auto_shrink);
 
-	if (wmname || wmclass)
-		gtk_window_set_wmclass(GTK_WINDOW(win),
-				       wmname?wmname:"", wmclass?wmclass:"");
-
-	if (xpos >= 0 || ypos >= 0)
-		gtk_widget_set_uposition (win, xpos, ypos);
-
+	glade_xml_set_window_props(GTK_WINDOW(win), info);
 	glade_xml_set_toplevel(xml, GTK_WINDOW(win));
 
 	return win;
@@ -2484,30 +2404,13 @@ fileselection_new (GladeXML *xml, GladeWidgetInfo *info)
 {
 	GtkWidget *win;
 	GList *tmp;
-	gint xpos = -1, ypos = -1;
-	gboolean allow_shrink = TRUE, allow_grow = TRUE, auto_shrink = FALSE;
-	GtkWindowPosition pos = GTK_WIN_POS_NONE;
 	GtkWindowType type = GTK_WINDOW_TOPLEVEL;
 	char *title = NULL;
-	char *wmname = NULL, *wmclass = NULL;
 
 	for (tmp = info->attributes; tmp; tmp = tmp->next) {
 		GladeAttribute *attr = tmp->data;
 
 		switch (attr->name[0]) {
-		case 'a':
-			if (!strcmp(attr->name, "allow_grow"))
-				allow_grow = attr->value[0] == 'T';
-			else if (!strcmp(attr->name, "allow_shrink"))
-				allow_shrink = attr->value[0] == 'T';
-			else if (!strcmp(attr->name, "auto_shrink"))
-				auto_shrink = attr->value[0] == 'T';
-			break;
-		case 'p':
-			if (!strcmp(attr->name, "position"))
-				pos = glade_enum_from_string(
-					GTK_TYPE_WINDOW_POSITION, attr->value);
-			break;
 		case 't':
 			if (!strcmp(attr->name, "title"))
 				title = attr->value;
@@ -2515,33 +2418,10 @@ fileselection_new (GladeXML *xml, GladeWidgetInfo *info)
 				type = glade_enum_from_string(
 					GTK_TYPE_WINDOW_TYPE, attr->value);
 			break;
-		case 'w':
-			if (!strcmp(attr->name, "wmclass_name"))
-				wmname = attr->value;
-			else if (!strcmp(attr->name, "wmclass_class"))
-				wmclass = attr->value;
-			break;
-		case 'x':
-			if (attr->name[1] == '\0')
-				xpos = strtol(attr->value, NULL, 0);
-			break;
-		case 'y':
-			if (attr->name[1] == '\0')
-				ypos = strtol(attr->value, NULL, 0);
-			break;
 		}
 	}
 	win = gtk_file_selection_new(_(title));
-	gtk_window_set_position(GTK_WINDOW(win), pos);
-	gtk_window_set_policy(GTK_WINDOW(win), allow_shrink, allow_grow,
-			      auto_shrink);
-	if (wmname || wmclass)
-		gtk_window_set_wmclass(GTK_WINDOW(win),
-				       wmname?wmname:"", wmclass?wmclass:"");
-
-	if (xpos >= 0 || ypos >= 0)
-		gtk_widget_set_uposition(win, xpos, ypos);
-
+	glade_xml_set_window_props(GTK_WINDOW(win), info);
 	glade_xml_set_toplevel(xml, GTK_WINDOW(win));
 
 	return win;
@@ -2552,31 +2432,16 @@ colorselectiondialog_new (GladeXML *xml, GladeWidgetInfo *info)
 {
 	GtkWidget *win;
 	GList *tmp;
-	gint xpos = -1, ypos = -1;
-	gboolean allow_shrink = TRUE, allow_grow = TRUE, auto_shrink = FALSE;
-	GtkWindowPosition pos = GTK_WIN_POS_NONE;
 	GtkWindowType type = GTK_WINDOW_TOPLEVEL;
 	GtkUpdateType policy = GTK_UPDATE_CONTINUOUS;
 	char *title = NULL;
-	char *wmname = NULL, *wmclass = NULL;
 
 	for (tmp = info->attributes; tmp; tmp = tmp->next) {
 		GladeAttribute *attr = tmp->data;
 
 		switch (attr->name[0]) {
-		case 'a':
-			if (!strcmp(attr->name, "allow_grow"))
-				allow_grow = attr->value[0] == 'T';
-			else if (!strcmp(attr->name, "allow_shrink"))
-				allow_shrink = attr->value[0] == 'T';
-			else if (!strcmp(attr->name, "auto_shrink"))
-				auto_shrink = attr->value[0] == 'T';
-			break;
 		case 'p':
-			if (!strcmp(attr->name, "position"))
-				pos = glade_enum_from_string(
-					GTK_TYPE_WINDOW_POSITION, attr->value);
-			else if (!strcmp(attr->name, "policy"))
+			if (!strcmp(attr->name, "policy"))
 				policy = glade_enum_from_string
 					(GTK_TYPE_UPDATE_TYPE, attr->value);
 			break;
@@ -2587,35 +2452,13 @@ colorselectiondialog_new (GladeXML *xml, GladeWidgetInfo *info)
 				type = glade_enum_from_string(
 					GTK_TYPE_WINDOW_TYPE, attr->value);
 			break;
-		case 'w':
-			if (!strcmp(attr->name, "wmclass_name"))
-				wmname = attr->value;
-			else if (!strcmp(attr->name, "wmclass_class"))
-				wmclass = attr->value;
-			break;
-		case 'x':
-			if (attr->name[1] == '\0')
-				xpos = strtol(attr->value, NULL, 0);
-			break;
-		case 'y':
-			if (attr->name[1] == '\0')
-				ypos = strtol(attr->value, NULL, 0);
-			break;
 		}
 	}
 	win = gtk_color_selection_dialog_new(_(title));
-	gtk_window_set_position(GTK_WINDOW(win), pos);
-	gtk_window_set_policy(GTK_WINDOW(win), allow_shrink, allow_grow,
-			      auto_shrink);
-	if (wmname || wmclass)
-		gtk_window_set_wmclass(GTK_WINDOW(win),
-				       wmname?wmname:"", wmclass?wmclass:"");
 	gtk_color_selection_set_update_policy(GTK_COLOR_SELECTION(
 			GTK_COLOR_SELECTION_DIALOG(win)->colorsel), policy);
 
-	if (xpos >= 0 || ypos >= 0)
-		gtk_widget_set_uposition(win, xpos, ypos);
-
+	glade_xml_set_window_props(GTK_WINDOW(win), info);
 	glade_xml_set_toplevel(xml, GTK_WINDOW(win));
 
 	return win;
@@ -2626,30 +2469,13 @@ fontselectiondialog_new (GladeXML *xml, GladeWidgetInfo *info)
 {
 	GtkWidget *win;
 	GList *tmp;
-	gint xpos = -1, ypos = -1;
-	gboolean allow_shrink = TRUE, allow_grow = TRUE, auto_shrink = FALSE;
-	GtkWindowPosition pos = GTK_WIN_POS_NONE;
 	GtkWindowType type = GTK_WINDOW_TOPLEVEL;
 	char *title = NULL;
-	char *wmname = NULL, *wmclass = NULL;
 
 	for (tmp = info->attributes; tmp; tmp = tmp->next) {
 		GladeAttribute *attr = tmp->data;
 
 		switch (attr->name[0]) {
-		case 'a':
-			if (!strcmp(attr->name, "allow_grow"))
-				allow_grow = attr->value[0] == 'T';
-			else if (!strcmp(attr->name, "allow_shrink"))
-				allow_shrink = attr->value[0] == 'T';
-			else if (!strcmp(attr->name, "auto_shrink"))
-				auto_shrink = attr->value[0] == 'T';
-			break;
-		case 'p':
-			if (!strcmp(attr->name, "position"))
-				pos = glade_enum_from_string(
-					GTK_TYPE_WINDOW_POSITION, attr->value);
-			break;
 		case 't':
 			if (!strcmp(attr->name, "title"))
 				title = attr->value;
@@ -2657,33 +2483,11 @@ fontselectiondialog_new (GladeXML *xml, GladeWidgetInfo *info)
 				type = glade_enum_from_string(
 					GTK_TYPE_WINDOW_TYPE, attr->value);
 			break;
-		case 'w':
-			if (!strcmp(attr->name, "wmclass_name"))
-				wmname = attr->value;
-			else if (!strcmp(attr->name, "wmclass_class"))
-				wmclass = attr->value;
-			break;
-		case 'x':
-			if (attr->name[1] == '\0')
-				xpos = strtol(attr->value, NULL, 0);
-			break;
-		case 'y':
-			if (attr->name[1] == '\0')
-				ypos = strtol(attr->value, NULL, 0);
-			break;
 		}
 	}
 	win = gtk_font_selection_dialog_new(_(title));
-	gtk_window_set_position(GTK_WINDOW(win), pos);
-	gtk_window_set_policy(GTK_WINDOW(win), allow_shrink, allow_grow,
-			      auto_shrink);
-	if (wmname || wmclass)
-		gtk_window_set_wmclass(GTK_WINDOW(win),
-				       wmname?wmname:"", wmclass?wmclass:"");
 
-	if (xpos >= 0 || ypos >= 0)
-		gtk_widget_set_uposition(win, xpos, ypos);
-
+	glade_xml_set_window_props(GTK_WINDOW(win), info);
 	glade_xml_set_toplevel(xml, GTK_WINDOW(win));
 
 	return win;

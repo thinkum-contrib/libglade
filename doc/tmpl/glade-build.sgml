@@ -73,9 +73,6 @@ the actual widgets from the XML node data structures.
 
 </para>
 
-@name: 
-@new: 
-@build_children: 
 
 <!-- ##### FUNCTION glade_register_widgets ##### -->
 <para>
@@ -114,6 +111,15 @@ the actual widgets from the XML node data structures.
 @Returns: 
 <!-- # Unused Parameters # -->
 @gnode: 
+
+
+<!-- ##### FUNCTION glade_xml_set_window_props ##### -->
+<para>
+
+</para>
+
+@window: 
+@info: 
 
 
 <!-- ##### FUNCTION glade_standard_build_children ##### -->

@@ -30,10 +30,6 @@ automatically connect as many handlers up as it can that way.
 
 </para>
 
-@parent: 
-@filename: 
-@textdomain: 
-@priv: 
 
 <!-- ##### STRUCT GladeXMLClass ##### -->
 <para>

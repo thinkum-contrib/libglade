@@ -1,3 +1,33 @@
+1999-11-16  James Henstridge  <james@daa.com.au>
+
+	* glade/Makefile.am (LTVERSION): updated libtool version number.
+
+	* NEWS: added news items.
+
+	* configure.in: incremented version number.
+
+	* glade/glade-gnome.c (about_new): 
+	(gnomedialog_new): 
+	(messagebox_new): 
+	(app_new): 
+	(propbox_new): use glade_xml_set_window_props to set common window
+	properties.
+
+	* glade/glade-gtk.c (window_new): 
+	(dialog_new): 
+	(fileselection_new): 
+	(colorselectiondialog_new): 
+	(fontselectiondialog_new): use glade_xml_set_window_props to set
+	common window properties.
+
+	* glade/glade-xml.c (glade_xml_set_window_props): new helper function
+	to set properties common to GtkWindow derived widgets.
+
+	* test-libglade.c: added licence to test-libglade example.  It is
+	dual licenced under GPL and X style licence, so it should be safe
+	for people to use as a base for programs that use libglade but have
+	different licencing to libglade.
+
 1999-11-13  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-xml.c (glade_xml_set_common_params): added patch to

@@ -72,6 +72,7 @@ glade_register_widgets
 glade_xml_relative_file
 glade_enum_from_string
 glade_get_adjustment
+glade_xml_set_window_props
 glade_standard_build_children
 <SUBSECTION I18N Routines>
 glade_xml_gettext

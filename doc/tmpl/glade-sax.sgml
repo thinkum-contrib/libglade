@@ -26,71 +26,36 @@ these functions and structures.
 
 </para>
 
-@ref: 
-@mtime: 
-@styles: 
-@widgets: 
-@names: 
 
 <!-- ##### STRUCT GladeStyleInfo ##### -->
 <para>
 
 </para>
 
-@name: 
-@rc_name: 
-@local: 
 
 <!-- ##### STRUCT GladeWidgetInfo ##### -->
 <para>
 
 </para>
 
-@parent: 
-@class: 
-@name: 
-@tooltip: 
-@width: 
-@height: 
-@border_width: 
-@visible: 
-@sensitive: 
-@can_default: 
-@can_focus: 
-@style: 
-@attributes: 
-@child_attributes: 
-@signals: 
-@accelerators: 
-@children: 
 
 <!-- ##### STRUCT GladeAttribute ##### -->
 <para>
 
 </para>
 
-@name: 
-@value: 
 
 <!-- ##### STRUCT GladeSignalInfo ##### -->
 <para>
 
 </para>
 
-@name: 
-@handler: 
-@data: 
-@object: 
-@after: 
 
 <!-- ##### STRUCT GladeAcceleratorInfo ##### -->
 <para>
 
 </para>
 
-@key: 
-@modifiers: 
-@signal: 
 
 <!-- ##### FUNCTION glade_widget_tree_parse_file ##### -->
 <para>
