@@ -1,5 +1,8 @@
 2004-11-08  James Henstridge  <james@jamesh.id.au>
 
+	* glade/glade-gtk.c (_glade_init_gtk_widgets): add
+	GtkFileChooserDialog.  Fixes bug #137592.
+
 	* libglade-convert.in (WidgetDef.ChildDef.dump): encode property
 	value in UTF-8.
 	(WidgetDef.dump): same here.

@@ -1232,6 +1232,8 @@ _glade_init_gtk_widgets(void)
 			   expander_build_children, NULL);
     glade_register_widget (GTK_TYPE_FILE_CHOOSER, glade_standard_build_widget,
 			   NULL, NULL);
+    glade_register_widget (GTK_TYPE_FILE_CHOOSER_DIALOG, glade_standard_build_widget,
+			   NULL, NULL);
     glade_register_widget (GTK_TYPE_FILE_CHOOSER_BUTTON, glade_standard_build_widget,
 			   NULL, NULL);
     glade_register_widget (GTK_TYPE_FILE_SELECTION, NULL,
