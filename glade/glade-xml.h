@@ -66,6 +66,8 @@ gboolean glade_xml_construct  (GladeXML *self, const char *fname,
 
 void glade_xml_signal_connect (GladeXML *self, const char *handlername,
 			       GtkSignalFunc func);
+void glade_xml_signal_connect_data (GladeXML *self, const char *handlername,
+				    GtkSignalFunc func, gpointer user_data);
 /*
  * use gmodule to connect signals automatically.  Basically a symbol with
  * the name of the signal handler is searched for, and that is connected to
@@ -100,6 +102,8 @@ void       glade_xml_signal_autoconnect_full (GladeXML *self,
 
 
 GtkWidget *glade_xml_get_widget              (GladeXML *self,
+					      const char *name);
+GList     *glade_xml_get_widget_prefix       (GladeXML *self,
 					      const char *name);
 GtkWidget *glade_xml_get_widget_by_long_name (GladeXML *self,
 					      const char *longname);

@@ -1,5 +1,7 @@
 2000-03-13  James Henstridge  <james@daa.com.au>
 
+	* glade/glade-xml.h: added prototypes for new functions.
+
 	* libglade.m4 (module_args): add support for bonobo library to macro.
 
 	* libglade-config.in: added support for the bonobo library to this
