@@ -1,3 +1,16 @@
+2001-10-31  James Henstridge  <james@daa.com.au>
+
+	* doc/Makefile.am: remove update-libglade crack, as it breaks the
+	distcheck.
+
+	* test-libglade.c (main): don't call glade_init().
+
+	* glade/glade-xml.c (glade_xml_class_init): call glade_init() here
+	as well.
+
+	* glade/glade-init.c (glade_require): call glade_init() here, to
+	make sure libglade is initialised.
+
 2001-10-29  jacob berkman  <jacob@ximian.com>
 
 	* configure.in: set GETTEXT_PACKAGE

@@ -34,13 +34,9 @@ EXTRA_DIST = 				\
 	libglade-decl.txt		\
 	libglade-sections.txt		\
 	libglade-docs.sgml		\
-	libglade.types			\
-	update-libglade
+	libglade.types
 
-update-libglade:
-	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/glade
-
-scan-build.stamp: $(top_srcdir)/glade/*.h update-libglade
+scan-build.stamp: $(top_srcdir)/glade/*.h
 	@echo '*** Scanning header files ***'
 	@-chmod -R u+w $(srcdir)
 	env CC="$(LIBTOOL) --mode=compile $(CC)" \

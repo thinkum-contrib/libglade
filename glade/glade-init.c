@@ -35,9 +35,10 @@ void _glade_init_gtk_widgets (void);
 /**
  * glade_init:
  * 
- * Should be called before creating any GladeXML objects.  Currently all it
- * does is register all the widget building routines, so they can be found
- * by widget name.  In the future it may do some more initialisation work.
+ * It used to be necessary to call glade_init() before creating
+ * GladeXML objects.  This is now no longer the case, as libglade will
+ * be initialised on demand now.  Calling glade_init() manually will
+ * not cause any problems though.
  */
 void
 glade_init(void)
@@ -47,8 +48,6 @@ glade_init(void)
     if (initialised) return;
     initialised = TRUE;
     _glade_init_gtk_widgets();
-
-    /*probably should do something about auto-loading of widget sets here*/
 }
 
 gchar *
@@ -78,6 +77,9 @@ glade_require(const gchar *library)
     gchar *filename;
     GModule *module;
     void (* init_func)(void);
+
+    /* a call to glade_init here to make sure libglade is initialised */
+    glade_init();
 
     if (loaded_packages) {
 	gint i;

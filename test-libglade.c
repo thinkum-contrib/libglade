@@ -97,9 +97,6 @@ main (int argc, char **argv)
 	g_error ("Cannot gnome_program_init ()");
 #endif
 
-    /* initialise libglade itself */
-    glade_init();
-
     if (g_getenv ("LIBGLADE_REGRESSION"))
 	    run_tests ();
 

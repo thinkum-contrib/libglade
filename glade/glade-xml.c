@@ -100,6 +100,9 @@ glade_xml_class_init (GladeXMLClass *class)
     glade_xml_tree_id = g_quark_from_static_string(glade_xml_tree_key);
     glade_xml_name_id = g_quark_from_static_string(glade_xml_name_key);
     glade_xml_tooltips_id = g_quark_from_static_string(glade_xml_tooltips_key);
+
+    /* make sure libglade is initialised */
+    glade_init();
 }
 
 static void

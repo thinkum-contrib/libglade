@@ -27,7 +27,7 @@
 
 G_BEGIN_DECLS
 
-/* must be called before use of libglade */
+/* left for compatibility.  Libglade will now automatically initialise */
 void glade_init(void);
 
 /* handle dynamic loading of libglade extensions */
