@@ -1,4 +1,4 @@
-libglade-0.5:  6-October-1999
+libglade-0.5:  7-September-1999
 	- removed some stuff to do with glade-keys.c I missed in the last
 	  release.
 	- If a .glade file has been changed on disk since it was last loaded
