@@ -39,12 +39,6 @@ else
 html/libglade.html:
 endif
 
-sgml/glade.sgml: $(tmpl_sources) libglade.hierarchy libglade-decl.txt
-	$(MAKE) sgml	
-
-libglade.hierarchy libglade-decl.txt:
-	$(MAKE) templates
-
 scan-build.stamp: $(top_srcdir)/glade/*.h
 	@echo '*** Scanning header files ***'
 	env CC="$(LIBTOOL) --mode=compile $(CC)" \

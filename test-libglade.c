@@ -90,7 +90,7 @@ main (int argc, char **argv)
 	g_print("Usage: %s [--no-connect] filename [rootnode]\n", argv[0]);
 	return 1;
     }
-  
+
     /* construct the interface */
     xml = glade_xml_new(filename, rootnode, NULL);
     if (!xml) {

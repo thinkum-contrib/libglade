@@ -133,8 +133,8 @@ glade_xml_new(const char *fname, const char *root, const char *domain)
 {
     GladeXML *self = g_object_new(GLADE_TYPE_XML, NULL);
 
-    if (!glade_xml_construct(self, fname, root, NULL)) {
-	gtk_object_unref(GTK_OBJECT(self));
+    if (!glade_xml_construct(self, fname, root, domain)) {
+	g_object_unref(G_OBJECT(self));
 	return NULL;
     }
     return self;
@@ -164,7 +164,7 @@ glade_xml_new_with_domain(const char *fname, const char *root,
     GladeXML *self = g_object_new(GLADE_TYPE_XML, NULL);
 
     if (!glade_xml_construct(self, fname, root, domain)) {
-	gtk_object_unref(GTK_OBJECT(self));
+	g_object_unref(G_OBJECT(self));
 	return NULL;
     }
     return self;

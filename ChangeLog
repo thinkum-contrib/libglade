@@ -1,5 +1,8 @@
 2001-08-24  James Henstridge  <james@daa.com.au>
 
+	* glade/glade-parser.c: fix things so that things really get
+	translated.
+
 	* glade/glade-build.h: remove reference to gettext.
 
 	* glade/glade-xml.c (glade_xml_construct): pass domain argument on

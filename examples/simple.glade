@@ -2,7 +2,6 @@
 <!DOCTYPE glade-interface SYSTEM "../glade-2.0.dtd" >
 
 <glade-interface>
-  <requires lib="gnome"/>
   <widget class="GtkWindow" id="window1">
     <property name="title">Testing</property>
     <property name="border_width">10</property>
@@ -71,7 +70,7 @@
 
                 <child>
                   <widget class="GtkLabel" id="label4">
-                    <property name="label">_Push me</property>
+                    <property name="label" translatable="yes">_Cancel</property>
                     <property name="use_underline">yes</property>
                     <property name="visible">yes</property>
                   </widget>

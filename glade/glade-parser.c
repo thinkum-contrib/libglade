@@ -19,7 +19,7 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA  02111-1307, USA.
  */
-#ifndef HAVE_CONFIG_H
+#ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
 
@@ -723,11 +723,12 @@ glade_parser_end_element(GladeParseState *state, const xmlChar *name)
 	if (!state->props)
 	    state->props = g_array_new(FALSE, FALSE, sizeof(GladeProperty));
 	prop.name = state->prop_name;
-	if (state->translate_prop)
+	if (state->translate_prop) {
 	    prop.value = alloc_string(state->interface,
 			dgettext(state->domain, state->content->str));
-	else
+	} else {
 	    prop.value = alloc_string(state->interface, state->content->str);
+	}
 	g_array_append_val(state->props, prop);
 	state->prop_name = NULL;
 	state->state = PARSER_WIDGET;
@@ -744,11 +745,12 @@ glade_parser_end_element(GladeParseState *state, const xmlChar *name)
 	if (!state->props)
 	    state->props = g_array_new(FALSE, FALSE, sizeof(GladeProperty));
 	prop.name = state->prop_name;
-	if (state->translate_prop)
+	if (state->translate_prop) {
 	    prop.value = alloc_string(state->interface,
 			dgettext(state->domain, state->content->str));
-	else
+	} else {
 	    prop.value = alloc_string(state->interface, state->content->str);
+	}
 	g_array_append_val(state->props, prop);
 	state->prop_name = NULL;
 	state->state = PARSER_WIDGET_ATK;
@@ -793,11 +795,12 @@ glade_parser_end_element(GladeParseState *state, const xmlChar *name)
 	if (!state->props)
 	    state->props = g_array_new(FALSE, FALSE, sizeof(GladeProperty));
 	prop.name = state->prop_name;
-	if (state->translate_prop)
+	if (state->translate_prop) {
 	    prop.value = alloc_string(state->interface,
 			dgettext(state->domain, state->content->str));
-	else
+	} else {
 	    prop.value = alloc_string(state->interface, state->content->str);
+	}
 	g_array_append_val(state->props, prop);
 	state->prop_name = NULL;
 	state->state = PARSER_WIDGET_CHILD_PACKING;
