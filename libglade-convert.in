@@ -321,7 +321,7 @@ renamed_props = {
                          ],
     'GnomeIconEntry' : [ ('title', 'browse_dialog_title') ],
     'GnomePixmapEntry' : [ ('title', 'browse_dialog_title') ],
-    'GtkLabel' : [ ('default_focus_target', 'mnemonic_widget') ],
+    'GtkLabel' : [ ('default_focus_target', 'mnemonic_widget'), ('focus_target', 'mnemonic_widget')],
     'GtkCList' : [ ('columns', 'n_columns') ],
     'GtkCTree' : [ ('columns', 'n_columns') ],
     'GtkToolbar': [ ('type', 'toolbar-style') ],
