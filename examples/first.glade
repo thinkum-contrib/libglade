@@ -63,6 +63,7 @@
             <property name="visibility">True</property>
             <property name="max-length">-1</property>
             <property name="text"></property>
+            <property name="has_focus">yes</property>
             <property name="visible">yes</property>
           </widget>
 	  <packing>

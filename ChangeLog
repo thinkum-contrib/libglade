@@ -1,5 +1,10 @@
 2002-02-17  James Henstridge  <james@daa.com.au>
 
+	* glade/glade-gtk.c (set_has_default): function to handle
+	"has_default" property.
+	(set_has_focus): same for "has_focus".
+	(_glade_init_gtk_widgets): register these custom prop handlers.
+
 	* libglade-convert.in (parent_table): GtkRadioButton is a
 	GtkButton.  This should make sure it gets the use_underline
 	property set correctly.

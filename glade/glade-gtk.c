@@ -73,6 +73,22 @@ set_tooltip(GladeXML *xml, GtkWidget *widget,
 }
 
 static void
+set_has_default(GladeXML *xml, GtkWidget *widget,
+		const gchar *prop_name, const gchar *prop_value)
+{
+    if (BOOL(prop_value))
+	xml->priv->default_widget = widget;
+}
+
+static void
+set_has_focus(GladeXML *xml, GtkWidget *widget,
+	      const gchar *prop_name, const gchar *prop_value)
+{
+    if (BOOL(prop_value))
+	xml->priv->focus_widget = widget;
+}
+
+static void
 pixmap_set_build_insensitive (GladeXML *xml, GtkWidget *w,
 			      const char *name, const char *value)
 {
@@ -886,6 +902,9 @@ _glade_init_gtk_widgets(void)
 {
     glade_register_custom_prop (GTK_TYPE_WIDGET, "visible", set_visible);
     glade_register_custom_prop (GTK_TYPE_WIDGET, "tooltip", set_tooltip);
+    glade_register_custom_prop (GTK_TYPE_WIDGET, "has_default", set_has_default);
+    glade_register_custom_prop (GTK_TYPE_WIDGET, "has_focus", set_has_focus);
+
     glade_register_custom_prop (GTK_TYPE_PIXMAP, "build_insensitive", pixmap_set_build_insensitive);
     glade_register_custom_prop (GTK_TYPE_PIXMAP, "filename", pixmap_set_filename);
     glade_register_custom_prop (GTK_TYPE_PROGRESS, "format", progress_set_format);
