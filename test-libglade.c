@@ -109,7 +109,7 @@ int main (int argc, char **argv)
   }
 #endif
   
-  xml = glade_xml_new(filename, rootnode);
+  xml = glade_xml_new(filename, rootnode, NULL);
 
   if (!xml) {
     g_warning("something bad happened while creating the interface");

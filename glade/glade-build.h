@@ -23,9 +23,9 @@
 #define GLADE_BUILD_H
 
 #include <glib.h>
+#include <glib-object.h>
 #include <gmodule.h>
 #include <glade/glade-xml.h>
-#include <gtk/gtktypeutils.h>
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkwindow.h>
 #include <gtk/gtkaccelgroup.h>
@@ -96,6 +96,13 @@ void       glade_xml_set_common_params(GladeXML *self,
 				       GladeWidgetInfo *info,
 				       const char *parent_long);
 
+gboolean glade_xml_set_value_from_prop (GType widget_type,
+					GValue *value,
+					GladeProperty *prop);
+
+GtkWidget *glade_standard_build_widget(GladeXML *xml, GType widget_type,
+				       GladeWidgetInfo *info);
+
 /* A standard child building routine that can be used in widget builders */
 void glade_standard_build_children(GladeXML *self, GtkWidget *w,
 				   GladeWidgetInfo *info,const char *longname);
@@ -105,7 +112,8 @@ GtkAdjustment *glade_get_adjustment(GladeWidgetInfo *info);
 
 /* this is a wrapper for gtk_type_enum_find_value, that just returns the
  * integer value for the enum */
-gint glade_enum_from_string(GtkType type, const char *string);
+gint  glade_enum_from_string(GType type, const char *string);
+guint glade_flags_from_string(GType type, const char *string);
 
 /* a wrapper for gettext */
 char *glade_xml_gettext(GladeXML *xml, const char *msgid);

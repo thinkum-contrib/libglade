@@ -21,10 +21,10 @@ EXTRA_DIST =			\
 bin_SCRIPTS = libglade-xgettext
 noinst_PROGRAMS = test-libglade
 test_libglade_LDADD = glade/libglade-2.0.la $(GTK_LIBS) $(XML_LIBS)
-SUBDIRS = intl po macros glade doc
+SUBDIRS = intl po macros glade
 
-m4datadir = $(datadir)/aclocal
-m4data_DATA = libglade-2.0.m4
+#m4datadir = $(datadir)/aclocal
+#m4data_DATA = libglade-2.0.m4
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libglade-2.0.pc

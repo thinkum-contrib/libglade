@@ -1,5 +1,14 @@
 2001-06-15  James Henstridge  <james@daa.com.au>
 
+	* Makefile.am (SUBDIRS): don't recurse into doc dir until docs
+	build is fixed.
+
+	* test-libglade.c (main): fix for new API.
+
+	* glade/glade-gtk.c (_glade_init_gtk_widgets): empty out this file
+	a bit.
+	(widget_data): add GtkButton to list.
+
 	* glade/glade-xml.c (glade_xml_set_value_from_prop): fix up GValue
 	code here.
 	(glade_enum_from_string): update to use GEnum APIs.
