@@ -1,3 +1,8 @@
+2001-12-07  Kristian Rietveld  <kris@gtk.org>
+
+	* libglade-convert.in (stock_icon_translate): fixed a small typo,
+	s/lowere/lower/
+
 2001-12-07  jacob berkman  <jacob@ximian.com>
 
 	* libglade-convert.in (renamed_props): added some for Gnome*Entry

@@ -504,7 +504,7 @@ def stock_icon_translate(old_name):
             return stock_pixmaps[name]
         except KeyError:
             name = re.sub('_', '-', name)
-            return 'gtk-' + name.lowere ()
+            return 'gtk-' + name.lower ()
     else:
         return old_name
 
