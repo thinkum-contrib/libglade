@@ -1468,7 +1468,7 @@ glade_xml_set_value_from_string (GladeXML *xml,
 				 GValue *value)
 {
     GType prop_type;
-    gboolean ret = TRUE;
+    gboolean ret = TRUE, showerr = TRUE;
 
     prop_type = G_PARAM_SPEC_VALUE_TYPE(pspec);
     g_value_init(value, prop_type);
@@ -1561,6 +1561,16 @@ glade_xml_set_value_from_string (GladeXML *xml,
 		ret = FALSE;
 	    }
 	    g_free(filename);
+	} else if (g_type_is_a(GTK_TYPE_WIDGET, G_PARAM_SPEC_VALUE_TYPE(pspec)) ||
+		   g_type_is_a(G_PARAM_SPEC_VALUE_TYPE(pspec), GTK_TYPE_WIDGET)) {
+	    GtkWidget *widget = g_hash_table_lookup(xml->priv->name_hash,
+						    string);
+	    if (widget) {
+		g_value_set_object(value, widget);
+	    } else {
+		ret = FALSE;
+		showerr = FALSE;
+	    }
 	} else
 	    ret = FALSE;
 	break;
@@ -1570,8 +1580,10 @@ glade_xml_set_value_from_string (GladeXML *xml,
     }
 
     if (!ret) {
-	g_warning("could not convert string to type `%s' for property `%s'",
-		  g_type_name(prop_type), pspec->name);
+	if (showerr)
+	    g_warning("could not convert string to type "
+		      "`%s' for property `%s'",
+		      g_type_name(prop_type), pspec->name);
 	g_value_unset(value);
     }
     return ret;
@@ -1650,25 +1662,17 @@ glade_standard_build_widget(GladeXML *xml, GType widget_type,
 	    continue;
 	}
 
-	/* this should catch all properties wanting a GtkWidget
-         * subclass.  We also look for types that could hold a
-         * GtkWidget in order to catch things like the
-         * GtkAccelLabel::accel_object property.  Since we don't do
-         * any handling of GObject or GtkObject directly in
-         * glade_xml_set_value_from_string, this shouldn't be a
-         * problem. */
-	if (g_type_is_a(GTK_TYPE_WIDGET, G_PARAM_SPEC_VALUE_TYPE(pspec)) ||
-	    g_type_is_a(G_PARAM_SPEC_VALUE_TYPE(pspec), GTK_TYPE_WIDGET)) {
-	    deferred_props = g_list_prepend(deferred_props,
-					    &info->properties[i]);
-	    continue;
-	}
-
 	if (glade_xml_set_value_from_string(xml, pspec,
 					    info->properties[i].value,
 					    &param.value)) {
 	    param.name = info->properties[i].name;
 	    g_array_append_val(props_array, param);
+	} else if (g_type_is_a(GTK_TYPE_WIDGET, G_PARAM_SPEC_VALUE_TYPE(pspec)) ||
+		   g_type_is_a(G_PARAM_SPEC_VALUE_TYPE(pspec), GTK_TYPE_WIDGET)) {
+	    /* if the pspec could hold a widget, then try to handle it
+	     * later */
+	    deferred_props = g_list_prepend(deferred_props,
+					    &info->properties[i]);
 	}
     }
     widget = g_object_newv(widget_type, props_array->len,

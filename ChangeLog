@@ -1,5 +1,12 @@
 2004-11-09  James Henstridge  <james@jamesh.id.au>
 
+	* glade/glade-xml.c (glade_xml_set_value_from_string): handle
+	GtkWidget type values, but don't throw an error if the named
+	widget doesn't exist yet.
+	(glade_standard_build_widget): only defer the widget prop if
+	glade_xml_set_value_from_string() didn't succeed.  Should fix bug
+	#123618 and #152063.
+
 	* glade/glade-parser.c: change some occurrences of "0" to "NULL".
 	Based on patch from Kjartan (bug #150039).
 
