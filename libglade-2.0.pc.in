@@ -6,7 +6,7 @@ includedir=@includedir@
 # so people can do "pkg-config --variable moduledir libglade-2.0"
 # (which is broken - users can now use the LIBGLADE_MODULE_PATH
 # environment variable
-#moduledir=${libdir}/libglade/2.0
+moduledir=${libdir}/libglade/2.0
 
 Name: Libglade
 Description: a library for dynamically loading GLADE interface files

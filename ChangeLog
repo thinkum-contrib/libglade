@@ -1,5 +1,13 @@
 2001-12-12  James Henstridge  <james@daa.com.au>
 
+	* libglade-2.0.pc.in (moduledir): uncomment this again, as
+	commenting it out breaks some packages.
+
+	* glade/glade-xml.c (glade_xml_get_toplevel): remove function.
+
+	* glade/glade-build.h (glade_xml_get_toplevel): remove
+	get_toplevel API.
+
 	* libglade-convert.in (fixup_as_type): small fix for GtkLayout --
 	it crashes if you set the width/height before the adjustments :(
 

@@ -660,22 +660,6 @@ glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window)
 }
 
 /**
- * glade_xml_get_toplevel:
- * @xml: the GladeXML object.
- *
- * Description:
- * This is used while the tree is being built to get the toplevel window that
- * is currently being built.
- *
- * Returns: The current GtkWindow being built
- */
-GtkWindow *
-glade_xml_get_toplevel (GladeXML *xml)
-{
-    return xml->priv->toplevel;
-}
-
-/**
  * glade_xml_handle_widget_prop
  * @xml: the GladeXML object
  * @widget: the property the widget to set the property on.

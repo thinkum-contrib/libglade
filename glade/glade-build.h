@@ -67,7 +67,6 @@ void glade_register_custom_prop(GType type,
 
 /* set the current toplevel widget while building (use NULL to unset) */
 void       glade_xml_set_toplevel(GladeXML *xml, GtkWindow *window);
-GtkWindow *glade_xml_get_toplevel(GladeXML *xml);
 
 /* push and pop accelerator groups on a stack */
 GtkAccelGroup *glade_xml_push_accel(GladeXML *xml);
