@@ -1,5 +1,9 @@
 2001-05-19  James Henstridge  <james@daa.com.au>
 
+	* Makefile.am (bin_SCRIPTS): don't install libglade-config script.
+
+	* glade/Makefile.am (INCLUDES): set GLADE_MODULE_DIR cpp define.
+
 	* glade/glade-init.h: header file containing gnome-init.c
 	prototypes (rather than having them in glade.h).
 

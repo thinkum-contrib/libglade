@@ -1,4 +1,4 @@
-/* -*- Mode: C; c-basic-offset: 8 -*-
+/* -*- Mode: C; c-basic-offset: 4 -*-
  * libglade - a library for building interfaces from XML files at runtime
  * Copyright (C) 1998-2001  James Henstridge <james@daa.com.au>
  *
@@ -37,6 +37,7 @@ G_BEGIN_DECLS
 	
 /* create a new widget of some type.  Don't parse `standard' widget options */
 typedef GtkWidget *(* GladeNewFunc) (GladeXML *xml,
+				     GType widget_type,
 				     GladeWidgetInfo *info);
 /* call glade_xml_build_widget on each child node, and pack in self */
 typedef void (* GladeBuildChildrenFunc) (GladeXML *xml,
@@ -46,9 +47,11 @@ typedef void (* GladeBuildChildrenFunc) (GladeXML *xml,
 
 typedef struct _GladeWidgetBuildData GladeWidgetBuildData;
 struct _GladeWidgetBuildData {
-  char *name;
-  GladeNewFunc new;
-  GladeBuildChildrenFunc build_children;
+    char *name;
+    GladeNewFunc new;
+    GladeBuildChildrenFunc build_children;
+    GType (* get_type_func)(void);
+    GType typecode;  /* this member takes precedence over get_type_func */
 };
 
 /* widgets is a static, NULL terminated array of GladeWidgetBuildData's.

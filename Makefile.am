@@ -18,7 +18,7 @@ EXTRA_DIST =			\
 	config.h.win32		\
 	makefile.mingw
 
-bin_SCRIPTS = libglade-config libglade-xgettext
+bin_SCRIPTS = libglade-xgettext
 noinst_PROGRAMS = test-libglade
 test_libglade_LDADD = glade/libglade-2.0.la $(GTK_LIBS) $(XML_LIBS)
 SUBDIRS = intl po macros glade doc

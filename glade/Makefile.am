@@ -9,10 +9,11 @@
 
 LTVERSION = 0:0:0
 
-INCLUDES = -I$(top_srcdir) $(XML_CFLAGS) $(GTK_CFLAGS)
+INCLUDES = -I$(top_srcdir) $(XML_CFLAGS) $(GTK_CFLAGS) -DGLADE_MODULE_DIR=\""$(glademoduledir)"\"
 
-lib_LTLIBRARIES = \
-	libglade-2.0.la
+glademoduledir = $(pkglibdir)/2.0
+
+lib_LTLIBRARIES = libglade-2.0.la
 
 gladeincludedir      = $(includedir)/glade-2.0/glade
 gladeinclude_HEADERS = \
