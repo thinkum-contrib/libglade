@@ -1,3 +1,10 @@
+1999-07-26  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-widget-info.h: the structures that the new SAX parser.
+	This is the public interface to the parser.
+
+	* glade/glade-sax.c: the new SAX based parser for libglade.
+
 1999-07-09  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-xml.c (glade_xml_gettext): return "" for a NULL msgid.

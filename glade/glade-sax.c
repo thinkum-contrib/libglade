@@ -1,18 +1,46 @@
 /* -*- Mode: C; c-basic-offset: 4 -*- */
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-#include <glib.h>
+#include <gtk/gtk.h>
 
-#include <tree.h>
 #include <parser.h>
 #include <parserInternals.h>
 
-#include "widget-tree.h"
+#include "glade-widget-tree.h"
 
+/* this is from glade-keys.h */
 guint glade_key_get(const char *str);
 
-GladeWidgetTree *glade_widget_tree_new(void) {
+/* This function is like xmlSAXParseFile, but allows us to set the user_data.
+ * It also does not assume we are building the DOM tree.  It returns a
+ * negative value on error.
+ */
+static int my_xmlSAXParseFile(xmlSAXHandlerPtr sax, void *user_data,
+		      const char *filename) {
+    int ret = 0;
+    xmlParserCtxtPtr ctxt;
+    
+    ctxt = xmlCreateFileParserCtxt(filename);
+    if (ctxt == NULL) return -1;
+    ctxt->sax = sax;
+    ctxt->userData = user_data;
+    
+    xmlParseDocument(ctxt);
+    
+    if (ctxt->wellFormed)
+	ret = 0;
+    else
+	ret = -1;
+    if (sax != NULL)
+	ctxt->sax = NULL;
+    xmlFreeParserCtxt(ctxt);
+    
+    return ret;
+}
+
+static GladeWidgetTree *glade_widget_tree_new(void) {
     GladeWidgetTree *self = g_new0(GladeWidgetTree, 1);
 
     self->names = g_hash_table_new(g_str_hash, g_str_equal);
@@ -20,7 +48,7 @@ GladeWidgetTree *glade_widget_tree_new(void) {
     return self;
 }
 
-GladeWidgetInfo *glade_widget_info_new(void) {
+static GladeWidgetInfo *glade_widget_info_new(void) {
     GladeWidgetInfo *info = g_new0(GladeWidgetInfo, 1);
 
     info->width = -2;
@@ -32,6 +60,71 @@ GladeWidgetInfo *glade_widget_info_new(void) {
     info->can_focus = TRUE;
 
     return info;
+}
+
+static void glade_widget_info_free(GladeWidgetInfo *info) {
+    GList *tmp;
+
+    g_free(info->class);
+    g_free(info->name);
+    g_free(info->tooltip);
+    /* the GladeStyleInfo member is a pointer to one of the style structures */
+
+    for (tmp = info->attributes; tmp; tmp = tmp->next) {
+	GladeAttribute *attr = tmp->data;
+	g_free(attr->name);
+	g_free(attr->value);
+	g_free(attr);
+    }
+    g_list_free(info->attributes);
+    for (tmp = info->child_attributes; tmp; tmp = tmp->next) {
+	GladeAttribute *attr = tmp->data;
+	g_free(attr->name);
+	g_free(attr->value);
+	g_free(attr);
+    }
+    g_list_free(info->child_attributes);
+
+    for (tmp = info->signals; tmp; tmp = tmp->next) {
+	GladeSignalInfo *inf = tmp->data;
+	g_free(inf->name);
+	g_free(inf->handler);
+	g_free(inf->data);
+	g_free(inf->object);
+	g_free(inf);
+    }
+    g_list_free(info->signals);
+
+    for (tmp = info->accelerators; tmp; tmp = tmp->next) {
+	GladeAcceleratorInfo *inf = tmp->data;
+	g_free(inf->signal);
+	g_free(inf);
+    }
+    g_list_free(info->accelerators);
+
+    for (tmp = info->children; tmp; tmp = tmp->next) {
+	GladeWidgetInfo *inf = tmp->data;
+	glade_widget_info_free(inf);
+    }
+    g_list_free(info->children);
+    g_free(info);
+}
+
+void glade_widget_tree_free(GladeWidgetTree *tree) {
+    GList *tmp;
+
+    /* free the styles */
+    for (tmp = tree->styles; tmp; tmp = tmp->next) {
+	GladeStyleInfo *inf = tmp->data;
+	g_free(inf->name);
+	g_free(inf->rc_name);
+	g_free(inf);
+    }
+    g_list_free(tree->styles);
+    for (tmp = tree->widgets; tmp; tmp = tmp->next)
+	glade_widget_info_free(tmp->data);
+    g_list_free(tree->widgets);
+    g_hash_table_destroy(tree->names);
 }
 
 static gchar *glade_style_make_name(void) {
@@ -442,10 +535,20 @@ static void gladeEndElement(GladeParseState *state, const CHAR *name) {
 	    state->state = PARSER_WIDGET;
 	else
 	    state->state = PARSER_GTK_INTERFACE;
-	state->cur_style->data = state->style_data->str;
 	if (!state->cur_style->name)
 	    state->cur_style->name = glade_style_make_name();
-	g_string_free(state->style_data, FALSE);
+	/* pass the style data to gtk_rc_parse_string() */
+	{
+	    gchar *rcstring =
+		g_strdup_printf("style \"GLADE_%s_style\" {\n%s\n}\n",
+				state->cur_style->name,state->style_data->str);
+	    gtk_rc_parse_string(rcstring);
+	    g_free(rcstring);
+	}
+	/* we want to apply the default style to everything */
+	if (!strcmp(state->cur_style->name, "Default"))
+	   gtk_rc_parse_string("widget \"*\" style \"GLADE_Default_style\"\n");
+	g_string_free(state->style_data, TRUE);
 	state->cur_style = NULL;
 	state->style_data = NULL;
 	break;
@@ -454,6 +557,7 @@ static void gladeEndElement(GladeParseState *state, const CHAR *name) {
 	state->state = PARSER_FINISH;
 	break;
     case PARSER_START:
+    case PARSER_FINISH:
 	/* we should not have a closing tag in this state */
 	g_assert_not_reached();
 	break;
@@ -475,10 +579,6 @@ static void gladeCharacters(GladeParseState *state, const CHAR *chars,
 
 static xmlEntityPtr gladeGetEntity(GladeParseState *state, const CHAR *name) {
     return xmlGetPredefinedEntity(name);
-}
-
-static void gladeComment(GladeParseState *state, const char *msg) {
-    g_log("XML", G_LOG_LEVEL_MESSAGE, "%s", msg);
 }
 
 static void gladeWarning(GladeParseState *state, const char *msg, ...) {
@@ -526,33 +626,21 @@ static xmlSAXHandler gladeSAXParser = {
     (charactersSAXFunc)gladeCharacters, /* characters */
     0, /* ignorableWhitespace */
     0, /* processingInstruction */
-    (commentSAXFunc)gladeComment, /* comment */
+    (commentSAXFunc)0, /* comment */
     (warningSAXFunc)gladeWarning, /* warning */
     (errorSAXFunc)gladeError, /* error */
     (fatalErrorSAXFunc)gladeFatalError, /* fatalError */
 };
 
-GladeWidgetTree *glade_parse_tree(const char *file) {
-    xmlParserCtxtPtr ctxt;
+GladeWidgetTree *glade_widget_tree_parse_file(const char *file) {
     GladeParseState state;
 
-    ctxt = xmlCreateFileParserCtxt(file);
-    if (!ctxt) return;
-    ctxt->sax = &gladeSAXParser;
-    ctxt->userData = &state;
-
-    xmlParseDocument(ctxt);
-
-    if (!ctxt->wellFormed)
+    if (my_xmlSAXParseFile(&gladeSAXParser, &state, file) < 0) {
 	g_warning("document not well formed!");
-    ctxt->sax = NULL;
-    xmlFreeParserCtxt(ctxt);
-
+	glade_widget_tree_free(state.tree);
+	return NULL;
+    }
     return state.tree;
-}
-
-static void free_sig_info(GladeSignalInfo *info) {
-    
 }
 
 static void glade_print_widget_info(GladeWidgetInfo *info, gchar *indent) {
@@ -593,17 +681,10 @@ static void glade_print_widget_info(GladeWidgetInfo *info, gchar *indent) {
     }
 }
 
-void glade_print_widget_tree(GladeWidgetTree *tree) {
+void glade_widget_tree_print(GladeWidgetTree *tree) {
     GList *tmp;
 
     for (tmp = tree->widgets; tmp; tmp = tmp->next)
 	glade_print_widget_info(tmp->data, "");
-}
-
-void main(int argc, char *argv[]) {
-    if (argc > 1)
-	    glade_print_widget_tree(glade_parse_tree(argv[1]));
-    else
-	g_message("need filename");
 }
 
