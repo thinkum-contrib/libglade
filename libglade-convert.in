@@ -1175,7 +1175,7 @@ def handle_file(filename):
     print '</glade-interface>'
     document.unlink() # only needed for python interpreters without cyclic gc
 
-usage = 'usage: libglade-convert [--no-upgrade] oldfile.glade'
+usage = 'usage: libglade-convert [--no-upgrade] [--verbose] oldfile.glade'
 
 def main():
     global upgrade, verbose

@@ -1,5 +1,8 @@
 2002-02-17  James Henstridge  <james@daa.com.au>
 
+	* libglade-convert.in (usage): update usage message to fix bug
+	#66371
+
 	* glade/glade-gtk.c (set_has_default): function to handle
 	"has_default" property.
 	(set_has_focus): same for "has_focus".
