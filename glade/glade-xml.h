@@ -24,6 +24,11 @@
 #include <gtk/gtkwidget.h>
 #include <gtk/gtktooltips.h>
 
+#ifdef __cplusplus
+extern "C" {
+#pragma }
+#endif /* __cplusplus */
+	
 #define GLADE_XML(obj) GTK_CHECK_CAST((obj), glade_xml_get_type(), GladeXML)
 #define GLADE_XML_CLASS(klass) GTK_CHECK_CLASS_CAST((klass), glade_xml_get_type(), GladeXMLClass)
 #define GLADE_IS_XML(obj) GTK_CHECK_TYPE((obj), glade_xml_get_type())
@@ -38,6 +43,7 @@ struct _GladeXML {
   GtkData parent;
 
   char *filename;
+  char *textdomain;
 
   /* <private> */
   GladeXMLPrivate *priv;
@@ -57,10 +63,12 @@ struct _GladeSignalData {
 
 GtkType glade_xml_get_type    (void);
 GladeXML *glade_xml_new       (const char *fname, const char *root);
-void glade_xml_construct      (GladeXML *self, const char *fname,
-			       const char *root);
+GladeXML *glade_xml_new_with_domain (const char *fname, const char *root,
+				     const char *domain);
+gboolean glade_xml_construct  (GladeXML *self, const char *fname,
+			       const char *root, const char *domain);
 
-void glade_xml_signal_connect (GladeXML *self, const char *signalname,
+void glade_xml_signal_connect (GladeXML *self, const char *handlername,
 			       GtkSignalFunc func);
 /*
  * use gmodule to connect signals automatically.  Basically a symbol with
@@ -70,10 +78,38 @@ void glade_xml_signal_connect (GladeXML *self, const char *signalname,
  */
 void       glade_xml_signal_autoconnect      (GladeXML *self);
 
+/* if the gtk_signal_connect_object behaviour is required, connect_object
+ * will point to the object, otherwise it will be NULL.
+ */
+typedef void (*GladeXMLConnectFunc)          (const gchar *handler_name,
+					      GtkObject *object,
+					      const gchar *signal_name,
+					      const gchar *signal_data,
+					      GtkObject *connect_object,
+					      gboolean after,
+					      gpointer user_data);
+
+/*
+ * These two are to make it easier to use libglade with an interpreted
+ * language binding.
+ */
+void       glade_xml_signal_connect_full     (GladeXML *self,
+					      const gchar *handler_name,
+					      GladeXMLConnectFunc func,
+					      gpointer user_data);
+
+void       glade_xml_signal_autoconnect_full (GladeXML *self,
+					      GladeXMLConnectFunc func,
+					      gpointer user_data);
+
+
 GtkWidget *glade_xml_get_widget              (GladeXML *self,
 					      const char *name);
 GtkWidget *glade_xml_get_widget_by_long_name (GladeXML *self,
 					      const char *longname);
+
+gchar     *glade_xml_relative_file           (GladeXML *self,
+					      const gchar *filename);
 
 /* don't free the results of these two ... */
 const char *glade_get_widget_name      (GtkWidget *widget);
@@ -81,5 +117,8 @@ const char *glade_get_widget_long_name (GtkWidget *widget);
 
 GladeXML   *glade_get_widget_tree      (GtkWidget *widget);
 
-
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+	
 #endif

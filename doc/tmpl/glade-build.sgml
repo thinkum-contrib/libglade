@@ -49,6 +49,18 @@ the actual widgets from the XML node data structures.
 @xml: 
 
 
+<!-- ##### FUNCTION glade_xml_set_common_params ##### -->
+<para>
+
+</para>
+
+@self: 
+@widget: 
+@node: 
+@parent_long: 
+@widget_class: 
+
+
 <!-- ##### STRUCT GladeWidgetBuildData ##### -->
 <para>
 
@@ -63,6 +75,16 @@ the actual widgets from the XML node data structures.
 @widgets: 
 
 
+<!-- ##### FUNCTION glade_xml_relative_file ##### -->
+<para>
+
+</para>
+
+@self: 
+@filename: 
+@Returns: 
+
+
 <!-- ##### FUNCTION glade_enum_from_string ##### -->
 <para>
 
@@ -70,6 +92,36 @@ the actual widgets from the XML node data structures.
 
 @type: 
 @string: 
+@Returns: 
+
+
+<!-- ##### FUNCTION glade_get_adjustment ##### -->
+<para>
+
+</para>
+
+@gnode: 
+@Returns: 
+
+
+<!-- ##### FUNCTION glade_standard_build_children ##### -->
+<para>
+
+</para>
+
+@self: 
+@w: 
+@node: 
+@longname: 
+
+
+<!-- ##### FUNCTION glade_xml_gettext ##### -->
+<para>
+
+</para>
+
+@xml: 
+@msgid: 
 @Returns: 
 
 

@@ -1,10 +1,205 @@
-<<<<<<< ChangeLog
-1999-06-05  Michael Meeks  <michael@edenproject.org>
+1999-06-20  James Henstridge  <james@daa.com.au>
 
-	* glade/glade-gtk.c: Add extern glade_init_gtk_widget to kill
-	warning.
+	* dialogs.glade: example of using the standard dialogs with libglade.
+	
+	* configure.in: upped version number to 0.2.
 
-=======
+	* glade/glade-gnome.c: small clean up.
+
+	* doc/libglade-docs.sgml: a few more changes to the documentation.
+
+1999-06-19  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gnome.c (gnomedialog_build_children): connect signals
+	to the individual button widgets.
+	(messagebox_build_children): similar for the message box widget.
+
+	* doc/libglade-docs.sgml: heaps of extra docs.  This should reduce
+	the number of libglade questions people ask me (assuming they
+	read the docs of course :).
+
+	* doc/libglade-sections.txt: added entries for the extra functions.
+
+	* glade/glade-xml.h, glade/glade-xml.c
+	(glade_xml_signal_connect_full, glade_xml_signal_autoconnect_full):
+	Added two functions that should be useful for people wanting to write
+	language bindings for libglade.  They allow the user to specify an
+	arbitrary function to use for connecting signals.
+
+1999-06-17  James Henstridge  <james@daa.com.au>
+
+	* gnome-widgets.glade: made the test glade file for GNOME a bit
+	nicer.
+
+	* glade/glade-gnome.c (toolbar_new): make toolbar button relief
+	match user preferences.
+
+	* glade/glade-gtk.c (text_new): small bug fix to text widget creation.
+
+1999-06-14  James Henstridge  <james@daa.com.au>
+
+	* glade/glade.h: moved the include of glade/glade-xml.h outside of
+	the extern "C" { ... } block, since it has its own extern "C" { ... }
+	stuff (and the extern "C" notation is not valid in C).
+
+	* glade/glade-gtk.c (optionmenu_new, combo_new): made adjustments to
+	match change in libglade-xgettext.
+
+	* libglade-xgettext (TranslatableStringParser.end_items): add list
+	items to translation list individually instead of as one large string.
+
+	* glade/glade-gnome.c (gnomedialog_new, app_new): added support for
+	setting wmname/wmclass on these windows as well.
+
+	* glade/glade-gtk.c: added support for GtkFileSelection,
+	GtkColorSelectionDialog and GtkFontSelectionDialog, including
+	the support for connecting signals to their buttons.
+	Also added support for setting the wmname/wmclass on windows.
+
+1999-06-13  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gnome.c: put #ifdef's round references to
+	GNOME_STOCK_PIXMAP_MIDI, so it will compile with gnome-libs-1.0.1
+	(Damon is keeping compatibility with that release for glade, so
+	I may as well do so as well).
+
+1999-06-13  Richard Hestilow  <hestgray@ionet.net>
+
+	* glade/glade-xml.h, glade-build.h, glade.h: added 
+	"#ifdef __cplusplus" wrappers, otherwise was giving linktime
+	errors with g++.
+	
+1999-06-12  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.c: fixed up gettext call.
+
+	* configure.in: added a call to AM_GNOME_GETTEXT so that the i18n
+	stuff should get included correctly.  Note that there is no libglade
+	translation domain -- libglade should not give any of its own output.
+
+1999-06-11  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-xml.[ch] (glade_xml_construct): added a third argument -
+	the translation domain.
+	(glade_xml_new_with_domain): a new constructor that allows you to
+	specify that this GladeXML object use a different translation
+	domain than the default.
+	
+	* glade/glade-xml.c (glade_xml_set_common_params): translate the
+	tooltips.
+
+	* glade/glade-gnome.c: added calls to glade_xml_gettext at appropriate
+	places.
+
+	* glade/glade-gtk.c: added calls to glade_xml_gettext at appropriate
+	places.
+
+	* glade/glade-xml.c (glade_xml_gettext): new function to handle
+	translations of text in widget building routines.
+
+	* glade/glade-xml.h: added textdomain attribute to GladeXML structure
+	that will hold the gettext text domain used for translations.  This
+	is just in preparation -- I haven't added i18n to libglade yet.
+
+	* glade/glade-xml.c (glade_xml_relative_file): small fix in call
+	to g_strconcat().  This one was picked up by Gary Ross.
+
+	* glade/glade-gnome.c (get_stock_name): now reads GNOME_STOCK_PIXMAP_
+	and GNOME_STOCK_MENU_ style stock names correctly.
+	(toolbar_new, toolbar_build_children): functions for building toolbars
+	that is aware of stock icons.  Now the toolbars look correct.
+	(menu_new, menubar_new, menushell_build_children): Handle stock
+	menu items correctly.  It even handles gnome-libs' internal
+	translation of stock menu item labels.
+	(pixmapmenuitem_new): This function does not worry about stock menu
+	items now.  It does handle pixmaps next to the menu items though
+	like it should.
+
+	* Makefile.am (bin_SCRIPTS): added libglade-xgettext.
+
+	* libglade-xgettext: a small program that can extract translation
+	strings from glade XML files.  Libglade itself has no i18n support
+	yet, but this is a start.  The program can output both standard pot
+	files or a C file that can then be parsed by xgettext.
+
+1999-06-10  James Henstridge  <james@daa.com.au>
+
+	* test-libglade.c (main): updated to call glade_gnome_init() instead
+	of glade_init() if GNOME support is enabled.
+
+	* libglade.m4 (module_args): modified macro so that you can pass
+	`gnome' as the third argument to get GNOME support.
+
+	* libglade-config.in: you can now pass it the arguments gtk and gnome
+	to indicate which widget sets you wish to use.  If you specify
+	GNOME, the --libs output will include -lglade-gnome.
+
+	* glade/Makefile.am: create a separate libglade-gnome library if
+	GNOME support is enabled.
+	
+	* glade/glade-gnome.c: implemented the GnomeApp, GnomeAppBar,
+	GnomeDock, GnomeDockItem and GtkPixmapItem (sort of).  Just about
+	everything displays, except that the GNOMEUIINFO stuff, which is
+	not properly implemented at this point in time.
+
+	* glade/glade-gnome.c (about_new): make the about dialog creation
+	routine use the values of gnome_app_id and gnome_app_version.
+
+	* glade/glade-tree.c (recurse_tree, destroy_func): the hash table of
+	widget name -> xmlNode was broken.  It was freeing the keys before
+	they were used.  This bug is from when I was converting libglade
+	over to using xmlNodeGetContent().  It should now be possible to
+	use the glade_xml_new("filename", "rootnode") style of initialisation,
+	and signal handlers that should be connected with
+	gtk_signal_connect_object should now work correctly as well.
+
+	* glade/glade-gtk.c (pixmap_new): the filename of the pixmap should
+	be relative to the xml file.
+	(toolbar_new, toolbar_build_children): fixed up toolbar support.  I
+	used code from the examples by Craig M. Buchek and Gary Ross.  The
+	actual implementation is different than both, but the sample code
+	was very helpful.
+
+	* doc/libglade-sections.txt: added extra entries to documentation.
+
+	* glade/glade-xml.c (glade_xml_set_common_params): new function that
+	exposes some of the work that glade_xml_build_widget performs.
+
+	* glade/glade-xml.h, glade/glade-xml.c (glade_xml_relative_file):
+	new function that resolves a filename that is relative to the XML
+	file for an interface.  This is useful for resolving image file
+	names and other external files.
+	
+	* glade/glade-xml.c (glade_xml_build_widget): make the height and
+	width setting code work correctly (before, setting width would unset
+	the height and vice versa).
+
+1999-06-09  James Henstridge  <james@daa.com.au>
+
+	* Makefile.am (EXTRA_DIST): added the custom.glade and
+	gnome-widgets.glade examples to the distribution.
+
+	* glade/glade-xml.h, glade/glade-xml.c: changed the second argument
+	name in glade_xml_signal_connect to handlername, so that people who
+	don't want to read the docs do not get confused as easily :)
+
+1999-06-09  Michael Meeks  <michael@edenproject.org>
+
+	* glade/glade-xml.c (glade_xml_new): Added return NULL on error
+	(glade_xml_construct): Added boolean - success return value.
+
+1999-06-08  James Henstridge  <james@daa.com.au>
+
+	* Makefile.am (confexec_DATA): install the libgladeConf.sh script.
+
+	* libgladeConf.sh.in: A file for use with the gnome-config shell
+	script.
+
+	* glade/glade-gnome.c: added support for GnomeDialog and
+	GnomeMessageBox.  This still leaves support for GnomeApp to be done.
+	Before this can be finished though, I need to work out the stock
+	menu (GnomeUIInfo) stuff.  I don't know how difficult this will be.
+
 1999-06-06  Erik Walthinsen  <omega@cse.ogi.edu>
 
 	* converted libglade.spec to libglade.spec.in, made appropiate
@@ -138,7 +333,6 @@
 	both gtk and gnome code.
 	(glade_get_adjustment): similar to above.
 
->>>>>>> 1.31
 1999-06-04  Miguel de Icaza  <miguel@nuclecu.unam.mx>
 
 	* glade/glade-gtk.c (optionmenu_new): Only add items if there are

@@ -29,7 +29,7 @@ int main (int argc, char **argv)
   char **list = NULL;
   
   gnome_init_with_popt_table ("test-libglade", VERSION, argc, argv, options, 0, &ctx);
-  glade_init();
+  glade_gnome_init();
 
   list = poptGetArgs (ctx);
   if (list){

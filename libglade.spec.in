@@ -88,6 +88,7 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 %{prefix}/lib/*a
 %{prefix}/include/glade/*
 %{prefix}/share/aclocal/*
+%{prefix}/lib/libgladeConf.sh
 
 %doc test-libglade.c
 %doc *.glade

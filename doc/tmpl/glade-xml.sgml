@@ -49,6 +49,17 @@ automatically connect as many handlers up as it can that way.
 @filename: 
 
 
+<!-- ##### FUNCTION glade_xml_new_with_domain ##### -->
+<para>
+
+</para>
+
+@fname: 
+@root: 
+@domain: 
+@Returns: 
+
+
 <!-- ##### FUNCTION glade_xml_construct ##### -->
 <para>
 
@@ -57,6 +68,8 @@ automatically connect as many handlers up as it can that way.
 @self: 
 @fname: 
 @root: 
+@domain: 
+@Returns: 
 <!-- # Unused Parameters # -->
 @filename: 
 @xml: 
@@ -68,9 +81,10 @@ automatically connect as many handlers up as it can that way.
 </para>
 
 @self: 
-@signalname: 
+@handlername: 
 @func: 
 <!-- # Unused Parameters # -->
+@signalname: 
 @xml: 
 
 
@@ -133,5 +147,40 @@ automatically connect as many handlers up as it can that way.
 
 @widget: 
 @Returns: 
+
+
+<!-- ##### USER_FUNCTION GladeXMLConnectFunc ##### -->
+<para>
+
+</para>
+
+@handler_name: 
+@object: 
+@signal_name: 
+@signal_data: 
+@connect_object: 
+@after: 
+@user_data: 
+
+
+<!-- ##### FUNCTION glade_xml_signal_connect_full ##### -->
+<para>
+
+</para>
+
+@self: 
+@handler_name: 
+@func: 
+@user_data: 
+
+
+<!-- ##### FUNCTION glade_xml_signal_autoconnect_full ##### -->
+<para>
+
+</para>
+
+@self: 
+@func: 
+@user_data: 
 
 

@@ -24,9 +24,6 @@
 #include <gmodule.h>
 
 void glade_init_gtk_widgets (void);
-#ifdef ENABLE_GNOME
-void glade_init_gnome_widgets (void);
-#endif
 
 /**
  * glade_init:
@@ -38,13 +35,13 @@ void glade_init_gnome_widgets (void);
 void
 glade_init(void)
 {
+	static gboolean initialised = FALSE;
+
+	if (initialised) return;
+	initialised = TRUE;
 	glade_init_gtk_widgets();
 
-#ifdef ENABLE_GNOME
-	glade_init_gnome_widgets();
-#endif
-
-	/* probably should do something about auto-loading of widget sets here */
+	/*probably should do something about auto-loading of widget sets here*/
 }
 
 /**

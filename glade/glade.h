@@ -19,15 +19,26 @@
 #ifndef GLADE_H
 #define GLADE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+	
 /* must be called before use of libglade */
 void glade_init(void);
-void glade_init_gnome_widgets(void);
+
+/* this is defined in libglade-gnome -- it should be used instead of
+ * glade_init() if you want to use the GNOME widget set with libglade */
+void glade_gnome_init(void);
 
 /* Load the named dynamic module.  Basically it is loaded, and the
  * glade_init_module function is called.  This function should
  * do any library initialisation and call glade_register_widgets */
 void glade_load_module(const char *module);
 
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+	
 #include <glade/glade-xml.h>
 /* don't include glade-build.h -- it is only for widget set definitions */
 

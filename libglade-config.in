@@ -7,15 +7,20 @@ includedir=@includedir@
 usage()
 {
     cat <<EOF
-Usage: libglade-config [OPTION]
+Usage: libglade-config [OPTION] [LIBRARIES]
 
 Known values for OPTION are:
 
   --prefix=DIR		change libglade prefix [default $prefix]
   --libs		print library linking information
   --cflags		print pre-processor and compiler flags
+  --check		just check for library.
   --help		display this help and exit
   --version		output version information
+
+Possible widget libraries:
+  gtk (included by default)
+  gnome
 EOF
 
     exit $1
@@ -27,6 +32,8 @@ fi
 
 cflags=false
 libs=false
+
+lib_gtk=yes
 
 while test $# -gt 0; do
     case "$1" in
@@ -53,23 +60,62 @@ while test $# -gt 0; do
 	;;
 
     --cflags)
-	if test "@includedir@" != /usr/include ; then
-	    echo -I@includedir@ @XML_CFLAGS@
-	else
-	    echo @XML_CFLAGS@
-	fi
+	echo_cflags=yes
        	;;
 
     --libs)
-       	echo -L@libdir@ -lglade @XML_LIBS@ @GNOME_LIBDIR@ @GNOMEUI_LIBS@
+	echo_libs=yes
        	;;
 
+    --check)
+	;;
+
+    gtk)
+	lib_gtk=yes
+	;;
+    gnome)
+	lib_gnome=yes
+	;;
+
     *)
-	usage
+	usage 1 1>&2
 	exit 1
 	;;
     esac
     shift
 done
+
+# This is uncommented when we have no GNOME support ...
+@GNOME_SUPPORT_FALSE@if test "$lib_gnome" = "yes"; then
+@GNOME_SUPPORT_FALSE@  echo "*** GNOME SUPPORT was not compiled into libglade" 1>&2
+@GNOME_SUPPORT_FALSE@  exit 1
+@GNOME_SUPPORT_FALSE@fi
+
+if test "$echo_cflags" = "yes"; then
+    cflags="@XML_CFLAGS@"
+    if test "@includedir@" != /usr/include; then
+	cflags="$cflags -I@includedir@"
+    fi
+    if test "$lib_gnome" = "yes"; then
+	cflags="$cflags @GNOME_INCLUDEDIR@"
+    else
+	cflags="$cflags @GTK_CFLAGS@"
+    fi
+    echo $cflags
+fi
+
+if test "$echo_libs" = "yes"; then
+    libs=""
+    libsa=""
+    if test "$lib_gtk" = "yes"; then
+	libs="-lglade"
+	libsa="@GTK_LIBS@"
+    fi
+    if test "$lib_gnome" = "yes"; then
+	libs="-lglade-gnome $libs"
+	libsa="@GNOME_LIBDIR@ @GNOMEUI_LIBS@"
+    fi
+    echo -L@libdir@ $libs @XML_LIBS@ $libsa
+fi
 
 exit 0

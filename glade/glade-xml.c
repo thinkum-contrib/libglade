@@ -32,6 +32,10 @@
 #include <gtk/gtkcontainer.h>
 #include <gtk/gtklabel.h>
 
+#ifdef ENABLE_NLS
+#  include <libintl.h>
+#endif
+
 static const char *glade_xml_tag = "GladeXML::";
 static const char *glade_xml_name_tag = "GladeXML::name";
 static const char *glade_xml_longname_tag = "GladeXML::longname";
@@ -88,6 +92,7 @@ glade_xml_init (GladeXML *self)
 	self->priv = priv = g_new (GladeXMLPrivate, 1);
 
 	self->filename = NULL;
+	self->textdomain = NULL;
 	priv->tooltips = NULL;
 	priv->name_hash = g_hash_table_new(g_str_hash, g_str_equal);
 	priv->longname_hash = g_hash_table_new(g_str_hash, g_str_equal);
@@ -107,14 +112,47 @@ glade_xml_init (GladeXML *self)
  * window it is embedded in.  Note also that the XML parse tree is cached
  * to speed up creating another GladeXML object for the same file
  *
- * Returns: the newly created GladeXML object.
+ * Returns: the newly created GladeXML object, or NULL on failure.
  */
 GladeXML *
 glade_xml_new(const char *fname, const char *root)
 {
 	GladeXML *self = gtk_type_new(glade_xml_get_type());
 
-	glade_xml_construct(self, fname, root);
+	if (!glade_xml_construct(self, fname, root, NULL)) {
+		gtk_object_destroy(GTK_OBJECT(self));
+		return NULL;
+	}
+	return self;
+}
+
+/**
+ * glade_xml_new_with_domain:
+ * @fname: the XML file name.
+ * @root: the widget node in @fname to start building from (or %NULL)
+ * @domain: the translation domain to use for this interface (or %NULL)
+ *
+ * Creates a new GladeXML object (and the corresponding widgets) from the
+ * XML file @fname.  Optionally it will only build the interface from the
+ * widget node @root (if it is not %NULL).  This feature is useful if you
+ * only want to build say a toolbar or menu from the XML file, but not the
+ * window it is embedded in.  Note also that the XML parse tree is cached
+ * to speed up creating another GladeXML object for the same file.  This
+ * function differs from glade_xml_new in that you can specify a different
+ * translation domain from the default to be used.
+ *
+ * Returns: the newly created GladeXML object, or NULL on failure.
+ */
+GladeXML *
+glade_xml_new_with_domain(const char *fname, const char *root,
+			  const char *domain)
+{
+	GladeXML *self = gtk_type_new(glade_xml_get_type());
+
+	if (!glade_xml_construct(self, fname, root, domain)) {
+		gtk_object_destroy(GTK_OBJECT(self));
+		return NULL;
+	}
 	return self;
 }
 
@@ -123,17 +161,24 @@ glade_xml_new(const char *fname, const char *root)
  * @self: the GladeXML object
  * @fname: the XML filename
  * @root: the root widget node (or %NULL for none)
+ * @domain: the translation domain (or %NULL for the default)
  *
  * This routine can be used by bindings (such as gtk--) to help construct
  * a GladeXML object, if it is needed.
+ *
+ * Returns: TRUE if the construction succeeded.
  */
-void
-glade_xml_construct (GladeXML *self, const char *fname, const char *root)
+gboolean
+glade_xml_construct (GladeXML *self, const char *fname, const char *root,
+		     const char *domain)
 {
 	GladeTreeData *tree = glade_tree_get(fname);
 
-	g_return_if_fail(tree != NULL);
+	if (!tree)
+		return FALSE;
 
+	if (self->textdomain) g_free(self->textdomain);
+	self->textdomain = g_strdup(domain);
 	if (self->filename)
 		g_free(self->filename);
 	self->filename = g_strdup(fname);
@@ -141,12 +186,14 @@ glade_xml_construct (GladeXML *self, const char *fname, const char *root)
 
 	if (self->priv->tooltips)
 		gtk_tooltips_enable(self->priv->tooltips);
+
+	return TRUE;
 }
 
 /**
  * glade_xml_signal_connect:
  * @self: the GladeXML object
- * @signalname: the signal handler name
+ * @handlername: the signal handler name
  * @func: the signal handler function
  *
  * In the glade interface descriptions, signal handlers are specified for
@@ -154,10 +201,10 @@ glade_xml_construct (GladeXML *self, const char *fname, const char *root)
  * all signals in the GladeXML file with the given signal handler name.
  */
 void
-glade_xml_signal_connect (GladeXML *self, const char *signalname,
+glade_xml_signal_connect (GladeXML *self, const char *handlername,
 			  GtkSignalFunc func)
 {
-	GList *signals = g_hash_table_lookup(self->priv->signals, signalname);
+	GList *signals = g_hash_table_lookup(self->priv->signals, handlername);
 	
 	for (; signals != NULL; signals = signals->next) {
 		GladeSignalData *data = signals->data;
@@ -185,7 +232,7 @@ glade_xml_signal_connect (GladeXML *self, const char *signalname,
 }
 
 static void
-autoconnect_foreach(char *signal_handler, GList *signals,
+autoconnect_foreach(const char *signal_handler, GList *signals,
 		    GModule *allsymbols)
 {
 	GtkSignalFunc func;
@@ -243,6 +290,109 @@ glade_xml_signal_autoconnect (GladeXML *self)
 	g_hash_table_foreach(self->priv->signals, (GHFunc)autoconnect_foreach, allsymbols);
 }
 
+
+typedef struct {
+  GladeXMLConnectFunc func;
+  gpointer user_data;
+} connect_struct;
+
+static void
+autoconnect_full_foreach(const char *signal_handler, GList *signals,
+			 connect_struct *conn)
+{
+	GtkSignalFunc func;
+	GladeXML *self = NULL;
+
+	for (; signals != NULL; signals = signals->next) {
+		GladeSignalData *data = signals->data;
+		GtkObject *connect_object = NULL;
+		
+		if (data->connect_object) {
+			if (!self)
+				self = glade_get_widget_tree(
+					GTK_WIDGET(data->signal_object));
+			connect_object = g_hash_table_lookup(
+					self->priv->name_hash,
+					data->connect_object);
+		}
+
+		(* conn->func) (signal_handler, data->signal_object,
+				data->signal_name, data->signal_data,
+				connect_object, data->signal_after,
+				conn->user_data);
+	}
+}
+
+/**
+ * GladeXMLConnectFunc:
+ * @handler_name: the name of the handler function to connect.
+ * @object: the object to connect the signal to.
+ * @signal_name: the name of the signal.
+ * @signal_data: the string value of the signal data given in the XML file.
+ * @connect_object: non NULL if gtk_signal_connect_object should be used.
+ * @after: TRUE if the connection should be made with gtk_signal_connect_after.
+ * @user_data: the user data argument.
+ *
+ * This is the signature of a function used to connect signals.  It is used
+ * by the glade_xml_signal_connect_full and glade_xml_signal_autoconnect_full
+ * functions.  It is mainly intented for interpreted language bindings, but
+ * could be useful where the programmer wants more control over the signal
+ * connection process.
+ */
+
+/**
+ * glade_xml_signal_connect_full:
+ * @self: the GladeXML object.
+ * @handler_name: the name of the signal handler that we want to connect.
+ * @func: the function to use to connect the signals.
+ * @user_data: arbitrary data to pass to the connect function.
+ *
+ * This function is similar to glade_xml_signal_connect, except that it
+ * allows you to give an arbitrary function that will be used for actually
+ * connecting the signals.  This is mainly useful for writers of interpreted
+ * language bindings, or applications where you need more control over the
+ * signal connection process.
+ */
+void
+glade_xml_signal_connect_full(GladeXML *self, const gchar *handler_name,
+			      GladeXMLConnectFunc func, gpointer user_data)
+{
+	connect_struct conn;
+	GList *signals = g_hash_table_lookup(self->priv->signals,handler_name);
+
+	g_return_if_fail (func != NULL);
+	/* rather than rewriting the code from the autoconnect_full version,
+	 * just reuse its helper function */
+	conn.func = func;
+	conn.user_data = user_data;
+	autoconnect_full_foreach(handler_name, signals, &conn);
+}
+
+/**
+ * glade_xml_signal_autoconnect_full:
+ * @self: the GladeXML object.
+ * @func: the function used to connect the signals.
+ * @user_data: arbitrary data that will be passed to the connection function.
+ *
+ * This function is similar to glade_xml_signal_connect_full, except that it
+ * will try to connect all signals in the interface, not just a single
+ * named handler.  It can be thought of the interpeted language binding
+ * version of glade_xml_signal_autoconnect, except that it does not
+ * require gmodule to function correctly.
+ */
+void
+glade_xml_signal_autoconnect_full (GladeXML *self, GladeXMLConnectFunc func,
+				   gpointer user_data)
+{
+	connect_struct conn;
+
+	g_return_if_fail (func != NULL);
+	conn.func = func;
+	conn.user_data = user_data;
+	g_hash_table_foreach(self->priv->signals,
+			     (GHFunc)autoconnect_full_foreach, &conn);
+}
+
 /**
  * glade_xml_get_widget:
  * @self: the GladeXML object.
@@ -278,6 +428,32 @@ glade_xml_get_widget_by_long_name(GladeXML *self,
 				  const char *longname)
 {
 	return g_hash_table_lookup(self->priv->longname_hash, longname);
+}
+
+/**
+ * glade_xml_relative_file
+ * @self: the GladeXML object.
+ * @filename: the filename.
+ *
+ * This function resolves a relative pathname, using the directory of the
+ * XML file as a base.  If the pathname is absolute, then the original
+ * filename is returned.
+ *
+ * Returns: the filename.  The result must be g_free'd.
+ */
+gchar *
+glade_xml_relative_file(GladeXML *self, const gchar *filename)
+{
+	gchar *dirname, *tmp;
+	g_return_val_if_fail(filename != NULL, NULL);
+
+	if (g_path_is_absolute(filename)) /* an absolute pathname */
+		return g_strdup(filename);
+	/* prepend XML file's dir onto filename */
+	dirname = g_dirname(self->filename);	
+	tmp = g_strconcat(dirname, G_DIR_SEPARATOR_S, filename, NULL);
+	g_free(dirname);
+	return tmp;
 }
 
 /**
@@ -325,6 +501,32 @@ GladeXML *
 glade_get_widget_tree(GtkWidget *widget)
 {
 	return gtk_object_get_data(GTK_OBJECT(widget), glade_xml_tag);
+}
+
+/**
+ * glade_xml_gettext:
+ * @xml: the GladeXML widget.
+ * @msgid: the string to translate.
+ *
+ * This function is a wrapper for gettext, that uses the translation domain
+ * requested by the user of the function, or the default if no domain has
+ * been specified.  This should be used for translatable strings in all
+ * widget building routines.
+ *
+ * Returns: the translated string
+ */
+char *
+glade_xml_gettext(GladeXML *xml, const char *msgid)
+{
+#ifdef ENABLE_NLS
+	if (!msgid) return NULL;
+	if (xml->textdomain)
+		return dgettext(xml->textdomain, msgid);
+	else
+		return gettext(msgid);
+#else
+	return msgid;
+#endif
 }
 
 /* this is a private function */
@@ -492,6 +694,8 @@ glade_xml_destroy(GtkObject *object)
 	
 	if (self->filename)
 		g_free(self->filename);
+	if (self->textdomain)
+		g_free(self->textdomain);
 
 	g_hash_table_destroy(priv->name_hash);
 	g_hash_table_destroy(priv->longname_hash);
@@ -581,6 +785,11 @@ glade_register_widgets(const GladeWidgetBuildData *widgets)
 	}
 }
 
+#ifndef ENABLE_NLS
+/* a slight optimisation when gettext is off */
+#define glade_xml_gettext(xml, msgid) (msgid)
+#endif
+
 /**
  * GladeNewFunc
  * @xml: The GladeXML object.
@@ -631,8 +840,7 @@ glade_xml_build_widget(GladeXML *self, GNode *node,
 		       const char *parent_long)
 {
 	xmlNodePtr xml = node->data, tmp;
-	char *widget_class, *w_name = NULL, *w_longname, *w_style = NULL;
-	gboolean visible = TRUE;
+	char *widget_class;
 	GladeWidgetBuildData *data;
 	GtkWidget *ret;
 
@@ -659,10 +867,49 @@ glade_xml_build_widget(GladeXML *self, GNode *node,
 		free(widget_class);
 		return ret;
 	}
-	free(widget_class);
 	g_assert(data->new);
 	ret = data->new(self, node);
+	glade_xml_set_common_params(self, ret, node,parent_long, widget_class);
+	free(widget_class);
+	return ret;
+}
 
+/**
+ * glade_xml_set_common_params
+ * @self: the GladeXML widget.
+ * @widget: the widget to set parameters on.
+ * @node: the XML node for this widget.
+ * @parent_long: the long name of the parent widget.
+ * @widget_class: the class of this widget, or NULL to guess the class.
+ *
+ * This function sets the common parameters on a widget, and is responsible
+ * for inserting it into the GladeXML object's internal structures.  It will
+ * also add the children to this widget.  Usually this function is only called
+ * by glade_xml_build_widget, but is exposed for difficult cases, such as
+ * setting up toolbar buttons and the like.
+ */
+void
+glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
+			    GNode *node, const char *parent_long,
+			    const char *widget_class)
+{
+	xmlNodePtr xml = node->data, tmp;
+	GladeWidgetBuildData *data;
+	char *w_name = NULL, *w_longname, *w_style = NULL;
+	gboolean visible = TRUE;
+
+	/* get the build data */
+	if (!widget_table)
+		widget_table = g_hash_table_new(g_str_hash, g_str_equal);
+	if (!widget_class) {
+		char *content;
+		tmp = glade_tree_find_node(xml, "class");
+		content = xmlNodeGetContent(tmp);
+		data = g_hash_table_lookup(widget_table, content);
+		free(content);
+	} else
+		data = g_hash_table_lookup(widget_table, widget_class);
+	
   /* set some common parameters that apply to all (or most) widgets */
 	for (tmp = xml->childs; tmp != NULL; tmp = tmp->next) {
 		const char *name = tmp->name;
@@ -671,42 +918,43 @@ glade_xml_build_widget(GladeXML *self, GNode *node,
 		switch (name[0]) {
 		case 'a':
 			if (!strcmp(name, "accelerator"))
-				glade_xml_add_accel(ret, tmp);
+				glade_xml_add_accel(widget, tmp);
 			break;
 		case 'A': /* The old accelerator tag used 'Accelerator'
 			   * rather than 'accelerator'. */
 			if (!strcmp(name, "Accelerator"))
-				glade_xml_add_accel(ret, tmp);
+				glade_xml_add_accel(widget, tmp);
 			break;
 		case 'b':
 			if (!strcmp(name, "border_width")) {
 				long width = strtol(value, NULL, 0);
-				gtk_container_set_border_width(GTK_CONTAINER(ret), width);
+				gtk_container_set_border_width(
+						GTK_CONTAINER(widget), width);
 			}
 			break;
 		case 'c':
-			if (!strcmp(name, "can_default")){
+			if (!strcmp(name, "can_default")) {
 				if (*value == 'T')
-					GTK_WIDGET_SET_FLAGS(ret, GTK_CAN_DEFAULT);
-			} else if (!strcmp(name, "can_focus")){
+					GTK_WIDGET_SET_FLAGS(widget, GTK_CAN_DEFAULT);
+			} else if (!strcmp(name, "can_focus")) {
 				if (*value == 'T')
-					GTK_WIDGET_SET_FLAGS(ret, GTK_CAN_FOCUS);
+					GTK_WIDGET_SET_FLAGS(widget, GTK_CAN_FOCUS);
 			}
 			break;
 		case 'e':
 			if (!strcmp(name, "events")) {
 				long events = strtol(value, NULL, 0);
-				gtk_widget_set_events(ret, events);
+				gtk_widget_set_events(widget, events);
 			} else if (!strcmp(name, "extension_events")) {
 				GdkExtensionMode ex =
 					glade_enum_from_string(GTK_TYPE_GDK_EXTENSION_MODE, value);
-				gtk_widget_set_extension_events(ret, ex);
+				gtk_widget_set_extension_events(widget, ex);
 			}
 			break;
 		case 'h':
 			if (!strcmp(name, "height")) {
 				long height = strtol(value, NULL, 0);
-				gtk_widget_set_usize(ret, -1, height);
+				gtk_widget_set_usize(widget, -2, height);
 			}
 			break;
 		case 'n':
@@ -717,23 +965,25 @@ glade_xml_build_widget(GladeXML *self, GNode *node,
 			break;
 		case 's':
 			if (!strcmp(name, "sensitive"))
-				gtk_widget_set_sensitive(ret, *value == 'T');
+				gtk_widget_set_sensitive(widget, *value=='T');
 			else if (!strcmp(name, "style_name")) {
 				if (w_style) g_free(w_style);
 				w_style = g_strdup(value);
 			} else if (!strcmp(name, "signal"))
-				glade_xml_add_signal(self, ret, tmp);
+				glade_xml_add_signal(self, widget, tmp);
 			break;
 		case 'S': /* The old signal tag used 'Signal' rather than
 			   * 'signal'. */
 			if (!strcmp(name, "Signal"))
-				glade_xml_add_signal(self, ret, tmp);
+				glade_xml_add_signal(self, widget, tmp);
 			break;
 		case 't':
 			if (!strcmp(name, "tooltip")) {
 				if (self->priv->tooltips == NULL)
 					self->priv->tooltips = gtk_tooltips_new();
-				gtk_tooltips_set_tip(self->priv->tooltips, ret, value, NULL);
+				gtk_tooltips_set_tip(self->priv->tooltips,
+					widget, glade_xml_gettext(self, value),
+					NULL);
 			}
 			break;
 		case 'v':
@@ -743,44 +993,43 @@ glade_xml_build_widget(GladeXML *self, GNode *node,
 		case 'w':
 			if (!strcmp(name, "width")) {
 				long width = strtol(value, NULL, 0);
-				gtk_widget_set_usize(ret, width, -1);
+				gtk_widget_set_usize(widget, width, -2);
 			}
 			break;
 		}
 		if (value) free(value);
 	}
 	g_assert(w_name != NULL);
-	gtk_widget_set_name(ret, w_name);
+	gtk_widget_set_name(widget, w_name);
 	if (parent_long)
 		w_longname = g_strconcat(parent_long, ".", w_name, NULL);
 	else
 		w_longname = g_strdup(w_name);
 	/* store this information as data of the widget.  w_longname is owned by
 	 * the widget now */
-	gtk_object_set_data(GTK_OBJECT(ret), glade_xml_tag, self);
-	gtk_object_set_data_full(GTK_OBJECT(ret), glade_xml_name_tag,
+	gtk_object_set_data(GTK_OBJECT(widget), glade_xml_tag, self);
+	gtk_object_set_data_full(GTK_OBJECT(widget), glade_xml_name_tag,
 				 w_name, (GtkDestroyNotify)g_free);
-	gtk_object_set_data_full(GTK_OBJECT(ret), glade_xml_longname_tag,
+	gtk_object_set_data_full(GTK_OBJECT(widget), glade_xml_longname_tag,
 				 w_longname, (GtkDestroyNotify)g_free);
 	/* store widgets in hash table, for easy lookup */
-	g_hash_table_insert(self->priv->name_hash, w_name, ret);
-	g_hash_table_insert(self->priv->longname_hash, w_longname, ret);
+	g_hash_table_insert(self->priv->name_hash, w_name, widget);
+	g_hash_table_insert(self->priv->longname_hash, w_longname, widget);
 
 	if (w_style) {
-		glade_style_attach(ret, w_style);
+		glade_style_attach(widget, w_style);
 		g_free(w_style);
 	}
 
 	if (data->build_children && node->children)
-		data->build_children(self, ret, node, w_longname);
+		data->build_children(self, widget, node, w_longname);
 	if (visible)
-		gtk_widget_show(ret);
-	return ret;
+		gtk_widget_show(widget);
 }
 
 /**
- * glade_default_build_children
- * @xml: the GladeXML object.
+ * glade_standard_build_children
+ * @self: the GladeXML object.
  * @w: the container widget.
  * @node: the node for this widget.
  * @longname: the long name for this widget.
@@ -791,13 +1040,13 @@ glade_xml_build_widget(GladeXML *self, GNode *node,
  * sets.
  */
 void
-glade_standard_build_children(GladeXML *xml, GtkWidget *w, GNode *node,
+glade_standard_build_children(GladeXML *self, GtkWidget *w, GNode *node,
 			     const char *longname)
 {
 	GNode *childnode;
 	for (childnode = node->children; childnode;
 	     childnode = childnode->next) {
-		GtkWidget *child = glade_xml_build_widget(xml, childnode,
+		GtkWidget *child = glade_xml_build_widget(self, childnode,
 							  longname);
 		gtk_container_add(GTK_CONTAINER(w), child);
 	}
@@ -808,6 +1057,8 @@ glade_standard_build_children(GladeXML *xml, GtkWidget *w, GNode *node,
  * @gnode: the XML node for the widget.
  *
  * This utility routine is used to create an adjustment object for a widget.
+ *
+ * Returns: the newly created GtkAdjustment.
  */
 GtkAdjustment *
 glade_get_adjustment(GNode *gnode)
