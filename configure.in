@@ -1,12 +1,18 @@
 -*- mode: autoconf -*-
 AC_PREREQ(2.52)
-AC_INIT(libglade, 2.3.6,
+
+m4_define([required_libxml_version], [2.4.10])
+m4_define([required_glib_version],   [2.4.0])
+m4_define([required_atk_version],    [1.0.0])
+m4_define([required_gtk_version],    [2.4.0])
+
+AC_INIT([libglade], [2.4.0],
         [http://bugzilla.gnome.org/enter_bug.cgi?product=libglade])
 
 AC_CONFIG_SRCDIR([test-libglade.c])
-AM_CONFIG_HEADER(config.h)
 
-AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
+AM_INIT_AUTOMAKE
+AM_CONFIG_HEADER([config.h])
 
 AC_ARG_ENABLE(debug,
   AC_HELP_STRING([--enable-debug], [check LIBGLADE_DEBUG env var]),,
@@ -14,7 +20,7 @@ AC_ARG_ENABLE(debug,
 
 AC_MSG_CHECKING([if debuging support was requested])
 if test "x$enable_debug" != xno; then
-  AC_DEFINE(DEBUG,, [enable use of LIBGLADE_DEBUG environment variable])
+  AC_DEFINE(DEBUG, 1, [enable use of LIBGLADE_DEBUG environment variable])
   AC_MSG_RESULT(yes)
 else
   AC_MSG_RESULT(no)
@@ -24,10 +30,14 @@ AC_PROG_CC
 AC_ISC_POSIX
 AC_HEADER_STDC
 
-AC_LIBTOOL_WIN32_DLL
-AM_PROG_LIBTOOL
+dnl XXXX hack to kill off all the libtool tags ...
+dnl it isn't like we are using C++ or Fortran.
+m4_define([_LT_AC_TAGCONFIG],[])
 
-AM_PATH_GTK_2_0(2.3.0)
+AC_LIBTOOL_WIN32_DLL
+AC_PROG_LIBTOOL
+
+AM_PATH_GTK_2_0(required_gtk_version)
 
 save_LIBS=$LIBS
 LIBS="$GTK_LIBS $LIBS"
@@ -37,7 +47,11 @@ LIBS=$save_LIBS
 
 AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
 
-PKG_CHECK_MODULES(LIBGLADE, libxml-2.0 >= 2.4.10 atk >= 1.0.0 gtk+-2.0 >= 2.3.0 glib-2.0 >= 2.3.1)
+PKG_CHECK_MODULES(LIBGLADE, [dnl
+  libxml-2.0 >= required_libxml_version dnl
+  atk >= required_atk_version dnl
+  gtk+-2.0 >= required_gtk_version dnl
+  glib-2.0 >= required_glib_version])
 AC_SUBST(LIBGLADE_LIBS)
 AC_SUBST(LIBGLADE_CFLAGS)
 
@@ -149,7 +163,7 @@ fi
 changequote([,])dnl
 
 dnl hack to get aclocal to use the ACLOCAL_FLAGS env var
-ACLOCAL_AMFLAGS=\${ACLOCAL_FLAGS}
+ACLOCAL_AMFLAGS="\${ACLOCAL_FLAGS}"
 AC_SUBST(ACLOCAL_AMFLAGS)
 
 AC_OUTPUT([

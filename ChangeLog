@@ -1,3 +1,15 @@
+2004-05-17  James Henstridge  <james@daa.com.au>
+
+	* NEWS: add small news message.
+
+	* autogen.sh: make autogen script a little more robust, and call
+	auto-tools in the right order.
+
+	* glade/Makefile.am: update libtool version.
+
+	* configure.in: increment version number to 2.4.0.  Also perform a
+	few small cleanups.
+
 2004-03-17  Glynn Foster  <glynn.foster@sun.com>
 
 	* Makefile.am, configure.in, libglade-2.0-uninstalled.pc.in:

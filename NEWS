@@ -1,3 +1,6 @@
+libglade-2.4.0: 17-May-2004
+	- Stable release.
+
 libglade-2.3.6: 10-March-2004
 	- Implement support GtkComboBoxEntry, GtkToolItem, GtkToolButton,
 	  GtkToggleToolButton, GtkRadioToolButton & GtkSeparatorToolItem (Damon Chaplin)

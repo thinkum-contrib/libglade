@@ -46,13 +46,16 @@ if $have_autoconf ; then : ; else
 	DIE=1
 fi
 
-if automake-1.7 --version < /dev/null > /dev/null 2>&1; then
+if automake-1.8 --version < /dev/null > /dev/null 2>&1; then
+  AUTOMAKE=automake-1.8
+  ACLOCAL=aclocal-1.8
+elif automake-1.7 --version < /dev/null > /dev/null 2>&1; then
   AUTOMAKE=automake-1.7
   ACLOCAL=aclocal-1.7
 else
 	echo
 	echo "You must have automake >= 1.7 installed to compile $PROJECT."
-	echo "Get http://ftp.gnu.org/gnu/automake/automake-1.7.3.tar.gz"
+	echo "Get http://ftp.gnu.org/gnu/automake/automake-1.8.4.tar.gz"
 	echo "(or a newer version if it is available)"
 	DIE=1
 fi
@@ -92,22 +95,23 @@ if test -z "$ACLOCAL_FLAGS"; then
 	done
 fi
 
-$ACLOCAL $ACLOCAL_FLAGS
+libtoolize --force || exit 1
+gtkdocize || exit 1
 
-libtoolize --force
-gtkdocize
+$ACLOCAL $ACLOCAL_FLAGS || exit 1
 
-autoconf
+autoconf || exit 1
 
 # optionally feature autoheader
-autoheader
+autoheader || exit 1
+test -f config.h.in && touch config.h.in
 
-$AUTOMAKE -a
+$AUTOMAKE --add-missing || exit 1
 
 cd $ORIGDIR
 
 if test -z "$AUTOGEN_SUBDIR_MODE"; then
-        $srcdir/configure --enable-maintainer-mode --enable-debug --enable-gtk-doc "$@"
+        $srcdir/configure --enable-maintainer-mode --enable-debug --enable-gtk-doc "$@" || exit 1
 
         echo 
         echo "Now type 'make' to compile $PROJECT."
