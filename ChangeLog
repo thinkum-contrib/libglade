@@ -1,5 +1,9 @@
 2002-01-31  James Henstridge  <james@daa.com.au>
 
+	* configure.in (CFLAGS): change to set -std=c9x rather than -ansi.
+	(AC_INIT): increment version number.
+	(PKG_CHECK_MODULES): and of its dependencies.
+
 	* glade/glade-gtk.c (menu_item_set_label): use set_text() instead
 	(menu_item_set_use_stock): only set the stock icon if the value is
 	true, and use gtk_label_set_text() to set the stock label text.
