@@ -1,3 +1,10 @@
+libglade-0.7:  28-September-1999
+	- Fixed a bug where libglade would seg fault when you tried to load
+	  a file that did not exist or was not a valid XML file.  This bug
+	  was found by Michael Meeks.
+	- Fixed segfault when adding normal buttons to a GnomeDialog's action
+	  area.  This fixes bug #2323.
+
 libglade-0.6:  20-September-1999
 	- libglade now honours the has_focus and has_default flags for
 	  widgets.

@@ -51,12 +51,22 @@ glade_tree_get(const char *filename)
 
 		if (stat(filename, &statbuf) >= 0 &&
 		    statbuf.st_mtime > tree->mtime) {
-			glade_widget_tree_unref(tree);
-			tree = glade_widget_tree_parse_file(filename);
-			g_hash_table_insert(tree_hash, orig_key, tree);
+			GladeWidgetTree *newtree =
+				glade_widget_tree_parse_file(filename);
+			if (!newtree)
+				g_warning("Could not parse file");
+			else {
+				glade_widget_tree_unref(tree);
+				tree = newtree;
+				g_hash_table_insert(tree_hash, orig_key, tree);
+			}
 		}
 	} else {
 		tree = glade_widget_tree_parse_file(filename);
+		if (!tree) {
+			g_warning("Could not parse file");
+			return NULL;
+		}
 		g_hash_table_insert(tree_hash, g_strdup(filename), tree);
 	}
 

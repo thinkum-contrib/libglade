@@ -1,3 +1,21 @@
+1999-09-28  James Henstridge  <james@daa.com.au>
+
+	* NEWS: added news items.
+
+	* configure.in: incremented package version number.
+
+	* glade/Makefile.am (LTVERSION): incremented libtool version number.
+
+	* gnome-widgets.glade: extended it by adding a proprety box to the
+	example.
+	
+	* glade/glade-gnome.c (gnomedialog_build_children): fix seg fault when
+	inserting normal buttons into a GnomeDialog's action area.  This
+	fixes bug #2323.
+
+	* glade/glade-tree.c (glade_tree_get): fixed up a seg fault when the
+	XML file could not be parsed or does not exist.
+
 1999-09-20  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-gnome.c (stock_button_new): carried Miguel's button
