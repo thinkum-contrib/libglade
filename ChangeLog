@@ -1,5 +1,12 @@
 2001-10-10  Michael Meeks  <michael@ximian.com>
 
+	* glade/glade-xml.c (glade_flags_from_string):
+	re-write, bug fix.
+
+	* test-libglade.c (run_tests): expand.
+
+2001-10-10  Michael Meeks  <michael@ximian.com>
+
 	* Makefile.am: hook up tests, set dodgy env. var
 	to trigger them.
 

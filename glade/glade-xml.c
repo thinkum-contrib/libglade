@@ -1090,32 +1090,49 @@ guint
 glade_flags_from_string (GType type, const char *string)
 {
     GFlagsClass *fclass;
-    GFlagsValue *fv;
     gchar *endptr;
-    guint ret = 0;
+    guint i, j, ret = 0;
+    char *flagstr;
 
     ret = strtoul(string, &endptr, 0);
     if (endptr != string) /* parsed a number */
 	return ret;
 
-    ret = 0;
     fclass = g_type_class_ref(type);
 
-    while ((endptr = strchr(string, ' '))) {
-	char *str = g_strndup(string, endptr-string);
 
-	fv = g_flags_get_value_by_name(fclass, str);
-	if (!fv) fv = g_flags_get_value_by_nick(fclass, str);
-	if (fv)  ret |= fv->value;
+    flagstr = g_strdup (string);
+    for (ret = i = j = 0; ; i++) {
+	gboolean eos;
 
-	g_free(str);
-	string = endptr;
-	while (string[0] == ' ' || string[0] == '|')
-	    string++;
+	eos = flagstr [i] == '\0';
+	
+	if (eos || flagstr [i] == '|') {
+	    GFlagsValue *fv;
+	    const char  *flag;
+
+	    flag = &flagstr [j];
+
+	    if (!eos) {
+		flagstr [i++] = '\0';
+		j = i;
+	    }
+
+	    fv = g_flags_get_value_by_name (fclass, flag);
+
+	    if (!fv)
+		fv = g_flags_get_value_by_nick (fclass, flag);
+
+	    if (fv)
+		ret |= fv->value;
+
+	    if (eos)
+		break;
+	} else
+	    i++;
     }
-    fv = g_flags_get_value_by_name(fclass, string);
-    if (!fv) fv = g_flags_get_value_by_nick(fclass, string);
-    if (fv)  ret |= fv->value;
+    
+    g_free (flagstr);
 
     g_type_class_unref(fclass);
 

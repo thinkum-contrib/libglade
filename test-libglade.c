@@ -63,7 +63,14 @@ run_tests (void)
 				      "GTK_ANCHOR_NORTH_WEST") ==
 	      GTK_ANCHOR_NORTH_WEST);
 
-/* guint glade_flags_from_string(GType type, const char *string); */
+    g_print ("Testing flags to string\n");
+    g_assert (glade_flags_from_string (GTK_TYPE_ATTACH_OPTIONS,
+				       "expand|fill") ==
+	      (GTK_EXPAND | GTK_FILL));
+
+    g_assert (glade_flags_from_string (GTK_TYPE_ATTACH_OPTIONS,
+				       "fill|expand") ==
+	      (GTK_EXPAND | GTK_FILL));
 
     g_print ("All tests passed\n");
     exit (0);
