@@ -572,12 +572,13 @@ GtkWidget *glade_xml_build_widget(GladeXML *self, GNode *node,
     char *value = xmlNodeGetContent(tmp);
     if (name == NULL) continue;
     switch (name[0]) {
-    case 'A':
-      if (!strcmp(name, "Accelerator"))
-	glade_xml_add_accel(ret, tmp);
-      break;
     case 'a':
       if (!strcmp(name, "accelerator"))
+	glade_xml_add_accel(ret, tmp);
+      break;
+    case 'A': /* The old accelerator tag used 'Accelerator' rather than
+		 'accelerator'. */
+      if (!strcmp(name, "Accelerator"))
 	glade_xml_add_accel(ret, tmp);
       break;
     case 'b':
@@ -617,13 +618,15 @@ GtkWidget *glade_xml_build_widget(GladeXML *self, GNode *node,
     case 's':
       if (!strcmp(name, "sensitive"))
 	gtk_widget_set_sensitive(ret, *value == 'T');
+      else if (!strcmp(name, "signal"))
+	glade_xml_add_signal(self, ret, tmp);
       else if (!strcmp(name, "style_name")) {
 	if (w_style) g_free(w_style);
 	w_style = g_strdup(value);
       } else if (!strcmp(name, "signal"))
 	glade_xml_add_signal(self, ret, tmp);
       break;
-    case 'S':
+    case 'S': /* The old signal tag used 'Signal' rather than 'signal'. */
       if (!strcmp(name, "Signal"))
 	glade_xml_add_signal(self, ret, tmp);
       break;

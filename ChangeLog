@@ -1,3 +1,9 @@
+1999-04-25  Damon Chaplin  <damon@karuna.freeserve.co.uk>
+
+	* glade/glade-xml.c (glade_xml_build_widget): The 'Signal' and
+	'Accelerator' tags were changed to lower case in Glade, to be
+	consistent with	all other widget tags, so I added support for that.
+
 1999-04-24  James Henstridge  <james@daa.com.au>
 
 	* glade/Makefile.am (INCLUDES): fixed up yet anothe mistake in the
