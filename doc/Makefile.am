@@ -20,7 +20,7 @@ SCANOBJ_FILES = $(DOC_MODULE).signals $(DOC_MODULE).hierachy $(DOC_MODULE).args
 content_files = libglade-dtd.sgml
 
 tmpl_sources = \
-  tmpl/glade.sgml \
+  tmpl/glade-init.sgml \
   tmpl/glade-xml.sgml \
   tmpl/glade-parser.sgml \
   tmpl/glade-build.sgml \

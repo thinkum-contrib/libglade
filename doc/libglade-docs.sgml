@@ -1,9 +1,9 @@
-<!doctype book PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
-<!entity libglade-glade-build SYSTEM "sgml/glade-build.sgml">
-<!entity libglade-glade-parser SYSTEM "sgml/glade-parser.sgml">
-<!entity libglade-glade-xml SYSTEM "sgml/glade-xml.sgml">
-<!entity libglade-glade SYSTEM "sgml/glade.sgml">
-<!entity libglade-dtd SYSTEM "libglade-dtd.sgml">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
+<!ENTITY libglade-glade-init SYSTEM "sgml/glade-init.sgml">
+<!ENTITY libglade-glade-xml SYSTEM "sgml/glade-xml.sgml">
+<!ENTITY libglade-glade-parser SYSTEM "sgml/glade-parser.sgml">
+<!ENTITY libglade-glade-build SYSTEM "sgml/glade-build.sgml">
+<!ENTITY libglade-dtd SYSTEM "libglade-dtd.sgml">
 ]>
 
 <book id="libglade">
@@ -337,18 +337,6 @@ menubar = glade_xml_get_widget(xml, "menubar");
     </sect1>
   </chapter>
 
-  <chapter id="libglade-lib">
-    <title>Libglade Library Reference</title>
-
-    <para>This section contains the API reference for libglade.  All
-    the public interfaces are documented here.</para>
-
-    &libglade-glade;
-    &libglade-glade-xml;
-    &libglade-glade-parser;
-    &libglade-glade-build;
-  </chapter>
-
   <chapter id="libglade-dtd">
     <title>Glade 2.0 File Format</title>
 
@@ -504,5 +492,19 @@ menubar = glade_xml_get_widget(xml, "menubar");
     </sect1>
 
   </chapter>
+
+  <part id="libglade-lib">
+    <title>Libglade Library Reference</title>
+
+    <partintro>
+      <para>This section contains the API reference for libglade.  All
+      the public interfaces are documented here.</para>
+    </partintro>
+
+    &libglade-glade-init;
+    &libglade-glade-xml;
+    &libglade-glade-parser;
+    &libglade-glade-build;
+  </part>
 
 </book>

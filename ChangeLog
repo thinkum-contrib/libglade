@@ -1,3 +1,12 @@
+2002-06-01  James Henstridge  <james@daa.com.au>
+
+	* doc/tmpl/glade-init.sgml: copy info from tmpl/glade.sgml.
+
+	* doc/Makefile.am (tmpl_sources): s/glade.sgml/glade-init.sgml/
+
+	* doc/libglade-docs.sgml: fix up docs a bit to make them closer to
+	XML compatible.
+
 2002-05-12  Jacob Berkman  <jacob@ximian.com>
 
 	* autogen.sh: enable gtk-doc from CVS, like gtk does
