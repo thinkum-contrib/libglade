@@ -39,6 +39,10 @@ AM_CONDITIONAL(HAVE_GTK_DOC, $GTKDOC)
 
 dnl gettext stuff ... there is no message catalog for libglade -- libglade
 dnl provides translation for the XML files it reads in.
+GETTEXT_PACKAGE=libglade-2.0
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE")
+
 ALL_LINGUAS=""
 AM_GLIB_GNU_GETTEXT
 

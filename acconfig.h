@@ -5,3 +5,4 @@
 #undef WITH_GNOME
 #undef WITH_BONOBO
 #undef WITH_CANVAS
+#undef GETTEXT_PACKAGE

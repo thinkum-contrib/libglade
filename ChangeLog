@@ -1,3 +1,9 @@
+2001-10-29  jacob berkman  <jacob@ximian.com>
+
+	* configure.in: set GETTEXT_PACKAGE
+
+	* acconfig.h: add GETTEXT_PACKAGE
+
 2001-10-27  jacob berkman  <jacob@ximian.com>
 
 	* configure.in: 
