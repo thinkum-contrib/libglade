@@ -9,8 +9,8 @@
 
 LTVERSION = 0:0:0
 
-INCLUDES = -DG_LOG_DOMAIN=\"libglade\" -I$(top_srcdir) $(XML_CFLAGS) \
-	$(GTK_CFLAGS) -DGLADE_MODULE_DIR=\""$(glademoduledir)"\"
+INCLUDES = -DG_LOG_DOMAIN=\"libglade\" -I$(top_srcdir) $(LIBGLADE_CFLAGS) \
+	-DGLADE_MODULE_DIR=\""$(glademoduledir)"\"
 
 glademoduledir = $(libdir)/libglade/2.0
 
@@ -32,7 +32,7 @@ libglade_2_0_la_SOURCES  = \
   glade-private.h \
   $(gladeinclude_HEADERS)
 
-libglade_2_0_la_LIBADD   = $(GTK_LIBS) $(XML_LIBS)
+libglade_2_0_la_LIBADD   = $(LIBGLADE_LIBS)
 libglade_2_0_la_LDFLAGS  = -version-info $(LTVERSION)
 
 EXTRA_DIST = $(gladeinclude_HEADERS) \

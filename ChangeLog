@@ -1,6 +1,15 @@
+2001-10-27  jacob berkman  <jacob@ximian.com>
+
+	* configure.in: 
+	* glade/Makefile.am: 
+	* doc/Makefile.am: 
+	* Makefile.am: replace GTK_LIBS/CFLAGS and XML_LIBS/CFLAGS with
+	LIBGLADE_LIBS/CFLAGS, and make the libglade check include gtk
+
 2001-10-26  Havoc Pennington  <hp@redhat.com>
 
 	* Makefile.am: remove undefined variables
+	(bin_SCRIPTS): 
 
 	* glade/Makefile.am (INCLUDES): remove undefined variables
 

@@ -12,8 +12,8 @@ HTML_DIR=$(datadir)/gtk-doc/html
 
 TARGET_DIR=$(HTML_DIR)/$(DOC_MODULE)
 
-CFLAGS = $(GTK_CFLAGS) $(XML_CFLAGS) -I$(top_srcdir)
-LDFLAGS = ../glade/libglade-2.0.la $(GTK_LIBS) $(XML_LIBS)
+CFLAGS = -I$(top_srcdir) $(LIBGLADE_CFLAGS)
+LDFLAGS = ../glade/libglade-2.0.la $(LIBGLADE_LIBS)
 
 SCANOBJ_FILES = $(DOC_MODULE).signals $(DOC_MODULE).hierachy $(DOC_MODULE).args
 
