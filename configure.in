@@ -74,7 +74,7 @@ AM_CONDITIONAL(HAVE_GTK_DOC, $GTKDOC)
 dnl gettext stuff ... there is no message catalog for libglade -- libglade
 dnl provides translation for the XML files it reads in.
 ALL_LINGUAS=""
-AM_GNOME2_GETTEXT
+AM_GLIB_GNU_GETTEXT
 BUILD_INCLUDED_LIBINTL=no
 AC_SUBST(BUILD_INCLUDED_LIBINTL)
 
@@ -91,14 +91,13 @@ AH_BOTTOM(
 
 #endif])
 
-AC_CONFIG_FILES([Makefile
+AC_OUTPUT([
+Makefile
 libglade.spec
-intl/Makefile
 po/Makefile.in
 glade/Makefile
 doc/Makefile
 libglade-2.0.pc])
-AC_OUTPUT
 
 echo
 echo "This is the development branch of libglade"

@@ -34,6 +34,11 @@ void glade_init(void);
 void glade_require(const gchar *library);
 void glade_provide(const gchar *library);
 
+/* libglade now loads modules based on information
+   in the glade file - these are deprecated */
+#define glade_gnome_init  glade_init
+#define glade_bonobo_init glade_init
+
 G_END_DECLS
 
 #endif

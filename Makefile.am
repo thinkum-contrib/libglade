@@ -1,4 +1,4 @@
-SUBDIRS = intl po glade doc
+SUBDIRS = po glade doc
 
 INCLUDES = $(GTK_CFLAGS) $(XML_CFLAGS)
 

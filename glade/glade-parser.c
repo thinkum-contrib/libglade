@@ -824,8 +824,6 @@ glade_parser_end_element(GladeParseState *state, const xmlChar *name)
 static void
 glade_parser_characters(GladeParseState *state, const xmlChar *chars, int len)
 {
-    int i;
-
     switch (state->state) {
     case PARSER_WIDGET_PROPERTY:
     case PARSER_WIDGET_ATK_PROPERTY:

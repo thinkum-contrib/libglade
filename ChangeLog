@@ -1,3 +1,13 @@
+2001-09-11  Michael Meeks  <michael@ximian.com>
+
+	* glade/glade-init.h: add glade_gnome_init, glade_bonobo_init
+	as compat defines for glade_init.
+
+	* configure.in: use the glib gettext setup, use AC_OUTPUT so
+	we work nicely with older automakes.
+
+	* Makefile.am: ditto.
+
 2001-09-06  James Henstridge  <james@daa.com.au>
 
 	* libglade-convert (fixup_widget): fix small bug in combo fixup.
