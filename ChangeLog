@@ -1,3 +1,8 @@
+2000-03-08  James Henstridge  <james@daa.com.au>
+
+	* glade/glade-gtk.c (progressbar_new): added support for progress
+	bar attributes.
+
 2000-01-22  James Henstridge  <james@daa.com.au>
 
 	* glade/glade-gtk.c (paned_build_children): recognise the resize

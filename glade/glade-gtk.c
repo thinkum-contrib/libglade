@@ -319,7 +319,8 @@ paned_build_children (GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info,
 	gtk_paned_pack2 (GTK_PANED(w), child, resize, shrink);
 }
 
-static void note_change_page(GtkWidget *child, GtkNotebook *notebook)
+static void
+note_change_page(GtkWidget *child, GtkNotebook *notebook)
 {
 	gint page = gtk_notebook_page_num(notebook, child);
 
@@ -1609,7 +1610,45 @@ toolbar_new(GladeXML *xml, GladeWidgetInfo *info)
 static GtkWidget *
 progressbar_new(GladeXML *xml, GladeWidgetInfo *info)
 {
-	return gtk_progress_bar_new();
+	GtkWidget *ret = gtk_progress_bar_new();
+	GList *tmp;
+	gfloat value = 0, lower = 0, upper = 100;
+	gfloat xalign = 0.5, yalign = 0.5;
+
+	for (tmp = info->attributes; tmp; tmp = tmp->next) {
+		GladeAttribute *attr = tmp->data;
+
+		if (!strcmp(attr->name, "value"))
+			value = g_strtod(attr->value, NULL);
+		else if (!strcmp(attr->name, "lower"))
+			lower = g_strtod(attr->value, NULL);
+		else if (!strcmp(attr->name, "upper"))
+			upper = g_strtod(attr->value, NULL);
+		else if (!strcmp(attr->name, "activity_mode"))
+			gtk_progress_set_activity_mode(GTK_PROGRESS(ret),
+						       attr->value[0]=='T');
+		else if (!strcmp(attr->name, "bar_style"))
+			gtk_progress_bar_set_bar_style(GTK_PROGRESS_BAR(ret),
+			    glade_enum_from_string(GTK_TYPE_PROGRESS_BAR_STYLE,
+						   attr->value));
+		else if (!strcmp(attr->name, "orientation"))
+			gtk_progress_bar_set_orientation(GTK_PROGRESS_BAR(ret),
+			    glade_enum_from_string(
+			      GTK_TYPE_PROGRESS_BAR_ORIENTATION, attr->value));
+		else if (!strcmp(attr->name, "show_text"))
+			gtk_progress_set_show_text(GTK_PROGRESS(ret),
+						   attr->value[0] == 'T');
+		else if (!strcmp(attr->name, "text_xalign"))
+			xalign = g_strtod(attr->value, NULL);
+		else if (!strcmp(attr->name, "text_yalign"))
+			yalign = g_strtod(attr->value, NULL);
+		else if (!strcmp(attr->name, "format"))
+			gtk_progress_set_format_string(GTK_PROGRESS(ret),
+						       attr->value);
+	}
+	gtk_progress_configure(GTK_PROGRESS(ret), value, lower, upper);
+	gtk_progress_set_text_alignment(GTK_PROGRESS(ret), xalign, yalign);
+	return ret;
 }
 
 static GtkWidget *
