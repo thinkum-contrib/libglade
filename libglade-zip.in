@@ -19,4 +19,6 @@ bin/libglade-convert
 lib/libglade-2.0.dll.a
 lib/pkgconfig/libglade-2.0.pc
 include/libglade-2.0
+share/xml/libglade
+share/gtk-doc/html/libglade
 EOF
