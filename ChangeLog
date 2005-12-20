@@ -1,3 +1,13 @@
+2005-12-20  Tor Lillqvist  <tml@novell.com>
+
+	* glade/glade-parser.c (glade_parser_parse_file): On Win32,
+	convert the file name from the GLib file name encoding (UTF-8) to
+	the system codepage encoding that libxml uses. (Alternatively, we
+	could use GMappedFile and parse the xml from memory, but this
+	brings up the (unlikely) possibility that two threads are reading
+	the same glade file at the same time, and we would thus have to
+	use locking, drats.)
+
 2005-08-28  Tor Lillqvist  <tml@novell.com>
 
 	* libglade-zip.in: Include also documentation in the developer

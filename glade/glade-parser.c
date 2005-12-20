@@ -1194,7 +1194,11 @@ glade_interface_destroy(GladeInterface *interface)
 GladeInterface *
 glade_parser_parse_file(const gchar *file, const gchar *domain)
 {
+#ifdef G_OS_WIN32
+    gchar *cp_file;
+#endif
     GladeParseState state = { 0 };
+    int rc;
 
     if (!g_file_test(file, G_FILE_TEST_IS_REGULAR)) {
 	g_warning("could not find glade file '%s'", file);
@@ -1207,7 +1211,22 @@ glade_parser_parse_file(const gchar *file, const gchar *domain)
     else
 	state.domain = textdomain(NULL);
 
-    if (xmlSAXUserParseFile(&glade_parser, &state, file) < 0) {
+#ifdef G_OS_WIN32
+    cp_file = g_win32_locale_filename_from_utf8(file);
+
+    if (cp_file == NULL) {
+	g_warning("could not get system codepage name of '%s'", file);
+	return NULL;
+    }
+
+    rc = xmlSAXUserParseFile(&glade_parser, &state, cp_file);
+
+    g_free (cp_file);
+#else
+    rc = xmlSAXUserParseFile(&glade_parser, &state, file);
+#endif
+
+    if (rc < 0) {
 	g_warning("document not well formed");
 	if (state.interface)
 	    glade_interface_destroy (state.interface);
