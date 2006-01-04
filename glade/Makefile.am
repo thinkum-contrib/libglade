@@ -30,6 +30,7 @@ INCLUDES = \
   -I$(top_srcdir) \
   $(LIBGLADE_CFLAGS) \
   -DGLADE_LIBDIR=\""$(libdir)"\" \
+  -DGLADE_PREFIX=\""$(prefix)"\" \
   -DG_DISABLE_DEPRECATED \
   -DGDK_DISABLE_DEPRECATED \
   -DGDK_PIXBUF_DISABLE_DEPRECATED \

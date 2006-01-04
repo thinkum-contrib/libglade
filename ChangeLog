@@ -1,3 +1,12 @@
+2006-01-04  Tor Lillqvist  <tml@novell.com>
+
+	* glade/glade-init.c (DllMain, replace_prefix, get_libdir): Add
+	the normal mechanism for run-time lookup of installation prefix
+	and libdir on Win32.
+
+	* glade/Makefile.am: Pass also $prefix as GLADE_PREFIX to the
+	compilation for the benefit of the above.
+
 2005-12-20  Tor Lillqvist  <tml@novell.com>
 
 	* glade/glade-parser.c (glade_parser_parse_file): On Win32,
