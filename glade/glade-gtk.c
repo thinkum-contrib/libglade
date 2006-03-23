@@ -421,7 +421,11 @@ static void
 entry_set_invisible_char (GladeXML *xml, GtkWidget *w,
 			  const gchar *name, const gchar *value)
 {
-    gtk_entry_set_invisible_char (GTK_ENTRY (w), value [0]);
+    gunichar c;
+
+    c = g_utf8_get_char_validated (value, strlen (value));
+    if (c > 0)
+        gtk_entry_set_invisible_char (GTK_ENTRY (w), c);
 }
 
 static void
