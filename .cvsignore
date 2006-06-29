@@ -26,3 +26,4 @@ test-libglade
 .deps
 *.pc
 *.tar.gz
+libglade-zip
