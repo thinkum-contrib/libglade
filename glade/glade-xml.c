@@ -121,8 +121,7 @@ glade_xml_init (GladeXML *self)
     priv->tree = NULL;
     priv->tooltips = gtk_tooltips_new();
     gtk_tooltips_enable(priv->tooltips);
-    g_object_ref(priv->tooltips);
-    gtk_object_sink(GTK_OBJECT(priv->tooltips));
+    g_object_ref_sink(priv->tooltips);
     priv->name_hash = g_hash_table_new(g_str_hash, g_str_equal);
     priv->signals = g_hash_table_new(g_str_hash, g_str_equal);
     priv->toplevel = NULL;
@@ -1517,7 +1516,8 @@ glade_xml_set_value_from_string (GladeXML *xml,
 	    adj->page_size = g_strtod(ptr, &ptr);
 
 	    g_value_set_object(value, adj);
-	    gtk_object_sink(GTK_OBJECT(adj));
+	    g_object_ref_sink(adj);
+	    g_object_unref(adj);
 	} else if (G_VALUE_HOLDS(value, GDK_TYPE_PIXBUF)) {
 	    gchar *filename;
 	    GError *error = NULL;

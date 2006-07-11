@@ -1,3 +1,11 @@
+2006-07-11  Kjartan Maraas  <kmaraas@gnome.org>
+
+	* glade/glade-xml.c: (glade_xml_init),
+	(glade_xml_set_value_from_string): Fix warnings from GCC:
+	glade-xml.c: In function 'glade_xml_set_value_from_string':
+	glade-xml.c:1519: warning: implicit declaration of function 'gtk_object_sink'
+	by using non-deprecated API instead. Closes bug #341857.
+
 2006-03-23  Matthias Clasen  <mclasen@redhat.com>
 
 	* glade/glade-gtk.c (entry_set_invisible_char): Correctly handle
