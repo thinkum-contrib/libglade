@@ -1,3 +1,14 @@
+2006-10-19  Kjartan Maraas  <kmaraas@gnome.org>
+
+	* NEWS: Update
+	* configure.in: Bump to 2.6.0
+	* doc/tmpl/glade-build.sgml:
+	* doc/tmpl/glade-init.sgml:
+	* doc/tmpl/glade-parser.sgml:
+	* doc/tmpl/glade-xml.sgml:
+	I forgot to commit this when making the 2.6.0 release a while ago.
+	Sorry all :-)
+
 2006-07-11  Kjartan Maraas  <kmaraas@gnome.org>
 
 	* glade/glade-xml.c: (glade_xml_init),
