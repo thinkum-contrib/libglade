@@ -1,3 +1,7 @@
+2006-11-14  Kjartan Maraas  <kmaraas@gnome.org>
+
+	* autogen.sh: Allow to build with autoconf 2.6x too.
+
 2006-10-19  Kjartan Maraas  <kmaraas@gnome.org>
 
 	* NEWS: Update
