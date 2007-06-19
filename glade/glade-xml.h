@@ -66,6 +66,10 @@ gboolean   glade_xml_construct           (GladeXML *self, const char *fname,
 					  const char *root,
 					  const char *domain);
 
+gboolean   glade_xml_construct_from_buffer (GladeXML *self, const char *buffer, int size,
+					  const char *root,
+					  const char *domain);
+
 void       glade_xml_signal_connect      (GladeXML *self,
 					  const char *handlername,
 					  GCallback func);

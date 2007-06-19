@@ -194,6 +194,45 @@ glade_xml_construct (GladeXML *self, const char *fname, const char *root,
 }
 
 /**
+ * glade_xml_construct_from_buffer:
+ * @self: the GladeXML object
+ * @buffer: the memory buffer containing the XML document.
+ * @size: the size of the buffer.
+ * @root: the root widget node (or %NULL for none)
+ * @domain: the translation domain (or %NULL for the default)
+ *
+ * In order to use this method you must already have a GladeXML
+ * object.  This two step creation process is typically used only 
+ * by language bindings, such as gtk--, while constructing GladeXML 
+ * objects from compiled-in buffers, at runtime.
+ *
+ * Returns: TRUE if the construction succeeded.
+ */
+gboolean   
+glade_xml_construct_from_buffer (GladeXML *self, const char *buffer, int size,
+					  const char *root,
+					  const char *domain)
+{
+    GladeInterface *iface;
+
+    g_return_val_if_fail(self != NULL, FALSE);
+    g_return_val_if_fail(self->priv->tree == NULL, FALSE);
+
+    iface = glade_parser_parse_buffer(buffer, size, domain);
+
+    if (!iface)
+	return FALSE;
+
+    self->priv->tree = iface;
+    if (self->filename)
+	g_free(self->filename);
+    self->filename = NULL;
+    glade_xml_build_interface(self, iface, root);
+
+    return TRUE;
+}
+
+/**
  * glade_xml_new_from_buffer:
  * @buffer: the memory buffer containing the XML document.
  * @size: the size of the buffer.
@@ -212,16 +251,14 @@ GladeXML *
 glade_xml_new_from_buffer(const char *buffer, int size, const char *root,
 			  const char *domain)
 {
-    GladeXML *self;
-    GladeInterface *iface = glade_parser_parse_buffer(buffer, size, domain);
-
-    if (!iface)
-	return NULL;
-    self = g_object_new(GLADE_TYPE_XML, NULL);
-
-    self->priv->tree = iface;
-    self->filename = NULL;
-    glade_xml_build_interface(self, iface, root);
+    GladeXML *self = g_object_new(GLADE_TYPE_XML, NULL);
+    self->filename = NULL; /* Not required if g_object_new guarantees filename is NULL.  I do not know if it does. */
+    if( !glade_xml_construct_from_buffer(self, buffer, size, root, domain) )
+    {
+       /* Clean up, the parser was unable to load the object */
+       g_free(self);
+       return NULL;
+    }
 
     return self;
 }
