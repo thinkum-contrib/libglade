@@ -1,3 +1,7 @@
+libglade-2.6.1: 19-July-2008
+	- Added glade_xml_construct_from_buffer(), 
+	for language bindings. (Douglas C. MacKenzie) 
+
 libglade-2.6.0: 12-July-2006
 	- Win32 portability fixes (Tor)
 	- Compiler warning fixes (Kjartan)
