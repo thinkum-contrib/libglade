@@ -1,3 +1,9 @@
+2007-07-07  Christian Persch  <chpe@gnome.org>
+
+	* autogen.sh: Use gnome-autogen. Bug #423573.
+        * Makefile.am:
+	* configure.in: Use automake 1.9.
+
 libglade-2.6.1:
 
 2007-04-16  Murray Cumming  <murrayc@murrayc.com>

@@ -4,119 +4,18 @@
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 
-ORIGDIR=`pwd`
-cd $srcdir
-PROJECT=Libglade
-TEST_TYPE=-d
-FILE=glade
+PKG_NAME="Glade"
 
-DIE=0
-
-have_libtool=false
-if libtool --version < /dev/null > /dev/null 2>&1 ; then
-	libtool_version=`libtoolize --version | sed 's/^[^0-9]*\([0-9.][0-9.]*\).*/\1/'`
-	case $libtool_version in
-	    1.[456789]*)
-		have_libtool=true
-		;;
-	esac
-fi
-if $have_libtool ; then : ; else
-	echo
-	echo "You must have libtool 1.4 installed to compile $PROJECT."
-	echo "Install the appropriate package for your distribution,"
-	echo "or get the source tarball at http://ftp.gnu.org/gnu/libtool/"
-	DIE=1
-fi
-
-have_autoconf=false
-if autoconf --version < /dev/null > /dev/null 2>&1 ; then
-	autoconf_version=`autoconf --version | sed 's/^[^0-9]*\([0-9.][0-9.]*\).*/\1/'`
-	case $autoconf_version in
-	    2.5*|2.6*)
-		have_autoconf=true
-		;;
-	esac
-fi
-if $have_autoconf ; then : ; else
-	echo
-	echo "You must have autoconf installed to compile $PROJECT."
-	echo "libtool the appropriate package for your distribution,"
-	echo "or get the source tarball at http://ftp.gnu.org/gnu/autoconf/"
-	DIE=1
-fi
-
-if automake-1.10 --version < /dev/null > /dev/null 2>&1; then
-  AUTOMAKE=automake-1.10
-  ACLOCAL=aclocal-1.10
-
-elif automake-1.9 --version < /dev/null > /dev/null 2>&1; then
-  AUTOMAKE=automake-1.9
-  ACLOCAL=aclocal-1.9
-elif automake-1.8 --version < /dev/null > /dev/null 2>&1; then
-  AUTOMAKE=automake-1.8
-  ACLOCAL=aclocal-1.8
-else
-	echo
-	echo "You must have automake >= 1.8 installed to compile $PROJECT."
-	echo "Get http://ftp.gnu.org/gnu/automake/automake-1.9.3.tar.bz2"
-	echo "(or a newer version if it is available)"
-	DIE=1
-fi
-
-if test "$DIE" -eq 1; then
-	exit 1
-fi
-
-test $TEST_TYPE $FILE || {
-	echo "You must run this script in the top-level $PROJECT directory"
-	exit 1
+(test -f $srcdir/test-libglade.c) || {
+    echo -n "**Error**: Directory "\`$srcdir\'" does not look like the"
+    echo " top-level $PKG_NAME directory"
+    exit 1
 }
 
-if test -z "$AUTOGEN_SUBDIR_MODE"; then
-        if test -z "$*"; then
-                echo "I am going to run ./configure with no arguments - if you wish "
-                echo "to pass any to it, please specify them on the $0 command line."
-        fi
-fi
+which gnome-autogen.sh || {
+    echo "You need to install gnome-common from GNOME SVN and make"
+    echo "sure the gnome-autogen.sh script is in your \$PATH."
+    exit 1
+}
 
-if test -z "$ACLOCAL_FLAGS"; then
-
-	acdir=`$ACLOCAL --print-ac-dir`
-        m4list="glib-2.0.m4 glib-gettext.m4 gtk-2.0.m4"
-
-	for file in $m4list
-	do
-		if [ ! -f "$acdir/$file" ]; then
-			echo "WARNING: aclocal's directory is $acdir, but..."
-			echo "         no file $acdir/$file"
-			echo "         You may see fatal macro warnings below."
-			echo "         If these files are installed in /some/dir, set the ACLOCAL_FLAGS "
-			echo "         environment variable to \"-I /some/dir\", or install"
-			echo "         $acdir/$file."
-			echo ""
-		fi
-	done
-fi
-
-libtoolize --force || exit 1
-gtkdocize || exit 1
-
-$ACLOCAL -I m4 $ACLOCAL_FLAGS || exit 1
-
-autoconf || exit 1
-
-# optionally feature autoheader
-autoheader || exit 1
-test -f config.h.in && touch config.h.in
-
-$AUTOMAKE --add-missing --force || exit 1
-
-cd $ORIGDIR
-
-if test -z "$AUTOGEN_SUBDIR_MODE"; then
-        $srcdir/configure --enable-maintainer-mode --enable-debug --enable-gtk-doc "$@" || exit 1
-
-        echo 
-        echo "Now type 'make' to compile $PROJECT."
-fi
+REQUIRED_AUTOMAKE_VERSION=1.9 USE_GNOME2_MACROS=1 . gnome-autogen.sh

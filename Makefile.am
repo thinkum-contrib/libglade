@@ -1,5 +1,7 @@
 SUBDIRS = glade doc tests
 
+ACLOCAL_AMFLAGS = -I m4
+
 INCLUDES = $(LIBGLADE_CFLAGS)
 
 # build documentation when doing a distcheck.
