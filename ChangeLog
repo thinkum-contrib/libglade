@@ -1,3 +1,8 @@
+2007-07-11  Christian Persch  <chpe@gnome.org>
+
+	* glade/Makefile.am: Remove GTK_DISABLE_DEPRECATED. Fixes the build
+	with gtk+ trunk; bug #455566.
+
 2007-07-07  Christian Persch  <chpe@gnome.org>
 
 	* autogen.sh: Use gnome-autogen. Bug #423573.
