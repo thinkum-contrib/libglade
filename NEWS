@@ -1,4 +1,7 @@
-libglade-2.6.1: 19-July-2008
+libglade-2.6.2:
+	* Fix building with gtk+ 2.11.
+
+libglade-2.6.1: 19-July-2007
 	- Added glade_xml_construct_from_buffer(), 
 	for language bindings. (Douglas C. MacKenzie) 
 

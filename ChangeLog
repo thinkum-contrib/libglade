@@ -1,3 +1,10 @@
+libglade-2.6.2:
+
+2007-07-31  Christian Persch  <chpe@gnome.org>
+
+	* NEWS:
+	* configure.in: Updated for 2.6.2.
+
 2007-07-11  Christian Persch  <chpe@gnome.org>
 
 	* glade/Makefile.am: Remove GTK_DISABLE_DEPRECATED. Fixes the build
@@ -1976,7 +1983,7 @@ Wed Oct 17 02:15:10 2001  Jonathan Blandford  <jrb@redhat.com>
 	* configure.in: add gnome-db tests and update version number.
 
 	* glade/glade-gnomedb.c: new file based on the gnomedb support
-	contributed by David Marín Carreño <davefx@bigfoot.com>.
+	contributed by David Marï¿½n Carreï¿½o <davefx@bigfoot.com>.
 
 2000-11-29  James Henstridge  <james@daa.com.au>
 
