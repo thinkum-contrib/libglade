@@ -1,3 +1,8 @@
+2007-11-26  Armin Burgmeier  <armin@openismus.com>
+
+	* glade/glade.def: Add glade_xml_construct_from_buffer to the list of
+	exported symbols, otherwise it is not available on Windows.
+
 libglade-2.6.2:
 
 2007-07-31  Christian Persch  <chpe@gnome.org>
