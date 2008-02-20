@@ -256,7 +256,7 @@ glade_xml_new_from_buffer(const char *buffer, int size, const char *root,
     if( !glade_xml_construct_from_buffer(self, buffer, size, root, domain) )
     {
        /* Clean up, the parser was unable to load the object */
-       g_free(self);
+       g_object_unref(self);
        return NULL;
     }
 

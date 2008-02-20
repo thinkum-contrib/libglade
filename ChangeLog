@@ -1,3 +1,8 @@
+2008-02-19  Matthias Clasen  <mclasen@redhat.com>
+
+	* glade/glade-xml.c (glade_xml_new_from_buffer): Don't call 
+	g_free on a GObject.  Pointed out by Peter Clifton.
+
 2007-11-26  Armin Burgmeier  <armin@openismus.com>
 
 	* glade/glade.def: Add glade_xml_construct_from_buffer to the list of
