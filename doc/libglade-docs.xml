@@ -4,7 +4,7 @@
 
 <book id="libglade" xmlns:xi="http://www.w3.org/2003/XInclude">
   <bookinfo>
-    <title>Libglade Reference Manual</title>
+    <title>Libglade - Graphical Interface Description Loader API</title>
     <releaseinfo>for libglade <xi:include href="version.xml"/></releaseinfo>
     <authorgroup>
       <author>
@@ -45,6 +45,11 @@
     </legalnotice>
 
     <abstract>
+      <para>libglade is a library that provides interfaces for loading
+      graphical interfaces described in glade xml files and for accessing
+      the widgets built in the loading process, .glade files are generated
+      by the Glade application.</para>
+      
       <para>This manual documents the interfaces of the libglade
       library and has some short notes to help get you up to speed
       with using the library.</para>

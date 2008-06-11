@@ -1,3 +1,8 @@
+2008-06-11  Diego Gonzalez  <diego@pemas.net>
+
+	* doc/libglade-docs.xml: Use a more descripve title for the book and
+	improve the abstract by describing the purpuse of this library.
+
 2008-06-11  Murray Cumming  <murrayc@murrayc.com>
 
 	* configure.in: Increase the required glib version from 2.5 to 2.10, 
