@@ -1,3 +1,9 @@
+2008-06-11  Murray Cumming  <murrayc@murrayc.com>
+
+	* configure.in: Increase the required glib version from 2.5 to 2.10, 
+	because we use g_object_ref_sink() since 2006-07-11.
+	Fixes bug #349611 (Yang Hong).
+
 2008-02-19  Matthias Clasen  <mclasen@redhat.com>
 
 	* glade/glade-xml.c (glade_xml_new_from_buffer): Don't call 
