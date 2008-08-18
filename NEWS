@@ -1,3 +1,19 @@
+libglade-2.6.3:
+
+	* glade_xml_new_from_buffer(): Do not call 
+	g_free() on a GObject.  (Matthias Clasen, Peter Clifton)
+	* Build: Check for glib >= 2.10 in configure.
+	(Murray Cumming)
+	* Documentation:
+	- Actually show glade_xml_construct_from_buffer().
+	(Murray Cumming)
+	- Improve the book title and abstract.
+	(Diego Gonzalez)
+	- Mention gmodule-export-2.0 for autoconnecting. Bug #446175.
+	(Murray Cumming)
+	* Windows: Export glade_xml_construct_from_buffer().
+	(Armin Burgmeier)
+
 libglade-2.6.2:
 	* Fix building with gtk+ 2.11.
 
