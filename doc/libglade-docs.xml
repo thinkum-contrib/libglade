@@ -144,10 +144,8 @@ int main(int argc, char *argv[]) {
 	flags, and libtool will convert it to the correct
 	format.</para>
 
-	<para>Many people did not see this problem on GNU/Linux with
-	GTK+ 1.2, because the <command>gtk-config</command> script
-	adds the correct flag on that platform.  Such programs would
-	sometimes break when run on alternative platforms.</para>
+	<para>The easiest way to get the correct extra flags is to check 
+	for gmodule-export-2.0 with pkg-config.</para> 
       </note>
 
       <para>To compile the program, we would use the following:</para>

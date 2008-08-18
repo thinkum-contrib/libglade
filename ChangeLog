@@ -1,3 +1,11 @@
+2008-06-11  Murray Cumming  <murrayc@murrayc.com>
+
+	* doc/libglade-docs.xml: Mention the gmodule-export-2.0 pkg-config 
+	check for autoconnecting signals. 
+	* glade/glade-xml.c: (glade_xml_signal_autoconnect): Menton it in the 
+	reference documentation too.
+	Fixes bug #446175.
+
 2008-06-11  Diego Gonzalez  <diego@pemas.net>
 
 	* doc/libglade-docs.xml: Use a more descripve title for the book and

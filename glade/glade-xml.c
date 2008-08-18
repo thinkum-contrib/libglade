@@ -350,6 +350,10 @@ autoconnect_foreach(const char *signal_handler, GList *signals,
  * the signal handler names given in the interface description with
  * symbols in the application and connects the signals.
  * 
+ * You should add gmodule-export-2.0 to your pkg-config checks to ensure 
+ * that your application's executable exports the signal handlers. This is not 
+ * necessary if the signal handlers are in a shared library.
+ *
  * Note that this function will not work correctly if gmodule is not
  * supported on the platform.
  */
