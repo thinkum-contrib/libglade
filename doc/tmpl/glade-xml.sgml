@@ -79,6 +79,19 @@ automatically connect as many handlers up as it can that way.
 @Returns: 
 
 
+<!-- ##### FUNCTION glade_xml_construct_from_buffer ##### -->
+<para>
+
+</para>
+
+@self: 
+@buffer: 
+@size: 
+@root: 
+@domain: 
+@Returns: 
+
+
 <!-- ##### FUNCTION glade_xml_signal_connect ##### -->
 <para>
 

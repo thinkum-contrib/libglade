@@ -165,7 +165,7 @@ glade_xml_new(const char *fname, const char *root, const char *domain)
  * @root: the root widget node (or %NULL for none)
  * @domain: the translation domain (or %NULL for the default)
  *
- * This routine can be used by bindings (such as gtk--) to help construct
+ * This routine can be used by bindings (such as gtkmm) to help construct
  * a GladeXML object, if it is needed.
  *
  * Returns: TRUE if the construction succeeded.
@@ -203,7 +203,7 @@ glade_xml_construct (GladeXML *self, const char *fname, const char *root,
  *
  * In order to use this method you must already have a GladeXML
  * object.  This two step creation process is typically used only 
- * by language bindings, such as gtk--, while constructing GladeXML 
+ * by language bindings, such as gtkmm, while constructing GladeXML 
  * objects from compiled-in buffers, at runtime.
  *
  * Returns: TRUE if the construction succeeded.

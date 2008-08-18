@@ -1,3 +1,10 @@
+2008-08-18  Murray Cumming  <murrayc@murrayc.com>
+
+	* doc/libglade-sections.txt:
+	* doc/tmpl/glade-xml.sgml: Mention glade_xml_construct_from_buffer() in 
+	these files, to make it actually appear in the documention.
+	* glade/glade-xml.c: Do not call gtkmm gtk--.
+
 2008-06-11  Murray Cumming  <murrayc@murrayc.com>
 
 	* doc/libglade-docs.xml: Mention the gmodule-export-2.0 pkg-config 
@@ -9,7 +16,7 @@
 2008-06-11  Diego Gonzalez  <diego@pemas.net>
 
 	* doc/libglade-docs.xml: Use a more descripve title for the book and
-	improve the abstract by describing the purpuse of this library.
+	improve the abstract by describing the purpose of this library.
 
 2008-06-11  Murray Cumming  <murrayc@murrayc.com>
 

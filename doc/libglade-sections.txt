@@ -18,6 +18,7 @@ GladeXMLClass
 glade_xml_new
 glade_xml_new_from_buffer
 glade_xml_construct
+glade_xml_construct_from_buffer
 <SUBSECTION Signal Routines>
 glade_xml_signal_connect
 glade_xml_signal_connect_data
