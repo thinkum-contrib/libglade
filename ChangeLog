@@ -1,3 +1,10 @@
+2008-10-06  Felix Riemann  <friemann@svn.gnome.org>
+
+	* glade/glade-build.h:
+	* glade/glade-xml.c:
+	* glade/glade-xml.h:
+	Fix GTK+ single includes. Fixes bug #555149.
+
 libglade-2.6.3:
 
 2008-08-18  Murray Cumming  <murrayc@murrayc.com>

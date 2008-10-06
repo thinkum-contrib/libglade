@@ -23,8 +23,7 @@
 #define GLADE_XML_H
 
 #include <glib.h>
-#include <gtk/gtkwidget.h>
-#include <gtk/gtktooltips.h>
+#include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 

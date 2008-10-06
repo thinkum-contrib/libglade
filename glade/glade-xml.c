@@ -30,11 +30,7 @@
 #include <glade/glade-build.h>
 #include <glade/glade-private.h>
 #include <gmodule.h>
-#include <gtk/gtkobject.h>
-#include <gtk/gtksignal.h>
-#include <gtk/gtkwidget.h>
-#include <gtk/gtkcontainer.h>
-#include <gtk/gtklabel.h>
+#include <gtk/gtk.h>
 #include <atk/atk.h>
 
 #ifdef ENABLE_NLS
