@@ -1,5 +1,13 @@
 2008-10-06  Felix Riemann  <friemann@svn.gnome.org>
 
+	* glade/glade-xml.c: (glade_xml_class_init), (glade_xml_init),
+	(glade_xml_finalize):
+	Use G_DEFINE_TYPE instead of registering the type by hand.
+	Also allocate the private data together with the "public" data.
+	Fixes bug #555147.
+
+2008-10-06  Felix Riemann  <friemann@svn.gnome.org>
+
 	* glade/glade-build.h:
 	* glade/glade-xml.c:
 	* glade/glade-xml.h:

@@ -44,11 +44,10 @@ static GQuark       glade_xml_name_id      = 0;
 static const gchar *glade_xml_tooltips_key = "GladeXML::tooltips";
 static GQuark       glade_xml_tooltips_id  = 0;
 
+G_DEFINE_TYPE (GladeXML, glade_xml, G_TYPE_OBJECT)
+#define GLADE_XML_GET_PRIVATE(object) \
+	(G_TYPE_INSTANCE_GET_PRIVATE ((object), GLADE_TYPE_XML, GladeXMLPrivate))
 
-static void glade_xml_init(GladeXML *xml);
-static void glade_xml_class_init(GladeXMLClass *class);
-
-static GObjectClass *parent_class;
 static void glade_xml_finalize(GObject *object);
 
 static void glade_xml_build_interface(GladeXML *xml, GladeInterface *iface,
@@ -56,44 +55,12 @@ static void glade_xml_build_interface(GladeXML *xml, GladeInterface *iface,
 
 static GType glade_xml_real_lookup_type(GladeXML*self, const char *gtypename);
 
-/**
- * glade_xml_get_type:
- *
- * Creates the typecode for the GladeXML object type.
- *
- * Returns: the typecode for the GladeXML object type.
- */
-GType
-glade_xml_get_type(void)
-{
-    static GType xml_type = 0;
-
-    if (!xml_type) {
-	static const GTypeInfo xml_info = {
-	    sizeof(GladeXMLClass),
-	    (GBaseInitFunc) NULL,
-	    (GBaseFinalizeFunc) NULL,
-	    (GClassInitFunc) glade_xml_class_init,
-	    (GClassFinalizeFunc) NULL,
-	    NULL,
-
-	    sizeof (GladeXML),
-	    0, /* n_preallocs */
-	    (GInstanceInitFunc) glade_xml_init,
-	};
-
-	xml_type = g_type_register_static(G_TYPE_OBJECT, "GladeXML",
-					  &xml_info, 0);
-    }
-    return xml_type;
-}
-
 static void
 glade_xml_class_init (GladeXMLClass *class)
 {
-    parent_class = g_type_class_peek_parent (class);
-
     G_OBJECT_CLASS(class)->finalize = glade_xml_finalize;
+
+    g_type_class_add_private (G_OBJECT_CLASS (class), sizeof (GladeXMLPrivate));
 
     class->lookup_type = glade_xml_real_lookup_type;
 
@@ -110,7 +77,7 @@ glade_xml_init (GladeXML *self)
 {
     GladeXMLPrivate *priv;
 	
-    self->priv = priv = g_new0 (GladeXMLPrivate, 1);
+    self->priv = priv = GLADE_XML_GET_PRIVATE (self);
 
     self->filename = NULL;
 
@@ -961,11 +928,10 @@ glade_xml_finalize(GObject *object)
 	if (priv->tree)
 	    glade_interface_destroy(priv->tree);
 
-	g_free (self->priv);
     }
     self->priv = NULL;
-    if (parent_class->finalize)
-	(* parent_class->finalize)(object);
+
+    G_OBJECT_CLASS (glade_xml_parent_class)->finalize (object);
 }
 
 /**
