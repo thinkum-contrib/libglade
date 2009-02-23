@@ -35,11 +35,6 @@
 
 #ifdef DEBUG
 guint _glade_debug_flags = 0;
-static const  GDebugKey libglade_debug_keys[] = {
-    { "parser", GLADE_DEBUG_PARSER },
-    { "build",  GLADE_DEBUG_BUILD },
-};
-static const guint libglade_ndebug_keys = G_N_ELEMENTS(libglade_debug_keys);
 #endif
 
 #ifdef G_OS_WIN32
@@ -149,9 +144,14 @@ glade_init(void)
 #ifdef DEBUG
     env_string = g_getenv("LIBGLADE_DEBUG");
     if (env_string != NULL) {
+	const GDebugKey libglade_debug_keys[] = {
+		{ "parser", GLADE_DEBUG_PARSER },
+		{ "build",  GLADE_DEBUG_BUILD },
+	};
+
 	_glade_debug_flags = g_parse_debug_string (env_string,
 						   libglade_debug_keys,
-						   libglade_ndebug_keys);
+						   G_N_ELEMENTS (libglade_debug_keys));
 	env_string = NULL;
     }
 #endif

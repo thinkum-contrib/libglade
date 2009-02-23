@@ -1,3 +1,7 @@
+2009-02-23  Christian Persch  <chpe@gnome.org>
+
+	* glade/glade-init.c: (glade_init): No need to make this data static.
+
 2008-10-06  Felix Riemann  <friemann@svn.gnome.org>
 
 	* glade/glade-xml.c: (glade_xml_class_init), (glade_xml_init),
