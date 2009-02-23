@@ -47,12 +47,10 @@ new_func(gchar *file)
 	/*glade_style_parse(tree->xml);*/
 	tree->tree = g_node_new(NULL); /* root node */
 	tree->hash = g_hash_table_new(g_str_hash, g_str_equal);
-	g_hash_table_freeze(tree->hash);
 
 	for (tmp = tree->xml->root->childs; tmp != NULL; tmp = tmp->next)
 		if (tmp->name && !strcmp(tmp->name, "widget"))
 			recurse_tree(tmp, tree->tree, tree->hash);
-	g_hash_table_thaw(tree->hash);
 	return tree;
 }
 

@@ -1,3 +1,10 @@
+2009-02-23  Andre Klapper  <a9016009@gmx.de>
+
+	* glade/makekeys.awk:
+	* test/domp.c:
+	* test/saxp.c:
+	Remove deprecated GLib functions. Fixes bug #572846.
+
 2009-02-23  Christian Persch  <chpe@gnome.org>
 
 	* glade/glade-init.c: (glade_init): No need to make this data static.

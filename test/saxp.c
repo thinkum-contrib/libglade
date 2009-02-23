@@ -395,12 +395,12 @@ static void gladeEndElement(GladeParseState *state, const CHAR *name) {
 	if (!strcmp(name, "style_name"))
 	    state->cur_style->name = g_strdup(state->content->str);
 	else if (!strcmp(name, "style_font"))
-	    g_string_sprintfa(state->style_data, "  font = \"%s\"\n",
+	    g_string_append_printf(state->style_data, "  font = \"%s\"\n",
 			      state->content->str);
 	else if (!strncmp(name, "fg-", 3)) {
 	    gint r, g, b;
 	    sscanf(state->content->str, "%d,%d,%d", &r, &g, &b);
-	    g_string_sprintfa(state->style_data,
+	    g_string_append_printf(state->style_data,
 			      "  fg[%s] = { %.3f, %.3f, %.3f }\n",
 			      &name[3],
 			      CLAMP(r, 0, 255) / 255.0,
@@ -409,7 +409,7 @@ static void gladeEndElement(GladeParseState *state, const CHAR *name) {
 	} else if (!strncmp(name, "bg-", 3)) {
 	    gint r, g, b;
 	    sscanf(state->content->str, "%d,%d,%d", &r, &g, &b);
-	    g_string_sprintfa(state->style_data,
+	    g_string_append_printf(state->style_data,
 			      "  bg[%s] = { %.3f, %.3f, %.3f }\n",
 			      &name[3],
 			      CLAMP(r, 0, 255) / 255.0,
@@ -418,7 +418,7 @@ static void gladeEndElement(GladeParseState *state, const CHAR *name) {
 	} else if (!strncmp(name, "text-", 5)) {
 	    gint r, g, b;
 	    sscanf(state->content->str, "%d,%d,%d", &r, &g, &b);
-	    g_string_sprintfa(state->style_data,
+	    g_string_append_printf(state->style_data,
 			      "  text[%s] = { %.3f, %.3f, %.3f }\n",
 			      &name[5],
 			      CLAMP(r, 0, 255) / 255.0,
@@ -427,14 +427,14 @@ static void gladeEndElement(GladeParseState *state, const CHAR *name) {
 	} else if (!strncmp(name, "base-", 5)) {
 	    gint r, g, b;
 	    sscanf(state->content->str, "%d,%d,%d", &r, &g, &b);
-	    g_string_sprintfa(state->style_data,
+	    g_string_append_printf(state->style_data,
 			      "  base[%s] = { %.3f, %.3f, %.3f }\n",
 			      &name[5],
 			      CLAMP(r, 0, 255) / 255.0,
 			      CLAMP(g, 0, 255) / 255.0,
 			      CLAMP(b, 0, 255) / 255.0);
 	} else if (!strncmp(name, "bg_pixmap-", 10))
-	    g_string_sprintfa(state->style_data, "  bg_pixmap[%s] = \"%s\"\n",
+	    g_string_append_printf(state->style_data, "  bg_pixmap[%s] = \"%s\"\n",
 			      &name[10], state->content->str);
 	break;
     case PARSER_STYLE:

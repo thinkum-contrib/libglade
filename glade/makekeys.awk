@@ -42,12 +42,10 @@ END {
   printf "  if (!hash) {\n";
   printf "    int i = 0;\n";
   printf "    hash = g_hash_table_new(g_str_hash, g_str_equal);\n";
-  printf "    g_hash_table_freeze(hash);\n";
   printf "    while (keys[i].str != NULL) {\n";
   printf "      g_hash_table_insert(hash, keys[i].str, GUINT_TO_POINTER(keys[i].key));\n";
   printf "      i++;\n";
   printf "    }\n";
-  printf "    g_hash_table_thaw(hash);\n";
   printf "  }\n";
   printf "  return hash;\n";
   printf "}\n\n";
