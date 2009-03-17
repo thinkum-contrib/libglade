@@ -1,3 +1,11 @@
+libglade-2.6.4:
+
+	* Fix GTK+ single includes (Felix Riemann)
+	* Use G_DEFINE_TYPE instead of registering the type by hand (Felix
+	  Riemann)
+	* Clean up code (Christian Persch)
+	* Remove deprecated GLib functions (Andre Klapper)
+
 libglade-2.6.3:
 
 	* glade_xml_new_from_buffer(): Do not call 
