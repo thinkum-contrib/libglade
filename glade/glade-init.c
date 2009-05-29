@@ -74,6 +74,7 @@ replace_prefix (const char *runtime_prefix,
 static const char *
 get_libdir (void)
 {
+    wchar_t wcbfr[1000];
     static const char *libdir = NULL;
     char *prefix = NULL;
 
@@ -84,18 +85,9 @@ get_libdir (void)
     }
 
 
-    if (GetVersion () < 0x80000000) {
-	wchar_t wcbfr[1000];
-
-	if (GetModuleFileNameW (hmodule, wcbfr,
-				G_N_ELEMENTS (wcbfr))) {
-	    prefix = g_utf16_to_utf8 (wcbfr, -1, NULL, NULL, NULL);
-	}
-    } else {
-	char cpbfr[1000];
-	if (GetModuleFileNameA (hmodule, cpbfr, G_N_ELEMENTS (cpbfr)))
-	    prefix = g_locale_to_utf8 (cpbfr, -1, NULL, NULL, NULL);
-    }
+    if (GetModuleFileNameW (hmodule, wcbfr,
+			    G_N_ELEMENTS (wcbfr)))
+	prefix = g_utf16_to_utf8 (wcbfr, -1, NULL, NULL, NULL);
 
     if (prefix != NULL) {
 	char *p = strrchr (prefix, '\\');
