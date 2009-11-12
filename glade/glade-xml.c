@@ -966,7 +966,7 @@ default_custom_handler(GladeXML *xml, gchar *func_name, gchar *name,
     allsymbols = g_module_open(NULL, 0);
     if (g_module_symbol(allsymbols, func_name, (gpointer)&func))
 	return (* func)(name, string1, string2, int1, int2);
-    g_warning("could not find widget creation function");
+    g_warning("could not find widget creation function '%s'.", func_name);
     return NULL;
 }
 
