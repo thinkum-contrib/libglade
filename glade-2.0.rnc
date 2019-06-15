@@ -1,0 +1,93 @@
+# glade-2.0.rnc - Glade XML 2.0 grammar, Relax NG Compact notation
+#
+# Generated from glade-2.0.dtd, libglade source changeset b246a0e
+# as of 11 November, 2004 08:44:00+0000
+# 
+# Generated with James Clark's trang tool, from FreeBSD port
+# textproc/trang as of FreeBSD Port version 20181222
+# 15 June, 2019 10:15:21+0000
+
+default namespace = "http://glade.gnome.org/glade-2.0.dtd"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+glade-interface =
+  element glade-interface {
+    attlist.glade-interface, requires*, widget*
+  }
+attlist.glade-interface &= empty
+requires = element requires { attlist.requires, empty }
+attlist.requires &= attribute lib { text }
+widget =
+  element widget {
+    attlist.widget,
+    property*,
+    accessibility?,
+    signal*,
+    accelerator*,
+    child*
+  }
+attlist.widget &=
+  attribute class { text },
+  attribute id { xsd:ID }
+property = element property { attlist.property, text }
+# type is an optional tag, and should be the string name of the
+# GType for the property
+
+# translatable specifies whether the property should be translated
+# before use.
+
+#  context indicates that the value has a |-separated 
+# context which must be stripped before use, look up g_strip_context() 
+# in the GLib API documentation for details.
+attlist.property &=
+  attribute name { text },
+  attribute type { text }?,
+  [ a:defaultValue = "no" ] attribute translatable { "yes" | "no" }?,
+  [ a:defaultValue = "no" ] attribute context { "yes" | "no" }?,
+  attribute comments { text }?,
+  attribute agent { text }?
+atkproperty =
+  element atkproperty { attlist.atkproperty, (text | accessibility)* }
+attlist.atkproperty &=
+  attribute name { text },
+  attribute type { text }?,
+  [ a:defaultValue = "no" ] attribute translatable { "yes" | "no" }?,
+  [ a:defaultValue = "no" ] attribute context { "yes" | "no" }?,
+  attribute comments { text }?
+atkrelation = element atkrelation { attlist.atkrelation, empty }
+attlist.atkrelation &=
+  attribute target { text },
+  attribute type { text }
+# description is assumed to be a translatable string
+atkaction = element atkaction { attlist.atkaction, empty }
+attlist.atkaction &=
+  attribute action_name { text },
+  attribute description { text }?
+accessibility =
+  element accessibility {
+    attlist.accessibility, (atkrelation | atkaction | atkproperty)*
+  }
+attlist.accessibility &= empty
+signal = element signal { attlist.signal, property* }
+attlist.signal &=
+  attribute name { text },
+  attribute handler { text },
+  [ a:defaultValue = "no" ] attribute after { "yes" | "no" }?,
+  attribute object { xsd:IDREF }?,
+  attribute last_modification_time { text }?
+accelerator = element accelerator { attlist.accelerator, empty }
+attlist.accelerator &=
+  attribute key { text },
+  attribute modifiers { text },
+  attribute signal { text }
+child =
+  element child { attlist.child, (widget | placeholder), packing? }
+# internal children should not have any properties set on them.
+# (Internal children are things like the scrollbars in a
+# GtkScrolledWindow, or the vbox in a GtkDialog).
+attlist.child &= attribute internal-child { text }?
+packing = element packing { attlist.packing, property+ }
+attlist.packing &= empty
+placeholder = element placeholder { attlist.placeholder, empty }
+attlist.placeholder &= empty
+start = glade-interface
